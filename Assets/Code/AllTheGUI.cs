@@ -7,7 +7,7 @@ public class AllTheGUI : MonoBehaviour {
     {
         if (GUI.Button(new Rect(10, 10, 100, 150), "Forward"))
         {
-            FindObjectOfType<Robot>().ExecuteMoveForward();
+            FindObjectOfType<Robot>().Execute(AST.Command.MoveForward);
         }
     }
 }

@@ -24,6 +24,8 @@ public class Robot : MonoBehaviour {
     public Direction FacingDirection;
     public IntVec3 Position;
 
+    public GameObject HeldPrefab;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -35,8 +37,30 @@ public class Robot : MonoBehaviour {
         transform.position = grid.CenterOfCell(Position);
 	}
 
-    public void ExecuteMoveForward() {
-        Position += forwardVec;
+    private void rotateCCW() {
+        if (FacingAxis == Axis.X) {
+            FacingDirection = FacingDirection == Direction.Neg ? Direction.Pos : Direction.Neg;
+        }
+        FacingAxis = FacingAxis == Axis.X ? Axis.Z : Axis.X;
+    }
+
+    public void Execute(AST.Command c) {
+        switch (c) {
+            case AST.Command.MoveForward:
+                Position += forwardVec;
+                break;
+            case AST.Command.PlaceBlock:
+                FindObjectOfType<Grid>().AddObject(Position + forwardVec, HeldPrefab);
+                break;
+            case AST.Command.TurnLeft:
+                rotateCCW();
+                break;
+            case AST.Command.TurnRight:
+                rotateCCW();
+                rotateCCW();
+                rotateCCW();
+                break;
+        }
     }
 
     private IntVec3 forwardVec {
