@@ -1,0 +1,19 @@
+syntax: glob
+bin/
+Temp/
+Obj/
+obj/
+UnityGenerated/
+Library/
+ExportedObj/
+Build/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+
