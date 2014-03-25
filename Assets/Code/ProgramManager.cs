@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public static class AST {
@@ -21,16 +21,17 @@ public class ProgramManager : MonoBehaviour {
 
     public float DelayPerCommand = 0.8f;
 
-    private AST.Program program = new AST.Program();
+    public AST.Program Program = new AST.Program();
+
     private int currentStatement = -1;
     private float lastStatementExecutionTime = 0.0f;
 
     public void AppendCommand(AST.Command c) {
-        program.Body.Add(c);
+        Program.Body.Add(c);
     }
 
     public void Clear() {
-        program.Body.Clear();
+        Program.Body.Clear();
     }
 
     public void Execute() {
@@ -46,10 +47,10 @@ public class ProgramManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (currentStatement >= 0 && lastStatementExecutionTime + DelayPerCommand < Time.fixedTime) {
-            if (currentStatement >= program.Body.Count) {
+            if (currentStatement >= Program.Body.Count) {
                 currentStatement = -1;
             } else {
-                FindObjectOfType<Robot>().Execute(program.Body[currentStatement++]);
+                FindObjectOfType<Robot>().Execute(Program.Body[currentStatement++]);
                 lastStatementExecutionTime = Time.fixedTime;
             }
         }
