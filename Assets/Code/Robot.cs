@@ -11,20 +11,18 @@ public class Robot : MonoBehaviour {
 
     public enum Direction
     {
-        Pos, Neg
+        Neg = -1,
+        Pos = 1,
     }
 
-    public static int intFromDirection(Direction d)
+    private static int intFromDirection(Direction d)
     {
-        if (d == Direction.Neg)
-            return -1;
-        return 1;
+        return (int)d;
     }
 
-    public Axis axis;
-    public Direction dir;
-
-    public IntVec2 pos;
+    public Axis FacingAxis;
+    public Direction FacingDirection;
+    public IntVec3 Position;
 
 	// Use this for initialization
 	void Start () {
@@ -33,22 +31,24 @@ public class Robot : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        var grid = gameObject.GetComponent<Grid>();
-        transform.position = grid.CenterOfCell(pos);
+        var grid = FindObjectOfType<Grid>();
+        transform.position = grid.CenterOfCell(Position);
 	}
 
-    public Vector3 forwardVec
-    {
-        get
-        {
-            switch (axis)
-            {
+    public void ExecuteMoveForward() {
+        Position += forwardVec;
+    }
+
+    private IntVec3 forwardVec {
+        get {
+            var d = intFromDirection(FacingDirection);
+            switch (FacingAxis) {
                 case Axis.X:
-                    return new Vector3(intFromDirection(dir), 0, 0);
+                    return new IntVec3(d, 0, 0);
                 case Axis.Y:
-                    return new Vector3(0, intFromDirection(dir), 0);
+                    return new IntVec3(0, d, 0);
                 case Axis.Z:
-                    return new Vector3(0, 0, intFromDirection(dir));
+                    return new IntVec3(0, 0, d);
                 default:
                     throw new InvalidEnumArgumentException();
             }
