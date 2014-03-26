@@ -45,6 +45,7 @@ public class Robot : MonoBehaviour {
     }
 
     public void Execute(AST.Command c) {
+        Debug.Log(c);
         switch (c) {
             case AST.Command.MoveForward:
                 Position += forwardVec;
@@ -54,10 +55,10 @@ public class Robot : MonoBehaviour {
                 break;
             case AST.Command.TurnLeft:
                 rotateCCW();
+                rotateCCW();
+                rotateCCW();
                 break;
             case AST.Command.TurnRight:
-                rotateCCW();
-                rotateCCW();
                 rotateCCW();
                 break;
         }
