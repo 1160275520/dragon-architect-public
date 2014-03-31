@@ -1,6 +1,6 @@
 using UnityEngine;
-using System.Collections;
-using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Robot : MonoBehaviour {
 
@@ -19,6 +19,22 @@ public class Robot : MonoBehaviour {
     {
         return (int)d;
     }
+
+    public enum Command
+    {
+        MoveForward,
+        TurnLeft,
+        TurnRight,
+        PlaceBlock
+    }
+
+    public static Dictionary<Command, string> CommandNames = new Dictionary<Command, string>{
+        {Command.MoveForward, "forward"},
+        {Command.TurnLeft, "left"},
+        {Command.TurnRight, "right"},
+        {Command.PlaceBlock, "block"},
+    };
+    public static Dictionary<string, Command> CommandMapping = CommandNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
 
     public Axis FacingAxis;
     public Direction FacingDirection;
@@ -44,21 +60,21 @@ public class Robot : MonoBehaviour {
         FacingAxis = FacingAxis == Axis.X ? Axis.Z : Axis.X;
     }
 
-    public void Execute(AST.Command c) {
-        Debug.Log(c);
-        switch (c) {
-            case AST.Command.MoveForward:
+    public void Execute(string command) {
+        Debug.Log(command);
+        switch (CommandMapping[command]) {
+            case Command.MoveForward:
                 Position += forwardVec;
                 break;
-            case AST.Command.PlaceBlock:
+            case Command.PlaceBlock:
                 FindObjectOfType<Grid>().AddObject(Position + forwardVec, HeldPrefab);
                 break;
-            case AST.Command.TurnLeft:
+            case Command.TurnLeft:
                 rotateCCW();
                 rotateCCW();
                 rotateCCW();
                 break;
-            case AST.Command.TurnRight:
+            case Command.TurnRight:
                 rotateCCW();
                 break;
         }
