@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class Robot : MonoBehaviour {
 
@@ -91,7 +92,7 @@ public class Robot : MonoBehaviour {
                 case Axis.Z:
                     return new IntVec3(0, 0, d);
                 default:
-                    throw new InvalidEnumArgumentException();
+                    throw new ArgumentException();
             }
             
         }

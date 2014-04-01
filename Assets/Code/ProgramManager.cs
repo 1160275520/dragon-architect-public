@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public static class AST
 {
@@ -21,12 +22,12 @@ public static class AST
     {
         public string Name;
         public string ParamName; // nullable
-        public Statement[] Body;
+        public List<Statement> Body = new List<Statement>();
     }
 
     public class Program
     {
-        public Procedure[] Procedures;
+        public List<Procedure> Procedures;
     }
 }
 
@@ -43,7 +44,7 @@ public class ProgramManager : MonoBehaviour {
         public int Statement;
     }
 
-    private Stack<CallStackState> callStack;
+    private Stack<CallStackState> callStack = new Stack<CallStackState>();
 
     private float lastStatementExecutionTime = 0.0f;
 
@@ -55,7 +56,7 @@ public class ProgramManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
@@ -70,10 +71,11 @@ public class ProgramManager : MonoBehaviour {
                 Update(); // recursively call self to unwind the stack
 
             } else {
-                var statement = proc.Body[callStack.Peek().Statement];
+                var statement = proc.Body[callStack.Peek().Statement++];
                 switch (statement.Type) {
                     case AST.StatementType.Call: {
                         var name = (string)statement.Arg1;
+                        Debug.Log(name);
                         var newproc = Program.Procedures.FirstOrDefault(p => p.Name == name);
 
                         if (newproc != null) {
@@ -89,10 +91,10 @@ public class ProgramManager : MonoBehaviour {
 
                     case AST.StatementType.Repeat: {
                         var name = (string)statement.Arg1;
-                        var numtimes = (int)statement.Arg2;
+                        var numtimes = Convert.ToInt32((string)statement.Arg2); // needs to be validated (e.g. not negative)
 
                         // create a anon procedure to do the repeat
-                        var newproc = new AST.Procedure { Body = (from x in Enumerable.Range(0, numtimes) select new AST.Statement { Type = AST.StatementType.Call, Arg1 = name }).ToArray() };
+                        var newproc = new AST.Procedure { Body = (from x in Enumerable.Range(0, numtimes) select new AST.Statement { Type = AST.StatementType.Call, Arg1 = name }).ToList<AST.Statement>() };
                         callStack.Push(new CallStackState { Proc = newproc, Statement = 0 });
 
                         break;
