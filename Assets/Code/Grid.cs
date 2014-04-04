@@ -44,10 +44,10 @@ public class Grid : MonoBehaviour {
         grid = new GameObject[GRID_SIZE, GRID_SIZE, GRID_SIZE];
         offset = new IntVec3(GRID_SIZE / 2, GRID_SIZE / 2, GRID_SIZE / 2);
 
-        AddObject(new IntVec3(5, 0, 5), TestPrefab);
-        AddObject(new IntVec3(4, 0, 5), TestPrefab);
-        AddObject(new IntVec3(3, 0, 5), TestPrefab);
-        AddObject(new IntVec3(5, 0, 6), TestPrefab);
+        //AddObject(new IntVec3(5, 0, 5), TestPrefab);
+        //AddObject(new IntVec3(4, 0, 5), TestPrefab);
+        //AddObject(new IntVec3(3, 0, 5), TestPrefab);
+        //AddObject(new IntVec3(5, 0, 6), TestPrefab);
 	}
 	
 	// Update is called once per frame

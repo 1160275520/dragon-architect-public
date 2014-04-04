@@ -27,7 +27,7 @@ public static class AST
 
     public class Program
     {
-        public List<Procedure> Procedures;
+        public Dictionary<string, Procedure> Procedures;
     }
 }
 
@@ -50,8 +50,37 @@ public class ProgramManager : MonoBehaviour {
 
     public void Execute() {
         callStack.Clear();
-        callStack.Push(new CallStackState { Proc = Program.Procedures[0], Statement = 0 });
+        callStack.Push(new CallStackState { Proc = Program.Procedures["Main"], Statement = 0 });
         lastStatementExecutionTime = Time.fixedTime;
+    }
+
+    public void Stop() {
+        callStack.Clear();
+    }
+
+    public bool IsExecuting {
+        get {
+            return callStack.Count > 0;
+        }
+    }
+
+    public CallStackState programState {
+        get { // janky copy-out, assuming all args are actually strings (i.e. immutable)
+            try {
+                var copyState = new CallStackState();
+                var curState = callStack.Peek();
+                var copyProc = new AST.Procedure { Body = new List<AST.Statement>(), Name = curState.Proc.Name, ParamName = curState.Proc.ParamName };
+                foreach (AST.Statement statement in curState.Proc.Body) {
+                    copyProc.Body.Add(new AST.Statement { Type = statement.Type, Arg1 = statement.Arg1, Arg2 = statement.Arg2 });
+                }
+                copyState.Proc = copyProc;
+                copyState.Statement = curState.Statement;
+                copyState.Arg = curState.Arg;
+                return copyState;
+            } catch (InvalidOperationException) {
+                return null;
+            }
+        }
     }
 
 	// Use this for initialization
@@ -75,8 +104,7 @@ public class ProgramManager : MonoBehaviour {
                 switch (statement.Type) {
                     case AST.StatementType.Call: {
                         var name = (string)statement.Arg1;
-                        Debug.Log(name);
-                        var newproc = Program.Procedures.FirstOrDefault(p => p.Name == name);
+                        var newproc = Program.Procedures.FirstOrDefault(p => p.Key == name).Value;
 
                         if (newproc != null) {
                             callStack.Push(new CallStackState { Proc = newproc, Statement = 0, Arg = statement.Arg2 });

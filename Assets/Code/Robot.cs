@@ -24,6 +24,8 @@ public class Robot : MonoBehaviour {
     public enum Command
     {
         MoveForward,
+        MoveUp,
+        MoveDown,
         TurnLeft,
         TurnRight,
         PlaceBlock
@@ -31,6 +33,8 @@ public class Robot : MonoBehaviour {
 
     public static Dictionary<Command, string> CommandNames = new Dictionary<Command, string>{
         {Command.MoveForward, "forward"},
+        {Command.MoveUp, "up"},
+        {Command.MoveDown, "down"},
         {Command.TurnLeft, "left"},
         {Command.TurnRight, "right"},
         {Command.PlaceBlock, "block"},
@@ -42,6 +46,7 @@ public class Robot : MonoBehaviour {
     public IntVec3 Position;
 
     public GameObject HeldPrefab;
+    public Plane YCue;
 
 	// Use this for initialization
 	void Start () {
@@ -66,6 +71,14 @@ public class Robot : MonoBehaviour {
         switch (CommandMapping[command]) {
             case Command.MoveForward:
                 Position += forwardVec;
+                break;
+            case Command.MoveUp:
+                Position += new IntVec3(0, 1, 0);
+                break;
+            case Command.MoveDown:
+                if (Position.Y > 0) {
+                    Position += new IntVec3(0, -1, 0);
+                }
                 break;
             case Command.PlaceBlock:
                 FindObjectOfType<Grid>().AddObject(Position + forwardVec, HeldPrefab);
