@@ -12,6 +12,7 @@ public class Grid : MonoBehaviour {
     private GameObject[,,] grid;
     // offset of origin in the grid (add to all indices)
     private IntVec3 offset;
+    private List<IntVec3> additions = new List<IntVec3>();
 
     public Vector3 CenterOfCell(IntVec3 idx) {
         var marker = Component.FindObjectOfType<GridMarker>();
@@ -29,6 +30,7 @@ public class Grid : MonoBehaviour {
         if (this[idx] != null) throw new ArgumentException("cell is not empty");
         var obj = (GameObject)Instantiate(prefab, CenterOfCell(idx), Quaternion.identity);
         this[idx] = obj;
+        additions.Add(idx);
     }
 
     public void RemoveObject(IntVec3 idx) {
@@ -37,6 +39,13 @@ public class Grid : MonoBehaviour {
         if (obj != null) {
             Destroy(obj);
         }
+    }
+
+    public void Undo() {
+        foreach (var idx in additions) {
+            RemoveObject(idx);
+        }
+        additions.Clear();
     }
 
 	// Use this for initialization

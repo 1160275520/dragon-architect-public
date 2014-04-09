@@ -16,6 +16,10 @@ public static class AST
         public StatementType Type;
         public object Arg1;
         public object Arg2;
+
+        public override string ToString() {
+            return "(" + Type + " " + Arg1 + " " + Arg2 + ")";
+        }
     }
 
     public class Procedure
@@ -23,6 +27,14 @@ public static class AST
         public string Name;
         public string ParamName; // nullable
         public List<Statement> Body = new List<Statement>();
+
+        public override string ToString() {
+            var result = Name + ":\n";
+            foreach (Statement statement in Body) {
+                result += statement + "\n";
+            }
+            return result;
+        }
     }
 
     public class Program
@@ -33,7 +45,7 @@ public static class AST
 
 public class ProgramManager : MonoBehaviour {
 
-    public float DelayPerCommand = 0.8f;
+    public float DelayPerCommand = 0.0f;
 
     public AST.Program Program = new AST.Program();
 
@@ -47,11 +59,14 @@ public class ProgramManager : MonoBehaviour {
     private Stack<CallStackState> callStack = new Stack<CallStackState>();
 
     private float lastStatementExecutionTime = 0.0f;
+    private IntVec3 prevPostion;
 
     public void Execute() {
         callStack.Clear();
         callStack.Push(new CallStackState { Proc = Program.Procedures["Main"], Statement = 0 });
         lastStatementExecutionTime = Time.fixedTime;
+        var curPostion = FindObjectOfType<Robot>().Position;
+        prevPostion = new IntVec3 { X = curPostion.X, Y = curPostion.Y, Z = curPostion.Z };
     }
 
     public void Stop() {
@@ -83,6 +98,11 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
+    public void Undo() {
+        FindObjectOfType<Robot>().Position = prevPostion;
+        FindObjectOfType<Grid>().Undo();
+    }
+
 	// Use this for initialization
 	void Start () {
 
@@ -105,12 +125,18 @@ public class ProgramManager : MonoBehaviour {
                     case AST.StatementType.Call: {
                         var name = (string)statement.Arg1;
                         var newproc = Program.Procedures.FirstOrDefault(p => p.Key == name).Value;
-
+                        Debug.Log(name + " " + statement.Arg2);
                         if (newproc != null) {
                             callStack.Push(new CallStackState { Proc = newproc, Statement = 0, Arg = statement.Arg2 });
                         } else {
                             // else assume it was a robot command, try to get the robot to execute it
-                            FindObjectOfType<Robot>().Execute(name);
+                            if (statement.Arg2 is string) {
+                                for (int i = 0; i < int.Parse((string)statement.Arg2); i++) {
+                                    FindObjectOfType<Robot>().Execute(name);
+                                }
+                            } else {
+                                FindObjectOfType<Robot>().Execute(name);
+                            }
                             lastStatementExecutionTime = Time.fixedTime;
                         }
 

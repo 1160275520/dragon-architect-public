@@ -67,7 +67,7 @@ public class Robot : MonoBehaviour {
     }
 
     public void Execute(string command) {
-        Debug.Log(command);
+        //Debug.Log(command);
         switch (CommandMapping[command]) {
             case Command.MoveForward:
                 Position += forwardVec;
