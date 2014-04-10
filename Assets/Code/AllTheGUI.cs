@@ -23,62 +23,65 @@ public class AllTheGUI : MonoBehaviour
     private Dragged currentlyDragged;
 
     void Start() {
-        FindObjectOfType<ProgramManager>().Program.Procedures = new Dictionary<string, AST.Procedure>();
-        FindObjectOfType<ProgramManager>().Program.Procedures.Add("Main", new AST.Procedure { Name = "Main" });
-        FindObjectOfType<ProgramManager>().Program.Procedures.Add("F1", new AST.Procedure { Name = "F1" });
-        FindObjectOfType<ProgramManager>().Program.Procedures.Add("F2", new AST.Procedure { Name = "F2" });
+        var prog = GetComponent<ProgramManager>().Program;
+        prog.Procedures = new Dictionary<string, AST.Procedure>();
+        prog.Procedures.Add("Main", new AST.Procedure { Name = "Main" });
+        prog.Procedures.Add("F1", new AST.Procedure { Name = "F1" });
+        prog.Procedures.Add("F2", new AST.Procedure { Name = "F2" });
     }
 
     void OnGUI() {
+        var progman = GetComponent<ProgramManager>();
+
         GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH+10, Screen.height - SPACING));
         var buttonStyle = new GUIStyle();
         setStyleBackground(buttonStyle, new Color(0.2f, 0.2f, 0.2f, 0.5f));
         GUILayout.BeginVertical(buttonStyle);
         var options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
         if (GUILayout.Button("Forward", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.MoveForward], Arg2 = "1" });
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.MoveForward], Arg2 = "1" });
         }
         if (GUILayout.Button("Up", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.MoveUp], Arg2 = "1" });
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.MoveUp], Arg2 = "1" });
         }
         if (GUILayout.Button("Down", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.MoveDown], Arg2 = "1" });
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.MoveDown], Arg2 = "1" });
         }
         if (GUILayout.Button("Left", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.TurnLeft]});
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.TurnLeft]});
         }
         if (GUILayout.Button("Right", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.TurnRight]});
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.TurnRight]});
         }
         if (GUILayout.Button("Block", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.PlaceBlock]});
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = Robot.CommandNames[Robot.Command.PlaceBlock]});
         }
         if (GUILayout.Button("Repeat", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Repeat, Arg1 = "F1", Arg2 = "5" });
+            progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Repeat, Arg1 = "F1", Arg2 = "5" });
         }
         //switch (curProc) {
         //    case 0:
                 if (GUILayout.Button("F1", options)) {
-                    FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = "F1"});
+                    progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = "F1"});
                 }
                 if (GUILayout.Button("F2", options)) {
-                    FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = "F2"});
+                    progman.Program.Procedures.ElementAt(curProc).Value.Body.Add(new AST.Statement { Type = AST.StatementType.Call, Arg1 = "F2"});
                 }
         //        break;
         //}
-        if (FindObjectOfType<ProgramManager>().IsExecuting) {
+        if (progman.IsExecuting) {
             if (GUILayout.Button("Stop", options)) {
-                FindObjectOfType<ProgramManager>().Stop();
+                progman.Stop();
             }
         }
         else if (GUILayout.Button("Execute", options)) {
-            FindObjectOfType<ProgramManager>().Execute();
+            progman.Execute();
         }
         if (GUILayout.Button("Clear", options)) {
-            FindObjectOfType<ProgramManager>().Program.Procedures.ElementAt(curProc).Value.Body = new List<AST.Statement>();
+            progman.Program.Procedures.ElementAt(curProc).Value.Body = new List<AST.Statement>();
         }
         if (GUILayout.Button("Undo", options)) {
-            FindObjectOfType<ProgramManager>().Undo();
+            progman.Undo();
         }
         GUILayout.EndVertical();
         GUILayout.EndArea();
@@ -86,7 +89,7 @@ public class AllTheGUI : MonoBehaviour
        
         GUILayout.BeginArea(new Rect(Screen.width - 3 * (COLUMN_WIDTH + SPACING), SPACING, 3 * (COLUMN_WIDTH + SPACING), Screen.height));
         GUILayout.BeginVertical(buttonStyle);
-        var procNames = FindObjectOfType<ProgramManager>().Program.Procedures.Keys;
+        var procNames = progman.Program.Procedures.Keys;
         curProc = GUILayout.SelectionGrid(curProc, procNames.ToArray(), procNames.Count);
         GUILayout.BeginHorizontal();
         GUILayout.Space(SPACING / 2);
@@ -109,7 +112,9 @@ public class AllTheGUI : MonoBehaviour
     }
 
     void makeProc(string procName) {
-        var proc = FindObjectOfType<ProgramManager>().Program.Procedures[procName];
+        var progman = GetComponent<ProgramManager>();
+
+        var proc = progman.Program.Procedures[procName];
         
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
@@ -157,10 +162,10 @@ public class AllTheGUI : MonoBehaviour
         setStyleBackground(codeStyle, new Color(0.2f, 0.2f, 0.2f, 0.5f));
         GUILayout.BeginVertical(codeStyle, GUILayout.Width(COLUMN_WIDTH));
         GUILayout.Space(proc.Body.Count > 0 ? SPACING/2 : SPACING * 5);
-        var body = FindObjectOfType<ProgramManager>().Program.Procedures[procName].Body;
+        var body = progman.Program.Procedures[procName].Body;
         for (int i = 0; i < body.Count; i++) {
             var command = body[i];
-            var programState = FindObjectOfType<ProgramManager>().programState;
+            var programState = progman.programState;
             var highlight = programState != null ? procName == programState.Proc.Name && i == programState.Statement : false;
             switch (command.Type) {
                 case AST.StatementType.Call:
