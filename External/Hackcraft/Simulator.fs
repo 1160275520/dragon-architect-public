@@ -9,7 +9,7 @@ open Hackcraft.Ast.Imperative
 open Hackcraft.Ast.Library
 
 type CallStackState = {
-    Args: obj[];
+    Args: ImmArr<obj>;
     mutable ToExecute: Statement list;
 }
 
@@ -25,7 +25,7 @@ let private getProc (program:Program) procname =
             | None -> runtimeError (sprintf "procedure '%s' does not exist" procname)
             | Some x -> x
         | Some x -> x
-    List.ofArray prog.Body
+    List.ofSeq prog.Body
 
 let private exprAsInt (o:obj) =
     match o with
@@ -34,7 +34,7 @@ let private exprAsInt (o:obj) =
     | _ -> runtimeError "cannot coerce object to integer"
 
 let CreateState program mainProcName =
-    {CallStack=[{Args=[||]; ToExecute=getProc program mainProcName;}]}
+    {CallStack=[{Args=ImmArr.ofSeq []; ToExecute=getProc program mainProcName;}]}
 
 let Evaluate (state:State) expression =
     match expression with
@@ -59,7 +59,7 @@ let ExecuteStep program (state:State) =
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
                 let ntimes = Evaluate state ntimesExpr |> exprAsInt
                 let proc = List.init ntimes (fun _ -> stmt)
-                state.CallStack <- {Args=[||]; ToExecute=proc} :: state.CallStack
+                state.CallStack <- {Args=ImmArr.ofSeq []; ToExecute=proc} :: state.CallStack
                 None
             | Command cmd -> Some cmd
 

@@ -7,7 +7,7 @@ type ImperativeAstManipulator() =
     let mutable ast: Program = {Procedures=Map.empty}
 
     let updateProc procname newbody =
-        let newproc = {ast.Procedures.[procname] with Body=Array.ofSeq newbody}
+        let newproc = {ast.Procedures.[procname] with Body=ImmArr.ofSeq newbody}
         ast <- {ast with Procedures=ast.Procedures.Add (procname, newproc)}
 
     let bodyAsList procname = new List<Statement>(ast.Procedures.[procname].Body)
@@ -15,7 +15,7 @@ type ImperativeAstManipulator() =
     member this.Program = ast
         
     member this.CreateProcedure name =
-        ast <- {ast with Procedures=ast.Procedures.Add (name, {Arity=0; Body=[||]})}
+        ast <- {ast with Procedures=ast.Procedures.Add (name, {Arity=0; Body=ImmArr.ofSeq []})}
 
     member this.InsertStatement procname index statement =
         let body = bodyAsList procname
