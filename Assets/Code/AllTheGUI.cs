@@ -102,7 +102,7 @@ public class AllTheGUI : MonoBehaviour
             statementRects = new Dictionary<string, List<Rect>>();
             procRects = new Dictionary<string, Rect>();
         }
-        //doDragDrop();
+        doDragDrop();
         makeProc("Main");
         GUILayout.Space(SPACING);
         makeProc("F1");
@@ -123,7 +123,11 @@ public class AllTheGUI : MonoBehaviour
             boxStyle.font = CodeFont;
             boxStyle.fontSize = 14;
             // XXX TODO put this back in
-            //GUI.Box(adjustedRect, string.Format("{0}   {1}", currentlyDragged.Statement.Arg1, currentlyDragged.Statement.Arg2), boxStyle);
+            if (currentlyDragged.Statement.IsCall) {
+                GUI.Box(adjustedRect, currentlyDragged.Statement.AsCall.Proc, boxStyle);
+            } else if (currentlyDragged.Statement.IsRepeat) {
+                GUI.Box(adjustedRect, "Repeat", boxStyle);
+            }
         }
         makeFPS();
     }
@@ -146,16 +150,15 @@ public class AllTheGUI : MonoBehaviour
             var highlight = false;
             if (command.IsCall) {
                 newStatement = makeCall(command.AsCall, highlight);
-                GUILayout.Space(SPACING / 2);
             } else if (command.IsRepeat) {
                 newStatement = makeRepeat(command.AsRepeat, highlight);
-                GUILayout.Space(SPACING / 2);
             }
 
             // XXX why does this only happen for call?
             if (Event.current.type == EventType.Repaint) {
-                //statementRects[procName].Add(GUILayoutUtility.GetLastRect());
+                statementRects[procName].Add(GUILayoutUtility.GetLastRect());
             }
+            GUILayout.Space(SPACING / 2);
 
             if (newStatement != null) {
                 progman.Program.ReplaceStatement(procName, i, newStatement);
@@ -180,12 +183,13 @@ public class AllTheGUI : MonoBehaviour
         boxStyle.font = CodeFont;
         boxStyle.fontSize = 14;
         GUILayout.BeginHorizontal();
-
         var procName = statement.Proc;
+        GUILayout.Box(procName, boxStyle);
+
         var arg1 = statement.Args.Count() > 0 ? statement.Args[0] as string : null;
 
         if (arg1 != null) {
-            GUILayout.Box(procName, boxStyle);
+            
             var newArg1 = GUILayout.TextField(arg1, 2, boxStyle, GUILayout.MinWidth(25));
             GUILayout.EndHorizontal();
 
@@ -195,8 +199,10 @@ public class AllTheGUI : MonoBehaviour
                 return Imperative.NewCall(procName, new object[] { newArg1 });
             }
         } else {
+            GUILayout.EndHorizontal();
             return null;
-        }
+        } 
+        
     }
 
     private Imperative.Statement makeRepeat(Imperative.Repeat statement, bool highlight) {
@@ -286,20 +292,21 @@ public class AllTheGUI : MonoBehaviour
 
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
-            foreach (var kvp in progman.Program.Program.Procedures) {
-                statementRects.Add(kvp.Key, new List<Rect>());
+            foreach (var procName in PROCS) {
+                statementRects.Add(procName, new List<Rect>());
             }
         }
         // when mouse down, determine which (if any) statement was clicked
         else if (Event.current.type == EventType.MouseDown) {
-            foreach (var kvp in progman.Program.Program.Procedures) {
-                var name = kvp.Key;
-                var proc = kvp.Value;
-                for (int i = 0; i < statementRects[name].Count; i++) {
-                    var rect = statementRects[name][i];
+            foreach (var procName in PROCS) {
+                var proc = progman.Program.Program.Procedures[procName];
+                for (int i = 0; i < statementRects[procName].Count; i++) {
+                    var rect = statementRects[procName][i];
+                    Debug.Log(rect);
+                    Debug.Log(Event.current.mousePosition);
                     if (rect.Contains(Event.current.mousePosition)) {
-                        currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = name, StatementIndex = i, DragRect = rect };
-                        Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
+                        currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect };
+                        //Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
                     }
                 }
             }
@@ -310,64 +317,57 @@ public class AllTheGUI : MonoBehaviour
             // update position
             currentlyDragged.DragRect.x = Event.current.mousePosition.x;
             currentlyDragged.DragRect.y = Event.current.mousePosition.y;
-            Debug.Log("dragRect = " + currentlyDragged.DragRect);
+            //Debug.Log("dragRect = " + currentlyDragged.DragRect);
 
             // does it need to be removed from current proc (if it has one)
             if (currentlyDragged.ProcName != null && !rectIntersect(currentlyDragged.DragRect, procRects[currentlyDragged.ProcName])) {
-                Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
-                progman.Program.RemoveStatement(currentlyDragged.ProcName,currentlyDragged.StatementIndex.Value);
+                //Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
+                progman.Program.RemoveStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value);
                 currentlyDragged.ProcName = null;
                 currentlyDragged.StatementIndex = null;
             } else {
-                foreach (var kvp in progman.Program.Program.Procedures) {
-                    var proc = kvp.Value;
-                    var name = kvp.Key;
+                foreach (var procName in PROCS) {
                     // should it be added to current procedure?
-                    if (rectIntersect(currentlyDragged.DragRect, procRects[name])) {
-                        Debug.Log("intersects with " + name);
+                    if (rectIntersect(currentlyDragged.DragRect, procRects[procName])) {
+                        //Debug.Log("intersects with " + procName);
                         // where in the curren procedure should it go?
                         int? swap = null;
                         if (currentlyDragged.ProcName != null) {
-                            if (currentlyDragged.ProcName == name) {
+                            if (currentlyDragged.ProcName == procName) {
                                 // remove in preparation for potential swap
-                                progman.Program.RemoveStatement(name,currentlyDragged.StatementIndex.Value);
+                                progman.Program.RemoveStatement(procName,currentlyDragged.StatementIndex.Value);
                                 swap = currentlyDragged.StatementIndex;
-                                Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
+                                //Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
                                 currentlyDragged.ProcName = null;
                                 currentlyDragged.StatementIndex = null;
                             } else {
                                 // we intersect with this proc, but we're already in a different one
-                                Debug.Log("already in " + currentlyDragged.ProcName + ", continuing");
+                                //Debug.Log("already in " + currentlyDragged.ProcName + ", continuing");
                                 continue;
                             }
                         }
-                        for (int i = 0; i < statementRects[name].Count; i++) {
-                            var rect = statementRects[name][i];
+                        for (int i = 0; i < statementRects[procName].Count; i++) {
+                            var rect = statementRects[procName][i];
                             Debug.Log(rect);
                             if ((swap.HasValue && ((i < swap && currentlyDragged.DragRect.yMin < rect.yMin + rect.height / 2) ||
                                                    (i >= swap && currentlyDragged.DragRect.yMin < rect.yMax + rect.height / 2))) ||
                                 (!swap.HasValue && currentlyDragged.DragRect.yMin < rect.yMin)) {
                                 // insert and return
-                                Debug.Log("inserted in " + name + " at " + i + " from " + swap);
-                                progman.Program.InsertStatement(name, i, currentlyDragged.Statement);
-                                currentlyDragged.ProcName = name;
+                                //Debug.Log("inserted in " + procName + " at " + i + " from " + swap);
+                                progman.Program.InsertStatement(procName, i, currentlyDragged.Statement);
+                                currentlyDragged.ProcName = procName;
                                 currentlyDragged.StatementIndex = i;
                                 return;
                             }
                         }
                         // insert at end
-                        Debug.Log("inserted in " + name + " at " + proc.Body.Count());
-                        currentlyDragged.StatementIndex = proc.Body.Count();
-                        progman.Program.AppendStatement(name, currentlyDragged.Statement);
-                        currentlyDragged.ProcName = name;
+                        //Debug.Log("inserted in " + procName + " at " + progman.Program.Program.Procedures[procName].Body.Count());
+                        currentlyDragged.StatementIndex = progman.Program.Program.Procedures[procName].Body.Count();
+                        progman.Program.AppendStatement(procName, currentlyDragged.Statement);
+                        currentlyDragged.ProcName = procName;
                     }
                 }
             }
         }
-        // when mouse up, reset and remove if released outside procedure
-        //if (Event.current.type == EventType.MouseUp && currentlyDragged != null) {
-        //    Debug.Log("drag ended");
-        //    currentlyDragged = null;
-        //}
     }
 }
