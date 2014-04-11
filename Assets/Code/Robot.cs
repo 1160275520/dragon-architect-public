@@ -67,6 +67,8 @@ public class Robot : MonoBehaviour {
     }
 
     public void Execute(string command) {
+        if (command == null) return;
+
         //Debug.Log(command);
         switch (CommandMapping[command]) {
             case Command.MoveForward:

@@ -16,4 +16,6 @@ Build/
 *.user
 *.unityproj
 *.booproj
+*.dll
+*.dll.meta
 
