@@ -1,4 +1,5 @@
 syntax: glob
+*.orig
 bin/
 Temp/
 Obj/
@@ -7,6 +8,7 @@ UnityGenerated/
 Library/
 ExportedObj/
 Build/
+ProjectSettings/Physics2DSettings.asset
 *.svd
 *.userprefs
 *.csproj
