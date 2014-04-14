@@ -79,7 +79,8 @@ public class AllTheGUI : MonoBehaviour
         }
         if (progman.IsExecuting && GUILayout.Button("Stop", options)) {
             progman.Stop();
-        } else if (GUILayout.Button("Execute", options)) {
+        }
+        if (!progman.IsExecuting && GUILayout.Button("Execute", options)) {
             progman.Execute();
         }
         if (GUILayout.Button("Clear", options)) {
@@ -94,8 +95,7 @@ public class AllTheGUI : MonoBehaviour
        
         GUILayout.BeginArea(new Rect(Screen.width - 3 * (COLUMN_WIDTH + SPACING), SPACING, 3 * (COLUMN_WIDTH + SPACING), Screen.height));
         GUILayout.BeginVertical(buttonStyle);
-        var procNames = (from kvp in program.Program.Procedures select kvp.Key).ToArray();
-        curProc = GUILayout.SelectionGrid(curProc, procNames, procNames.Length);
+        curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
         GUILayout.BeginHorizontal();
         GUILayout.Space(SPACING / 2);
         if (Event.current.type == EventType.Repaint) {

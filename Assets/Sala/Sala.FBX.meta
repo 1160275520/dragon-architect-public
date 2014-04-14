@@ -1,0 +1,241 @@
+fileFormatVersion: 2
+guid: de5d07be39df4e64cab961985adf29cb
+ModelImporter:
+  serializedVersion: 16
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: BONE_Tail_2
+    100004: BONE_Tail_1
+    100006: BONE_Tail_0
+    100008: BONE_Body_1
+    100010: BONE_Gill_L
+    100012: BONE_Gill_R
+    100014: BONE_Body_0
+    100016: MESH_Sala_Body
+    100018: BONE_leg_BR
+    100020: BONE_leg_BL
+    100022: BONE_leg_FL
+    100024: BONE_leg_FR
+    400000: //RootNode
+    400002: BONE_Tail_2
+    400004: BONE_Tail_1
+    400006: BONE_Tail_0
+    400008: BONE_Body_1
+    400010: BONE_Gill_L
+    400012: BONE_Gill_R
+    400014: BONE_Body_0
+    400016: MESH_Sala_Body
+    400018: BONE_leg_BR
+    400020: BONE_leg_BL
+    400022: BONE_leg_FL
+    400024: BONE_leg_FR
+    4300000: MESH_Sala_Body
+    4300002: MESH_Sala_Leg_FL
+    4300004: MESH_Sala_Leg_FR
+    4300006: MESH_Sala_Leg_BL
+    4300008: MESH_Sala_Leg_BR
+    7400000: Take 001
+    7400002: sala_Swim
+    7400004: sala_Pose
+    7400006: sala_PoseLoop
+    7400008: sala_Squirm
+    7400010: sala_Roll
+    7400012: sala_PoseStart
+    7400014: sala_PoseEnd
+    7400016: sala_RollStart
+    7400018: sala_RollLoop
+    7400020: sala_Pose_Start
+    7400022: sala_Pose_Loop
+    7400024: sala_Pose_End
+    7400026: sala_Roll_Start
+    7400028: sala_Roll_Loop
+    7400030: sala_Roll_End
+    7400032: sala_Cheer_Start
+    7400034: sala_Cheer_Loop
+    7400036: sala_Cheer_End
+    11100000: //RootNode
+    13700000: BONE_Body_0
+    13700002: MESH_Sala_Body
+  materials:
+    importMaterials: 1
+    materialName: 1
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 0
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 2
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: sala_Swim
+      takeName: 
+      firstFrame: 15
+      lastFrame: 34
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: sala_Squirm
+      takeName: 
+      firstFrame: 190
+      lastFrame: 221
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: sala_Cheer_Start
+      takeName: 
+      firstFrame: 70
+      lastFrame: 100
+      wrapMode: 1
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: sala_Cheer_Loop
+      takeName: 
+      firstFrame: 101
+      lastFrame: 110
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: sala_Cheer_End
+      takeName: 
+      firstFrame: 125
+      lastFrame: 150
+      wrapMode: 1
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 1
+  additionalBone: 0
+  userData: 
