@@ -42,9 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections.fs" />
+    <Compile Include="Lex.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="Simulator.fs" />
     <Compile Include="AstManipulator.fs" />
+    <Compile Include="Json.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

@@ -52,7 +52,7 @@ let ExecuteStep program (state:State) =
             None
         | stmt :: next ->
             head.ToExecute <- next
-            match stmt with
+            match stmt.Stmt with
             | Call {Proc=procname; Args=args} ->
                 state.CallStack <- {Args=args; ToExecute=getProc program procname;} :: state.CallStack
                 None

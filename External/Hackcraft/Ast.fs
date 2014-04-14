@@ -4,6 +4,10 @@ open Hackcraft
 
 module Imperative =
 
+    type Meta = {
+        Id: int;
+    }
+
     type Expression =
     | Literal of obj
     | Argument of int
@@ -14,17 +18,23 @@ module Imperative =
 
     type Call = { Proc:string; Args:ImmArr<obj>; }
     type Repeat = { Stmt:Statement; NumTimes:Expression; }
-    and Statement =
+    and StatementT =
     | Call of Call
     | Repeat of Repeat
     | Command of string
+    and Statement = {
+        Stmt: StatementT;
+        Meta: Meta;
+    }
 
-    type Statement with
+    type StatementT with
         member x.AsCall = match x with Call c -> c | _ -> invalidOp "not a call"
         member x.AsRepeat = match x with Repeat r -> r | _ -> invalidOp "not a repeat"
 
-    let NewCall (proc, args) = Call({Proc=proc; Args=ImmArr.ofSeq args;})
-    let NewRepeat (stmt, nt) = Repeat({Stmt=stmt; NumTimes=nt;})
+    let NewStatement id stmt = {Stmt=stmt; Meta={Id=id}}
+    let NewCall id proc args = NewStatement id (Call({Proc=proc; Args=ImmArr.ofSeq args;}))
+    let NewRepeat id stmt nt = NewStatement id (Repeat({Stmt=stmt; NumTimes=nt;}))
+    let NewCommand id cmd = NewStatement id (Command cmd)
 
     type Procedure = {
         Arity: int;
@@ -44,11 +54,11 @@ module Library =
 
     let Builtins =
         Map([
-            ("Forward", {Arity=1; Body=arr [NewRepeat (Command "forward", Argument 0)]});
-            ("Right", {Arity=0; Body=arr [Command "right"]});
-            ("Left", {Arity=0; Body=arr [Command "left"]});
-            ("Up", {Arity=1; Body=arr [NewRepeat (Command "up", Argument 0)]});
-            ("Down", {Arity=1; Body=arr [NewRepeat (Command "down", Argument 0)]});
-            ("TurnAround", {Arity=0; Body=arr [Command "right"; Command "right"]});
-            ("PlaceBlock", {Arity=0; Body=arr [Command "block"]});
+            ("Forward", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "forward") (Argument 0)]});
+            ("Right", {Arity=0; Body=arr [NewCommand 0 "right"]});
+            ("Left", {Arity=0; Body=arr [NewCommand 0 "left"]});
+            ("Up", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "up") (Argument 0)]});
+            ("Down", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "down") (Argument 0)]});
+            ("TurnAround", {Arity=0; Body=arr [NewCommand 0 "right"; NewCommand 0 "right"]});
+            ("PlaceBlock", {Arity=0; Body=arr [NewCommand 0 "block"]});
         ])

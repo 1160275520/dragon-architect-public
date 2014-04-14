@@ -27,6 +27,10 @@ public class AllTheGUI : MonoBehaviour
     private Dragged currentlyDragged;
     private string[] PROCS = new string[] { "Main", "F1", "F2" };
 
+    private int astIdCounter = 0;
+    // important that this is prefix, 1 should be the first id
+    private int NextId() { return ++astIdCounter; }
+
     void Start() {
         var prog = GetComponent<ProgramManager>().Program;
         foreach (var p in PROCS) {
@@ -51,31 +55,31 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.BeginVertical(buttonStyle);
         var options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
         if (GUILayout.Button("Forward", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("Forward", new object[] { "1" }));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Forward", new object[] { "1" }));
         }
         if (GUILayout.Button("Up", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("Up", new object[] { "1" }));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Up", new object[] { "1" }));
         }
         if (GUILayout.Button("Down", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("Down", new object[] { "1" }));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Down", new object[] { "1" }));
         }
         if (GUILayout.Button("Left", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("Left", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Left", new object[]{}));
         }
         if (GUILayout.Button("Right", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("Right", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Right", new object[]{}));
         }
         if (GUILayout.Button("Block", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("PlaceBlock", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[]{}));
         }
         if (GUILayout.Button("Repeat", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(Imperative.NewCall("F1", new object[]{}), Imperative.Expression.NewLiteral("5")));
+            program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[]{}), Imperative.Expression.NewLiteral("5")));
         }
         if (GUILayout.Button("F1", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("F1", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[]{}));
         }
         if (GUILayout.Button("F2", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall("F2", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F2", new object[]{}));
         }
         if (progman.IsExecuting && GUILayout.Button("Stop", options)) {
             progman.Stop();
@@ -123,9 +127,9 @@ public class AllTheGUI : MonoBehaviour
             boxStyle.font = CodeFont;
             boxStyle.fontSize = 14;
             // XXX TODO put this back in
-            if (currentlyDragged.Statement.IsCall) {
-                GUI.Box(adjustedRect, currentlyDragged.Statement.AsCall.Proc, boxStyle);
-            } else if (currentlyDragged.Statement.IsRepeat) {
+            if (currentlyDragged.Statement.Stmt.IsCall) {
+                GUI.Box(adjustedRect, currentlyDragged.Statement.Stmt.AsCall.Proc, boxStyle);
+            } else if (currentlyDragged.Statement.Stmt.IsRepeat) {
                 GUI.Box(adjustedRect, "Repeat", boxStyle);
             }
         }
@@ -144,7 +148,7 @@ public class AllTheGUI : MonoBehaviour
         Imperative.Statement newStatement = null;
 
         for (int i = 0; i < body.Count(); i++) {
-            var command = body[i];
+            var command = body[i].Stmt;
             var programState = progman.programState;
             //var highlight = programState != null ? procName == programState.Proc.Name && i == programState.Statement : false;
             var highlight = false;
@@ -196,7 +200,7 @@ public class AllTheGUI : MonoBehaviour
             if (newArg1 == arg1) {
                 return null;
             } else {
-                return Imperative.NewCall(procName, new object[] { newArg1 });
+                return Imperative.NewCall(NextId(), procName, new object[] { newArg1 });
             }
         } else {
             GUILayout.EndHorizontal();
@@ -214,7 +218,7 @@ public class AllTheGUI : MonoBehaviour
         }
         boxStyle.padding = new RectOffset(0, 0, 5, 5);
 
-        var procName = statement.Stmt.AsCall.Proc;
+        var procName = statement.Stmt.Stmt.AsCall.Proc;
         var numTimes = statement.NumTimes.AsLiteral as string;
 
         var textStyle = new GUIStyle();
@@ -236,7 +240,7 @@ public class AllTheGUI : MonoBehaviour
         if (procName == newProcName && numTimes == newNumTimes) {
             return null;
         } else {
-            return Imperative.NewRepeat(Imperative.NewCall(newProcName, new object[]{}), Imperative.Expression.NewLiteral(newNumTimes));
+            return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, newProcName, new object[]{}), Imperative.Expression.NewLiteral(newNumTimes));
         }
     }
 
