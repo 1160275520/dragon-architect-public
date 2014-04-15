@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Camera : MonoBehaviour
+public class MyCamera : MonoBehaviour
 {
     public float smooth = 1.5f;         // The relative speed at which the camera will catch up.
     

@@ -94,10 +94,10 @@ public class AllTheGUI : MonoBehaviour
             progman.Undo();
         }
         if (GUILayout.Button("Zoom In", options)) {
-            FindObjectOfType<Camera>().Zoom(0.5f);
+            FindObjectOfType<MyCamera>().Zoom(0.5f);
         }
         if (GUILayout.Button("Zoom Out", options)) {
-            FindObjectOfType<Camera>().Zoom(2f);
+            FindObjectOfType<MyCamera>().Zoom(2f);
         }
         GUILayout.EndVertical();
         GUILayout.EndArea();
@@ -155,11 +155,12 @@ public class AllTheGUI : MonoBehaviour
         var body = proc.Body;
         Imperative.Statement newStatement = null;
 
+        var lastExecuted = progman.LastExecuted;
+
         for (int i = 0; i < body.Count(); i++) {
             var command = body[i].Stmt;
             var programState = progman.programState;
-            var highlight = false; //progman.IsExecuting ? programState
-            //var highlight = programState != null ? procName == programState.Proc.Name && i == programState.Statement : false;
+            var highlight = lastExecuted.Count > 0 && body[i].Meta.Id == lastExecuted[0];
             if (command.IsCall) {
                 newStatement = makeCall(command.AsCall, highlight);
             } else if (command.IsRepeat) {
