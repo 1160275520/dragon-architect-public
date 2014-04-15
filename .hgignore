@@ -2,6 +2,7 @@ syntax: glob
 *.orig
 *.orig.meta
 bin/
+TestData/
 Temp/
 Obj/
 obj/
