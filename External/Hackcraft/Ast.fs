@@ -61,4 +61,5 @@ module Library =
             ("Down", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "down") (Argument 0)]});
             ("TurnAround", {Arity=0; Body=arr [NewCommand 0 "right"; NewCommand 0 "right"]});
             ("PlaceBlock", {Arity=0; Body=arr [NewCommand 0 "block"]});
+            ("RemoveBlock", {Arity=0; Body=arr [NewCommand 0 "remove"]});
         ])

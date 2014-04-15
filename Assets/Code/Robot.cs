@@ -28,7 +28,8 @@ public class Robot : MonoBehaviour {
         MoveDown,
         TurnLeft,
         TurnRight,
-        PlaceBlock
+        PlaceBlock,
+        RemoveBlock
     }
 
     public static Dictionary<Command, string> CommandNames = new Dictionary<Command, string>{
@@ -38,6 +39,7 @@ public class Robot : MonoBehaviour {
         {Command.TurnLeft, "left"},
         {Command.TurnRight, "right"},
         {Command.PlaceBlock, "block"},
+        {Command.RemoveBlock, "remove"},
     };
     public static Dictionary<string, Command> CommandMapping = CommandNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
 
@@ -97,6 +99,9 @@ public class Robot : MonoBehaviour {
                 break;
             case Command.PlaceBlock:
                 FindObjectOfType<Grid>().AddObject(Position, HeldPrefab);
+                break;
+            case Command.RemoveBlock:
+                FindObjectOfType<Grid>().RemoveObject(Position);
                 break;
             case Command.TurnLeft:
                 rotateCCW();

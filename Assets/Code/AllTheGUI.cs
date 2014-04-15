@@ -83,6 +83,9 @@ public class AllTheGUI : MonoBehaviour
         if (GUILayout.Button("Block", options)) {
             program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[] { }));
         }
+        if (GUILayout.Button("Remove", options)) {
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "RemoveBlock", new object[] { }));
+        }
         if (GUILayout.Button("Repeat", options)) {
             program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5")));
         }
