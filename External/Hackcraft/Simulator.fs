@@ -15,6 +15,7 @@ type CallStackState = {
 
 type State = {
     mutable CallStack: CallStackState list;
+    mutable LastExecuted: Statement list;
 }
 
 let private getProc (program:Program) procname =
@@ -34,7 +35,7 @@ let private exprAsInt (o:obj) =
     | _ -> runtimeError "cannot coerce object to integer"
 
 let CreateState program mainProcName =
-    {CallStack=[{Args=ImmArr.ofSeq []; ToExecute=getProc program mainProcName;}]}
+    {CallStack=[{Args=ImmArr.ofSeq []; ToExecute=getProc program mainProcName;}]; LastExecuted=[];}
 
 let Evaluate (state:State) expression =
     match expression with
@@ -52,14 +53,23 @@ let ExecuteStep program (state:State) =
             None
         | stmt :: next ->
             head.ToExecute <- next
+
+            // update last executed
+            if state.LastExecuted.Length < state.CallStack.Length then
+                state.LastExecuted <- stmt :: state.LastExecuted
+            else if state.LastExecuted.Length > state.CallStack.Length
+                then state.LastExecuted <- stmt :: state.LastExecuted.Tail.Tail
+            else
+                state.LastExecuted <- stmt :: state.LastExecuted.Tail
+
             match stmt.Stmt with
             | Call {Proc=procname; Args=args} ->
                 state.CallStack <- {Args=args; ToExecute=getProc program procname;} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
                 let ntimes = Evaluate state ntimesExpr |> exprAsInt
-                let proc = List.init ntimes (fun _ -> stmt)
-                state.CallStack <- {Args=ImmArr.ofSeq []; ToExecute=proc} :: state.CallStack
+                let toAdd = List.init ntimes (fun _ -> stmt)
+                state.CallStack <- {head with ToExecute=List.concat [toAdd; head.ToExecute]} :: tail
                 None
             | Command cmd -> Some cmd
 
