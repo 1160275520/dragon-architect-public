@@ -12,6 +12,7 @@ let JsonOfProgram (program:Program) =
     let jsonOfObj (o:obj) =
         match o with
         | :? int as i -> jint i
+        | :? string as s -> jstr s
         | _ -> invalidArg "o" (sprintf "cannot json encode object of type '%s'" (o.GetType().Name))
 
     let jsonOfMeta (meta:Meta) =
@@ -48,6 +49,11 @@ let JsonOfProgram (program:Program) =
 
 let ProgramOfJson (json:Json.JsonValue) =
 
+    let parseObject j : obj =
+        match j with
+        | Json.Int i -> upcast i
+        | Json.String s -> upcast s
+
     let parseMeta (j:Json.JsonValue) =
         let jmeta = j.AsObject
         {Id=jmeta.["id"].AsInt}
@@ -55,7 +61,7 @@ let ProgramOfJson (json:Json.JsonValue) =
     let parseExpr (j:Json.JsonValue) =
         let jexpr = j.AsObject
         match jexpr.["type"].AsString with
-        | "literal" -> Literal jexpr.["value"].AsInt
+        | "literal" -> Literal (parseObject jexpr.["value"])
         | "argument" -> Argument jexpr.["index"].AsInt
         | t -> invalidArg "j" ("invalid expression type " + t)
 
@@ -63,7 +69,7 @@ let ProgramOfJson (json:Json.JsonValue) =
         let jstmt = j.AsObject
         let stmt =
             match jstmt.["type"].AsString with
-            | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map (fun x -> upcast x.AsInt))}
+            | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseObject)}
             | "repeat" -> Repeat {Stmt=parseStmt jstmt.["stmt"]; NumTimes=parseExpr jstmt.["numtimes"]}
             | "command" -> Command jstmt.["command"].AsString
             | t -> invalidArg "j" ("invalid statement type " + t)
@@ -75,3 +81,13 @@ let ProgramOfJson (json:Json.JsonValue) =
         {Arity=jproc.["arity"].AsInt; Body=ImmArr.ofSeq body}
 
     {Procedures=Map.map parseProc json.AsObject}
+
+let SaveFile filename program =
+    let text = Json.Format (JsonOfProgram program)
+    use file = System.IO.File.OpenWrite(filename)
+    use writer = new System.IO.StreamWriter(file)
+    writer.Write text
+
+let LoadFile filename =
+    let text = System.IO.File.ReadAllText(filename)
+    ProgramOfJson (Json.Parse text)

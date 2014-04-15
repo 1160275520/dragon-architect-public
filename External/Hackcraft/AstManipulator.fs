@@ -12,7 +12,9 @@ type ImperativeAstManipulator() =
 
     let bodyAsList procname = new List<Statement>(ast.Procedures.[procname].Body)
 
-    member this.Program = ast
+    member this.Program
+        with get () = ast
+        and set p = ast <- p
         
     member this.CreateProcedure name =
         ast <- {ast with Procedures=ast.Procedures.Add (name, {Arity=0; Body=ImmArr.ofSeq []})}

@@ -27,6 +27,8 @@ public class AllTheGUI : MonoBehaviour
     private Dragged currentlyDragged;
     private string[] PROCS = new string[] { "Main", "F1", "F2" };
 
+    private string filename = "";
+
     private int astIdCounter = 0;
     // important that this is prefix, 1 should be the first id
     private int NextId() { return ++astIdCounter; }
@@ -49,7 +51,17 @@ public class AllTheGUI : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         var program = progman.Program;
 
-        GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH+10, Screen.height - SPACING));
+        // save/load dialog
+        filename = GUI.TextField(new Rect(Screen.width - 120, Screen.height - 40, 100, 20), filename);
+        if (GUI.Button(new Rect(Screen.width - 220, Screen.height - 40, 80, 20), "Save File")) {
+            Hackcraft.Serialization.SaveFile("TestData/" + filename, GetComponent<ProgramManager>().Program.Program);
+        }
+        if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 40, 80, 20), "Load File")) {
+            GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile("TestData/" + filename);
+        }
+
+
+        GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING));
         var buttonStyle = new GUIStyle();
         setStyleBackground(buttonStyle, new Color(0.2f, 0.2f, 0.2f, 0.5f));
         GUILayout.BeginVertical(buttonStyle);
@@ -64,22 +76,22 @@ public class AllTheGUI : MonoBehaviour
             program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Down", new object[] { "1" }));
         }
         if (GUILayout.Button("Left", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Left", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Left", new object[] { }));
         }
         if (GUILayout.Button("Right", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Right", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Right", new object[] { }));
         }
         if (GUILayout.Button("Block", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[] { }));
         }
         if (GUILayout.Button("Repeat", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[]{}), Imperative.Expression.NewLiteral("5")));
+            program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5")));
         }
         if (GUILayout.Button("F1", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[] { }));
         }
         if (GUILayout.Button("F2", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F2", new object[]{}));
+            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F2", new object[] { }));
         }
         if (progman.IsExecuting && GUILayout.Button("Stop", options)) {
             progman.Stop();
@@ -102,7 +114,7 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
-       
+
         GUILayout.BeginArea(new Rect(Screen.width - 3 * (COLUMN_WIDTH + SPACING), SPACING, 3 * (COLUMN_WIDTH + SPACING), Screen.height));
         GUILayout.BeginVertical(buttonStyle);
         curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
