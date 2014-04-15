@@ -21,6 +21,7 @@ public class ProgramManager : MonoBehaviour {
         lastStatementExecutionTime = Time.fixedTime;
         var curPostion = FindObjectOfType<Robot>().Position;
         prevPostion = new IntVec3 { X = curPostion.X, Y = curPostion.Y, Z = curPostion.Z };
+        FindObjectOfType<Grid>().ResetUndo();
     }
 
     public void Stop() {

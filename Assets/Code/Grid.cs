@@ -48,6 +48,10 @@ public class Grid : MonoBehaviour {
         additions.Clear();
     }
 
+    public void ResetUndo() {
+        additions.Clear();
+    }
+
 	// Use this for initialization
 	void Start() {
         grid = new GameObject[GRID_SIZE, GRID_SIZE, GRID_SIZE];

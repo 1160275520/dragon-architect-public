@@ -46,7 +46,6 @@ public class Robot : MonoBehaviour {
     public IntVec3 Position;
 
     public GameObject HeldPrefab;
-    public Plane YCue;
 
 	// Use this for initialization
 	void Start () {
@@ -57,6 +56,7 @@ public class Robot : MonoBehaviour {
 	void Update () {
         var grid = FindObjectOfType<Grid>();
         transform.position = grid.CenterOfCell(Position);
+        transform.rotation = getRotation();
 	}
 
     private void rotateCCW() {
@@ -64,6 +64,19 @@ public class Robot : MonoBehaviour {
             FacingDirection = FacingDirection == Direction.Neg ? Direction.Pos : Direction.Neg;
         }
         FacingAxis = FacingAxis == Axis.X ? Axis.Z : Axis.X;
+    }
+
+    private Quaternion getRotation() {
+        float rot;
+        switch (FacingAxis) {
+            case Axis.X:
+                rot = FacingDirection == Direction.Pos ? 90f : -90f;
+                return Quaternion.Euler(new Vector3(0f, rot, 0f));
+            case Axis.Z:
+                rot = FacingDirection == Direction.Pos ? 0f : 180f;
+                return Quaternion.Euler(new Vector3(0f, rot, 0f));
+        }
+        throw new InvalidOperationException("Rotation for FacingAxis == Axis.Y is ill-defined");
     }
 
     public void Execute(string command) {
@@ -83,7 +96,7 @@ public class Robot : MonoBehaviour {
                 }
                 break;
             case Command.PlaceBlock:
-                FindObjectOfType<Grid>().AddObject(Position + forwardVec, HeldPrefab);
+                FindObjectOfType<Grid>().AddObject(Position, HeldPrefab);
                 break;
             case Command.TurnLeft:
                 rotateCCW();

@@ -93,6 +93,12 @@ public class AllTheGUI : MonoBehaviour
         if (GUILayout.Button("Undo", options)) {
             progman.Undo();
         }
+        if (GUILayout.Button("Zoom In", options)) {
+            FindObjectOfType<Camera>().Zoom(0.5f);
+        }
+        if (GUILayout.Button("Zoom Out", options)) {
+            FindObjectOfType<Camera>().Zoom(2f);
+        }
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
@@ -106,7 +112,9 @@ public class AllTheGUI : MonoBehaviour
             statementRects = new Dictionary<string, List<Rect>>();
             procRects = new Dictionary<string, Rect>();
         }
-        doDragDrop();
+        if (!progman.IsExecuting) {
+            doDragDrop();
+        }
         makeProc("Main");
         GUILayout.Space(SPACING);
         makeProc("F1");
@@ -150,8 +158,8 @@ public class AllTheGUI : MonoBehaviour
         for (int i = 0; i < body.Count(); i++) {
             var command = body[i].Stmt;
             var programState = progman.programState;
+            var highlight = false; //progman.IsExecuting ? programState
             //var highlight = programState != null ? procName == programState.Proc.Name && i == programState.Statement : false;
-            var highlight = false;
             if (command.IsCall) {
                 newStatement = makeCall(command.AsCall, highlight);
             } else if (command.IsRepeat) {
@@ -159,7 +167,7 @@ public class AllTheGUI : MonoBehaviour
             }
 
             // XXX why does this only happen for call?
-            if (Event.current.type == EventType.Repaint) {
+            if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
                 statementRects[procName].Add(GUILayoutUtility.GetLastRect());
             }
             GUILayout.Space(SPACING / 2);
@@ -169,7 +177,7 @@ public class AllTheGUI : MonoBehaviour
             }
         }
         GUILayout.EndVertical();
-        if (Event.current.type == EventType.Repaint) {
+        if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
             procRects.Add(procName, GUILayoutUtility.GetLastRect());
         }
     }
@@ -306,8 +314,8 @@ public class AllTheGUI : MonoBehaviour
                 var proc = progman.Program.Program.Procedures[procName];
                 for (int i = 0; i < statementRects[procName].Count; i++) {
                     var rect = statementRects[procName][i];
-                    Debug.Log(rect);
-                    Debug.Log(Event.current.mousePosition);
+                    //Debug.Log(rect);
+                    //Debug.Log(Event.current.mousePosition);
                     if (rect.Contains(Event.current.mousePosition)) {
                         currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect };
                         //Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
@@ -352,7 +360,7 @@ public class AllTheGUI : MonoBehaviour
                         }
                         for (int i = 0; i < statementRects[procName].Count; i++) {
                             var rect = statementRects[procName][i];
-                            Debug.Log(rect);
+                            //Debug.Log(rect);
                             if ((swap.HasValue && ((i < swap && currentlyDragged.DragRect.yMin < rect.yMin + rect.height / 2) ||
                                                    (i >= swap && currentlyDragged.DragRect.yMin < rect.yMax + rect.height / 2))) ||
                                 (!swap.HasValue && currentlyDragged.DragRect.yMin < rect.yMin)) {

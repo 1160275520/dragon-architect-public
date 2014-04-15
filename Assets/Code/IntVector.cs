@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public struct IntVec2 {
     public int X;
@@ -19,6 +20,12 @@ public struct IntVec3 {
         X = x;
         Y = y;
         Z = z;
+    }
+
+    public Vector3 AsVector3 {
+        get {
+            return new Vector3(X, Y, Z);
+        }
     }
 
     public static IntVec3 operator+(IntVec3 l, IntVec3 r) {
