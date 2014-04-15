@@ -9,7 +9,6 @@ public class Dragged {
     public string ProcName; // nullable
     public int? StatementIndex; // nullable
     public Rect DragRect;
-
 }
 
 public class AllTheGUI : MonoBehaviour
@@ -133,6 +132,7 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.Space(SPACING);
         makeProc("F2");
         GUILayout.EndHorizontal();
+        GUILayout.Space(SPACING);
         GUILayout.EndVertical();
         GUILayout.EndArea();
         if (currentlyDragged != null && currentlyDragged.ProcName == null) {
@@ -146,7 +146,6 @@ public class AllTheGUI : MonoBehaviour
             boxStyle.padding = new RectOffset(0, 0, 5, 5);
             boxStyle.font = CodeFont;
             boxStyle.fontSize = 14;
-            // XXX TODO put this back in
             if (currentlyDragged.Statement.Stmt.IsCall) {
                 GUI.Box(adjustedRect, currentlyDragged.Statement.Stmt.AsCall.Proc, boxStyle);
             } else if (currentlyDragged.Statement.Stmt.IsRepeat) {
@@ -172,7 +171,7 @@ public class AllTheGUI : MonoBehaviour
         for (int i = 0; i < body.Count(); i++) {
             var command = body[i].Stmt;
             var programState = progman.programState;
-            var highlight = lastExecuted.Count > 0 && body[i].Meta.Id == lastExecuted[0];
+            var highlight = lastExecuted.Contains(body[i].Meta.Id);
             if (command.IsCall) {
                 newStatement = makeCall(command.AsCall, highlight);
             } else if (command.IsRepeat) {

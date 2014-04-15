@@ -14,13 +14,20 @@ public class ProgramManager : MonoBehaviour {
     public Simulator.State State { get; private set; }
 
     private float lastStatementExecutionTime = 0.0f;
-    private IntVec3 prevPostion;
+    private struct RobotState
+    {
+        public IntVec3 Postion;
+        public Robot.Axis Axis;
+        public Robot.Direction Dir;
+    }
+    private RobotState prevState;
 
     public void Execute() {
         State = Simulator.CreateState(Program.Program, "Main");
         lastStatementExecutionTime = Time.fixedTime;
-        var curPostion = FindObjectOfType<Robot>().Position;
-        prevPostion = new IntVec3 { X = curPostion.X, Y = curPostion.Y, Z = curPostion.Z };
+        var robot = FindObjectOfType<Robot>();
+        prevState = new RobotState { Postion = new IntVec3 { X = robot.Position.X, Y = robot.Position.Y, Z = robot.Position.Z }, 
+                                     Axis = robot.FacingAxis, Dir = robot.FacingDirection };
         FindObjectOfType<Grid>().ResetUndo();
     }
 
@@ -55,7 +62,10 @@ public class ProgramManager : MonoBehaviour {
     }
 
     public void Undo() {
-        FindObjectOfType<Robot>().Position = prevPostion;
+        var robot = FindObjectOfType<Robot>();
+        robot.Position = prevState.Postion;
+        robot.FacingAxis = prevState.Axis;
+        robot.FacingDirection = prevState.Dir;
         FindObjectOfType<Grid>().Undo();
     }
 

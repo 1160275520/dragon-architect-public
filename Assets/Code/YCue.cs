@@ -11,7 +11,6 @@ public class YCue : MonoBehaviour
         lineRenderer.material = lineMat;
         lineRenderer.SetWidth(0.05f, 0.05f);
         lineRenderer.SetVertexCount(2);
-        Debug.Log("init");
     }
 
     // Update is called once per frame
