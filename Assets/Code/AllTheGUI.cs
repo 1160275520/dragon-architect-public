@@ -50,6 +50,12 @@ public class AllTheGUI : MonoBehaviour
         }
     }
 
+    void makeButton(string text, GUILayoutOption[] options, Action callback) {
+        if (GUILayout.Button(text, options)) {
+            callback.Invoke();
+        }
+    }
+
     void OnGUI() {
         var progman = GetComponent<ProgramManager>();
         var program = progman.Program;
@@ -65,10 +71,8 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.BeginVertical("ButtonBackground");
         GUILayout.BeginHorizontal();
         var options = new GUILayoutOption[] { GUILayout.Width(100), GUILayout.Height(BUTTON_HEIGHT) };
-        if (GUILayout.Button("Clear", options)) {
-            currentModalWindow = displayConfirmClear;
-        }
-        if (GUILayout.Button("Save File", options)) {
+        makeButton("Clear", options, () => currentModalWindow = displayConfirmClear);
+        makeButton("Save File", options, () => {
             string filename = null;
             if (currentlyTypedFilename.Length == 0) {
                 using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
@@ -83,8 +87,8 @@ public class AllTheGUI : MonoBehaviour
             if (filename != null) {
                 Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Program.Program);
             }
-        }
-        if (GUILayout.Button("Load File", options)) {
+        });
+        makeButton("Load File", options, () => {
             string filename = null;
             if (currentlyTypedFilename.Length == 0) {
                 using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
@@ -99,7 +103,7 @@ public class AllTheGUI : MonoBehaviour
             if (filename != null) {
                 GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile(filename);
             }
-        }
+        });
         var textStyle = new GUIStyle(GUI.skin.textField);
         textStyle.margin = new RectOffset(0, 0, 4, 0);
         currentlyTypedFilename = GUILayout.TextField(currentlyTypedFilename, textStyle, options);
@@ -111,48 +115,23 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING * 2));
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
-        if (GUILayout.Button("Forward", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Forward", new object[] { "1" }));
+        makeButton("Forward", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Forward", new object[] { "1" })));
+        makeButton("Up", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Up", new object[] { "1" })));
+        makeButton("Down", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Down", new object[] { "1" })));
+        makeButton("Left", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Left", new object[] { })));
+        makeButton("Right", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Right", new object[] { })));
+        makeButton("Block", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[] { })));
+        makeButton("Remove", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "RemoveBlock", new object[] { })));
+        makeButton("Repeat", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5"))));
+        makeButton("Call", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[] { })));
+        if (progman.IsExecuting) {
+            makeButton("Stop", options, () => progman.Stop());
+        } else {
+            makeButton("Execute", options, () => progman.Execute());
         }
-        if (GUILayout.Button("Up", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Up", new object[] { "1" }));
-        }
-        if (GUILayout.Button("Down", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Down", new object[] { "1" }));
-        }
-        if (GUILayout.Button("Left", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Left", new object[] { }));
-        }
-        if (GUILayout.Button("Right", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Right", new object[] { }));
-        }
-        if (GUILayout.Button("Block", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[] { }));
-        }
-        if (GUILayout.Button("Remove", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "RemoveBlock", new object[] { }));
-        }
-        if (GUILayout.Button("Repeat", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5")));
-        }
-        if (GUILayout.Button("Call", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[] { }));
-        }
-        if (progman.IsExecuting && GUILayout.Button("Stop", options)) {
-            progman.Stop();
-        }
-        if (!progman.IsExecuting && GUILayout.Button("Execute", options)) {
-            progman.Execute();
-        }
-        if (GUILayout.Button("Undo", options)) {
-            progman.Undo();
-        }
-        if (GUILayout.Button("Zoom In", options)) {
-            FindObjectOfType<MyCamera>().Zoom(0.5f);
-        }
-        if (GUILayout.Button("Zoom Out", options)) {
-            FindObjectOfType<MyCamera>().Zoom(2f);
-        }
+        makeButton("Undo", options, () => progman.Undo());
+        makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
+        makeButton("Zoom Out", options, () => FindObjectOfType<MyCamera>().Zoom(2f));
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
@@ -198,13 +177,8 @@ public class AllTheGUI : MonoBehaviour
 
         var r = new Rect(midx - hw, midy - hh, 2 * hw, 2 * hh);
         GUI.ModalWindow(213421345, r, (id) => {
-            if (GUILayout.Button("Yes")) {
-                GetComponent<ProgramManager>().Clear();
-                currentModalWindow = null;
-            }
-            if (GUILayout.Button("No")) {
-                currentModalWindow = null;
-            }
+            makeButton("Yes", null, () => { GetComponent<ProgramManager>().Clear(); currentModalWindow = null; } );
+            makeButton("No", null, () => currentModalWindow = null);
         }, "Confirm Clear?");
 
     }
