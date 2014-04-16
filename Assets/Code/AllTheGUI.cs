@@ -30,7 +30,7 @@ public class AllTheGUI : MonoBehaviour
 
     private Action currentModalWindow = null;
 
-    private string filename = "";
+    private string currentlyTypedFilename = "";
 
     private int astIdCounter = 0;
     // important that this is prefix, 1 should be the first id
@@ -69,14 +69,40 @@ public class AllTheGUI : MonoBehaviour
             currentModalWindow = displayConfirmClear;
         }
         if (GUILayout.Button("Save File", options)) {
-            Hackcraft.Serialization.SaveFile("TestData/" + filename, GetComponent<ProgramManager>().Program.Program);
+            string filename = null;
+            if (currentlyTypedFilename.Length == 0) {
+                using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
+                    dialog.InitialDirectory = "TestData/";
+                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                        filename = dialog.FileName;
+                    }
+                }
+            } else {
+                filename = "TestData/" + currentlyTypedFilename;
+            }
+            if (filename != null) {
+                Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Program.Program);
+            }
         }
         if (GUILayout.Button("Load File", options)) {
-            GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile("TestData/" + filename);
+            string filename = null;
+            if (currentlyTypedFilename.Length == 0) {
+                using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
+                    dialog.InitialDirectory = "TestData/";
+                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                        filename = dialog.FileName;
+                    }
+                }
+            } else {
+                filename = "TestData/" + currentlyTypedFilename;
+            }
+            if (filename != null) {
+                GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile(filename);
+            }
         }
         var textStyle = new GUIStyle(GUI.skin.textField);
         textStyle.margin = new RectOffset(0, 0, 4, 0);
-        filename = GUILayout.TextField(filename, textStyle, options);
+        currentlyTypedFilename = GUILayout.TextField(currentlyTypedFilename, textStyle, options);
         GUILayout.EndHorizontal();
         GUILayout.FlexibleSpace();
         GUILayout.EndVertical();
