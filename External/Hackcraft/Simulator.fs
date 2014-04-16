@@ -57,10 +57,8 @@ let ExecuteStep program (state:State) =
             // update last executed
             if state.LastExecuted.Length < state.CallStack.Length then
                 state.LastExecuted <- stmt :: state.LastExecuted
-            else if state.LastExecuted.Length > state.CallStack.Length
-                then state.LastExecuted <- stmt :: state.LastExecuted.Tail.Tail
             else
-                state.LastExecuted <- stmt :: state.LastExecuted.Tail
+                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
 
             match stmt.Stmt with
             | Call {Proc=procname; Args=args} ->

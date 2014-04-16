@@ -11,11 +11,12 @@ namespace Hackcraft
     class Program
     {
         static void Main(string[] args) {
-            var prog = new Imperative.Program(Library.Builtins);
-            var str = Json.Format(Serialization.JsonOfProgram(prog));
-            Debug.WriteLine(str);
-            var nprog = Serialization.ProgramOfJson(Json.Parse(str));
-            Debug.WriteLine(Json.Format(Serialization.JsonOfProgram(nprog)));
+            var prog = Serialization.LoadFile("../../../../TestData/test2.txt");
+            var state = Simulator.CreateState(prog, "Main");
+            while (true) {
+                Simulator.ExecuteStep(prog, state);
+                Debug.WriteLine(state.LastExecuted);
+            }
         }
     }
 }

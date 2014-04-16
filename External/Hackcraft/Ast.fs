@@ -7,6 +7,8 @@ module Imperative =
     type Meta = {
         Id: int;
     }
+    with
+        override x.ToString() = sprintf "id = %d" x.Id
 
     type Expression =
     | Literal of obj
@@ -26,6 +28,8 @@ module Imperative =
         Stmt: StatementT;
         Meta: Meta;
     }
+    with
+        override x.ToString() = sprintf "%O: %O" x.Meta x.Stmt
 
     type StatementT with
         member x.AsCall = match x with Call c -> c | _ -> invalidOp "not a call"

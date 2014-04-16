@@ -16,3 +16,7 @@ type ImmArr<'T> private(arr : 'T[]) =
 
 module ImmArr =
     let ofSeq (s: #seq<'a>) = ImmArr (s)
+
+module MyList =
+    let rec skip n (list:'a list) =
+        if n <= 0 then list else skip (n - 1) list.Tail
