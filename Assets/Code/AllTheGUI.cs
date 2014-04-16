@@ -96,11 +96,8 @@ public class AllTheGUI : MonoBehaviour
         if (GUILayout.Button("Repeat", options)) {
             program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5")));
         }
-        if (GUILayout.Button("F1", options)) {
+        if (GUILayout.Button("Call", options)) {
             program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[] { }));
-        }
-        if (GUILayout.Button("F2", options)) {
-            program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F2", new object[] { }));
         }
         if (progman.IsExecuting && GUILayout.Button("Stop", options)) {
             progman.Stop();
@@ -221,34 +218,29 @@ public class AllTheGUI : MonoBehaviour
     private Imperative.Statement makeCall(Imperative.Call statement, bool highlight) {
         GUILayout.BeginHorizontal();
         var procName = statement.Proc;
-        if (highlight) {
-            GUILayout.Box(procName, "BoxHighlight");
-        } else {
-            GUILayout.Box(procName, "box");
 
+        string newProcName = procName;
+        if (PROCS.Contains(procName)) {
+            GUILayout.Box("Call", highlight ? "BoxHighlight" : "box");
+            newProcName = GUILayout.TextField(procName, 2, highlight ? "TextHighlight" : "textfield", GUILayout.Width(25));
+        } else {
+            GUILayout.Box(procName, highlight ? "BoxHighlight" : "box");
         }
 
+
         var arg1 = statement.Args.Count() > 0 ? statement.Args[0] as string : null;
-
+        string newArg1 = null;
         if (arg1 != null) {
-            
-            string newArg1;
-            if (highlight) {
-                newArg1 = GUILayout.TextField(arg1, 2, "TextHighlight", GUILayout.Width(25));
-            } else {
-                newArg1 = GUILayout.TextField(arg1, 2, "textfield", GUILayout.Width(25));
-            }
-            GUILayout.EndHorizontal();
-
-            if (newArg1 == arg1) {
-                return null;
-            } else {
-                return Imperative.NewCall(NextId(), procName, new object[] { newArg1 });
-            }
-        } else {
-            GUILayout.EndHorizontal();
-            return null;
+            newArg1 = GUILayout.TextField(arg1, 2, highlight ? "TextHighlight" : "textfield", GUILayout.Width(25));
         } 
+
+        GUILayout.EndHorizontal();
+
+        if (newArg1 == arg1 && newProcName == procName) {
+            return null;
+        } else {
+            return Imperative.NewCall(NextId(), newProcName, newArg1 == null ? new object[] {} : new object[] { newArg1 });
+        }
         
     }
 
