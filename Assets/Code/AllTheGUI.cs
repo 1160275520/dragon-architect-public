@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,6 +28,8 @@ public class AllTheGUI : MonoBehaviour
     private Dragged currentlyDragged;
     private string[] PROCS = new string[] { "Main", "F1", "F2", "F3", "F4", "F5" };
 
+    private Action currentModalWindow = null;
+
     private string filename = "";
 
     private int astIdCounter = 0;
@@ -51,6 +54,10 @@ public class AllTheGUI : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         var program = progman.Program;
         GUI.skin = CustomSkin;
+
+        if (currentModalWindow != null) {
+            currentModalWindow();
+        }
 
         // save/load dialog
         filename = GUI.TextField(new Rect(Screen.width - 120, Screen.height - 40, 100, 20), filename);
@@ -102,7 +109,7 @@ public class AllTheGUI : MonoBehaviour
             progman.Execute();
         }
         if (GUILayout.Button("Clear", options)) {
-            program.CreateProcedure(PROCS[curProc]);
+            currentModalWindow = displayConfirmClear;
         }
         if (GUILayout.Button("Undo", options)) {
             progman.Undo();
@@ -150,9 +157,34 @@ public class AllTheGUI : MonoBehaviour
         makeFPS();
     }
 
+    private void displayConfirmClear() {
+        var midx = Screen.width / 2;
+        var midy = Screen.height / 2;
+        var hw = 100;
+        var hh = 50;
+
+        var r = new Rect(midx - hw, midy - hh, 2 * hw, 2 * hh);
+        GUI.ModalWindow(213421345, r, (id) => {
+            if (GUILayout.Button("Yes")) {
+                GetComponent<ProgramManager>().Clear();
+                currentModalWindow = null;
+            }
+            if (GUILayout.Button("No")) {
+                currentModalWindow = null;
+            }
+        }, "Confirm Clear?");
+
+    }
+
     void makeProc(string procName) {
         var progman = GetComponent<ProgramManager>();
-        var proc = progman.Program.Program.Procedures[procName];
+        Imperative.Procedure proc;
+        try {
+            proc = progman.Program.Program.Procedures[procName];
+        } catch (KeyNotFoundException) {
+            progman.Program.CreateProcedure(procName);
+            proc = progman.Program.Program.Procedures[procName];
+        }
 
         GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
         GUILayout.Space(SPACING / 2);

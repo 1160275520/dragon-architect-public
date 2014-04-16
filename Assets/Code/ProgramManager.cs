@@ -66,7 +66,19 @@ public class ProgramManager : MonoBehaviour {
         robot.Position = prevState.Postion;
         robot.FacingAxis = prevState.Axis;
         robot.FacingDirection = prevState.Dir;
-        FindObjectOfType<Grid>().Undo();
+        GetComponent<Grid>().Undo();
+    }
+
+    public void Clear() {
+        var procs = from kvp in Program.Program.Procedures select kvp.Key;
+        foreach (var p in procs) {
+            Program.ClearProcedure(p);
+        }
+        GetComponent<Grid>().Clear();
+        var robot = FindObjectOfType<Robot>();
+        robot.Position = new IntVec3(0, 0, 0);
+        robot.FacingAxis = Robot.Axis.Z;
+        robot.FacingDirection = Robot.Direction.Pos;
     }
 
 	// Use this for initialization
