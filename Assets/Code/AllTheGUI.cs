@@ -19,12 +19,13 @@ public class AllTheGUI : MonoBehaviour
 
     public Font CodeFont;
     public Texture2D RepeatTex;
-    public Texture2D RepeatTexHighlight; 
+    public Texture2D RepeatTexHighlight;
+    public GUISkin CustomSkin;
     private int curProc = 0;
     private Dictionary<string, List<Rect>> statementRects;
     private Dictionary<string, Rect> procRects;
     private Dragged currentlyDragged;
-    private string[] PROCS = new string[] { "Main", "F1", "F2" };
+    private string[] PROCS = new string[] { "Main", "F1", "F2", "F3", "F4", "F5" };
 
     private string filename = "";
 
@@ -49,6 +50,7 @@ public class AllTheGUI : MonoBehaviour
     void OnGUI() {
         var progman = GetComponent<ProgramManager>();
         var program = progman.Program;
+        GUI.skin = CustomSkin;
 
         // save/load dialog
         filename = GUI.TextField(new Rect(Screen.width - 120, Screen.height - 40, 100, 20), filename);
@@ -58,12 +60,10 @@ public class AllTheGUI : MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 40, 80, 20), "Load File")) {
             GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile("TestData/" + filename);
         }
-
+        
 
         GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING));
-        var buttonStyle = new GUIStyle();
-        setStyleBackground(buttonStyle, new Color(0.2f, 0.2f, 0.2f, 0.5f));
-        GUILayout.BeginVertical(buttonStyle);
+        GUILayout.BeginVertical("ButtonBackground");
         var options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
         if (GUILayout.Button("Forward", options)) {
             program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Forward", new object[] { "1" }));
@@ -117,8 +117,8 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndArea();
 
 
-        GUILayout.BeginArea(new Rect(Screen.width - 3 * (COLUMN_WIDTH + SPACING), SPACING, 3 * (COLUMN_WIDTH + SPACING), Screen.height));
-        GUILayout.BeginVertical(buttonStyle);
+        GUILayout.BeginArea(new Rect(Screen.width - 6 * (COLUMN_WIDTH + SPACING), SPACING, 6 * (COLUMN_WIDTH + SPACING), Screen.height));
+        GUILayout.BeginVertical("ButtonBackground");
         curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
         GUILayout.BeginHorizontal();
         GUILayout.Space(SPACING / 2);
@@ -129,30 +129,22 @@ public class AllTheGUI : MonoBehaviour
         if (!progman.IsExecuting) {
             doDragDrop();
         }
-        makeProc("Main");
-        GUILayout.Space(SPACING);
-        makeProc("F1");
-        GUILayout.Space(SPACING);
-        makeProc("F2");
+        foreach (var procName in PROCS) {
+            makeProc(procName);
+            GUILayout.Space(SPACING);
+        }
         GUILayout.EndHorizontal();
         GUILayout.Space(SPACING);
         GUILayout.EndVertical();
         GUILayout.EndArea();
         if (currentlyDragged != null && currentlyDragged.ProcName == null) {
             var adjustedRect = new Rect(currentlyDragged.DragRect);
-            adjustedRect.x += Screen.width - 3 * (COLUMN_WIDTH + SPACING);
+            adjustedRect.x += Screen.width - 6 * (COLUMN_WIDTH + SPACING);
             adjustedRect.y += SPACING;
-            var boxStyle = new GUIStyle();
-            setStyleBackground(boxStyle, Color.black);
-            boxStyle.normal.textColor = Color.white;
-            boxStyle.alignment = TextAnchor.MiddleCenter;
-            boxStyle.padding = new RectOffset(0, 0, 5, 5);
-            boxStyle.font = CodeFont;
-            boxStyle.fontSize = 14;
             if (currentlyDragged.Statement.Stmt.IsCall) {
-                GUI.Box(adjustedRect, currentlyDragged.Statement.Stmt.AsCall.Proc, boxStyle);
+                GUI.Box(adjustedRect, currentlyDragged.Statement.Stmt.AsCall.Proc, "box");
             } else if (currentlyDragged.Statement.Stmt.IsRepeat) {
-                GUI.Box(adjustedRect, "Repeat", boxStyle);
+                GUI.Box(adjustedRect, "Repeat", "box");
             }
         }
         makeFPS();
@@ -162,9 +154,7 @@ public class AllTheGUI : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         var proc = progman.Program.Program.Procedures[procName];
 
-        var codeStyle = new GUIStyle();
-        setStyleBackground(codeStyle, new Color(0.2f, 0.2f, 0.2f, 0.5f));
-        GUILayout.BeginVertical(codeStyle, GUILayout.Width(COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
+        GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
         GUILayout.Space(SPACING / 2);
         var body = proc.Body;
         Imperative.Statement newStatement = null;
@@ -181,7 +171,6 @@ public class AllTheGUI : MonoBehaviour
                 newStatement = makeRepeat(command.AsRepeat, highlight);
             }
 
-            // XXX why does this only happen for call?
             if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
                 statementRects[procName].Add(GUILayoutUtility.GetLastRect());
             }
@@ -198,26 +187,25 @@ public class AllTheGUI : MonoBehaviour
     }
 
     private Imperative.Statement makeCall(Imperative.Call statement, bool highlight) {
-        var boxStyle = new GUIStyle();
-        if (highlight) {
-            setStyleBackground(boxStyle, new Color(0.9f, 0.6f, 0.5f, 0.5f));
-        } else {
-            setStyleBackground(boxStyle, Color.black);
-        }
-        boxStyle.normal.textColor = Color.white;
-        boxStyle.alignment = TextAnchor.MiddleCenter;
-        boxStyle.padding = new RectOffset(0, 0, 5, 5);
-        boxStyle.font = CodeFont;
-        boxStyle.fontSize = 14;
         GUILayout.BeginHorizontal();
         var procName = statement.Proc;
-        GUILayout.Box(procName, boxStyle);
+        if (highlight) {
+            GUILayout.Box(procName, "BoxHighlight");
+        } else {
+            GUILayout.Box(procName, "box");
+
+        }
 
         var arg1 = statement.Args.Count() > 0 ? statement.Args[0] as string : null;
 
         if (arg1 != null) {
             
-            var newArg1 = GUILayout.TextField(arg1, 2, boxStyle, GUILayout.MinWidth(25));
+            string newArg1;
+            if (highlight) {
+                newArg1 = GUILayout.TextField(arg1, 2, "TextHighlight", GUILayout.Width(25));
+            } else {
+                newArg1 = GUILayout.TextField(arg1, 2, "textfield", GUILayout.Width(25));
+            }
             GUILayout.EndHorizontal();
 
             if (newArg1 == arg1) {
@@ -233,30 +221,17 @@ public class AllTheGUI : MonoBehaviour
     }
 
     private Imperative.Statement makeRepeat(Imperative.Repeat statement, bool highlight) {
-        var boxStyle = new GUIStyle();
-        if (highlight) {
-            boxStyle.normal.background = RepeatTexHighlight;
-        } else {
-            boxStyle.normal.background = RepeatTex;
-        }
-        boxStyle.padding = new RectOffset(0, 0, 5, 5);
-
         var procName = statement.Stmt.Stmt.AsCall.Proc;
         var numTimes = statement.NumTimes.AsLiteral as string;
 
-        var textStyle = new GUIStyle();
-        textStyle.font = CodeFont;
-        textStyle.fontSize = 14;
-        textStyle.normal.textColor = Color.white;
-        textStyle.alignment = TextAnchor.MiddleCenter;
-        GUILayout.BeginVertical(boxStyle);
+        GUILayout.BeginVertical("box");
         GUILayout.BeginHorizontal();
-        GUILayout.Box("Repeat", textStyle);
-        var newProcName = GUILayout.TextField(procName, 2, textStyle, GUILayout.MinWidth(25));
+        GUILayout.Box("Repeat", "box");
+        var newProcName = GUILayout.TextField(procName, 2, "textfield", GUILayout.Width(25));
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        var newNumTimes = GUILayout.TextField(numTimes, 3, textStyle, GUILayout.MinWidth(35));
-        GUILayout.Box("times", textStyle);
+        var newNumTimes = GUILayout.TextField(numTimes, 3, "textfield", GUILayout.Width(35));
+        GUILayout.Box("times", "box");
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
 
@@ -265,14 +240,6 @@ public class AllTheGUI : MonoBehaviour
         } else {
             return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, newProcName, new object[]{}), Imperative.Expression.NewLiteral(newNumTimes));
         }
-    }
-
-    void setStyleBackground(GUIStyle style, Color color) {
-        var background = new Texture2D(1, 1);
-        background.SetPixel(0, 0, color);
-        //background.alphaIsTransparency = true;
-        background.Apply();
-        style.normal.background = background;
     }
 
     private float updateInterval = 0.5F;
@@ -294,8 +261,7 @@ public class AllTheGUI : MonoBehaviour
             accum = 0.0F;
             frames = 0;
         }
-        var fpsStyle = new GUIStyle();
-        setStyleBackground(fpsStyle, Color.black);
+        GUIStyle fpsStyle = "FPS";
         if (fps < 30)
             fpsStyle.normal.textColor = Color.yellow;
         else
@@ -304,7 +270,7 @@ public class AllTheGUI : MonoBehaviour
             else
                 fpsStyle.normal.textColor = Color.green;
         string format = System.String.Format("{0:F2} FPS", fps);
-        GUI.Label(new Rect(Screen.width - 65, 0, 65, 15), format, fpsStyle);
+        GUI.Label(new Rect(Screen.width - 75, 0, 75, 15), format, "FPS");
     }
 
     bool rectIntersect(Rect r1, Rect r2) {
