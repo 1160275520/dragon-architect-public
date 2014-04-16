@@ -202,7 +202,6 @@ public class AllTheGUI : MonoBehaviour
 
         for (int i = 0; i < body.Count(); i++) {
             var command = body[i].Stmt;
-            var programState = progman.programState;
             var highlight = lastExecuted.Contains(body[i].Meta.Id);
             if (command.IsCall) {
                 newStatement = makeCall(command.AsCall, highlight);
