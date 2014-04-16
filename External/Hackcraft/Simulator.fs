@@ -64,12 +64,12 @@ let ExecuteStep program (state:State) =
 
             match stmt.Stmt with
             | Call {Proc=procname; Args=args} ->
-                state.CallStack <- {Args=args; ToExecute=getProc program procname;} :: state.CallStack
+                state.CallStack <- {Args=args; ToExecute=getProc program procname} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
                 let ntimes = Evaluate state ntimesExpr |> exprAsInt
                 let toAdd = List.init ntimes (fun _ -> stmt)
-                state.CallStack <- {head with ToExecute=List.concat [toAdd; head.ToExecute]} :: tail
+                state.CallStack <- {Args=head.Args; ToExecute=toAdd} :: state.CallStack
                 None
             | Command cmd -> Some cmd
 
