@@ -59,19 +59,32 @@ public class AllTheGUI : MonoBehaviour
             currentModalWindow();
         }
 
+
         // save/load dialog
-        filename = GUI.TextField(new Rect(Screen.width - 120, Screen.height - 40, 100, 20), filename);
-        if (GUI.Button(new Rect(Screen.width - 220, Screen.height - 40, 80, 20), "Save File")) {
+        GUILayout.BeginArea(new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING));
+        GUILayout.BeginVertical("ButtonBackground");
+        GUILayout.BeginHorizontal();
+        var options = new GUILayoutOption[] { GUILayout.Width(100), GUILayout.Height(BUTTON_HEIGHT) };
+        if (GUILayout.Button("Clear", options)) {
+            currentModalWindow = displayConfirmClear;
+        }
+        if (GUILayout.Button("Save File", options)) {
             Hackcraft.Serialization.SaveFile("TestData/" + filename, GetComponent<ProgramManager>().Program.Program);
         }
-        if (GUI.Button(new Rect(Screen.width - 320, Screen.height - 40, 80, 20), "Load File")) {
+        if (GUILayout.Button("Load File", options)) {
             GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile("TestData/" + filename);
         }
-        
+        var textStyle = new GUIStyle(GUI.skin.textField);
+        textStyle.margin = new RectOffset(0, 0, 4, 0);
+        filename = GUILayout.TextField(filename, textStyle, options);
+        GUILayout.EndHorizontal();
+        GUILayout.FlexibleSpace();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
 
-        GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING));
+        GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING * 2));
         GUILayout.BeginVertical("ButtonBackground");
-        var options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
+        options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
         if (GUILayout.Button("Forward", options)) {
             program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Forward", new object[] { "1" }));
         }
@@ -104,9 +117,6 @@ public class AllTheGUI : MonoBehaviour
         }
         if (!progman.IsExecuting && GUILayout.Button("Execute", options)) {
             progman.Execute();
-        }
-        if (GUILayout.Button("Clear", options)) {
-            currentModalWindow = displayConfirmClear;
         }
         if (GUILayout.Button("Undo", options)) {
             progman.Undo();
@@ -248,14 +258,14 @@ public class AllTheGUI : MonoBehaviour
         var procName = statement.Stmt.Stmt.AsCall.Proc;
         var numTimes = statement.NumTimes.AsLiteral as string;
 
-        GUILayout.BeginVertical("box");
+        GUILayout.BeginVertical(highlight ? "BoxHighlight" : "box");
         GUILayout.BeginHorizontal();
-        GUILayout.Box("Repeat", "box");
-        var newProcName = GUILayout.TextField(procName, 2, "textfield", GUILayout.Width(25));
+        GUILayout.Box("Repeat", highlight ? "BoxHighlight" : "box");
+        var newProcName = GUILayout.TextField(procName, 2, highlight ? "TextHighlight" : "textfield", GUILayout.Width(25));
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        var newNumTimes = GUILayout.TextField(numTimes, 3, "textfield", GUILayout.Width(35));
-        GUILayout.Box("times", "box");
+        var newNumTimes = GUILayout.TextField(numTimes, 3, highlight ? "TextHighlight" : "textfield", GUILayout.Width(35));
+        GUILayout.Box("times", highlight ? "BoxHighlight" : "box");
         GUILayout.EndHorizontal();
         GUILayout.EndVertical();
 
