@@ -10,6 +10,7 @@ public class Dragged {
     public string ProcName; // nullable
     public int? StatementIndex; // nullable
     public Rect DragRect;
+    public float Delay;
 }
 
 public class AllTheGUI : MonoBehaviour
@@ -25,7 +26,10 @@ public class AllTheGUI : MonoBehaviour
     private int curProc = 0;
     private Dictionary<string, List<Rect>> statementRects;
     private Dictionary<string, Rect> procRects;
+    private Dictionary<string, Rect> buttonRects;
     private Dragged currentlyDragged;
+    private Rect area;
+    private float lastUpdateTime = 0.0f;
     private string[] PROCS = new string[] { "Main", "F1", "F2", "F3", "F4", "F5" };
 
     private Action currentModalWindow = null;
@@ -44,15 +48,55 @@ public class AllTheGUI : MonoBehaviour
     }
 
     void Update() {
-        if (currentlyDragged != null && !Input.GetMouseButton(0)) {
-            Debug.Log("drag ended");
-            currentlyDragged = null;
+        if (currentlyDragged != null) {
+            if (!Input.GetMouseButton(0)) {
+                Debug.Log("drag ended");
+                currentlyDragged = null;
+            } else if (currentlyDragged.Delay > 0) {
+                currentlyDragged.Delay -= Time.fixedTime - lastUpdateTime;
+            }
+        }
+        lastUpdateTime = Time.fixedTime;
+    }
+
+    Rect getLastRect() {
+        var rect = GUILayoutUtility.GetLastRect();
+        rect.x += area.x;
+        rect.y += area.y;
+        return rect;
+    }
+
+    void makeButton(string text, GUILayoutOption[] options, Action callback, bool draggable = false) {
+        if (GUILayout.Button(text, options)) {
+            callback.Invoke();
+        }
+        if (draggable && Event.current.type == EventType.Repaint) {
+            buttonRects[text] = getLastRect();
         }
     }
 
-    void makeButton(string text, GUILayoutOption[] options, Action callback) {
-        if (GUILayout.Button(text, options)) {
-            callback.Invoke();
+    Imperative.Statement makeStatement(string name) {
+        switch (name.ToLower()) {
+            case "forward":
+                return Imperative.NewCall(NextId(), "Forward", new object[] { "1" });
+            case "up":
+                return Imperative.NewCall(NextId(), "Up", new object[] { "1" });
+            case "down":
+                return Imperative.NewCall(NextId(), "Down", new object[] { "1" });
+            case "left":
+                return Imperative.NewCall(NextId(), "Left", new object[] { });
+            case "right":
+                return Imperative.NewCall(NextId(), "Right", new object[] { });
+            case "block":
+                return Imperative.NewCall(NextId(), "PlaceBlock", new object[] { });
+            case "remove":
+                return Imperative.NewCall(NextId(), "RemoveBlock", new object[] { });
+            case "repeat":
+                return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5"));
+            case "call":
+                return Imperative.NewCall(NextId(), "F1", new object[] { });
+            default:
+                throw new ArgumentException(name + " is not a recognized instruction name.");
         }
     }
 
@@ -64,10 +108,15 @@ public class AllTheGUI : MonoBehaviour
         if (currentModalWindow != null) {
             currentModalWindow();
         }
-
+        if (Event.current.type == EventType.Repaint) {
+            statementRects = new Dictionary<string, List<Rect>>();
+            procRects = new Dictionary<string, Rect>();
+            buttonRects = new Dictionary<string, Rect>();
+        }
 
         // save/load dialog
-        GUILayout.BeginArea(new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING));
+        area = new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING);
+        GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
         GUILayout.BeginHorizontal();
         var options = new GUILayoutOption[] { GUILayout.Width(100), GUILayout.Height(BUTTON_HEIGHT) };
@@ -112,18 +161,21 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
-        GUILayout.BeginArea(new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING * 2));
+        // instructions and other controls
+        area = new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
+        GUILayout.BeginArea(area);
+        var offset = new Vector2(area.x, area.y);
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
-        makeButton("Forward", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Forward", new object[] { "1" })));
-        makeButton("Up", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Up", new object[] { "1" })));
-        makeButton("Down", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Down", new object[] { "1" })));
-        makeButton("Left", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Left", new object[] { })));
-        makeButton("Right", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "Right", new object[] { })));
-        makeButton("Block", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "PlaceBlock", new object[] { })));
-        makeButton("Remove", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "RemoveBlock", new object[] { })));
-        makeButton("Repeat", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5"))));
-        makeButton("Call", options, () => program.AppendStatement(PROCS[curProc], Imperative.NewCall(NextId(), "F1", new object[] { })));
+        makeButton("Forward", options, () => program.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
+        makeButton("Up", options, () => program.AppendStatement(PROCS[curProc], makeStatement("up")), true);
+        makeButton("Down", options, () => program.AppendStatement(PROCS[curProc], makeStatement("down")), true);
+        makeButton("Left", options, () => program.AppendStatement(PROCS[curProc], makeStatement("left")), true);
+        makeButton("Right", options, () => program.AppendStatement(PROCS[curProc], makeStatement("right")), true);
+        makeButton("Block", options, () => program.AppendStatement(PROCS[curProc], makeStatement("block")), true);
+        makeButton("Remove", options, () => program.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
+        makeButton("Repeat", options, () => program.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
+        makeButton("Call", options, () => program.AppendStatement(PROCS[curProc], makeStatement("call")), true);
         if (progman.IsExecuting) {
             makeButton("Stop", options, () => progman.Stop());
         } else {
@@ -135,17 +187,15 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
-
-        GUILayout.BeginArea(new Rect(Screen.width - 6 * (COLUMN_WIDTH + SPACING), SPACING, 6 * (COLUMN_WIDTH + SPACING), Screen.height));
+        // program display
+        area = new Rect(Screen.width - 6 * (COLUMN_WIDTH + SPACING), SPACING, 6 * (COLUMN_WIDTH + SPACING), Screen.height);
+        GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
         curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
         GUILayout.BeginHorizontal();
         GUILayout.Space(SPACING / 2);
-        if (Event.current.type == EventType.Repaint) {
-            statementRects = new Dictionary<string, List<Rect>>();
-            procRects = new Dictionary<string, Rect>();
-        }
         if (!progman.IsExecuting) {
+            //Debug.Log(Event.current.type);
             doDragDrop();
         }
         foreach (var procName in PROCS) {
@@ -156,16 +206,15 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.Space(SPACING);
         GUILayout.EndVertical();
         GUILayout.EndArea();
-        if (currentlyDragged != null && currentlyDragged.ProcName == null) {
-            var adjustedRect = new Rect(currentlyDragged.DragRect);
-            adjustedRect.x += Screen.width - 6 * (COLUMN_WIDTH + SPACING);
-            adjustedRect.y += SPACING;
+        if (currentlyDragged != null && currentlyDragged.ProcName == null && currentlyDragged.Delay <= 0) {
             if (currentlyDragged.Statement.Stmt.IsCall) {
-                GUI.Box(adjustedRect, currentlyDragged.Statement.Stmt.AsCall.Proc, "box");
+                GUI.Box(currentlyDragged.DragRect, currentlyDragged.Statement.Stmt.AsCall.Proc, "box");
             } else if (currentlyDragged.Statement.Stmt.IsRepeat) {
-                GUI.Box(adjustedRect, "Repeat", "box");
+                GUI.Box(currentlyDragged.DragRect, "Repeat", "box");
             }
         }
+
+        // fps display
         makeFPS();
     }
 
@@ -210,7 +259,7 @@ public class AllTheGUI : MonoBehaviour
             }
 
             if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
-                statementRects[procName].Add(GUILayoutUtility.GetLastRect());
+                statementRects[procName].Add(getLastRect());
             }
             GUILayout.Space(SPACING / 2);
 
@@ -220,7 +269,7 @@ public class AllTheGUI : MonoBehaviour
         }
         GUILayout.EndVertical();
         if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
-            procRects.Add(procName, GUILayoutUtility.GetLastRect());
+            procRects.Add(procName, getLastRect());
         }
     }
 
@@ -315,6 +364,7 @@ public class AllTheGUI : MonoBehaviour
 
     void doDragDrop() {
         var progman = GetComponent<ProgramManager>();
+        var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
 
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
@@ -322,28 +372,36 @@ public class AllTheGUI : MonoBehaviour
                 statementRects.Add(procName, new List<Rect>());
             }
         }
-        // when mouse down, determine which (if any) statement was clicked
-        else if (Event.current.type == EventType.MouseDown) {
+        else if (Input.GetMouseButtonDown(0) && currentlyDragged == null) {
             foreach (var procName in PROCS) {
                 var proc = progman.Program.Program.Procedures[procName];
                 for (int i = 0; i < statementRects[procName].Count; i++) {
                     var rect = statementRects[procName][i];
                     //Debug.Log(rect);
                     //Debug.Log(Event.current.mousePosition);
-                    if (rect.Contains(Event.current.mousePosition)) {
+                    if (rect.Contains(mousePosition)) {
                         currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect };
                         //Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
+                        return;
                     }
                 }
             }
-            
+            Debug.Log("checking buttons");
+            foreach (var button in buttonRects) {
+                Debug.Log(button);
+                if (button.Value.Contains(mousePosition)) {
+                    currentlyDragged = new Dragged { Statement = makeStatement(button.Key), ProcName = null, StatementIndex = null, DragRect = button.Value, Delay = 0.05f };
+                    Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
+                    return;
+                }
+            }
         }
         // when mouse dragged, if the current proc contains the dragged statement, swap the statement to its new position
-        else if (Event.current.type == EventType.MouseDrag && currentlyDragged != null) {
+        else if (Input.GetMouseButton(0) && currentlyDragged != null) {
             // update position
-            currentlyDragged.DragRect.x = Event.current.mousePosition.x;
-            currentlyDragged.DragRect.y = Event.current.mousePosition.y;
-            //Debug.Log("dragRect = " + currentlyDragged.DragRect);
+            currentlyDragged.DragRect.x = mousePosition.x;
+            currentlyDragged.DragRect.y = mousePosition.y; 
+            Debug.Log("dragRect = " + currentlyDragged.DragRect);
 
             // does it need to be removed from current proc (if it has one)
             if (currentlyDragged.ProcName != null && !rectIntersect(currentlyDragged.DragRect, procRects[currentlyDragged.ProcName])) {
@@ -361,7 +419,7 @@ public class AllTheGUI : MonoBehaviour
                         if (currentlyDragged.ProcName != null) {
                             if (currentlyDragged.ProcName == procName) {
                                 // remove in preparation for potential swap
-                                progman.Program.RemoveStatement(procName,currentlyDragged.StatementIndex.Value);
+                                progman.Program.RemoveStatement(procName, currentlyDragged.StatementIndex.Value);
                                 swap = currentlyDragged.StatementIndex;
                                 //Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
                                 currentlyDragged.ProcName = null;
