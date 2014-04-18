@@ -57,17 +57,25 @@ public class ProgramManager : MonoBehaviour {
         var robot = FindObjectOfType<RobotController>();
         var grid = GetComponent<Grid>();
         currentStateIndex = index;
-        var state = States[currentStateIndex];
+
+        var idx = currentStateIndex < States.Length ? currentStateIndex : States.Length - 1;
+        var state = States[idx];
         robot.Robot = state.Robot;
         grid.SetGrid(state.Grid);
-        //Debug.Log("Robot: " + state.Robot.Position + ", " + state.Robot.Direction);
     }
 
     public void SetProgramStateBySlider(float slider) {
-        var newIndex = Math.Min((int)Math.Floor(States.Length * slider), States.Length - 1);
+        var newIndex = (int)Math.Floor(States.Length * slider);
         if (currentStateIndex != newIndex) {
             setGameState(newIndex);
             IsExecuting = false;
+        }
+    }
+
+    public float SliderPosition {
+        get {
+            if (States == null) return 0.0f;
+            return (float)currentStateIndex / States.Length;
         }
     }
 
@@ -82,7 +90,9 @@ public class ProgramManager : MonoBehaviour {
             //Debug.Log("program is dirty!");
             var robot = FindObjectOfType<RobotController>();
             var grid = new GridStateTracker();
-            States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, robot.Robot.Clone);
+            var initialRobotState = States != null ? States[0].Robot : robot.Robot;
+
+            States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
             Manipulator.ClearDirtyBit();
         }
 

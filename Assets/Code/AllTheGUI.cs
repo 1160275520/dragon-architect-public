@@ -35,7 +35,6 @@ public class AllTheGUI : MonoBehaviour
     private Action currentModalWindow = null;
 
     private string currentlyTypedFilename = "";
-    private float currentSliderPos = 0.0f;
 
     private int astIdCounter = 0;
     // important that this is prefix, 1 should be the first id
@@ -217,10 +216,10 @@ public class AllTheGUI : MonoBehaviour
         }
 
         // time slider
-        var newSLiderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 30, 400, 10), currentSliderPos, 0, 1);
-        if (newSLiderPos != currentSliderPos) {
-            currentSliderPos = newSLiderPos;
-            progman.SetProgramStateBySlider(currentSliderPos);
+        var sliderPos = progman.SliderPosition;
+        var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 30, 400, 20), sliderPos, 0, 1);
+        if (sliderPos != newSliderPos) {
+            progman.SetProgramStateBySlider(newSliderPos);
         }
 
         // fps display

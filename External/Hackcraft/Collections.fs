@@ -3,7 +3,6 @@
 open System.Collections
 open System.Collections.Generic
 
-[<StructAttribute>]
 type ImmArr<'T> private(arr : 'T[]) =
     new(s : seq<'T>) = ImmArr (Array.ofSeq s)
     member x.Item with get idx = arr.[idx]
