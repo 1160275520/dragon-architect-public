@@ -14,5 +14,5 @@ type GridStateTracker() =
         ImmArr.ofSeq cells.Keys 
 
     interface IGrid with
-        member x.AddObject idx = cells.Add (idx, ())
+        member x.AddObject idx = cells.[idx] <- ()
         member x.RemoveObject idx = ignore (cells.Remove idx)

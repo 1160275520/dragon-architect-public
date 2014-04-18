@@ -90,7 +90,7 @@ type StepState = {
 let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRobot) =
     let MAX_ITER = 10000
     let state = CreateState program mainFunc
-    let mutable steps = []
+    let mutable steps = [{Command=""; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}]
     let mutable isDone = false
     let mutable numSteps = 0
     while not (IsDone state) && numSteps < MAX_ITER do
