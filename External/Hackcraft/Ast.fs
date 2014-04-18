@@ -48,7 +48,20 @@ module Imperative =
     type Program = {
         Procedures: Map<string,Procedure>;
     }
+    with
+        member x.AllIds =
+            let rec idsOfStmt (stmt:Statement) =
+                let tail =
+                    match stmt.Stmt with
+                    | Repeat r -> idsOfStmt r.Stmt
+                    | _ -> []
+                stmt.Meta.Id :: tail
 
+            let idsOfProc (proc:Procedure) =
+                List.ofSeq proc.Body |> List.map idsOfStmt |> List.concat
+
+            let ids = Map.toList x.Procedures |> List.map (fun (k,v) -> idsOfProc v) |> List.concat
+            Set(ids)
 
 module Library =
     open Imperative

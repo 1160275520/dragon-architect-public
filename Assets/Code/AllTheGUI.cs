@@ -151,7 +151,9 @@ public class AllTheGUI : MonoBehaviour
                 filename = "TestData/" + currentlyTypedFilename;
             }
             if (filename != null) {
-                GetComponent<ProgramManager>().Manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
+                manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
+                // reset the id counter to not overload with existing statements
+                astIdCounter = manipulator.Program.AllIds.Max();
             }
         });
         var textStyle = new GUIStyle(GUI.skin.textField);
@@ -165,7 +167,6 @@ public class AllTheGUI : MonoBehaviour
         // instructions and other controls
         area = new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
         GUILayout.BeginArea(area);
-        var offset = new Vector2(area.x, area.y);
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
         makeButton("Forward", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
