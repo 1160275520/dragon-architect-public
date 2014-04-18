@@ -41,13 +41,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Math.fs" />
     <Compile Include="Collections.fs" />
     <Compile Include="Lex.fs" />
-    <Compile Include="Ast.fs" />
-    <Compile Include="Simulator.fs" />
     <Compile Include="Json.fs" />
+    <Compile Include="Ast.fs" />
     <Compile Include="AstManipulator.fs" />
     <Compile Include="Serialization.fs" />
+    <Compile Include="Grid.fs" />
+    <Compile Include="Robot.fs" />
+    <Compile Include="Simulator.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

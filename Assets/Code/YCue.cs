@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Hackcraft;
 
 public class YCue : MonoBehaviour
 {
@@ -16,11 +17,11 @@ public class YCue : MonoBehaviour
     // Update is called once per frame
     void Update() {
         var grid = FindObjectOfType<Grid>();
-        var robot = FindObjectOfType<Robot>();
-        var robotPos = grid.CenterOfCell(robot.Position);
+        var robot = FindObjectOfType<RobotController>();
+        var robotPos = grid.CenterOfCell(robot.Robot.Position);
         var yPos = 0.1f;
-        for (int i = 0; i <= robot.Position.Y; i++) {
-            if (grid[new IntVec3(robot.Position.X, i, robot.Position.Z)] != null) {
+        for (int i = 0; i <= robot.Robot.Position.Y; i++) {
+            if (grid[new IntVec3(robot.Robot.Position.X, i, robot.Robot.Position.Z)] != null) {
                 yPos = i + 1.1f;
             }
         }

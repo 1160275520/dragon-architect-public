@@ -7,6 +7,7 @@ open System.Collections.Generic
 type ImmArr<'T> private(arr : 'T[]) =
     new(s : seq<'T>) = ImmArr (Array.ofSeq s)
     member x.Item with get idx = arr.[idx]
+    member x.Length = arr.Length
 
     interface IEnumerable with
         member x.GetEnumerator() = (arr :> IEnumerable<'T>).GetEnumerator() :> IEnumerator

@@ -35,13 +35,14 @@ public class AllTheGUI : MonoBehaviour
     private Action currentModalWindow = null;
 
     private string currentlyTypedFilename = "";
+    private float currentSliderPos = 0.0f;
 
     private int astIdCounter = 0;
     // important that this is prefix, 1 should be the first id
     private int NextId() { return ++astIdCounter; }
 
     void Start() {
-        var prog = GetComponent<ProgramManager>().Program;
+        var prog = GetComponent<ProgramManager>().Manipulator;
         foreach (var p in PROCS) {
             prog.CreateProcedure(p);
         }
@@ -50,7 +51,7 @@ public class AllTheGUI : MonoBehaviour
     void Update() {
         if (currentlyDragged != null) {
             if (!Input.GetMouseButton(0)) {
-                Debug.Log("drag ended");
+                //Debug.Log("drag ended");
                 currentlyDragged = null;
             } else if (currentlyDragged.Delay > 0) {
                 currentlyDragged.Delay -= Time.fixedTime - lastUpdateTime;
@@ -68,7 +69,7 @@ public class AllTheGUI : MonoBehaviour
 
     void makeButton(string text, GUILayoutOption[] options, Action callback, bool draggable = false) {
         if (GUILayout.Button(text, options)) {
-            callback.Invoke();
+            callback();
         }
         if (draggable && Event.current.type == EventType.Repaint) {
             buttonRects[text] = getLastRect();
@@ -102,7 +103,7 @@ public class AllTheGUI : MonoBehaviour
 
     void OnGUI() {
         var progman = GetComponent<ProgramManager>();
-        var program = progman.Program;
+        var manipulator = progman.Manipulator;
         GUI.skin = CustomSkin;
 
         if (currentModalWindow != null) {
@@ -134,7 +135,7 @@ public class AllTheGUI : MonoBehaviour
                 filename = "TestData/" + currentlyTypedFilename;
             }
             if (filename != null) {
-                Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Program.Program);
+                Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
             }
         });
         makeButton("Load File", options, () => {
@@ -150,7 +151,7 @@ public class AllTheGUI : MonoBehaviour
                 filename = "TestData/" + currentlyTypedFilename;
             }
             if (filename != null) {
-                GetComponent<ProgramManager>().Program.Program = Hackcraft.Serialization.LoadFile(filename);
+                GetComponent<ProgramManager>().Manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
             }
         });
         var textStyle = new GUIStyle(GUI.skin.textField);
@@ -167,19 +168,19 @@ public class AllTheGUI : MonoBehaviour
         var offset = new Vector2(area.x, area.y);
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
-        makeButton("Forward", options, () => program.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
-        makeButton("Up", options, () => program.AppendStatement(PROCS[curProc], makeStatement("up")), true);
-        makeButton("Down", options, () => program.AppendStatement(PROCS[curProc], makeStatement("down")), true);
-        makeButton("Left", options, () => program.AppendStatement(PROCS[curProc], makeStatement("left")), true);
-        makeButton("Right", options, () => program.AppendStatement(PROCS[curProc], makeStatement("right")), true);
-        makeButton("Block", options, () => program.AppendStatement(PROCS[curProc], makeStatement("block")), true);
-        makeButton("Remove", options, () => program.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
-        makeButton("Repeat", options, () => program.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
-        makeButton("Call", options, () => program.AppendStatement(PROCS[curProc], makeStatement("call")), true);
+        makeButton("Forward", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
+        makeButton("Up", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("up")), true);
+        makeButton("Down", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("down")), true);
+        makeButton("Left", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("left")), true);
+        makeButton("Right", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("right")), true);
+        makeButton("Block", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("block")), true);
+        makeButton("Remove", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
+        makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
+        makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
         if (progman.IsExecuting) {
-            makeButton("Stop", options, () => progman.Stop());
+            makeButton("Stop", options, () => progman.StopExecution());
         } else {
-            makeButton("Execute", options, () => progman.Execute());
+            makeButton("Execute", options, () => progman.StartExecution());
         }
         makeButton("Undo", options, () => progman.Undo());
         makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
@@ -214,6 +215,13 @@ public class AllTheGUI : MonoBehaviour
             }
         }
 
+        // time slider
+        var newSLiderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 30, 400, 10), currentSliderPos, 0, 1);
+        if (newSLiderPos != currentSliderPos) {
+            currentSliderPos = newSLiderPos;
+            progman.SetProgramStateBySlider(currentSliderPos);
+        }
+
         // fps display
         makeFPS();
     }
@@ -236,10 +244,10 @@ public class AllTheGUI : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         Imperative.Procedure proc;
         try {
-            proc = progman.Program.Program.Procedures[procName];
+            proc = progman.Manipulator.Program.Procedures[procName];
         } catch (KeyNotFoundException) {
-            progman.Program.CreateProcedure(procName);
-            proc = progman.Program.Program.Procedures[procName];
+            progman.Manipulator.CreateProcedure(procName);
+            proc = progman.Manipulator.Program.Procedures[procName];
         }
 
         GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
@@ -264,7 +272,7 @@ public class AllTheGUI : MonoBehaviour
             GUILayout.Space(SPACING / 2);
 
             if (newStatement != null) {
-                progman.Program.ReplaceStatement(procName, i, newStatement);
+                progman.Manipulator.ReplaceStatement(procName, i, newStatement);
             }
         }
         GUILayout.EndVertical();
@@ -374,7 +382,7 @@ public class AllTheGUI : MonoBehaviour
         }
         else if (Input.GetMouseButtonDown(0) && currentlyDragged == null) {
             foreach (var procName in PROCS) {
-                var proc = progman.Program.Program.Procedures[procName];
+                var proc = progman.Manipulator.Program.Procedures[procName];
                 for (int i = 0; i < statementRects[procName].Count; i++) {
                     var rect = statementRects[procName][i];
                     //Debug.Log(rect);
@@ -386,12 +394,12 @@ public class AllTheGUI : MonoBehaviour
                     }
                 }
             }
-            Debug.Log("checking buttons");
+            //Debug.Log("checking buttons");
             foreach (var button in buttonRects) {
-                Debug.Log(button);
+                //Debug.Log(button);
                 if (button.Value.Contains(mousePosition)) {
                     currentlyDragged = new Dragged { Statement = makeStatement(button.Key), ProcName = null, StatementIndex = null, DragRect = button.Value, Delay = 0.05f };
-                    Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
+                    //Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
                     return;
                 }
             }
@@ -401,12 +409,12 @@ public class AllTheGUI : MonoBehaviour
             // update position
             currentlyDragged.DragRect.x = mousePosition.x;
             currentlyDragged.DragRect.y = mousePosition.y; 
-            Debug.Log("dragRect = " + currentlyDragged.DragRect);
+            //Debug.Log("dragRect = " + currentlyDragged.DragRect);
 
             // does it need to be removed from current proc (if it has one)
             if (currentlyDragged.ProcName != null && !rectIntersect(currentlyDragged.DragRect, procRects[currentlyDragged.ProcName])) {
                 //Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
-                progman.Program.RemoveStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value);
+                progman.Manipulator.RemoveStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value);
                 currentlyDragged.ProcName = null;
                 currentlyDragged.StatementIndex = null;
             } else {
@@ -419,7 +427,7 @@ public class AllTheGUI : MonoBehaviour
                         if (currentlyDragged.ProcName != null) {
                             if (currentlyDragged.ProcName == procName) {
                                 // remove in preparation for potential swap
-                                progman.Program.RemoveStatement(procName, currentlyDragged.StatementIndex.Value);
+                                progman.Manipulator.RemoveStatement(procName, currentlyDragged.StatementIndex.Value);
                                 swap = currentlyDragged.StatementIndex;
                                 //Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
                                 currentlyDragged.ProcName = null;
@@ -438,7 +446,7 @@ public class AllTheGUI : MonoBehaviour
                                 (!swap.HasValue && currentlyDragged.DragRect.yMin < rect.yMin)) {
                                 // insert and return
                                 //Debug.Log("inserted in " + procName + " at " + i + " from " + swap);
-                                progman.Program.InsertStatement(procName, i, currentlyDragged.Statement);
+                                progman.Manipulator.InsertStatement(procName, i, currentlyDragged.Statement);
                                 currentlyDragged.ProcName = procName;
                                 currentlyDragged.StatementIndex = i;
                                 return;
@@ -446,8 +454,8 @@ public class AllTheGUI : MonoBehaviour
                         }
                         // insert at end
                         //Debug.Log("inserted in " + procName + " at " + progman.Program.Program.Procedures[procName].Body.Count());
-                        currentlyDragged.StatementIndex = progman.Program.Program.Procedures[procName].Body.Count();
-                        progman.Program.AppendStatement(procName, currentlyDragged.Statement);
+                        currentlyDragged.StatementIndex = progman.Manipulator.Program.Procedures[procName].Body.Count();
+                        progman.Manipulator.AppendStatement(procName, currentlyDragged.Statement);
                         currentlyDragged.ProcName = procName;
                     }
                 }

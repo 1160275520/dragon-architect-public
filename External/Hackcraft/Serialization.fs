@@ -53,6 +53,7 @@ let ProgramOfJson (json:Json.JsonValue) =
         match j with
         | Json.Int i -> upcast i
         | Json.String s -> upcast s
+        | _ -> invalidArg "j" (sprintf "cannot json parse object of type '%s'" (j.GetType().Name))
 
     let parseMeta (j:Json.JsonValue) =
         let jmeta = j.AsObject

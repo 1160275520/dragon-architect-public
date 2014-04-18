@@ -8,45 +8,31 @@ using Hackcraft.Ast;
 
 public class ProgramManager : MonoBehaviour {
 
-    public float DelayPerCommand = 0.0f;
+    public float DelayPerCommand;
 
-    public ImperativeAstManipulator Program = new ImperativeAstManipulator();
-    public Simulator.State State { get; private set; }
+    public ImperativeAstManipulator Manipulator = new ImperativeAstManipulator();
+    public ImmArr<Simulator.StepState> States { get; private set; }
 
+    public bool IsExecuting { get; private set; }
+    private int currentStateIndex = -1;
     private float lastStatementExecutionTime = 0.0f;
-    private struct RobotState
-    {
-        public IntVec3 Postion;
-        public Robot.Axis Axis;
-        public Robot.Direction Dir;
-    }
-    private RobotState prevState;
 
-    public void Execute() {
-        State = Simulator.CreateState(Program.Program, "Main");
+    public void StartExecution() {
+        currentStateIndex = -1;
+        IsExecuting = true;
         lastStatementExecutionTime = Time.fixedTime;
-        var robot = FindObjectOfType<Robot>();
-        prevState = new RobotState { Postion = new IntVec3 { X = robot.Position.X, Y = robot.Position.Y, Z = robot.Position.Z }, 
-                                     Axis = robot.FacingAxis, Dir = robot.FacingDirection };
-        FindObjectOfType<Grid>().ResetUndo();
     }
 
-    public void Stop() {
-        State = null;
-    }
-
-    public bool IsExecuting {
-        get {
-            return State != null;
-        }
+    public void StopExecution() {
+        IsExecuting = false;
     }
 
     public List<int> LastExecuted {
         get {
             var rv = new List<int>();
-            if (State != null) {
+            if (currentStateIndex >= 0 && currentStateIndex < States.Length) {
                 // using 'var' does not compile here for reasons, sooo just explicitly type it
-                foreach (Imperative.Statement stmt in State.LastExecuted) {
+                foreach (Imperative.Statement stmt in States[currentStateIndex].LastExecuted) {
                     var id = stmt.Meta.Id;
                     if (id > 0) rv.Add(id);
                 }
@@ -55,30 +41,34 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
-    public System.Object programState {
-        get { // janky copy-out, assuming all args are actually strings (i.e. immutable)
-            return null;
-        }
-    }
-
     public void Undo() {
-        var robot = FindObjectOfType<Robot>();
-        robot.Position = prevState.Postion;
-        robot.FacingAxis = prevState.Axis;
-        robot.FacingDirection = prevState.Dir;
-        GetComponent<Grid>().Undo();
     }
 
     public void Clear() {
-        var procs = from kvp in Program.Program.Procedures select kvp.Key;
+        var procs = from kvp in Manipulator.Program.Procedures select kvp.Key;
         foreach (var p in procs) {
-            Program.ClearProcedure(p);
+            Manipulator.ClearProcedure(p);
         }
         GetComponent<Grid>().Clear();
-        var robot = FindObjectOfType<Robot>();
-        robot.Position = new IntVec3(0, 0, 0);
-        robot.FacingAxis = Robot.Axis.Z;
-        robot.FacingDirection = Robot.Direction.Pos;
+        FindObjectOfType<RobotController>().Reset();
+    }
+
+    private void setGameState(int index) {
+        var robot = FindObjectOfType<RobotController>();
+        var grid = GetComponent<Grid>();
+        currentStateIndex = index;
+        var state = States[currentStateIndex];
+        robot.Robot = state.Robot;
+        grid.SetGrid(state.Grid);
+        //Debug.Log("Robot: " + state.Robot.Position + ", " + state.Robot.Direction);
+    }
+
+    public void SetProgramStateBySlider(float slider) {
+        var newIndex = Math.Min((int)Math.Floor(States.Length * slider), States.Length - 1);
+        if (currentStateIndex != newIndex) {
+            setGameState(newIndex);
+            IsExecuting = false;
+        }
     }
 
 	// Use this for initialization
@@ -88,13 +78,20 @@ public class ProgramManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!IsExecuting) return;
+        if (Manipulator.IsDirty) {
+            //Debug.Log("program is dirty!");
+            var robot = FindObjectOfType<RobotController>();
+            var grid = new GridStateTracker();
+            States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, robot.Robot.Clone);
+            Manipulator.ClearDirtyBit();
+        }
 
-        if (lastStatementExecutionTime + DelayPerCommand < Time.fixedTime) {
-            var command = Simulator.ExecuteUntilCommand(Program.Program, State);
-            FindObjectOfType<Robot>().Execute(command);
-            if (Simulator.IsDone(State)) {
-                State = null;
+        if (IsExecuting && lastStatementExecutionTime + DelayPerCommand < Time.fixedTime) {
+            currentStateIndex++;
+            if (currentStateIndex >= States.Length) {
+                IsExecuting = false;
+            } else {
+                setGameState(currentStateIndex);
             }
             lastStatementExecutionTime = Time.fixedTime;
         }

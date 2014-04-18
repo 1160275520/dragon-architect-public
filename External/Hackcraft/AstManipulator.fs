@@ -5,19 +5,27 @@ open System.Collections.Generic
 
 type ImperativeAstManipulator() =
     let mutable ast: Program = {Procedures=Map.empty}
+    let mutable isDirty = true
 
     let updateProc procname newbody =
         let newproc = {ast.Procedures.[procname] with Body=ImmArr.ofSeq newbody}
         ast <- {ast with Procedures=ast.Procedures.Add (procname, newproc)}
+        isDirty <- true
 
     let bodyAsList procname = new List<Statement>(ast.Procedures.[procname].Body)
 
+    member this.IsDirty = isDirty
+    member this.ClearDirtyBit () = isDirty <- false
+
     member this.Program
         with get () = ast
-        and set p = ast <- p
+        and set p =
+            ast <- p
+            isDirty <- true
         
     member this.CreateProcedure name =
         ast <- {ast with Procedures=ast.Procedures.Add (name, {Arity=0; Body=ImmArr.ofSeq []})}
+        isDirty <- true
 
     member this.InsertStatement procname index statement =
         let body = bodyAsList procname

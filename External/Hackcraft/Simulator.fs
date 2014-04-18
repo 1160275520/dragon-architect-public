@@ -79,3 +79,23 @@ let ExecuteUntilCommand program state =
     match cmd with Some c -> c | None -> null
 
 let IsDone (state:State) = state.CallStack.IsEmpty
+
+type StepState = {
+    Command: string;
+    LastExecuted: Statement list;
+    Robot: Robot.IRobot;
+    Grid: ImmArr<IntVec3>;
+}
+
+let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRobot) =
+    let state = CreateState program mainFunc
+    let mutable steps = []
+    let mutable isDone = false
+    while not (IsDone state) do
+        let cmd = ExecuteUntilCommand program state
+        robot.Execute grid cmd
+        steps <- {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState} :: steps
+
+    ImmArr.ofSeq (List.rev steps)
+    
+
