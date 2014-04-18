@@ -88,13 +88,16 @@ type StepState = {
 }
 
 let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRobot) =
+    let MAX_ITER = 10000
     let state = CreateState program mainFunc
     let mutable steps = []
     let mutable isDone = false
-    while not (IsDone state) do
+    let mutable numSteps = 0
+    while not (IsDone state) && numSteps < MAX_ITER do
         let cmd = ExecuteUntilCommand program state
         robot.Execute grid cmd
         steps <- {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState} :: steps
+        numSteps <- numSteps + 1
 
     ImmArr.ofSeq (List.rev steps)
     
