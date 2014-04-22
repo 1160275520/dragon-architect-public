@@ -168,6 +168,7 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
+        GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
         makeButton("Forward", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
         makeButton("Up", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("up")), true);
         makeButton("Down", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("down")), true);
@@ -177,12 +178,19 @@ public class AllTheGUI : MonoBehaviour
         makeButton("Remove", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
         makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
         makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+        area = new Rect(SPACING, SPACING + Screen.height * 3.0f / 5, COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
+        GUILayout.BeginArea(area);
+        GUILayout.BeginVertical("ButtonBackground");
+        GUILayout.Label("Click to\ndo things", GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2f));
         if (progman.IsExecuting) {
             makeButton("Stop", options, () => progman.StopExecution());
         } else {
             makeButton("Execute", options, () => progman.StartExecution());
         }
-        makeButton("Undo", options, () => progman.Undo());
+        //makeButton("Undo", options, () => progman.Undo());
         makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
         makeButton("Zoom Out", options, () => FindObjectOfType<MyCamera>().Zoom(2f));
         GUILayout.EndVertical();
@@ -286,7 +294,7 @@ public class AllTheGUI : MonoBehaviour
         var procName = statement.Proc;
 
         string newProcName = procName;
-        if (PROCS.Contains(procName)) {
+        if (!Library.Builtins.ContainsKey(procName)) {
             GUILayout.Box("Call", highlight ? "BoxHighlight" : "box");
             newProcName = GUILayout.TextField(procName, 2, highlight ? "TextHighlight" : "textfield", GUILayout.Width(25));
         } else {
