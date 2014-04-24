@@ -81,7 +81,7 @@ public class ProgramManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+        Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/demo.txt");
 	}
 	
 	// Update is called once per frame

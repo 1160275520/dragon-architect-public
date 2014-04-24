@@ -200,6 +200,7 @@ public class AllTheGUI : MonoBehaviour
         area = new Rect(Screen.width - 6 * (COLUMN_WIDTH + SPACING), SPACING, 6 * (COLUMN_WIDTH + SPACING), Screen.height);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
+        GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
         curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
         GUILayout.BeginHorizontal();
         GUILayout.Space(SPACING / 2);
