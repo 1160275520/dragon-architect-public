@@ -165,7 +165,7 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndArea();
 
         // instructions and other controls
-        area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
+        area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING) - BUTTON_COLUMN_WIDTH - SPACING - 5, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
@@ -182,14 +182,14 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
-        area = new Rect(SPACING, SPACING + Screen.height * 3.0f / 5, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
+        area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
-        GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2f));
+        GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 1.5f));
         if (progman.IsExecuting) {
             makeButton("Stop", options, () => progman.StopExecution());
         } else {
-            makeButton("Execute", options, () => progman.StartExecution());
+            makeButton("RUN!", options, () => progman.StartExecution());
         }
         //makeButton("Undo", options, () => progman.Undo());
         makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
