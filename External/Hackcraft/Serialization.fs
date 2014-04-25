@@ -32,6 +32,7 @@ let JsonOfProgram (program:Program) =
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
             match stmt.Stmt with
+            | Block b -> [("type", jstr "block"); ("body", jarr (Seq.map jsonOfStmt b))]
             | Call c -> [("type", jstr "call"); ("proc", jstr c.Proc); ("args", jarrmap jsonOfObj c.Args)]
             | Repeat r -> [("type", jstr "repeat"); ("stmt", jsonOfStmt r.Stmt); ("numtimes", jsonOfExpr r.NumTimes)]
             | Command c -> [("type", jstr "command"); ("command", jstr c)]
@@ -70,6 +71,7 @@ let ProgramOfJson (json:Json.JsonValue) =
         let jstmt = j.AsObject
         let stmt =
             match jstmt.["type"].AsString with
+            | "block" -> Block (ImmArr.ofSeq (jstmt.["body"].AsArray |> Seq.map parseStmt))
             | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseObject)}
             | "repeat" -> Repeat {Stmt=parseStmt jstmt.["stmt"]; NumTimes=parseExpr jstmt.["numtimes"]}
             | "command" -> Command jstmt.["command"].AsString

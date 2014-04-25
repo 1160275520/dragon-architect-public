@@ -61,6 +61,9 @@ let ExecuteStep program (state:State) =
                 state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
 
             match stmt.Stmt with
+            | Block b ->
+                state.CallStack <- {Args=head.Args; ToExecute=List.ofSeq b} :: state.CallStack
+                None
             | Call {Proc=procname; Args=args} ->
                 state.CallStack <- {Args=args; ToExecute=getProc program procname} :: state.CallStack
                 None

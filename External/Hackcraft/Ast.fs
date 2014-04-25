@@ -21,6 +21,7 @@ module Imperative =
     type Call = { Proc:string; Args:ImmArr<obj>; }
     type Repeat = { Stmt:Statement; NumTimes:Expression; }
     and StatementT =
+    | Block of ImmArr<Statement>
     | Call of Call
     | Repeat of Repeat
     | Command of string
@@ -36,6 +37,7 @@ module Imperative =
         member x.AsRepeat = match x with Repeat r -> r | _ -> invalidOp "not a repeat"
 
     let NewStatement id stmt = {Stmt=stmt; Meta={Id=id}}
+    let NewBlock id list = NewStatement id (Block list)
     let NewCall id proc args = NewStatement id (Call({Proc=proc; Args=ImmArr.ofSeq args;}))
     let NewRepeat id stmt nt = NewStatement id (Repeat({Stmt=stmt; NumTimes=nt;}))
     let NewCommand id cmd = NewStatement id (Command cmd)
@@ -79,4 +81,5 @@ module Library =
             ("TurnAround", {Arity=0; Body=arr [NewCommand 0 "right"; NewCommand 0 "right"]});
             ("PlaceBlock", {Arity=0; Body=arr [NewCommand 0 "block"]});
             ("RemoveBlock", {Arity=0; Body=arr [NewCommand 0 "remove"]});
+            ("Line", {Arity=1; Body=arr [NewRepeat 0 (NewBlock 0 (ImmArr.ofSeq [NewCommand 0 "block"; NewCommand 0 "forward"])) (Argument 0)]});
         ])

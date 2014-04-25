@@ -92,6 +92,8 @@ public class AllTheGUI : MonoBehaviour
                 return Imperative.NewCall(NextId(), "PlaceBlock", new object[] { });
             case "removeblock":
                 return Imperative.NewCall(NextId(), "RemoveBlock", new object[] { });
+            case "line":
+                return Imperative.NewCall(NextId(), "Line", new object[] { "5" });
             case "repeat":
                 return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F5", new object[] { }), Imperative.Expression.NewLiteral("5"));
             case "call":
@@ -177,6 +179,7 @@ public class AllTheGUI : MonoBehaviour
         makeButton("Right", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("right")), true);
         makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("placeblock")), true);
         makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("removeblock")), true);
+        makeButton("Line", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("line")), true);
         makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
         makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
         GUILayout.EndVertical();
