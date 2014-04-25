@@ -93,9 +93,9 @@ public class AllTheGUI : MonoBehaviour
             case "remove":
                 return Imperative.NewCall(NextId(), "RemoveBlock", new object[] { });
             case "repeat":
-                return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F1", new object[] { }), Imperative.Expression.NewLiteral("5"));
+                return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F5", new object[] { }), Imperative.Expression.NewLiteral("5"));
             case "call":
-                return Imperative.NewCall(NextId(), "F1", new object[] { });
+                return Imperative.NewCall(NextId(), "F5", new object[] { });
             default:
                 throw new ArgumentException(name + " is not a recognized instruction name.");
         }
