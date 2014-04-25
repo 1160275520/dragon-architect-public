@@ -220,6 +220,8 @@ public class AllTheGUI : MonoBehaviour
         //makeButton("Undo", options, () => progman.Undo());
         makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
         makeButton("Zoom Out", options, () => FindObjectOfType<MyCamera>().Zoom(2f));
+        makeButton("Roate Left", options, () => FindObjectOfType<MyCamera>().Rotate(90));
+        makeButton("Roate Right", options, () => FindObjectOfType<MyCamera>().Rotate(-90));
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
