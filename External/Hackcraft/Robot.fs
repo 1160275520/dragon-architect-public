@@ -23,7 +23,7 @@ type BasicImperativeRobot(aPos, aDir) =
             match command with
             | "forward" -> pos <- pos + dir
             | "up" -> pos <- pos + IntVec3.UnitY
-            | "down" -> pos <- pos - IntVec3.UnitY
+            | "down" -> pos <- if pos.Y > 0 then pos - IntVec3.UnitY else pos
             | "left" -> dir <- IntVec3 (-dir.Z, 0, dir.X)
             | "right" -> dir <- IntVec3 (dir.Z, 0, -dir.X)
             | "block" -> grid.AddObject pos
