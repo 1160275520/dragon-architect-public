@@ -15,7 +15,8 @@ public class Dragged {
 
 public class AllTheGUI : MonoBehaviour
 {
-    public static readonly int COLUMN_WIDTH = 85;
+    public static readonly int PROGRAM_COLUMN_WIDTH = 85;
+    public static readonly int BUTTON_COLUMN_WIDTH = 110;
     public static readonly int BUTTON_HEIGHT = 25;
     public static readonly int SPACING = 10;
 
@@ -164,27 +165,27 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndArea();
 
         // instructions and other controls
-        area = new Rect(SPACING, SPACING, COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
+        area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
-        options = new GUILayoutOption[] { GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
-        GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
+        options = new GUILayoutOption[] { GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
+        GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
         makeButton("Forward", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
         makeButton("Up", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("up")), true);
         makeButton("Down", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("down")), true);
         makeButton("Left", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("left")), true);
         makeButton("Right", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("right")), true);
-        makeButton("Block", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("block")), true);
-        makeButton("Remove", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
+        makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("block")), true);
+        makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
         makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
         makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
         GUILayout.EndVertical();
         GUILayout.EndArea();
 
-        area = new Rect(SPACING, SPACING + Screen.height * 3.0f / 5, COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
+        area = new Rect(SPACING, SPACING + Screen.height * 3.0f / 5, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
-        GUILayout.Label("Click to\ndo things", GUILayout.Width(COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2f));
+        GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2f));
         if (progman.IsExecuting) {
             makeButton("Stop", options, () => progman.StopExecution());
         } else {
@@ -197,10 +198,10 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndArea();
 
         // program display
-        area = new Rect(Screen.width - 6 * (COLUMN_WIDTH + SPACING), SPACING, 6 * (COLUMN_WIDTH + SPACING), Screen.height);
+        area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, 6 * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
-        GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
+        GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
         curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
         GUILayout.BeginHorizontal();
         GUILayout.Space(SPACING / 2);
@@ -259,7 +260,7 @@ public class AllTheGUI : MonoBehaviour
             proc = progman.Manipulator.Program.Procedures[procName];
         }
 
-        GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
+        GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(PROGRAM_COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
         GUILayout.Space(SPACING / 2);
         var body = proc.Body;
         Imperative.Statement newStatement = null;
