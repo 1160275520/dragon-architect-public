@@ -33,6 +33,8 @@ public class AllTheGUI : MonoBehaviour
     private float lastUpdateTime = 0.0f;
     private string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
 
+    private bool isFirstUpdate = true;
+
     private Action currentModalWindow = null;
 
     private string currentlyTypedFilename = "";
@@ -49,6 +51,13 @@ public class AllTheGUI : MonoBehaviour
     }
 
     void Update() {
+        if (isFirstUpdate) {
+            isFirstUpdate = false;
+            var manipulator = GetComponent<ProgramManager>().Manipulator;
+            manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/demo.txt");
+            astIdCounter = manipulator.Program.AllIds.Max();
+        }
+
         if (currentlyDragged != null) {
             if (!Input.GetMouseButton(0)) {
                 //Debug.Log("drag ended");

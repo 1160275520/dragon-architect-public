@@ -13,8 +13,13 @@ public class ProgramManager : MonoBehaviour {
     public ImperativeAstManipulator Manipulator = new ImperativeAstManipulator();
     public ImmArr<Simulator.StepState> States { get; private set; }
 
+    /// true iff the program manager is currently showing real-time execution of a program
     public bool IsExecuting { get; private set; }
-    private int currentStateIndex = -1;
+    /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame
+    /// set this to false when the gui is changing the program state
+    public bool IsCheckingForProgramChanges { get; set; }
+
+    private int currentStateIndex = 0;
     private float lastStatementExecutionTime = 0.0f;
 
     public void StartExecution() {
@@ -30,7 +35,7 @@ public class ProgramManager : MonoBehaviour {
     public List<int> LastExecuted {
         get {
             var rv = new List<int>();
-            if (currentStateIndex >= 0 && currentStateIndex < States.Length) {
+            if (States != null && currentStateIndex >= 0 && currentStateIndex < States.Length) {
                 // using 'var' does not compile here for reasons, sooo just explicitly type it
                 foreach (Imperative.Statement stmt in States[currentStateIndex].LastExecuted) {
                     var id = stmt.Meta.Id;
@@ -48,12 +53,13 @@ public class ProgramManager : MonoBehaviour {
         var procs = from kvp in Manipulator.Program.Procedures select kvp.Key;
         foreach (var p in procs) {
             Manipulator.ClearProcedure(p);
-        }
+        } 
         GetComponent<Grid>().Clear();
         FindObjectOfType<RobotController>().Reset();
     }
 
     private void setGameState(int index) {
+        Debug.Log("setting to " + index);
         var robot = FindObjectOfType<RobotController>();
         var grid = GetComponent<Grid>();
         currentStateIndex = index;
@@ -81,12 +87,13 @@ public class ProgramManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/demo.txt");
+        IsExecuting = false;
+        IsCheckingForProgramChanges = true;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (Manipulator.IsDirty) {
+        if (IsCheckingForProgramChanges && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
 
             Debug.Log("program is dirty!");
@@ -98,6 +105,7 @@ public class ProgramManager : MonoBehaviour {
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
             States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
+            Debug.Log(States.Length + " states in program");
             if (isOldIndexAtEnd) {
                 currentStateIndex = States.Length;
             }
