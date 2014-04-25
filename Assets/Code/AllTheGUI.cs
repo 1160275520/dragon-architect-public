@@ -165,7 +165,7 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndArea();
 
         // instructions and other controls
-        area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING) - BUTTON_COLUMN_WIDTH - SPACING - 5, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
+        area = new Rect(SPACING, SPACING + 1.0f / 3 * Screen.height, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
         GUILayout.BeginArea(area);
         GUILayout.BeginVertical("ButtonBackground");
         options = new GUILayoutOption[] { GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT) };
