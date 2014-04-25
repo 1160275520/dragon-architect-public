@@ -22,4 +22,5 @@ ProjectSettings/Physics2DSettings.asset
 *.booproj
 *.dll
 *.dll.meta
-
+.DS_Store
+Hackcraft.app/
