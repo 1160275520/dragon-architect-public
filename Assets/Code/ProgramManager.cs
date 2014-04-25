@@ -9,8 +9,9 @@ using Hackcraft.Ast;
 public class ProgramManager : MonoBehaviour {
 
     public float DelayPerCommand;
+    public const int MAX_PROCEDURE_LENGTH = 15;
 
-    public ImperativeAstManipulator Manipulator = new ImperativeAstManipulator();
+    public ImperativeAstManipulator Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
     public ImmArr<Simulator.StepState> States { get; private set; }
 
     /// true iff the program manager is currently showing real-time execution of a program

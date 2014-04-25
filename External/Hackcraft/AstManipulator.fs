@@ -3,7 +3,7 @@
 open Ast.Imperative
 open System.Collections.Generic
 
-type ImperativeAstManipulator() =
+type ImperativeAstManipulator(maxProcedureLength:int) =
     let mutable ast: Program = {Procedures=Map.empty}
     let mutable isDirty = true
 
@@ -34,8 +34,10 @@ type ImperativeAstManipulator() =
 
     member this.AppendStatement procname statement =
         let body = bodyAsList procname
-        body.Add statement
-        updateProc procname body
+        if body.Count < maxProcedureLength
+        then
+            body.Add statement
+            updateProc procname body
 
     member this.RemoveStatement procname index =
         let body = bodyAsList procname
