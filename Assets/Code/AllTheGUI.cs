@@ -256,7 +256,11 @@ public class AllTheGUI : MonoBehaviour
 
         var r = new Rect(midx - hw, midy - hh, 2 * hw, 2 * hh);
         GUI.ModalWindow(213421345, r, (id) => {
-            makeButton("Yes", null, () => { GetComponent<ProgramManager>().Clear(); currentModalWindow = null; } );
+            makeButton("Yes", null, () => {
+                Hackcraft.Serialization.SaveFile(string.Format("TestData/autosave-{0:yyyy-MM-dd_HH-mm-ss}.txt", DateTime.Now), GetComponent<ProgramManager>().Manipulator.Program);
+                GetComponent<ProgramManager>().Clear();
+                currentModalWindow = null;
+            } );
             makeButton("No", null, () => currentModalWindow = null);
         }, "Confirm Clear?");
 
