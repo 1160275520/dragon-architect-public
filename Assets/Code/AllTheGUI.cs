@@ -88,9 +88,9 @@ public class AllTheGUI : MonoBehaviour
                 return Imperative.NewCall(NextId(), "Left", new object[] { });
             case "right":
                 return Imperative.NewCall(NextId(), "Right", new object[] { });
-            case "block":
+            case "placeblock":
                 return Imperative.NewCall(NextId(), "PlaceBlock", new object[] { });
-            case "remove":
+            case "removeblock":
                 return Imperative.NewCall(NextId(), "RemoveBlock", new object[] { });
             case "repeat":
                 return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F5", new object[] { }), Imperative.Expression.NewLiteral("5"));
@@ -175,8 +175,8 @@ public class AllTheGUI : MonoBehaviour
         makeButton("Down", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("down")), true);
         makeButton("Left", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("left")), true);
         makeButton("Right", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("right")), true);
-        makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("block")), true);
-        makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("remove")), true);
+        makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("placeblock")), true);
+        makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("removeblock")), true);
         makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
         makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
         GUILayout.EndVertical();
@@ -227,7 +227,7 @@ public class AllTheGUI : MonoBehaviour
 
         // time slider
         var sliderPos = progman.SliderPosition;
-        var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 30, 400, 20), sliderPos, 0, 1);
+        var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 60, 400, 20), sliderPos, 0, 1);
         if (sliderPos != newSliderPos) {
             progman.SetProgramStateBySlider(newSliderPos);
         }
