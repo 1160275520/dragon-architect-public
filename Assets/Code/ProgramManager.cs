@@ -87,13 +87,14 @@ public class ProgramManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (Manipulator.IsDirty) {
-            //Debug.Log("program is dirty!");
+            Manipulator.ClearDirtyBit();
+
+            Debug.Log("program is dirty!");
             var robot = FindObjectOfType<RobotController>();
             var grid = new GridStateTracker();
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
             States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
-            Manipulator.ClearDirtyBit();
         }
 
         if (IsExecuting && lastStatementExecutionTime + DelayPerCommand < Time.fixedTime) {
