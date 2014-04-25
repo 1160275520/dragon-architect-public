@@ -90,11 +90,18 @@ public class ProgramManager : MonoBehaviour {
             Manipulator.ClearDirtyBit();
 
             Debug.Log("program is dirty!");
+
+            var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
+
             var robot = FindObjectOfType<RobotController>();
             var grid = new GridStateTracker();
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
             States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
+            if (isOldIndexAtEnd) {
+                currentStateIndex = States.Length;
+            }
+            setGameState(currentStateIndex);
         }
 
         if (IsExecuting && lastStatementExecutionTime + DelayPerCommand < Time.fixedTime) {
