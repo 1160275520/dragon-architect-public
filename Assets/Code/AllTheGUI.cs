@@ -135,15 +135,15 @@ public class AllTheGUI : MonoBehaviour
         makeButton("Clear", options, () => currentModalWindow = displayConfirmClear);
         makeButton("Save File", options, () => {
             string filename = null;
-            if (currentlyTypedFilename.Length == 0) {
+            if (currentlyTypedFilename.Length > 0) {
+                filename = "TestData/" + currentlyTypedFilename;
+            } else if (!Screen.fullScreen) {
                 using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
                     dialog.InitialDirectory = "TestData/";
                     if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
                         filename = dialog.FileName;
                     }
                 }
-            } else {
-                filename = "TestData/" + currentlyTypedFilename;
             }
             if (filename != null) {
                 Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
@@ -151,15 +151,15 @@ public class AllTheGUI : MonoBehaviour
         });
         makeButton("Load File", options, () => {
             string filename = null;
-            if (currentlyTypedFilename.Length == 0) {
+            if (currentlyTypedFilename.Length > 0) {
+                filename = "TestData/" + currentlyTypedFilename;
+            } else if (!Screen.fullScreen) {
                 using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
                     dialog.InitialDirectory = "TestData/";
                     if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
                         filename = dialog.FileName;
                     }
                 }
-            } else {
-                filename = "TestData/" + currentlyTypedFilename;
             }
             if (filename != null) {
                 manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
