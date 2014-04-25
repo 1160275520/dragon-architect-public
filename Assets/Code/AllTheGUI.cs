@@ -305,17 +305,17 @@ public class AllTheGUI : MonoBehaviour
             if (body [i] == null) {
                 GUILayout.Box("", "DragSnapped");
             } else {
-                var command = body [i].Stmt;
+                var command = body [i];
                 var highlight = GUIStyleType.Standard;
                 if (lastExecuted.FirstOrDefault() == body[i].Meta.Id) {
                     highlight = GUIStyleType.CurrentHighlight;
                 } else if (lastExecuted.Contains(body [i].Meta.Id)) {
                     highlight = GUIStyleType.Highlight;
                 }
-                if (command.IsCall) {
-                    newStatement = makeCall(command.AsCall, highlight);
-                } else if (command.IsRepeat) {
-                    newStatement = makeRepeat(command.AsRepeat, highlight);
+                if (command.Stmt.IsCall) {
+                    newStatement = makeCall(command, highlight);
+                } else if (command.Stmt.IsRepeat) {
+                    newStatement = makeRepeat(command, highlight);
                 }
             }
             if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
@@ -333,23 +333,26 @@ public class AllTheGUI : MonoBehaviour
         }
     }
 
-    private Imperative.Statement makeCall(Imperative.Call statement, GUIStyleType highlight)
+    private Imperative.Statement makeCall(Imperative.Statement statement, GUIStyleType highlight)
     {
         GUILayout.BeginHorizontal();
-        var procName = statement.Proc;
+        var call = statement.Stmt.AsCall;
+        var procName = call.Proc;
 
         string newProcName = procName;
         if (!Library.Builtins.ContainsKey(procName)) {
             GUILayout.Box("Call", BoxStyles[(int)highlight]);
+            GUI.SetNextControlName("Call" + statement.Meta.Id + "TextField");
             newProcName = GUILayout.TextField(procName, 2, TextStyles[(int)highlight], GUILayout.Width(25));
         } else {
             GUILayout.Box(procName, BoxStyles[(int)highlight]);
         }
 
 
-        var arg1 = statement.Args.Count() > 0 ? statement.Args [0] as string : null;
+        var arg1 = call.Args.Count() > 0 ? call.Args [0] as string : null;
         string newArg1 = null;
         if (arg1 != null) {
+            GUI.SetNextControlName(procName + statement.Meta.Id + "TextField");
             newArg1 = GUILayout.TextField(arg1, 2, TextStyles[(int)highlight], GUILayout.Width(25));
         } 
 
@@ -363,17 +366,20 @@ public class AllTheGUI : MonoBehaviour
         
     }
 
-    private Imperative.Statement makeRepeat(Imperative.Repeat statement, GUIStyleType highlight)
+    private Imperative.Statement makeRepeat(Imperative.Statement statement, GUIStyleType highlight)
     {
-        var procName = statement.Stmt.Stmt.AsCall.Proc;
-        var numTimes = statement.NumTimes.AsLiteral as string;
+        var repeat = statement.Stmt.AsRepeat;
+        var procName = repeat.Stmt.Stmt.AsCall.Proc;
+        var numTimes = repeat.NumTimes.AsLiteral as string;
 
         GUILayout.BeginVertical(BoxStyles[(int)highlight]);
         GUILayout.BeginHorizontal();
         GUILayout.Box("Repeat", BoxStyles[(int)highlight]);
+        GUI.SetNextControlName("Repeat" + statement.Meta.Id + "ProcTextField");
         var newProcName = GUILayout.TextField(procName, 2, TextStyles[(int)highlight], GUILayout.Width(25));
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
+        GUI.SetNextControlName("Repeat" + statement.Meta.Id + "NumTextField");
         var newNumTimes = GUILayout.TextField(numTimes, 3, TextStyles[(int)highlight], GUILayout.Width(35));
         GUILayout.Box("times", BoxStyles[(int)highlight]);
         GUILayout.EndHorizontal();
@@ -436,13 +442,13 @@ public class AllTheGUI : MonoBehaviour
     {
         var progman = GetComponent<ProgramManager>();
         var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
-
+        Debug.Log(GUI.GetNameOfFocusedControl());
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
             foreach (var procName in PROCS) {
                 statementRects.Add(procName, new List<Rect>());
             }
-        } else if (Input.GetMouseButtonDown(0) && currentlyDragged == null) {
+        } else if (Input.GetMouseButtonDown(0) && currentlyDragged == null && GUI.GetNameOfFocusedControl() == "") {
             foreach (var procName in PROCS) {
                 var proc = progman.Manipulator.Program.Procedures [procName];
                 for (int i = 0; i < statementRects[procName].Count; i++) {
@@ -450,7 +456,8 @@ public class AllTheGUI : MonoBehaviour
                     //Debug.Log(rect);
                     //Debug.Log(Event.current.mousePosition);
                     if (rect.Contains(mousePosition)) {
-                        currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect };
+                        currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect};
+                        progman.IsCheckingForProgramChanges = false;
                         //Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
                         return;
                     }
@@ -460,14 +467,15 @@ public class AllTheGUI : MonoBehaviour
             foreach (var button in buttonRects) {
                 //Debug.Log(button);
                 if (button.Value.Contains(mousePosition)) {
-                    currentlyDragged = new Dragged { Statement = makeStatement(button.Key), ProcName = null, StatementIndex = null, DragRect = button.Value, Delay = 0.05f };
+                    currentlyDragged = new Dragged { Statement = makeStatement(button.Key), ProcName = null, StatementIndex = null, DragRect = button.Value, Delay = 0.1f };
+                    progman.IsCheckingForProgramChanges = false;
                     //Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
                     return;
                 }
             }
         }
         // when mouse dragged, if the current proc contains the dragged statement, swap the statement to its new position
-        else if (Input.GetMouseButton(0) && currentlyDragged != null) {
+        else if (Input.GetMouseButton(0) && currentlyDragged != null && currentlyDragged.Delay <= 0) {
             // update position
             currentlyDragged.DragRect.x = mousePosition.x;
             currentlyDragged.DragRect.y = mousePosition.y; 
@@ -529,6 +537,7 @@ public class AllTheGUI : MonoBehaviour
                 progman.Manipulator.ReplaceStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value, currentlyDragged.Statement);
             }
             currentlyDragged = null;
+            progman.IsCheckingForProgramChanges = true;
         } 
     }
 }
