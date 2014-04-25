@@ -18,9 +18,9 @@ type State = {
     mutable LastExecuted: Statement list;
 }
 
-let private getProc (program:Program) procname =
+let private getProc (program:Program) (procname:string) =
     let prog = 
-        match program.Procedures.TryFind procname with
+        match program.Procedures.TryFind (procname.ToUpper ()) with
         | None ->
             match Builtins.TryFind procname with
             | None -> runtimeError (sprintf "procedure '%s' does not exist" procname)

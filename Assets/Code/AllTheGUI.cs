@@ -31,7 +31,7 @@ public class AllTheGUI : MonoBehaviour
     private Dragged currentlyDragged;
     private Rect area;
     private float lastUpdateTime = 0.0f;
-    private string[] PROCS = new string[] { "Main", "F1", "F2", "F3", "F4", "F5" };
+    private string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
 
     private Action currentModalWindow = null;
 

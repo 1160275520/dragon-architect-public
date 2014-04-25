@@ -78,12 +78,13 @@ let ProgramOfJson (json:Json.JsonValue) =
             | t -> invalidArg "j" ("invalid statement type " + t)
         {Meta=parseMeta jstmt.["meta"]; Stmt=stmt}
 
-    let parseProc name (j:Json.JsonValue) =
+    let parseProc (name:string, j:Json.JsonValue) =
         let jproc = j.AsObject
         let body = Array.map parseStmt jproc.["body"].AsArray
-        {Arity=jproc.["arity"].AsInt; Body=ImmArr.ofSeq body}
+        (name.ToUpper (), {Arity=jproc.["arity"].AsInt; Body=ImmArr.ofSeq body})
 
-    {Procedures=Map.map parseProc json.AsObject}
+    let jprocs = Map.toSeq json.AsObject
+    {Procedures=Map(Seq.map parseProc jprocs)}
 
 let SaveFile filename program =
     let text = Json.Format (JsonOfProgram program)
