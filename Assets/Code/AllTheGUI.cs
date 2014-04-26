@@ -226,9 +226,9 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.EndArea();
 
         // program display
-        area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, 6 * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height);
+        area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, 6 * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
         GUILayout.BeginArea(area);
-        GUILayout.BeginVertical("ButtonBackground");
+        GUILayout.BeginVertical("ButtonBackground", GUILayout.Height (area.height));
         GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
         curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
         GUILayout.BeginHorizontal();
@@ -294,7 +294,7 @@ public class AllTheGUI : MonoBehaviour
             proc = progman.Manipulator.Program.Procedures [procName];
         }
 
-        GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(PROGRAM_COLUMN_WIDTH), GUILayout.MinHeight(SPACING * 5));
+        GUILayout.BeginVertical("CodeBackground", GUILayout.MaxWidth(PROGRAM_COLUMN_WIDTH));
         GUILayout.Space(SPACING / 2);
         var body = proc.Body;
         Imperative.Statement newStatement = null;
@@ -327,6 +327,7 @@ public class AllTheGUI : MonoBehaviour
                 progman.Manipulator.ReplaceStatement(procName, i, newStatement);
             }
         }
+        GUILayout.FlexibleSpace();
         GUILayout.EndVertical();
         if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
             procRects.Add(procName, getLastRect());
@@ -442,7 +443,7 @@ public class AllTheGUI : MonoBehaviour
     {
         var progman = GetComponent<ProgramManager>();
         var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
-        Debug.Log(GUI.GetNameOfFocusedControl());
+        Debug.Log (GUI.GetNameOfFocusedControl());
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
             foreach (var procName in PROCS) {
@@ -456,7 +457,7 @@ public class AllTheGUI : MonoBehaviour
                     //Debug.Log(rect);
                     //Debug.Log(Event.current.mousePosition);
                     if (rect.Contains(mousePosition)) {
-                        currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect};
+                        currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect, Delay = 0.01f};
                         progman.IsCheckingForProgramChanges = false;
                         //Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
                         return;
