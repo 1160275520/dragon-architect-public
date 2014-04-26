@@ -81,9 +81,9 @@ public class AllTheGUI : MonoBehaviour
         return rect;
     }
 
-    void makeButton(string text, GUILayoutOption[] options, Action callback, bool draggable = false)
+    void makeButton(string text, GUILayoutOption[] options, Action callback, bool draggable = false, string style = "button")
     {
-        if (GUILayout.Button(text, options)) {
+        if (GUILayout.Button(text, style, options)) {
             callback();
         }
         if (draggable && Event.current.type == EventType.Repaint) {
@@ -213,9 +213,15 @@ public class AllTheGUI : MonoBehaviour
         GUILayout.BeginVertical("ButtonBackground");
         GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 1.5f));
         if (progman.IsExecuting) {
-            makeButton("Stop", options, () => progman.StopExecution());
+            makeButton("Stop", new GUILayoutOption[] {
+                GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                GUILayout.Height(2 * BUTTON_HEIGHT)
+            }, () => progman.StopExecution(), false, "StopButton");
         } else {
-            makeButton("RUN!", options, () => progman.StartExecution());
+            makeButton("RUN!", new GUILayoutOption[] {
+                GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                GUILayout.Height(2 * BUTTON_HEIGHT)
+            }, () => progman.StartExecution(), false, "RunButton");
         }
         //makeButton("Undo", options, () => progman.Undo());
         makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
