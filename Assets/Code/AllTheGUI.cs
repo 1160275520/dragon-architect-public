@@ -443,7 +443,7 @@ public class AllTheGUI : MonoBehaviour
     {
         var progman = GetComponent<ProgramManager>();
         var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
-        Debug.Log (GUI.GetNameOfFocusedControl());
+//        if (currentlyDragged != null) { Debug.Log(currentlyDragged.ProcName); }
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
             foreach (var procName in PROCS) {
@@ -459,7 +459,7 @@ public class AllTheGUI : MonoBehaviour
                     if (rect.Contains(mousePosition)) {
                         currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect, Delay = 0.01f};
                         progman.IsCheckingForProgramChanges = false;
-                        //Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
+                        Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
                         return;
                     }
                 }
@@ -470,7 +470,7 @@ public class AllTheGUI : MonoBehaviour
                 if (button.Value.Contains(mousePosition)) {
                     currentlyDragged = new Dragged { Statement = makeStatement(button.Key), ProcName = null, StatementIndex = null, DragRect = button.Value, Delay = 0.1f };
                     progman.IsCheckingForProgramChanges = false;
-                    //Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
+                    Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
                     return;
                 }
             }
@@ -481,10 +481,10 @@ public class AllTheGUI : MonoBehaviour
             currentlyDragged.DragRect.x = mousePosition.x;
             currentlyDragged.DragRect.y = mousePosition.y; 
             //Debug.Log("dragRect = " + currentlyDragged.DragRect);
-
+            Debug.Log(currentlyDragged.ProcName);
             // does it need to be removed from current proc (if it has one)
             if (currentlyDragged.ProcName != null && !rectIntersect(currentlyDragged.DragRect, procRects [currentlyDragged.ProcName])) {
-                //Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
+                Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
                 progman.Manipulator.RemoveStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value);
                 currentlyDragged.ProcName = null;
                 currentlyDragged.StatementIndex = null;
@@ -500,12 +500,12 @@ public class AllTheGUI : MonoBehaviour
                                 // remove in preparation for potential swap
                                 progman.Manipulator.RemoveStatement(procName, currentlyDragged.StatementIndex.Value);
                                 swap = currentlyDragged.StatementIndex;
-                                //Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
+                                Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
                                 currentlyDragged.ProcName = null;
                                 currentlyDragged.StatementIndex = null;
                             } else {
                                 // we intersect with this proc, but we're already in a different one
-                                //Debug.Log("already in " + currentlyDragged.ProcName + ", continuing");
+                                Debug.Log("already in " + currentlyDragged.ProcName + ", continuing");
                                 continue;
                             }
                         }
@@ -516,18 +516,20 @@ public class AllTheGUI : MonoBehaviour
                                 (i >= swap && currentlyDragged.DragRect.yMin < rect.yMax + rect.height / 2))) ||
                                 (!swap.HasValue && currentlyDragged.DragRect.yMin < rect.yMin)) {
                                 // insert and return
-                                //Debug.Log("inserted in " + procName + " at " + i + " from " + swap);
-                                progman.Manipulator.InsertStatement(procName, i, null);
-                                currentlyDragged.ProcName = procName;
-                                currentlyDragged.StatementIndex = i;
+                                if (progman.Manipulator.InsertStatement(procName, i, null)) {
+                                    currentlyDragged.ProcName = procName;
+                                    currentlyDragged.StatementIndex = i;
+                                    Debug.Log("inserted in " + procName + " at " + i + " from " + swap);
+                                }
                                 return;
                             }
                         }
                         // insert at end
-                        //Debug.Log("inserted in " + procName + " at " + progman.Program.Program.Procedures[procName].Body.Count());
-                        currentlyDragged.StatementIndex = progman.Manipulator.Program.Procedures [procName].Body.Count();
-                        progman.Manipulator.AppendStatement(procName, null);
-                        currentlyDragged.ProcName = procName;
+                        if (progman.Manipulator.AppendStatement(procName, null)) {
+                            currentlyDragged.ProcName = procName;
+                            currentlyDragged.StatementIndex = progman.Manipulator.Program.Procedures [procName].Body.Count() - 1;
+                            Debug.Log("inserted in " + procName + " at " + (progman.Manipulator.Program.Procedures[procName].Body.Count() - 1));
+                        }
                     }
                 }
             }
@@ -535,7 +537,9 @@ public class AllTheGUI : MonoBehaviour
         if (!Input.GetMouseButton(0) && currentlyDragged != null) {
             //Debug.Log("drag ended");
             if (currentlyDragged.ProcName != null) {
-                progman.Manipulator.ReplaceStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value, currentlyDragged.Statement);
+                try {
+                    progman.Manipulator.ReplaceStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value, currentlyDragged.Statement);
+                } catch (ArgumentOutOfRangeException) {}
             }
             currentlyDragged = null;
             progman.IsCheckingForProgramChanges = true;
