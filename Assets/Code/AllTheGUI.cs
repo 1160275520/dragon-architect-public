@@ -459,7 +459,7 @@ public class AllTheGUI : MonoBehaviour
                     if (rect.Contains(mousePosition)) {
                         currentlyDragged = new Dragged { Statement = proc.Body[i], ProcName = procName, StatementIndex = i, DragRect = rect, Delay = 0.01f};
                         progman.IsCheckingForProgramChanges = false;
-                        Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
+//                        Debug.Log("Now dragging " + proc.Body[currentlyDragged.StatementIndex.Value] + " at index " + i);
                         return;
                     }
                 }
@@ -470,7 +470,7 @@ public class AllTheGUI : MonoBehaviour
                 if (button.Value.Contains(mousePosition)) {
                     currentlyDragged = new Dragged { Statement = makeStatement(button.Key), ProcName = null, StatementIndex = null, DragRect = button.Value, Delay = 0.1f };
                     progman.IsCheckingForProgramChanges = false;
-                    Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
+//                    Debug.Log("Now dragging " + button.Key + " starting at " + currentlyDragged.DragRect);
                     return;
                 }
             }
@@ -481,10 +481,10 @@ public class AllTheGUI : MonoBehaviour
             currentlyDragged.DragRect.x = mousePosition.x;
             currentlyDragged.DragRect.y = mousePosition.y; 
             //Debug.Log("dragRect = " + currentlyDragged.DragRect);
-            Debug.Log(currentlyDragged.ProcName);
+//            Debug.Log(currentlyDragged.ProcName);
             // does it need to be removed from current proc (if it has one)
             if (currentlyDragged.ProcName != null && !rectIntersect(currentlyDragged.DragRect, procRects [currentlyDragged.ProcName])) {
-                Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
+//                Debug.Log("removed from " + currentlyDragged.ProcName + "; no intersection");
                 progman.Manipulator.RemoveStatement(currentlyDragged.ProcName, currentlyDragged.StatementIndex.Value);
                 currentlyDragged.ProcName = null;
                 currentlyDragged.StatementIndex = null;
@@ -500,12 +500,12 @@ public class AllTheGUI : MonoBehaviour
                                 // remove in preparation for potential swap
                                 progman.Manipulator.RemoveStatement(procName, currentlyDragged.StatementIndex.Value);
                                 swap = currentlyDragged.StatementIndex;
-                                Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
+//                                Debug.Log("removed from " + currentlyDragged.ProcName + "; potential swap from " + swap);
                                 currentlyDragged.ProcName = null;
                                 currentlyDragged.StatementIndex = null;
                             } else {
                                 // we intersect with this proc, but we're already in a different one
-                                Debug.Log("already in " + currentlyDragged.ProcName + ", continuing");
+//                                Debug.Log("already in " + currentlyDragged.ProcName + ", continuing");
                                 continue;
                             }
                         }
@@ -519,7 +519,7 @@ public class AllTheGUI : MonoBehaviour
                                 if (progman.Manipulator.InsertStatement(procName, i, null)) {
                                     currentlyDragged.ProcName = procName;
                                     currentlyDragged.StatementIndex = i;
-                                    Debug.Log("inserted in " + procName + " at " + i + " from " + swap);
+//                                    Debug.Log("inserted in " + procName + " at " + i + " from " + swap);
                                 }
                                 return;
                             }
@@ -528,7 +528,7 @@ public class AllTheGUI : MonoBehaviour
                         if (progman.Manipulator.AppendStatement(procName, null)) {
                             currentlyDragged.ProcName = procName;
                             currentlyDragged.StatementIndex = progman.Manipulator.Program.Procedures [procName].Body.Count() - 1;
-                            Debug.Log("inserted in " + procName + " at " + (progman.Manipulator.Program.Procedures[procName].Body.Count() - 1));
+//                            Debug.Log("inserted in " + procName + " at " + (progman.Manipulator.Program.Procedures[procName].Body.Count() - 1));
                         }
                     }
                 }
