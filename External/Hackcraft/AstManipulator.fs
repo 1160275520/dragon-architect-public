@@ -29,8 +29,13 @@ type ImperativeAstManipulator(maxProcedureLength:int) =
 
     member this.InsertStatement procname index statement =
         let body = bodyAsList procname
-        body.Insert (index, statement)
-        updateProc procname body
+        if body.Count < maxProcedureLength
+        then
+            body.Insert (index, statement)
+            updateProc procname body
+            true
+        else
+            false
 
     member this.AppendStatement procname statement =
         let body = bodyAsList procname
@@ -38,6 +43,9 @@ type ImperativeAstManipulator(maxProcedureLength:int) =
         then
             body.Add statement
             updateProc procname body
+            true
+        else
+            false
 
     member this.RemoveStatement procname index =
         let body = bodyAsList procname
