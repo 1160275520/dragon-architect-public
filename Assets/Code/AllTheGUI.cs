@@ -39,6 +39,8 @@ public class AllTheGUI : MonoBehaviour
     public bool IsActiveTimeSlider = true;
     public bool IsActiveSaveLoad = true;
 
+    public string CurrentMessage { get; set; }
+
     private int curProc = 0;
     private Dictionary<string, List<Rect>> statementRects;
     private Dictionary<string, Rect> procRects;
@@ -142,6 +144,10 @@ public class AllTheGUI : MonoBehaviour
         }
 
         GUILayoutOption[] options;
+
+        if (CurrentMessage != null) {
+            GUI.Box(new Rect(175, SPACING, 450, 250), CurrentMessage, "ButtonBackground");
+        }
 
         // save/load dialog
         if (IsActiveSaveLoad) {
@@ -322,7 +328,7 @@ public class AllTheGUI : MonoBehaviour
 
     }
 
-    void makeProc(string procName)
+    private void makeProc(string procName)
     {
         var progman = GetComponent<ProgramManager>();
         Imperative.Procedure proc;
@@ -432,13 +438,13 @@ public class AllTheGUI : MonoBehaviour
         }
     }
 
-    private float updateInterval = 0.5F;
+    private const float updateInterval = 0.5F;
     private float accum = 0; // FPS accumulated over the interval
     private int frames = 0; // Frames drawn over the interval
     private float timeleft = 0.5f; // Left time for current interval
     private float fps = 60;
 
-    void makeFPS()
+    private void makeFPS()
     {
         timeleft -= Time.deltaTime;
         accum += Time.timeScale / Time.deltaTime;
@@ -464,7 +470,7 @@ public class AllTheGUI : MonoBehaviour
         GUI.Label(new Rect(Screen.width - 75, 0, 75, 15), format, "FPS");
     }
 
-    bool rectIntersect(Rect r1, Rect r2)
+    private bool rectIntersect(Rect r1, Rect r2)
     {
         return !(r1.xMin > r2.xMax ||
             r1.xMax < r2.xMin ||
@@ -472,13 +478,7 @@ public class AllTheGUI : MonoBehaviour
             r1.yMax < r2.yMin);
     }
 
-    public bool IsDragging {
-        get {
-            return currentlyDragged != null;
-        }
-    }
-
-    void doDragDrop()
+    private void doDragDrop()
     {
         var progman = GetComponent<ProgramManager>();
         var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
