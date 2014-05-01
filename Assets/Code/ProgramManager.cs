@@ -14,6 +14,12 @@ public class ProgramManager : MonoBehaviour {
     public ImperativeAstManipulator Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
     public ImmArr<Simulator.StepState> States { get; private set; }
 
+    public bool IsAvailMovement = true;
+    public bool IsAvailPlaceBlock = true;
+    public bool IsAvailLine = true;
+    public bool IsAvailCall = true;
+    public bool IsAvailRepeat = true;
+
     /// true iff the program manager is currently showing real-time execution of a program
     public bool IsExecuting { get; private set; }
     /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame

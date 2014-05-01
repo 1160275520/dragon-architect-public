@@ -28,10 +28,17 @@ public class AllTheGUI : MonoBehaviour
     public static readonly int BUTTON_COLUMN_WIDTH = 110;
     public static readonly int BUTTON_HEIGHT = 25;
     public static readonly int SPACING = 10;
+
     public Font CodeFont;
     public Texture2D RepeatTex;
     public Texture2D RepeatTexHighlight;
     public GUISkin CustomSkin;
+
+    public bool IsActiveMainControls = true;
+    public bool IsActiveCodeEditor = true;
+    public bool IsActiveTimeSlider = true;
+    public bool IsActiveSaveLoad = true;
+
     private int curProc = 0;
     private Dictionary<string, List<Rect>> statementRects;
     private Dictionary<string, Rect> procRects;
@@ -134,136 +141,162 @@ public class AllTheGUI : MonoBehaviour
             buttonRects = new Dictionary<string, Rect>();
         }
 
+        GUILayoutOption[] options;
+
         // save/load dialog
-        area = new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING);
-        GUILayout.BeginArea(area);
-        GUILayout.BeginVertical("ButtonBackground");
-        GUILayout.BeginHorizontal();
-        var options = new GUILayoutOption[] {
-            GUILayout.Width(100),
-            GUILayout.Height(BUTTON_HEIGHT)
-        };
-        makeButton("Clear", options, () => currentModalWindow = displayConfirmClear);
-        makeButton("Save File", options, () => {
-            string filename = null;
-            if (currentlyTypedFilename.Length > 0) {
-                filename = "TestData/" + currentlyTypedFilename;
-            } else if (!Screen.fullScreen) {
-                using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
-                    dialog.InitialDirectory = "TestData/";
-                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-                        filename = dialog.FileName;
+        if (IsActiveSaveLoad) {
+            area = new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING);
+            GUILayout.BeginArea(area);
+            GUILayout.BeginVertical("ButtonBackground");
+            GUILayout.BeginHorizontal();
+            options = new GUILayoutOption[] {
+                GUILayout.Width(100),
+                GUILayout.Height(BUTTON_HEIGHT)
+            };
+            makeButton("Clear", options, () => currentModalWindow = displayConfirmClear);
+            makeButton("Save File", options, () => {
+                string filename = null;
+                if (currentlyTypedFilename.Length > 0) {
+                    filename = "TestData/" + currentlyTypedFilename;
+                } else if (!Screen.fullScreen) {
+                    using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
+                        dialog.InitialDirectory = "TestData/";
+                        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                            filename = dialog.FileName;
+                        }
                     }
                 }
-            }
-            if (filename != null) {
-                Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
-            }
-        });
-        makeButton("Load File", options, () => {
-            string filename = null;
-            if (currentlyTypedFilename.Length > 0) {
-                filename = "TestData/" + currentlyTypedFilename;
-            } else if (!Screen.fullScreen) {
-                using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
-                    dialog.InitialDirectory = "TestData/";
-                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-                        filename = dialog.FileName;
+                if (filename != null) {
+                    Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
+                }
+            });
+            makeButton("Load File", options, () => {
+                string filename = null;
+                if (currentlyTypedFilename.Length > 0) {
+                    filename = "TestData/" + currentlyTypedFilename;
+                } else if (!Screen.fullScreen) {
+                    using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
+                        dialog.InitialDirectory = "TestData/";
+                        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                            filename = dialog.FileName;
+                        }
                     }
                 }
-            }
-            if (filename != null) {
-                manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
-                // reset the id counter to not overload with existing statements
-                astIdCounter = manipulator.Program.AllIds.Max();
-            }
-        });
-        var textStyle = new GUIStyle(GUI.skin.textField);
-        textStyle.margin = new RectOffset(0, 0, 4, 0);
-        currentlyTypedFilename = GUILayout.TextField(currentlyTypedFilename, textStyle, options);
-        GUILayout.EndHorizontal();
-        GUILayout.FlexibleSpace();
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
+                if (filename != null) {
+                    manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
+                    // reset the id counter to not overload with existing statements
+                    astIdCounter = manipulator.Program.AllIds.Max();
+                }
+            });
+            var textStyle = new GUIStyle(GUI.skin.textField);
+            textStyle.margin = new RectOffset(0, 0, 4, 0);
+            currentlyTypedFilename = GUILayout.TextField(currentlyTypedFilename, textStyle, options);
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+        }
 
         // instructions and other controls
-        area = new Rect(SPACING, SPACING + 1.0f / 3 * Screen.height, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
-        GUILayout.BeginArea(area);
-        GUILayout.BeginVertical("ButtonBackground");
-        options = new GUILayoutOption[] {
-            GUILayout.Width(BUTTON_COLUMN_WIDTH),
-            GUILayout.Height(BUTTON_HEIGHT)
-        };
-        GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
-        makeButton("Forward", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("forward")), true);
-        makeButton("Up", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("up")), true);
-        makeButton("Down", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("down")), true);
-        makeButton("Left", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("left")), true);
-        makeButton("Right", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("right")), true);
-        makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("placeblock")), true);
-        makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("removeblock")), true);
-        makeButton("Line", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("line")), true);
-        makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("repeat")), true);
-        makeButton("Call", options, () => manipulator.AppendStatement(PROCS [curProc], makeStatement("call")), true);
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
+        if (IsActiveCodeEditor) {
+            area = new Rect(SPACING, SPACING + 1.0f / 3 * Screen.height, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
+            GUILayout.BeginArea(area);
+            GUILayout.BeginVertical("ButtonBackground");
+            options = new GUILayoutOption[] {
+                GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                GUILayout.Height(BUTTON_HEIGHT)
+            };
+            GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
+            if (progman.IsAvailMovement) {
+                makeButton("Forward", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
+                makeButton("Up", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("up")), true);
+                makeButton("Down", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("down")), true);
+                makeButton("Left", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("left")), true);
+                makeButton("Right", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("right")), true);
+            }
+            if (progman.IsAvailPlaceBlock) {
+                makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("placeblock")), true);
+                makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("removeblock")), true);
+            }
+            if (progman.IsAvailLine) {
+                makeButton("Line", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("line")), true);
+            }
+            if (progman.IsAvailCall) {
+                makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
+            }
+            if (progman.IsAvailRepeat) {
+                makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+        }
 
-        area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
-        GUILayout.BeginArea(area);
-        GUILayout.BeginVertical("ButtonBackground");
-        GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 1.5f));
-        if (progman.IsExecuting) {
-            makeButton("Stop", new GUILayoutOption[] {
+        if (IsActiveMainControls) {
+            area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
+            GUILayout.BeginArea(area);
+            GUILayout.BeginVertical("ButtonBackground");
+            GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 1.5f));
+            options = new GUILayoutOption[] {
+                GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                GUILayout.Height(BUTTON_HEIGHT)
+            };
+            if (progman.IsExecuting) {
+                makeButton("Stop", new GUILayoutOption[] {
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(2 * BUTTON_HEIGHT)
             }, () => progman.StopExecution(), false, "StopButton");
-        } else {
-            makeButton("RUN!", new GUILayoutOption[] {
+            } else {
+                makeButton("RUN!", new GUILayoutOption[] {
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(2 * BUTTON_HEIGHT)
             }, () => progman.StartExecution(), false, "RunButton");
+            }
+            //makeButton("Undo", options, () => progman.Undo());
+            makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
+            makeButton("Zoom Out", options, () => FindObjectOfType<MyCamera>().Zoom(2f));
+            makeButton("Roate Left", options, () => FindObjectOfType<MyCamera>().Rotate(90));
+            makeButton("Roate Right", options, () => FindObjectOfType<MyCamera>().Rotate(-90));
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
         }
-        //makeButton("Undo", options, () => progman.Undo());
-        makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
-        makeButton("Zoom Out", options, () => FindObjectOfType<MyCamera>().Zoom(2f));
-        makeButton("Roate Left", options, () => FindObjectOfType<MyCamera>().Rotate(90));
-        makeButton("Roate Right", options, () => FindObjectOfType<MyCamera>().Rotate(-90));
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
 
         // program display
-        area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, 6 * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
-        GUILayout.BeginArea(area);
-        GUILayout.BeginVertical("ButtonBackground", GUILayout.Height (area.height));
-        GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
-        curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
-        GUILayout.BeginHorizontal();
-        GUILayout.Space(SPACING / 2);
-        if (!progman.IsExecuting) {
-            //Debug.Log(Event.current.type);
-            doDragDrop();
-        }
-        foreach (var procName in PROCS) {
-            makeProc(procName);
+        if (IsActiveCodeEditor) {
+            area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, 6 * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
+            GUILayout.BeginArea(area);
+            GUILayout.BeginVertical("ButtonBackground", GUILayout.Height(area.height));
+            GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
+            curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(SPACING / 2);
+            if (!progman.IsExecuting) {
+                //Debug.Log(Event.current.type);
+                doDragDrop();
+            }
+            foreach (var procName in PROCS) {
+                makeProc(procName);
+                GUILayout.Space(SPACING);
+            }
+            GUILayout.EndHorizontal();
             GUILayout.Space(SPACING);
-        }
-        GUILayout.EndHorizontal();
-        GUILayout.Space(SPACING);
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
-        if (currentlyDragged != null && currentlyDragged.Delay <= 0) {
-            if (currentlyDragged.Statement.Stmt.IsCall) {
-                GUI.Box(currentlyDragged.DragRect, currentlyDragged.Statement.Stmt.AsCall.Proc, "Dragged");
-            } else if (currentlyDragged.Statement.Stmt.IsRepeat) {
-                GUI.Box(currentlyDragged.DragRect, "Repeat", "Dragged");
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+            if (currentlyDragged != null && currentlyDragged.Delay <= 0) {
+                if (currentlyDragged.Statement.Stmt.IsCall) {
+                    GUI.Box(currentlyDragged.DragRect, currentlyDragged.Statement.Stmt.AsCall.Proc, "Dragged");
+                } else if (currentlyDragged.Statement.Stmt.IsRepeat) {
+                    GUI.Box(currentlyDragged.DragRect, "Repeat", "Dragged");
+                }
             }
         }
 
         // time slider
-        var sliderPos = progman.SliderPosition;
-        var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 60, 400, 20), sliderPos, 0, 1);
-        if (sliderPos != newSliderPos) {
-            progman.SetProgramStateBySlider(newSliderPos);
+        if (IsActiveTimeSlider) {
+            var sliderPos = progman.SliderPosition;
+            var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 60, 400, 20), sliderPos, 0, 1);
+            if (sliderPos != newSliderPos) {
+                progman.SetProgramStateBySlider(newSliderPos);
+            }
         }
 
         // fps display
