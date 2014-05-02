@@ -20,6 +20,29 @@ public class ProgramManager : MonoBehaviour {
     public bool IsAvailCall = true;
     public bool IsAvailRepeat = true;
 
+    public int NumHelperFuncs = 5;
+
+    private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
+
+    public string[] AvailableProcedures { get {
+        return PROCS.Take(NumHelperFuncs + 1).ToArray();
+    } }
+
+    // which procedures cannot be edited
+    private HashSet<string> lockedProcedures = new HashSet<string>();
+
+    public bool IsEditable(string proc) {
+        return !lockedProcedures.Contains(proc);
+    }
+
+    public void SetIsEditable(string proc, bool b) {
+        if (b) {
+            lockedProcedures.Remove(proc);
+        } else {
+            lockedProcedures.Add(proc);
+        }
+    }
+
     /// true iff the program manager is currently showing real-time execution of a program
     public bool IsExecuting { get; private set; }
     /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame

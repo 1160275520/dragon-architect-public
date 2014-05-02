@@ -49,7 +49,6 @@ public class AllTheGUI : MonoBehaviour
     private Dragged currentlyDragged;
     private Rect area;
     private float lastUpdateTime = 0.0f;
-    private string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
 
     private bool isFirstUpdate = true;
     private Action currentModalWindow = null;
@@ -63,9 +62,9 @@ public class AllTheGUI : MonoBehaviour
 
     void Start()
     {
-        var prog = GetComponent<ProgramManager>().Manipulator;
-        foreach (var p in PROCS) {
-            prog.CreateProcedure(p);
+        var progman = GetComponent<ProgramManager>();
+        foreach (var p in progman.AvailableProcedures) {
+            progman.Manipulator.CreateProcedure(p);
         }
     }
 
@@ -132,6 +131,7 @@ public class AllTheGUI : MonoBehaviour
     void OnGUI()
     {
         var progman = GetComponent<ProgramManager>();
+        var procedures = progman.AvailableProcedures;
         var manipulator = progman.Manipulator;
         GUI.skin = CustomSkin;
 
@@ -215,24 +215,24 @@ public class AllTheGUI : MonoBehaviour
             };
             GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
             if (progman.IsAvailMovement) {
-                makeButton("Forward", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("forward")), true);
-                makeButton("Up", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("up")), true);
-                makeButton("Down", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("down")), true);
-                makeButton("Left", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("left")), true);
-                makeButton("Right", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("right")), true);
+                makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
+                makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
+                makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
+                makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
+                makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
             }
             if (progman.IsAvailPlaceBlock) {
-                makeButton("PlaceBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("placeblock")), true);
-                makeButton("RemoveBlock", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("removeblock")), true);
+                makeButton("PlaceBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("placeblock")), true);
+                makeButton("RemoveBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("removeblock")), true);
             }
             if (progman.IsAvailLine) {
-                makeButton("Line", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("line")), true);
+                makeButton("Line", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("line")), true);
             }
             if (progman.IsAvailCall) {
-                makeButton("Call", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("call")), true);
+                makeButton("Call", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("call")), true);
             }
             if (progman.IsAvailRepeat) {
-                makeButton("Repeat", options, () => manipulator.AppendStatement(PROCS[curProc], makeStatement("repeat")), true);
+                makeButton("Repeat", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("repeat")), true);
             }
             GUILayout.EndVertical();
             GUILayout.EndArea();
@@ -269,18 +269,18 @@ public class AllTheGUI : MonoBehaviour
 
         // program display
         if (IsActiveCodeEditor) {
-            area = new Rect(Screen.width - 6 * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, 6 * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
+            area = new Rect(Screen.width - procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground", GUILayout.Height(area.height));
-            GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(6 * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
-            curProc = GUILayout.SelectionGrid(curProc, PROCS, PROCS.Length);
+            GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(procedures.Length * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
+            curProc = GUILayout.SelectionGrid(curProc, procedures, procedures.Length);
             GUILayout.BeginHorizontal();
             GUILayout.Space(SPACING / 2);
             if (!progman.IsExecuting) {
                 //Debug.Log(Event.current.type);
-                doDragDrop();
+                dragDropFunctionOfDoom(procedures);
             }
-            foreach (var procName in PROCS) {
+            foreach (var procName in procedures) {
                 makeProc(procName);
                 GUILayout.Space(SPACING);
             }
@@ -497,19 +497,21 @@ public class AllTheGUI : MonoBehaviour
         return 0;
     }
 
-    private void doDragDrop()
+    private void dragDropFunctionOfDoom(string[] procedures)
     {
         var progman = GetComponent<ProgramManager>();
         var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
         // generate rects for statements
         if (Event.current.type == EventType.Repaint) {
-            foreach (var procName in PROCS) {
+            foreach (var procName in procedures) {
                 statementRects.Add(procName, new List<Rect>());
             }
         } 
         // detect drag in existing tiles or buttons, ignoring dragges in text fields
         else if (Input.GetMouseButtonDown(0) && currentlyDragged == null && GUI.GetNameOfFocusedControl() == "") {
-            foreach (var procName in PROCS) { // check existing tiles
+            foreach (var procName in procedures) { // check existing tiles
+                if (!progman.IsEditable(procName)) continue;
+
                 var proc = progman.Manipulator.Program.Procedures [procName];
                 for (int i = 0; i < statementRects[procName].Count; i++) {
                     var rect = statementRects [procName] [i];
@@ -550,10 +552,10 @@ public class AllTheGUI : MonoBehaviour
                 currentlyDragged.StatementIndex = null;
             }
             // compute overlapping areas with procedure rectangles
-            var areas = PROCS.Select((procName, index) => new { Value = rectIntersectArea(currentlyDragged.DragRect, procRects[procName]), Index = index });
+            var areas = procedures.Select((procName, index) => new { Name=procName, Value = rectIntersectArea(currentlyDragged.DragRect, procRects[procName]), Index = index }).Where(x => progman.IsEditable(x.Name));
             if (areas.Any((x) => x.Value > 0)) { // if any overlap exists
                 // find procedure with greatest overlap, and insert statement there
-                var procName = PROCS[areas.Aggregate((a, b) => a.Value > b.Value ? a : b).Index];
+                var procName = procedures[areas.Aggregate((a, b) => a.Value > b.Value ? a : b).Index];
                 //Debug.Log("intersects with " + procName);
                 for (int i = 0; i < statementRects[procName].Count; i++) {
                     var rect = statementRects[procName][i];
