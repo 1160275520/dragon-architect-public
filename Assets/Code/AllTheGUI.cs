@@ -247,11 +247,11 @@ public class AllTheGUI : MonoBehaviour
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(BUTTON_HEIGHT)
             };
-            if (progman.IsExecuting) {
-                makeButton("Stop", new GUILayoutOption[] {
+            if (progman.IsRunning) {
+                makeButton("Reset", new GUILayoutOption[] {
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(2 * BUTTON_HEIGHT)
-            }, () => progman.StopExecution(), false, "StopButton");
+            }, () => progman.StopRunning(), false, "StopButton");
             } else {
                 makeButton("RUN!", new GUILayoutOption[] {
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),

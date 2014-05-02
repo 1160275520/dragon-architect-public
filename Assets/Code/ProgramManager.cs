@@ -45,6 +45,9 @@ public class ProgramManager : MonoBehaviour {
 
     /// true iff the program manager is currently showing real-time execution of a program
     public bool IsExecuting { get; private set; }
+    /// true iff the program is "running", which means either executing or done executing but not yet reset
+    public bool IsRunning { get; private set; }
+
     /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame
     /// set this to false when the gui is changing the program state
     public bool IsCheckingForProgramChanges { get; set; }
@@ -55,11 +58,14 @@ public class ProgramManager : MonoBehaviour {
     public void StartExecution() {
         currentStateIndex = -1;
         IsExecuting = true;
+        IsRunning = true;
         lastStatementExecutionTime = Time.fixedTime;
     }
 
-    public void StopExecution() {
+    public void StopRunning() {
         IsExecuting = false;
+        IsRunning = false;
+        setGameState(0);
     }
 
     public List<int> LastExecuted {
@@ -146,6 +152,7 @@ public class ProgramManager : MonoBehaviour {
             currentStateIndex++;
             if (currentStateIndex >= States.Length) {
                 IsExecuting = false;
+                // leave IsRunning set to true
             } else {
                 setGameState(currentStateIndex);
             }
