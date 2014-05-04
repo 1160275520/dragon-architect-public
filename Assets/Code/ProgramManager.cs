@@ -11,7 +11,7 @@ public class ProgramManager : MonoBehaviour {
     public float DelayPerCommand;
     public const int MAX_PROCEDURE_LENGTH = 15;
 
-    public ImperativeAstManipulator Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
+    public ImperativeAstManipulator Manipulator { get; private set; }
     public ImmArr<Simulator.StepState> States { get; private set; }
 
     public bool IsAvailMovement = true;
@@ -121,17 +121,19 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
-	// Use this for initialization
+    void Awake() {
+        Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
+        Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/demo.txt");
+    }
+
 	void Start () {
         IsExecuting = false;
         IsCheckingForProgramChanges = true;
 	}
 	
-	// Update is called once per frame
 	void Update () {
         if (IsCheckingForProgramChanges && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
-
             Debug.Log("program is dirty!");
 
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;

@@ -60,19 +60,10 @@ public class AllTheGUI : MonoBehaviour
         return ++astIdCounter;
     }
 
-    void Start()
-    {
-        var progman = GetComponent<ProgramManager>();
-        foreach (var p in progman.AvailableProcedures) {
-            progman.Manipulator.CreateProcedure(p);
-        }
-    }
-
     void Update() {
         if (isFirstUpdate) {
             isFirstUpdate = false;
             var manipulator = GetComponent<ProgramManager>().Manipulator;
-            manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/demo.txt");
             astIdCounter = manipulator.Program.AllIds.Max();
         }
 
