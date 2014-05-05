@@ -200,26 +200,30 @@ public class AllTheGUI : MonoBehaviour
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(BUTTON_HEIGHT)
             };
-            GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
-            if (progman.IsAvailMovement) {
-                makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
-                makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
-                makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
-                makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
-                makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
-            }
-            if (progman.IsAvailPlaceBlock) {
-                makeButton("PlaceBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("placeblock")), true);
-                makeButton("RemoveBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("removeblock")), true);
-            }
-            if (progman.IsAvailLine) {
-                makeButton("Line", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("line")), true);
-            }
-            if (progman.IsAvailCall) {
-                makeButton("Call", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("call")), true);
-            }
-            if (progman.IsAvailRepeat) {
-                makeButton("Repeat", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("repeat")), true);
+            if (progman.IsEditable(procedures[curProc])) {
+                GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
+                if (progman.IsAvailMovement) {
+                    makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
+                    makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
+                    makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
+                    makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
+                    makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
+                }
+                if (progman.IsAvailPlaceBlock) {
+                    makeButton("PlaceBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("placeblock")), true);
+                    makeButton("RemoveBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("removeblock")), true);
+                }
+                if (progman.IsAvailLine) {
+                    makeButton("Line", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("line")), true);
+                }
+                if (progman.IsAvailCall) {
+                    makeButton("Call", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("call")), true);
+                }
+                if (progman.IsAvailRepeat) {
+                    makeButton("Repeat", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("repeat")), true);
+                }
+            } else {
+                GUILayout.Label(procedures[curProc] + " is not\neditable.\nSelect a\ndifferent\nprocedure.", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 4.5f));
             }
             GUILayout.EndVertical();
             GUILayout.EndArea();
