@@ -1,5 +1,6 @@
 ﻿namespace Hackcraft.Ast
 
+open System
 open Hackcraft
 
 module Imperative =
@@ -64,6 +65,20 @@ module Imperative =
 
             let ids = Map.toList x.Procedures |> List.map (fun (k,v) -> idsOfProc v) |> List.concat
             Set(ids)
+
+    let rec iterStatement fn (stmt:Statement) =
+        fn stmt
+        match stmt.Stmt with
+        | Block b -> Seq.iter (iterStatement fn) b
+        | Call _ -> ()
+        | Repeat r -> iterStatement fn r.Stmt
+        | Command _ -> ()
+
+    let iterStatementP fn (proc:Procedure) =
+        Seq.iter (iterStatement fn) proc.Body
+        
+    let iterStatementPA (proc, fn:Action<Statement>) =
+        iterStatementP (fun x -> fn.Invoke(x)) proc
 
 module Library =
     open Imperative
