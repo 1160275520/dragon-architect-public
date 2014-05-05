@@ -37,6 +37,10 @@ public class Grid : MonoBehaviour {
         }
     }
 
+    public IEnumerable<IntVec3> AllCells {
+        get { return grid.Keys; }
+    }
+
     public void AddObject(IntVec3 idx, GameObject prefab) {
         if (this[idx] != null) {
             return;
