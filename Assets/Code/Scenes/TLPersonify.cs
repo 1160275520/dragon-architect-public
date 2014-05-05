@@ -24,9 +24,9 @@ public class TLPersonify : MonoBehaviour {
             var progman = GetComponent<ProgramManager>();
             var grid = GetComponent<Grid>();
             progman.InitGrid = grid.AllCells;
-            Instantiate(highlightPrefab, grid.CenterOfCell(new IntVec3(0, 0, 3)), Quaternion.identity);
-            Instantiate(highlightPrefab, grid.CenterOfCell(new IntVec3(0, 0, 6)), Quaternion.identity);
-            Instantiate(highlightPrefab, grid.CenterOfCell(new IntVec3(2, 0, 6)), Quaternion.identity);
+            Instantiate(highlightPrefab, grid.CenterOfCell(new IntVec3(0, 0, 3)) - new Vector3(0f, 0.49f, 0f), Quaternion.identity);
+            Instantiate(highlightPrefab, grid.CenterOfCell(new IntVec3(0, 0, 6)) - new Vector3(0f, 0.49f, 0f), Quaternion.identity);
+            Instantiate(highlightPrefab, grid.CenterOfCell(new IntVec3(2, 0, 6)) - new Vector3(0f, 0.49f, 0f), Quaternion.identity);
             progman.IsAvailMovement = true;
             progman.IsAvailPlaceBlock = true;
             progman.NumHelperFuncs = 0;

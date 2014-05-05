@@ -262,13 +262,13 @@ public class AllTheGUI : MonoBehaviour
 
         // program display
         if (IsActiveCodeEditor) {
-            area = new Rect(Screen.width - procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING), SPACING, procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING), Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
+            area = new Rect(Screen.width - procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING) - SPACING, SPACING, procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING) + SPACING, Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground", GUILayout.Height(area.height));
-            GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(procedures.Length * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * .8f));
+            GUILayout.Label("Drag and Drop to edit program.", GUILayout.Width(procedures.Length * PROGRAM_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.0f));
             curProc = GUILayout.SelectionGrid(curProc, procedures, procedures.Length);
             GUILayout.BeginHorizontal();
-            GUILayout.Space(SPACING / 2);
+            GUILayout.Space(SPACING);
             if (!progman.IsExecuting) {
                 //Debug.Log(Event.current.type);
                 dragDropFunctionOfDoom(procedures);
