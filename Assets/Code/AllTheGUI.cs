@@ -30,9 +30,6 @@ public class AllTheGUI : MonoBehaviour
     public static readonly int BUTTON_HEIGHT = 25;
     public static readonly int SPACING = 10;
 
-    public Font CodeFont;
-    public Texture2D RepeatTex;
-    public Texture2D RepeatTexHighlight;
     public GUISkin CustomSkin;
 
     public bool IsActiveMainControls = true;
@@ -140,7 +137,6 @@ public class AllTheGUI : MonoBehaviour
         if (CurrentMessage != null) {
             GUI.Box(new Rect(175, SPACING, 450, 250), CurrentMessage, "ButtonBackground");
         }
-
         // save/load dialog
         if (IsActiveSaveLoad) {
             area = new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING);

@@ -38,7 +38,13 @@ public class Grid : MonoBehaviour {
     }
 
     public IEnumerable<IntVec3> AllCells {
-        get { return grid.Keys; }
+        get {
+            var offsetKeys = new List<IntVec3>();
+            foreach (var key in grid.Keys) {
+                offsetKeys.Add(key - offset);
+            }
+            return offsetKeys;
+        }
     }
 
     public void AddObject(IntVec3 idx, GameObject prefab) {
