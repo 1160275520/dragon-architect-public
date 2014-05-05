@@ -90,6 +90,8 @@ public class AllTheGUI : MonoBehaviour
 
     Imperative.Statement makeStatement(string name)
     {
+        var lastProc = GetComponent<ProgramManager>().AvailableProcedures.Last();
+
         switch (name.ToLower()) {
             case "forward":
                 return Imperative.NewCall(NextId(), "Forward", new object[] { "1" });
@@ -108,9 +110,9 @@ public class AllTheGUI : MonoBehaviour
             case "line":
                 return Imperative.NewCall(NextId(), "Line", new object[] { "5" });
             case "repeat":
-                return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, "F5", new object[] { }), Imperative.Expression.NewLiteral("5"));
+                return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, lastProc, new object[] { }), Imperative.Expression.NewLiteral("5"));
             case "call":
-                return Imperative.NewCall(NextId(), "F5", new object[] { });
+                return Imperative.NewCall(NextId(), lastProc, new object[] { });
             default:
                 throw new ArgumentException(name + " is not a recognized instruction name.");
         }
