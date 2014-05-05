@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Hackcraft.Ast;
 using Hackcraft;
 using System.Collections.Generic;
