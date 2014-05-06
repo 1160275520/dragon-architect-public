@@ -1,5 +1,6 @@
 ﻿namespace Hackcraft
 
+[<StructuralEquality;NoComparison>]
 type IntVec2 = struct
     val X : int
     val Y : int
@@ -35,5 +36,4 @@ type IntVec3 = struct
     static member UnitZ = IntVec3(0,0,1)
 
     override v.ToString () = sprintf "<%d,%d,%d>" v.X v.Y v.Z
-    //override v.GetHashCode () = v.X ^^^ (v.Y <<< 8) ^^^ (v.Z <<< 16)
 end
