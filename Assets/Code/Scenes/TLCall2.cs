@@ -1,26 +1,24 @@
 using UnityEngine;
-using Hackcraft.Ast;
+using System;
 using System.Linq;
+using Hackcraft.Ast;
 
 public class TLCall2 : MonoBehaviour
 {
+    Func<bool> winPredicate;
+
 	void Start() {
+        var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, try to place at least 15 blocks. Use the <b>Call</b> statement to tell <b>Robot/Dragon/Salamander</b> to do the same action many times.";
         var progman = GetComponent<ProgramManager>();
         foreach (var p in progman.AvailableProcedures) progman.Manipulator.ClearProcedure(p);
+
+        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(15) });
 	}
 
     void Update() {
-
-        var progman = GetComponent<ProgramManager>();
-        if (progman.IsRunning && !progman.IsExecuting && WinPredicate()) {
-            GetComponent<AllTheGUI>().CurrentMessage = "Yay, you win!";
+        if (winPredicate()) {
+            GetComponent<LevelHelper>().WinLevel();
         }
-
-    }
-
-    private bool WinPredicate() {
-        var grid = GetComponent<Grid>();
-        return grid.AllCells.Count() >= 15;
     }
 }

@@ -21,9 +21,8 @@ public class TestLevel : MonoBehaviour
 	}
 
     void Update() {
-
         if (winPredicate()) {
-            GetComponent<AllTheGUI>().CurrentMessage = "YAYYYYYYYYYYYYYYYYYYYY";
+            GetComponent<LevelHelper>().WinLevel();
         }
     }
 }

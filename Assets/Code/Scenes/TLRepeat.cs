@@ -1,25 +1,30 @@
 using UnityEngine;
+using System;
+using System.Linq;
+using Hackcraft;
 using Hackcraft.Ast;
 
 public class TLRepeat : MonoBehaviour
 {
+    Func<bool> winPredicate;
+
 	void Start() {
+        var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "The <b>Repeat</b> statement does a thing, blah blah. Use the <b>Repeat</b> statement.";
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
         foreach (var p in progman.AvailableProcedures) progman.Manipulator.ClearProcedure(p);
+
+        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 
     void Update() {
-
-        var progman = GetComponent<ProgramManager>();
-        if (progman.IsRunning && !progman.IsExecuting && WinPredicate()) {
-            GetComponent<AllTheGUI>().CurrentMessage = "Yay, you win!";
+        if (winPredicate()) {
+            GetComponent<LevelHelper>().WinLevel();
         }
-
     }
 
-    private bool WinPredicate() {
+    private bool programWinPredicate() {
         var program = GetComponent<ProgramManager>().Manipulator.Program;
 
         bool isRepeat = false;

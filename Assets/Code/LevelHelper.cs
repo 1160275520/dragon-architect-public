@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Hackcraft;
+using Hackcraft.Ast;
 
 public class LevelHelper : MonoBehaviour
 {
@@ -30,7 +31,19 @@ public class LevelHelper : MonoBehaviour
         };
     }
 
+    public Func<bool> CreateMinBlockCountPredicate(int numBlocks) {
+        return () => {
+            var grid = GetComponent<Grid>();
+            return grid.AllCells.Count() >= numBlocks;
+        };
+    }
+
     public static Func<bool> All(IEnumerable<Func<bool>> predicates) {
         return () => predicates.All(f => f());
+    }
+
+    public void WinLevel() {
+        // TODO maybe do actual things once you win
+        GetComponent<AllTheGUI>().CurrentMessage = "Yay, you win!";
     }
 }
