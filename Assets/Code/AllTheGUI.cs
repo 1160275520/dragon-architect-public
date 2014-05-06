@@ -204,12 +204,14 @@ public class AllTheGUI : MonoBehaviour
             };
             if (progman.IsEditable(procedures[curProc])) {
                 GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
-                if (progman.IsAvailMovement) {
+                if (progman.IsAvail2DMovement) {
                     makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
-                    makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
-                    makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
                     makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
                     makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
+                }
+                if (progman.IsAvail3DMovement) {
+                    makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
+                    makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
                 }
                 if (progman.IsAvailPlaceBlock) {
                     makeButton("PlaceBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("placeblock")), true);

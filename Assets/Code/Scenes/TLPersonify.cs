@@ -9,7 +9,7 @@ public class TLPersonify : MonoBehaviour {
 
     public GameObject highlightPrefab;
 
-    private string instructions = "Use the arrow keys to move around and space to place blocks. Put blocks on the blue squares.";
+    private string instructions = "Use the arrow keys to move around and space to place blocks. Put blocks on the blue boxes.";
     private bool coding = false;
     List<IntVec3> blueprint;
     Func<bool> winPredicate;
@@ -35,7 +35,7 @@ public class TLPersonify : MonoBehaviour {
     void Update() {
 
         if (winPredicate() && !coding) {
-            instructions = "Now have Sala put blocks on the blue squares.";
+            instructions = "Now have Sala put blocks on the blue boxes.";
             var progman = GetComponent<ProgramManager>();
             var grid = GetComponent<Grid>();
             var lh = GetComponent<LevelHelper>();
@@ -49,9 +49,9 @@ public class TLPersonify : MonoBehaviour {
             lh.CreateBlueprint(salaBlueprint);
             blueprint.AddRange(salaBlueprint);
 
-            winPredicate = lh.CreateBlueprintPredicate(blueprint);
+            winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(blueprint) });
 
-            progman.IsAvailMovement = true;
+            progman.IsAvail2DMovement = true;
             progman.IsAvailPlaceBlock = true;
             progman.NumHelperFuncs = 0;
             var gui = GetComponent<AllTheGUI>();
@@ -61,7 +61,8 @@ public class TLPersonify : MonoBehaviour {
             FindObjectOfType<PersonController>().enabled = false;
             coding = true;
         } else if (winPredicate() && coding) {
-            GetComponent<AllTheGUI>().CurrentMessage = "You did it!";
+            var lh = GetComponent<LevelHelper>();
+            lh.WinLevel();
         } else {
             GetComponent<AllTheGUI>().CurrentMessage = instructions;
         }

@@ -16,7 +16,8 @@ public class ProgramManager : MonoBehaviour {
 
     public IEnumerable<IntVec3> InitGrid = new List<IntVec3>();
 
-    public bool IsAvailMovement = true;
+    public bool IsAvail2DMovement = true;
+    public bool IsAvail3DMovement = true;
     public bool IsAvailPlaceBlock = true;
     public bool IsAvailLine = true;
     public bool IsAvailCall = true;
@@ -134,7 +135,7 @@ public class ProgramManager : MonoBehaviour {
 	}
 	
 	void Update () {
-        if (IsCheckingForProgramChanges && Manipulator.IsDirty) {
+        if (IsCheckingForProgramChanges && !IsRunning && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
             Debug.Log("program is dirty!");
 
