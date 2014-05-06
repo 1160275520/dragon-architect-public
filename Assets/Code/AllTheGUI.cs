@@ -385,7 +385,11 @@ public class AllTheGUI : MonoBehaviour
             GUI.SetNextControlName("Call" + statement.Meta.Id + "TextField");
             newProcName = GUILayout.TextField(procName, 2, TextStyles[(int)highlight], GUILayout.Width(25));
         } else {
-            GUILayout.Box(procName, BoxStyles[(int)highlight]);
+            GUIStyle style = new GUIStyle(BoxStyles[(int)highlight]);
+            if (procName == "RemoveBlock") {
+                style.fontSize = 12;
+            }
+            GUILayout.Box(procName, style);
         }
 
 

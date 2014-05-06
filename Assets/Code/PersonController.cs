@@ -5,8 +5,8 @@ using System.Linq;
 
 public class PersonController : MonoBehaviour {
 
-    public IntVec3 Position;
-    public IntVec3 Direction;
+    public IntVec3 Position = new IntVec3(0, 0, 0);
+    public IntVec3 Direction = new IntVec3(0, 0, 1);
     public GameObject HeldPrefab;
 
     private enum Command {
@@ -29,8 +29,6 @@ public class PersonController : MonoBehaviour {
     public GUISkin CustomSkin;
     
 	void Start () {
-        Position = new IntVec3(-4, 0, 0);
-        Direction = new IntVec3(0, 0, 1);
         commands = new List<Command>();
 	}
 	
