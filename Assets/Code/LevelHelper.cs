@@ -19,7 +19,7 @@ public class LevelHelper : MonoBehaviour
     public void CreateBlueprint(IEnumerable<IntVec3> cells) {
         var grid = GetComponent<Grid>();
         foreach (var c in cells) {
-            var obj = GameObject.Instantiate(BlueprintPrefab, grid.CenterOfCell(c), Quaternion.identity);
+            GameObject.Instantiate(BlueprintPrefab, grid.CenterOfCell(c), Quaternion.identity);
         }
     }
 
