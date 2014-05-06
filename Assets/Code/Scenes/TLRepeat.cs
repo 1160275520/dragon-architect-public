@@ -13,7 +13,7 @@ public class TLRepeat : MonoBehaviour
         GetComponent<AllTheGUI>().CurrentMessage = "The <b>Repeat</b> statement does a thing, blah blah. Use the <b>Repeat</b> statement.";
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
-        foreach (var p in progman.AvailableProcedures) progman.Manipulator.ClearProcedure(p);
+        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/level_repeat_01.txt");
 
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}

@@ -59,3 +59,6 @@ type ImperativeAstManipulator(maxProcedureLength:int) =
 
     member this.ClearProcedure procname =
         updateProc procname []
+
+    member this.ClearAll () =
+        ast <- {Procedures=ast.Procedures |> Map.map (fun k v -> {v with Body=ImmArr.ofSeq []})}

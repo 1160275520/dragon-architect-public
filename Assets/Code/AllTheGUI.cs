@@ -61,7 +61,10 @@ public class AllTheGUI : MonoBehaviour
         if (isFirstUpdate) {
             isFirstUpdate = false;
             var manipulator = GetComponent<ProgramManager>().Manipulator;
-            astIdCounter = manipulator.Program.AllIds.Max();
+            var allIds = manipulator.Program.AllIds;
+            if (allIds.Count > 0) {
+                astIdCounter = allIds.Max();
+            }
         }
 
         if (currentlyDragged != null && currentlyDragged.Delay > 0) {

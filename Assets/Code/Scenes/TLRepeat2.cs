@@ -13,7 +13,7 @@ public class TLRepeat2 : MonoBehaviour
         var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, try to make a 5x5 vertical wall. Use the <b>Repeat</b> statement to tell <b>Robot/Dragon/Salamander</b> to do the same action many times.";
         var progman = GetComponent<ProgramManager>();
-        foreach (var p in progman.AvailableProcedures) progman.Manipulator.ClearProcedure(p);
+        progman.Manipulator.ClearAll();
 
         var template = new List<IntVec3>();
         const int size = 5;

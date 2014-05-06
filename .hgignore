@@ -24,3 +24,6 @@ ProjectSettings/Physics2DSettings.asset
 *.dll.meta
 .DS_Store
 Hackcraft.app/
+*.exe
+*_Data/
+

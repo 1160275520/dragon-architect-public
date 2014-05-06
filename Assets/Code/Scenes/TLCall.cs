@@ -12,7 +12,7 @@ public class TLCall : MonoBehaviour
         GetComponent<AllTheGUI>().CurrentMessage = "The <b>Call</b> statement does a thing, blah blah. Use the call statement.";
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
-        foreach (var p in progman.AvailableProcedures) progman.Manipulator.ClearProcedure(p);
+        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/level_call_01.txt");
 
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
