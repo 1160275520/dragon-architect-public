@@ -15,6 +15,7 @@ public class LevelHelper : MonoBehaviour
         return progman.IsRunning && !progman.IsExecuting;
     }
 
+    /// Instantiates the blueprint prefab for each of the given cells.
     public void CreateBlueprint(IEnumerable<IntVec3> cells) {
         var grid = GetComponent<Grid>();
         foreach (var c in cells) {
@@ -22,7 +23,7 @@ public class LevelHelper : MonoBehaviour
         }
     }
 
-    /// Create a function that checks the current state of the grid and returns true if it exactly matches
+    /// Create a function that checks the current state of the grid and returns true iff it exactly matches
     public Func<bool> CreateBlueprintPredicate(IEnumerable<IntVec3> cells) {
         var cellSet = new HashSet<IntVec3>(cells);
         return () => {
@@ -31,6 +32,7 @@ public class LevelHelper : MonoBehaviour
         };
     }
 
+    /// Creates a function that checks the current state of the grid and returns true iff there are at least numBlocks.
     public Func<bool> CreateMinBlockCountPredicate(int numBlocks) {
         return () => {
             var grid = GetComponent<Grid>();
@@ -38,6 +40,7 @@ public class LevelHelper : MonoBehaviour
         };
     }
 
+    /// Returns a function that evaluates to true iff all the given predicates evaluate to true.
     public static Func<bool> All(IEnumerable<Func<bool>> predicates) {
         return () => predicates.All(f => f());
     }
