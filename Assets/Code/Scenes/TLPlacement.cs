@@ -10,7 +10,7 @@ public class TLPlacement : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "Sala needs to place some blocks! Use PlaceBlock to complete her program and click RUN.";
+        GetComponent<AllTheGUI>().CurrentMessage = "Sala needs to place some blocks! Use <b>PlaceBlock</b> to complete her program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/TLPlacement");
 
