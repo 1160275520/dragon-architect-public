@@ -35,7 +35,7 @@ public class TLPersonify : MonoBehaviour {
     void Update() {
 
         if (winPredicate() && !coding) {
-            instructions = "Now have Sala put blocks on the blue boxes.";
+            instructions = "Now have Sala put blocks on the blue boxes the same way you did. Use <b>Forward</b>, <b>Right</b>, and <b>PlaceBlock</b>.";
             var progman = GetComponent<ProgramManager>();
             var grid = GetComponent<Grid>();
             var lh = GetComponent<LevelHelper>();

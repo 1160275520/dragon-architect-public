@@ -8,6 +8,7 @@ using Hackcraft.Ast;
 public class LevelHelper : MonoBehaviour
 {
     public GameObject BlueprintPrefab;
+    public GameObject RobotTargetPrefab;
 
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {
@@ -20,6 +21,14 @@ public class LevelHelper : MonoBehaviour
         var grid = GetComponent<Grid>();
         foreach (var c in cells) {
             GameObject.Instantiate(BlueprintPrefab, grid.CenterOfCell(c), Quaternion.identity);
+        }
+    }
+
+    /// Instantiates the target prefab for each of the given cells.
+    public void CreateRobotTarget(IEnumerable<IntVec3> cells) {
+        var grid = GetComponent<Grid>();
+        foreach (var c in cells) {
+            GameObject.Instantiate(RobotTargetPrefab, grid.CenterOfCell(c), Quaternion.identity);
         }
     }
 

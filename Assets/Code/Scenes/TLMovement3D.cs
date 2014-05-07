@@ -10,7 +10,7 @@ public class TLMovement3D : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "Help Sala get to the blue box! Use <b>Up</b> to complete her program and click <b>RUN</b>.";
+        GetComponent<AllTheGUI>().CurrentMessage = "Help Sala get to the pink box! Use <b>Up</b> to complete her program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/TLMovement3D");
 
@@ -18,7 +18,7 @@ public class TLMovement3D : MonoBehaviour
             new IntVec3(3,6,0),
         };
 
-        lh.CreateBlueprint(template);
+        lh.CreateRobotTarget(template);
         // offset win location since Sala floats one cell above her actual location
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, 
                                                           () => FindObjectOfType<RobotController>().Robot.Position.Equals(template[0] - new IntVec3(0,1,0)) });

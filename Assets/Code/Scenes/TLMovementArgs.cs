@@ -21,8 +21,8 @@ public class TLMovementArgs : MonoBehaviour
                 new IntVec3(2,0,6),
             };
 
-        lh.CreateBlueprint(template);
-        // offset win location since Sala floats one cell above her actual location
+        lh.CreateRobotTarget(template);
+
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
 
