@@ -96,9 +96,7 @@ public class MyCamera : MonoBehaviour
     }
 
     public void Rotate(float degrees) {
-        Debug.Log(relCameraPos);
         relCameraPos = Quaternion.AngleAxis(degrees, Vector3.up) * relCameraPos;
-        Debug.Log(relCameraPos);
     }
 
     public void Zoom(float scale) {
