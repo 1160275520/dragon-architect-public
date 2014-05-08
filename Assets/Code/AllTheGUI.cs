@@ -36,6 +36,7 @@ public class AllTheGUI : MonoBehaviour
     public bool IsActiveCodeEditor = true;
     public bool IsActiveTimeSlider = true;
     public bool IsActiveSaveLoad = true;
+    public bool IsActiveReturnToLoader = false;
 
     public string CurrentMessage { get; set; }
 
@@ -141,6 +142,14 @@ public class AllTheGUI : MonoBehaviour
 
         if (CurrentMessage != null) {
             GUI.Box(new Rect(175, SPACING, 450, 250), CurrentMessage, "ButtonBackground");
+        }
+        if (IsActiveReturnToLoader) {
+            var style = new GUIStyle("button");
+            style.fontSize = 24;
+            style.fontStyle = FontStyle.Bold;
+            if (GUI.Button(new Rect(300, 175, 200, 60), "Return to level select", style)) {
+                Application.LoadLevel("loader");
+            }
         }
         // save/load dialog
         if (IsActiveSaveLoad) {
