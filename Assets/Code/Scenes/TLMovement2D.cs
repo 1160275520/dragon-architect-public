@@ -11,7 +11,7 @@ public class TLMovement2D : MonoBehaviour {
         var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "Help Sala get to the pink box! Use <b>Forward</b> to complete her program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/TLMovement2D");
+        progman.LoadProgram("TLMovement2D");
 
         var template = new IntVec3[] {
             new IntVec3(5,1,3),

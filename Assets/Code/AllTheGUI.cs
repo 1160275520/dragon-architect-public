@@ -167,38 +167,19 @@ public class AllTheGUI : MonoBehaviour
                 if (currentlyTypedFilename.Length > 0) {
                     filename = "TestData/" + currentlyTypedFilename;
                 }
-#if DESKTOP
-                else if (!Screen.fullScreen) {
-
-                    using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
-                        dialog.InitialDirectory = "TestData/";
-                        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-                            filename = dialog.FileName;
-                        }
-                    }
-                }
-#endif
+                /*
                 if (filename != null) {
                     Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
                 }
+                */
             });
             makeButton("Load File", options, () => {
                 string filename = null;
                 if (currentlyTypedFilename.Length > 0) {
-                    filename = "TestData/" + currentlyTypedFilename;
+                    filename = currentlyTypedFilename;
                 }
-#if DESKTOP
-                else if (!Screen.fullScreen) {
-                    using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
-                        dialog.InitialDirectory = "TestData/";
-                        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-                            filename = dialog.FileName;
-                        }
-                    }
-                }
-#endif
                 if (filename != null) {
-                    manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
+                    progman.LoadProgram(filename);
                     // reset the id counter to not overload with existing statements
                     astIdCounter = manipulator.Program.AllIds.Max();
                 }
@@ -334,7 +315,7 @@ public class AllTheGUI : MonoBehaviour
         var r = new Rect(midx - hw, midy - hh, 2 * hw, 2 * hh);
         GUI.ModalWindow(213421345, r, (id) => {
             makeButton("Yes", null, () => {
-                Hackcraft.Serialization.SaveFile(string.Format("TestData/autosave-{0:yyyy-MM-dd_HH-mm-ss}.txt", DateTime.Now), GetComponent<ProgramManager>().Manipulator.Program);
+                //Hackcraft.Serialization.SaveFile(string.Format("TestData/autosave-{0:yyyy-MM-dd_HH-mm-ss}.txt", DateTime.Now), GetComponent<ProgramManager>().Manipulator.Program);
                 GetComponent<ProgramManager>().Clear();
                 currentModalWindow = null;
             } );

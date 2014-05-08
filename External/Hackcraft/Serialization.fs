@@ -86,12 +86,12 @@ let ProgramOfJson (json:Json.JsonValue) =
     let jprocs = Map.toSeq json.AsObject
     {Procedures=Map(Seq.map parseProc jprocs)}
 
+(*
 let SaveFile filename program =
     let text = Json.Format (JsonOfProgram program)
     use file = System.IO.File.OpenWrite(filename)
     use writer = new System.IO.StreamWriter(file)
     writer.Write text
+*)
 
-let LoadFile filename =
-    let text = System.IO.File.ReadAllText(filename)
-    ProgramOfJson (Json.Parse text)
+let Load text = ProgramOfJson (Json.Parse text)

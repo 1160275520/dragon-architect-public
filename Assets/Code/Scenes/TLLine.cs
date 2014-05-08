@@ -11,7 +11,7 @@ public class TLLine : MonoBehaviour
         var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "The <b>Line</b> statement uses Repeat to save you time, blah blah. Use the line statement to replicate this manual repeat loop.";
         var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/level_line_01.txt");
+        progman.LoadProgram("level_line_01");
 
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}

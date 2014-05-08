@@ -124,9 +124,13 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
+    public void LoadProgram(string resourceName) {
+        Manipulator.Program = Hackcraft.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
+    }
+
     void Awake() {
         Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
-        Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/demo.txt");
+        LoadProgram("demo");
     }
 
 	void Start () {

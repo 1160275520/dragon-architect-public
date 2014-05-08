@@ -12,7 +12,7 @@ public class TLPlacement : MonoBehaviour
         var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "Sala needs to place some blocks! Use <b>PlaceBlock</b> to complete her program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/TLPlacement");
+        progman.LoadProgram("TLPlacement");
 
         var template = new IntVec3[] {
             new IntVec3(0,0,3),

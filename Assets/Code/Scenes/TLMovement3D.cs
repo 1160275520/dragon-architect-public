@@ -12,7 +12,7 @@ public class TLMovement3D : MonoBehaviour
         var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "Help Sala get to the pink box! Use <b>Up</b> to complete her program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/TLMovement3D");
+        progman.LoadProgram("TLMovement3D");
 
         var template = new IntVec3[] {
             new IntVec3(3,6,0),

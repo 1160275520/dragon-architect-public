@@ -13,7 +13,7 @@ public class TLDebug : MonoBehaviour
         var lh = GetComponent<LevelHelper>();
         GetComponent<AllTheGUI>().CurrentMessage = "The given program is not quite correct.... Can you fix it? Click <b>RUN</b> to run the program. You can see which program steps are executing by looking at the highlighted statements. It looks like some statements need to be added.";
         var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.Program = Hackcraft.Serialization.LoadFile("TestData/level_debug_01.txt");
+        progman.LoadProgram("level_debug_01");
 
         var template = new List<IntVec3>();
         for (int x = 0; x < 6; x++) {
