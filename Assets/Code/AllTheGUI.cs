@@ -166,7 +166,10 @@ public class AllTheGUI : MonoBehaviour
                 string filename = null;
                 if (currentlyTypedFilename.Length > 0) {
                     filename = "TestData/" + currentlyTypedFilename;
-                } else if (!Screen.fullScreen) {
+                }
+#if DESKTOP
+                else if (!Screen.fullScreen) {
+
                     using (var dialog = new System.Windows.Forms.SaveFileDialog()) {
                         dialog.InitialDirectory = "TestData/";
                         if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
@@ -174,6 +177,7 @@ public class AllTheGUI : MonoBehaviour
                         }
                     }
                 }
+#endif
                 if (filename != null) {
                     Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
                 }
@@ -182,7 +186,9 @@ public class AllTheGUI : MonoBehaviour
                 string filename = null;
                 if (currentlyTypedFilename.Length > 0) {
                     filename = "TestData/" + currentlyTypedFilename;
-                } else if (!Screen.fullScreen) {
+                }
+#if DESKTOP
+                else if (!Screen.fullScreen) {
                     using (var dialog = new System.Windows.Forms.OpenFileDialog()) {
                         dialog.InitialDirectory = "TestData/";
                         if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
@@ -190,6 +196,7 @@ public class AllTheGUI : MonoBehaviour
                         }
                     }
                 }
+#endif
                 if (filename != null) {
                     manipulator.Program = Hackcraft.Serialization.LoadFile(filename);
                     // reset the id counter to not overload with existing statements
