@@ -25,7 +25,7 @@ public class Global : MonoBehaviour {
 
     // External API function
     // apparently needs to be here, putting it in LoaderGUI didn't work >_>
-    public void SetStage(string id) {
+    public void EAPI_SetStage(string id) {
         Debug.Log("setting stage to " + id);
         Application.LoadLevel(id);
     }

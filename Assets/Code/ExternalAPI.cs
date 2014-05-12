@@ -28,30 +28,16 @@ public class ExternalAPI : MonoBehaviour
         // TODO jk, ignore this for now because it never changes during puzzles!
     }
 
-    /*
-    private string newMessage(string name, Json.JsonValue value) {
-        var json = MapModule.Empty<string, Json.JsonValue>().Add("name", Json.JsonValue.NewString(name)).Add("value", value);
-        return Json.Format(Json.JsonValue.NewObject(json));
-    }
-    */
-
     private void sendProgram() {
         var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
         Application.ExternalCall(ExternalApiFunc, OnProgramChange, Json.Format(prog));
     }
 
-    public void SetProgram(string json) {
+    // external API
+
+    public void EAPI_SetProgramFromJson(string json) {
+        Debug.Log("setting program woo!");
         var prog = Serialization.ProgramOfJson(Json.Parse(json));
         GetComponent<ProgramManager>().Manipulator.Program = prog;
     }
-
-    public void SetState() {
-        // load a stage
-    }
-
-    public void ExternalTest(string arg) {
-        Debug.Log("Hello, " + arg + "!");
-        Application.ExternalCall("somefunc", "somearg");
-    }
-	
 }

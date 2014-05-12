@@ -39,13 +39,24 @@ $(function() {
 
     // button/ui callbacks have to be setup inside this block
 
-    $('#btn').on('click', function() {
-        console.log('click!');
-        send_message("Global", "SetStage", possible_stages[8]);
+    $('#btn-load').on('click', function() {
+        set_stage(possible_stages[8]);
+    });
+
+    $('#btn-setprog').on('click', function() {
+        set_program("not a valid program");
     });
 });
 
 // SPECIFIC HANDLER FUNCTIONS
+
+function set_program(prog) {
+    send_message("System", "EAPI_SetProgramFromJson", JSON.stringify(prog));
+}
+
+function set_stage(stage_id) {
+    send_message("Global", "EAPI_SetStage", stage_id);
+}
 
 handler.onSystemStart = function(json) {
     possible_stages = JSON.parse(json);
