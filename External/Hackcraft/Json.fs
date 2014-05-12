@@ -33,7 +33,21 @@ type private Parser(cs:CharacterStream) =
     let parseString doReadOpeningQuote =
         if doReadOpeningQuote then matchCharacter '"' 
         let start = cs.Position // not quite correct pos, but MEH
-        let s = System.String [| while not (cs.Peek = '"' || isNewline cs.Peek) do yield cs.Next() |]
+        let s =
+            System.String [|
+                while not (cs.Peek = '"' || isNewline cs.Peek) do
+                    let c = cs.Next()
+                    if c = '\\'
+                    then
+                        match cs.Next() with
+                        | '"' -> yield '"'
+                        | '\\' -> yield '\\'
+                        | 'n' -> yield '\n'
+                        | 't' -> yield '\t'
+                        | x -> syntaxError (Location(cs.Position,cs.Position,cs.Filename)) (sprintf "invalid escape character '\%c'" x)
+                    else yield c
+            |]
+
         // if there is a newline, that's an error, otherwise skip the right quote
         let p = cs.Position
         if isNewline (cs.Next()) then syntaxError (Location(start,p,cs.Filename)) "String literals may not span multiple lines"
@@ -92,7 +106,9 @@ let rec Format json =
     match json with
     | Null -> "null"
     | Int i -> i.ToString()
-    | String s -> sprintf "\"%s\"" s
+    | String s ->
+        let s = s.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\"", "\\\"")
+        sprintf "\"%s\"" s
     | Bool b -> if b then "true" else "false"
     | Array a ->
         sprintf "[%s]" (System.String.Join(",", Array.map Format a))
