@@ -6,11 +6,13 @@ public class CameraProjection : MonoBehaviour {
     public float right;
     public float top;
     public float bottom;
+#if !UNITY_WEBPLAYER
     void LateUpdate() {
         Camera cam = camera;
         Matrix4x4 m = PerspectiveOffCenter(left, right, bottom, top, cam.nearClipPlane, cam.farClipPlane);
         cam.projectionMatrix = m;
     }
+#endif
     static Matrix4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far) {
         float x = 2.0F * near / (right - left);
         float y = 2.0F * near / (top - bottom);
