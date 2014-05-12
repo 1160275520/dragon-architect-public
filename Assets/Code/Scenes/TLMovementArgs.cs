@@ -10,7 +10,7 @@ public class TLMovementArgs : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "Help Sala put blocks on the blue boxes! The number after each <b>Forward</b> tells Sala how many spaces to move. Change the numbers to complete her program and click <b>RUN</b>.";
+		GetComponent<AllTheGUI>().CurrentMessage = "Help <b>Sala</b> put blocks on the blue boxes! The number after each <b>Forward</b> tells Sala how many spaces to move. Change the numbers to complete her program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLMovementArgs");
         progman.SetIsEditable("Main", false);

@@ -9,7 +9,8 @@ public class TLCall : MonoBehaviour
 
 	void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "The <b>Call</b> statement does a thing, blah blah. Use the call statement.";
+		GetComponent<AllTheGUI>().CurrentMessage = "The <b>Call</b> statement runs the commands in another column (called a procedure). " +
+			"<b>Call F1</b> does everything in procedure <b>F1</b>. Try using the call statement to see what it does.";
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
         progman.LoadProgram("level_call_01");

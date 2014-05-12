@@ -9,7 +9,7 @@ public class TLCall2 : MonoBehaviour
 
 	void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, try to place at least 15 blocks. Use the <b>Call</b> statement to tell <b>Robot/Dragon/Salamander</b> to do the same action many times.";
+		GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, try to place at least 15 blocks. Use the <b>Call</b> statement to tell <b>Sala</b> to do the same action many times.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
 
