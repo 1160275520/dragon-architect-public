@@ -40,4 +40,14 @@ public class ExternalAPI : MonoBehaviour
         var prog = Serialization.ProgramOfJson(Json.Parse(json));
         GetComponent<ProgramManager>().Manipulator.Program = prog;
     }
+
+    public void EAPI_SetIsRunning(string aIsRunning) {
+        bool isRunning = aIsRunning == "true";
+        var progman = GetComponent<ProgramManager>();
+        if (isRunning) {
+            progman.StartExecution();
+        } else {
+            progman.StopRunning();
+        }
+    }
 }

@@ -5,6 +5,7 @@ onHackcraftEvent = (function(){
 var possible_stages;
 var program;
 var unityObject;
+var is_running = false;
 
 var handler = {};
 
@@ -12,16 +13,11 @@ var handler = {};
 
 // send a message to unity
 function send_message(object, method, arg) {
-    console.log(object);
-    console.log(method);
-    console.log(arg);
     unityObject.getUnity().SendMessage(object, method, arg);
 }
 
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
-    console.log(func);
-    console.log(arg);
     console.log(handler[func]);
     handler[func](arg);
 }
@@ -46,6 +42,11 @@ $(function() {
     $('#btn-setprog').on('click', function() {
         set_program("not a valid program");
     });
+
+    $('#btn-run').on('click', function() {
+        is_running = !is_running;
+        set_is_running(is_running);
+    });
 });
 
 // SPECIFIC HANDLER FUNCTIONS
@@ -56,6 +57,10 @@ function set_program(prog) {
 
 function set_stage(stage_id) {
     send_message("Global", "EAPI_SetStage", stage_id);
+}
+
+function set_is_running(is_running) {
+    send_message("System", "EAPI_SetIsRunning", is_running ? "true" : "false");
 }
 
 handler.onSystemStart = function(json) {
