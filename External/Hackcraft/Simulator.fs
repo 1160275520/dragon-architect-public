@@ -3,7 +3,7 @@
 type RuntimeError(msg: string) =
     inherit System.Exception(sprintf "Runtime Error: %s" msg)
 
-let private runtimeError msg = raise (RuntimeError msg)
+let private runtimeError (meta:Ast.Imperative.Meta) msg = raise (RuntimeError (sprintf "Error at id=%d: %s" meta.Id msg))
 
 open Hackcraft.Ast.Imperative
 open Hackcraft.Ast.Library
@@ -23,16 +23,18 @@ let private getProc (program:Program) (procname:string) =
         match program.Procedures.TryFind (procname.ToUpper ()) with
         | None ->
             match Builtins.TryFind procname with
-            | None -> runtimeError (sprintf "procedure '%s' does not exist" procname)
+            | None -> runtimeError {Id=0} (sprintf "procedure '%s' does not exist" procname)
             | Some x -> x
         | Some x -> x
     List.ofSeq prog.Body
 
-let private exprAsInt (o:obj) =
+let private exprAsInt meta (o:obj) =
     match o with
     | :? int as x -> x
-    | :? string as s -> System.Int32.Parse(s)
-    | _ -> runtimeError "cannot coerce object to integer"
+    | :? string as s ->
+        try System.Int32.Parse(s)
+        with _ -> runtimeError meta (sprintf "cannot convert '%s' to integer" s)
+    | _ -> runtimeError meta "cannot coerce object to integer"
 
 let CreateState program mainProcName =
     {CallStack=[{Args=ImmArr.ofSeq []; ToExecute=getProc program mainProcName;}]; LastExecuted=[];}
@@ -68,7 +70,7 @@ let ExecuteStep program (state:State) =
                 state.CallStack <- {Args=args; ToExecute=getProc program procname} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
-                let ntimes = Evaluate state ntimesExpr |> exprAsInt
+                let ntimes = Evaluate state ntimesExpr |> exprAsInt stmt.Meta
                 let toAdd = List.init ntimes (fun _ -> stmt)
                 state.CallStack <- {Args=head.Args; ToExecute=toAdd} :: state.CallStack
                 None
