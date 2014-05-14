@@ -17,7 +17,7 @@ type JsonValue with
     member t.AsString = match t with String(x) -> x | Null -> null | _ -> invalidOp "not a string"
     member t.AsBool = match t with Bool(x) -> x | _ -> invalidOp "not a bool"
     member t.AsArray = match t with Array(x) -> x | _ -> invalidOp "not an array"
-    member t.AsObject = match t with Object(x) -> x | _ -> invalidOp "not an array"
+    member t.AsObject = match t with Object(x) -> x | _ -> invalidOp "not an object"
 
 type private Parser(cs:CharacterStream) =
 

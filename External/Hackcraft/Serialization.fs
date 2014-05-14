@@ -50,6 +50,8 @@ let JsonOfProgram (program:Program) =
 
 let ProgramOfJson (json:Json.JsonValue) =
 
+    let argexn (e:System.Exception) jvalue msg = raise (System.ArgumentException(sprintf "Error processing '%s': %s" (Json.Format jvalue) msg, e))
+
     let parseObject j : obj =
         match j with
         | Json.Int i -> upcast i
@@ -57,34 +59,54 @@ let ProgramOfJson (json:Json.JsonValue) =
         | _ -> invalidArg "j" (sprintf "cannot json parse object of type '%s'" (j.GetType().Name))
 
     let parseMeta (j:Json.JsonValue) =
-        let jmeta = j.AsObject
-        {Id=jmeta.["id"].AsInt}
+        try
+            let jmeta = j.AsObject
+            {Id=jmeta.["id"].AsInt}
+        with
+            :? System.ArgumentException -> reraise ()
+            | e -> argexn e j "cannot parse meta"
 
     let parseExpr (j:Json.JsonValue) =
-        let jexpr = j.AsObject
-        match jexpr.["type"].AsString with
-        | "literal" -> Literal (parseObject jexpr.["value"])
-        | "argument" -> Argument jexpr.["index"].AsInt
-        | t -> invalidArg "j" ("invalid expression type " + t)
+        try
+            let jexpr = j.AsObject
+            match jexpr.["type"].AsString with
+            | "literal" -> Literal (parseObject jexpr.["value"])
+            | "argument" -> Argument jexpr.["index"].AsInt
+            | t -> invalidArg "j" ("invalid expression type " + t)
+        with
+            :? System.ArgumentException -> reraise ()
+            | e -> argexn e j "cannot parse expr"
 
     let rec parseStmt (j:Json.JsonValue) =
-        let jstmt = j.AsObject
-        let stmt =
-            match jstmt.["type"].AsString with
-            | "block" -> Block (ImmArr.ofSeq (jstmt.["body"].AsArray |> Seq.map parseStmt))
-            | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseObject)}
-            | "repeat" -> Repeat {Stmt=parseStmt jstmt.["stmt"]; NumTimes=parseExpr jstmt.["numtimes"]}
-            | "command" -> Command jstmt.["command"].AsString
-            | t -> invalidArg "j" ("invalid statement type " + t)
-        {Meta=parseMeta jstmt.["meta"]; Stmt=stmt}
+        try
+            let jstmt = j.AsObject
+            let stmt =
+                match jstmt.["type"].AsString with
+                | "block" -> Block (ImmArr.ofSeq (jstmt.["body"].AsArray |> Seq.map parseStmt))
+                | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseObject)}
+                | "repeat" -> Repeat {Stmt=parseStmt jstmt.["stmt"]; NumTimes=parseExpr jstmt.["numtimes"]}
+                | "command" -> Command jstmt.["command"].AsString
+                | t -> invalidArg "j" ("invalid statement type " + t)
+            {Meta=parseMeta jstmt.["meta"]; Stmt=stmt}
+        with
+            :? System.ArgumentException -> reraise ()
+            | e -> argexn e j "cannot parse stmt"
 
     let parseProc (name:string, j:Json.JsonValue) =
-        let jproc = j.AsObject
-        let body = Array.map parseStmt jproc.["body"].AsArray
-        (name.ToUpper (), {Arity=jproc.["arity"].AsInt; Body=ImmArr.ofSeq body})
+        try
+            let jproc = j.AsObject
+            let body = Array.map parseStmt jproc.["body"].AsArray
+            (name.ToUpper (), {Arity=jproc.["arity"].AsInt; Body=ImmArr.ofSeq body})
+        with
+            :? System.ArgumentException -> reraise ()
+            | e -> argexn e j "cannot parse proc"
 
-    let jprocs = Map.toSeq json.AsObject
-    {Procedures=Map(Seq.map parseProc jprocs)}
+    try
+        let jprocs = Map.toSeq json.AsObject
+        {Procedures=Map(Seq.map parseProc jprocs)}
+    with
+        :? System.ArgumentException -> reraise ()
+        | e -> argexn e json "cannot parse program"
 
 (*
 let SaveFile filename program =
