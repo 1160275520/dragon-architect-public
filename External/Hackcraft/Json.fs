@@ -12,13 +12,6 @@ and JsonValue =
 | Array of JsonArray
 | Object of JsonObject
 
-type JsonValue with
-    member t.AsInt = match t with Int(x) -> x | _ -> invalidOp "not an int"
-    member t.AsString = match t with String(x) -> x | Null -> null | _ -> invalidOp "not a string"
-    member t.AsBool = match t with Bool(x) -> x | _ -> invalidOp "not a bool"
-    member t.AsArray = match t with Array(x) -> x | _ -> invalidOp "not an array"
-    member t.AsObject = match t with Object(x) -> x | _ -> invalidOp "not an object"
-
 type private Parser(cs:CharacterStream) =
 
     let isSpace c = c = ' ' || c = '\r' || c = '\n' || c = '\t'
@@ -114,3 +107,10 @@ let rec Format json =
         sprintf "[%s]" (System.String.Join(",", Array.map Format a))
     | Object o ->
         sprintf "{%s}" (System.String.Join(",", o |> Seq.map (fun kvp -> sprintf "\"%s\":%s" kvp.Key (Format kvp.Value)) |> Array.ofSeq))
+
+type JsonValue with
+    member t.AsInt = match t with Int(x) -> x | _ -> invalidOp ((Format t) + " is not an int")
+    member t.AsString = match t with String(x) -> x | Null -> null | _ -> invalidOp ((Format t) + " is not a string")
+    member t.AsBool = match t with Bool(x) -> x | _ -> invalidOp ((Format t) + " is not a bool")
+    member t.AsArray = match t with Array(x) -> x | _ -> invalidOp ((Format t) + " is not an array")
+    member t.AsObject = match t with Object(x) -> x | _ -> invalidOp ((Format t) + " is not an object")
