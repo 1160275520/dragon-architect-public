@@ -1,0 +1,58 @@
+{namespace hackcraft}
+
+/**
+ * This is a Closure Template.
+ *
+ * To regenerate just en.js, run this command:
+ * java -jar ../_soy/SoyToJsSrcCompiler.jar --outputPathFormat generated/en.js --srcs ../common.soy,template.soy
+ *
+ * To regenerate all files, see: trunk/apps/common.soy
+ */
+
+/**
+ * Translated messages for use in JavaScript.
+ */
+{template .messages}
+  {call apps.messages /}
+  <div style="display: none">
+  </div>
+{/template}
+
+/**
+ * Web page structure.
+ */
+{template .start}
+  {call .messages /}
+  <table width="100%">
+    <tr>
+      <td>
+        <h1>
+          <span id="title">
+          </span>
+        </h1>
+      </td>
+      <td class="farSide">
+        <select id="languageMenu"></select>
+      </td>
+    </tr>
+  </table>
+  <div id="unityPlayer"></div>
+  <button id="btn-load">Load a level!</button>
+  <button id="btn-setprog">Set the program!</button>
+  <script type="text/javascript" src="blockly_uncompressed.js"></script>
+  // <script type="text/javascript" src="blocks_compressed.js"></script>
+  // <script type="text/javascript" src="javascript_compressed.js"></script>
+  <script type="text/javascript" src="blocks.js"></script>
+  {call .toolbox /}
+  <div id="blockly"></div>
+
+{/template}
+
+/**
+ * Toolbox.
+ */
+{template .toolbox}
+  <xml id="toolbox" style="display: none">
+      <block type="forward"></block>
+  </xml>
+{/template}
