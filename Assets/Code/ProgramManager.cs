@@ -59,6 +59,7 @@ public class ProgramManager : MonoBehaviour {
     private float lastStatementExecutionTime = 0.0f;
 
     public void StartExecution() {
+        EvalProgram();
         currentStateIndex = -1;
         IsExecuting = true;
         IsRunning = true;
@@ -137,8 +138,8 @@ public class ProgramManager : MonoBehaviour {
         IsExecuting = false;
         IsCheckingForProgramChanges = true;
 	}
-	
-	void Update () {
+
+    void EvalProgram() {
         if (IsCheckingForProgramChanges && !IsRunning && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
             Debug.Log("program is dirty!");
@@ -156,6 +157,10 @@ public class ProgramManager : MonoBehaviour {
             }
             setGameState(currentStateIndex);
         }
+    }
+
+	void Update () {
+        EvalProgram();
 
         if (IsExecuting && lastStatementExecutionTime + DelayPerCommand < Time.fixedTime) {
             currentStateIndex++;

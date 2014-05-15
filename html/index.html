@@ -2,15 +2,21 @@
 <html>
   <head>
     <meta charset=UTF-8>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- <link rel="stylesheet" type="text/css" href="common.css"> -->
     <script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script>
     <script src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
     <script src="app.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script type="text/javascript" src="hackcraft.js"></script>
+    <script type="text/javascript" src="_soy/soyutils.js"></script>
   </head>
-  <body>
-    <div id="unityPlayer">
-    </div>
-    <button id="btn-load">Load a level!</button>
-    <button id="btn-setprog">Set the program!</button>
+  <body>    
+     <script type="text/javascript">
+    document.write(hackcraft.start({}, null,
+        {lang: BlocklyApps.LANG,
+         langSrc: BlocklyApps.languagePack()}));
+    </script>
     <button id="btn-run">Run!</button>
   </body>
 </html>

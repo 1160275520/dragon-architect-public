@@ -1,4 +1,3 @@
-// the elsinore module, which returns the top-level function required for Unity communication
 onHackcraftEvent = (function(){
 "use strict";
 
@@ -40,10 +39,11 @@ $(function() {
     });
 
     $('#btn-setprog').on('click', function() {
-        set_program("not a valid program");
+        set_program(Hackcraft.getProgram());
     });
 
     $('#btn-run').on('click', function() {
+        set_program(Hackcraft.getProgram());
         is_running = !is_running;
         set_is_running(is_running);
     });

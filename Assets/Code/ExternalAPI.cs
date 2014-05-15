@@ -36,7 +36,6 @@ public class ExternalAPI : MonoBehaviour
     // external API
 
     public void EAPI_SetProgramFromJson(string json) {
-        Debug.Log("setting program woo!");
         var prog = Serialization.ProgramOfJson(Json.Parse(json));
         GetComponent<ProgramManager>().Manipulator.Program = prog;
     }
