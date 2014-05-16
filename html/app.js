@@ -68,8 +68,14 @@ handler.onSystemStart = function(json) {
 }
 
 handler.onProgramChange = function(json) {
+    console.log(json);
     program = JSON.parse(json);
-    console.log(program);
+    Hackcraft.setProgram(program);
+}
+
+handler.onLevelChange = function(json) {
+    console.log(json);
+    Hackcraft.setTools(JSON.parse(json));
 }
 
 return onHackcraftEvent;

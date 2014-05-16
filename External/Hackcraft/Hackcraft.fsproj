@@ -4,8 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>8ac42bfa-8d32-4b3d-a51f-8ed54ed67a5a</ProjectGuid>
+    <ProjectGuid>8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Hackcraft</RootNamespace>
     <AssemblyName>Hackcraft</AssemblyName>
@@ -44,6 +43,7 @@
     <Compile Include="Math.fs" />
     <Compile Include="Collections.fs" />
     <Compile Include="Lex.fs" />
+    <Compile Include="LevelInfo.fs" />
     <Compile Include="Json.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="AstManipulator.fs" />
@@ -66,4 +66,19 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="../Makefile" IsAutotoolsProject="True" RelativeConfigureInPath=".">
+          <BuildFilesVar />
+          <DeployFilesVar />
+          <ResourcesVar />
+          <OthersVar />
+          <GacRefVar />
+          <AsmRefVar />
+          <ProjectRefVar />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

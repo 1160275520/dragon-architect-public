@@ -32,19 +32,19 @@ apps.ok = function(opt_data, opt_ignored) {
 // This file was automatically generated from template.soy.
 // Please don't edit this file by hand.
 
-if (typeof hackcraft == 'undefined') { var hackcraft = {}; }
+if (typeof Hackcraft == 'undefined') { var Hackcraft = {}; }
 
 
-hackcraft.messages = function(opt_data, opt_ignored) {
+Hackcraft.messages = function(opt_data, opt_ignored) {
   return apps.messages(null) + '<div style="display: none"></div>';
 };
 
 
-hackcraft.start = function(opt_data, opt_ignored) {
-  return hackcraft.messages(null) + '<table width="100%"><tr><td><h1><span id="title"></span></h1></td><td class="farSide"><select id="languageMenu"></select></td></tr></table><div id="unityPlayer"></div><button id="btn-load">Load a level!</button><button id="btn-setprog">Set the program!</button><script type="text/javascript" src="blockly_compressed.js"><\/script><script type="text/javascript" src="blocks_compressed.js"><\/script><script type="text/javascript" src="javascript_compressed.js"><\/script><script type="text/javascript" src="blocks.js"><\/script>' + hackcraft.toolbox(null) + '<div id="blockly"></div>';
+Hackcraft.start = function(opt_data, opt_ignored) {
+  return Hackcraft.messages(null) + '<table width="100%"><tr><td><h1><span id="title"></span></h1></td><td class="farSide"><select id="languageMenu"></select></td></tr></table><div id="unityPlayer"></div><button id="btn-load">Load a level!</button><button id="btn-setprog">Set the program!</button><script type="text/javascript" src="blockly_compressed.js"><\/script><script type="text/javascript" src="blocks_compressed.js"><\/script><script type="text/javascript" src="javascript_compressed.js"><\/script><script type="text/javascript" src="blocks.js"><\/script>' + Hackcraft.toolbox(null) + '<div id="blockly"></div>';
 };
 
 
-hackcraft.toolbox = function(opt_data, opt_ignored) {
-  return '<xml id="toolbox" style="display: none"><block type="forward"></block></xml>';
+Hackcraft.toolbox = function(opt_data, opt_ignored) {
+  return '<xml id="toolbox" style="display: none"><block type="Forward"></block></xml>';
 };

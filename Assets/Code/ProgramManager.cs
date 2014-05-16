@@ -27,6 +27,18 @@ public class ProgramManager : MonoBehaviour {
 
     private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
 
+    public LevelInfo MakeLevelInfo() {
+        var map = new List<Tuple<string, bool>>();
+        map.Add(new Tuple<string, bool>("move2", IsAvail2DMovement));
+        map.Add(new Tuple<string, bool>("move3", IsAvail3DMovement));
+        map.Add(new Tuple<string, bool>("place", IsAvailPlaceBlock));
+        map.Add(new Tuple<string, bool>("line", IsAvailLine));
+        map.Add(new Tuple<string, bool>("call", IsAvailCall));
+        map.Add(new Tuple<string, bool>("repeat", IsAvailRepeat));
+        var li = new LevelInfo(new Microsoft.FSharp.Collections.FSharpMap<string, bool>(map), NumHelperFuncs);
+        return li;
+    }
+
     public string[] AvailableProcedures { get {
         return PROCS.Take(NumHelperFuncs + 1).ToArray();
     } }

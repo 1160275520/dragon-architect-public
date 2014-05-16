@@ -5,6 +5,7 @@ open Hackcraft.Ast.Imperative
 let private jstr s = Json.String s
 let private jint i = Json.Int i
 let private jarr x = Json.Array (Array.ofSeq x)
+let private jbool b = Json.Bool b
 
 let private jarrmap f x = jarr (Seq.map f x)
 
@@ -117,3 +118,13 @@ let SaveFile filename program =
 *)
 
 let Load text = ProgramOfJson (Json.Parse text)
+
+let JsonOfLevel(level:LevelInfo) = 
+    let jsonOfAvail commands b = 
+        jbool b
+    Json.Object (
+        Map([
+            ("commands", Json.Object (Map.map jsonOfAvail level.AvailCommands)); 
+            ("funcs", jint level.NumHelperFuncs);
+        ])
+    )

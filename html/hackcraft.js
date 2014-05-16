@@ -36,17 +36,27 @@ BlocklyApps.LANG = BlocklyApps.getLang();
 document.write('<script type="text/javascript" src="generated/' +
                BlocklyApps.LANG + '.js"></script>\n');
 
-Hackcraft.Movement2D = '<block type="forward"></block> \
-                        <block type="left"></block> \
-                        <block type="right"></block>';
-Hackcraft.Movement3D = '<block type="up"></block> \
-                        <block type="down"></block>';
-Hackcraft.PlaceBlock = '<block type="placeblock"></block>';
-Hackcraft.Line       = '<block type="line"></block>';
-Hackcraft.Call       = '<block type="procedures_callnoreturn"> \
-                            <mutation name="MAIN"></mutation> \
-                        </block>';
-Hackcraft.Repeat     = '<block type="controls_repeat"></block>';
+Hackcraft.Commands = {"move2" :  '<block type="Forward"></block> \
+                                  <block type="Left"></block> \
+                                  <block type="Right"></block>',
+                      "move3" :  '<block type="Up"></block> \
+                                  <block type="Down"></block>',
+                      "place" :  '<block type="PlaceBlock"></block>',
+                      "line" :   '<block type="Line"></block>',
+                      "repeat" : '<block type="controls_repeat"></block>'};
+
+Hackcraft.makeFuncs = function (num) {
+    Hackcraft.Commands['call'] = '<block type="procedures_callnoreturn"> \
+                                    <mutation name="MAIN"></mutation> \
+                                  </block>';
+    for (var i = 0; i < num; i++) {
+        Hackcraft.Commands['call'] += '<block type="procedures_callnoreturn"> \
+                                         <mutation name="F'+ (i+1) + '"></mutation> \
+                                       </block>';
+    };
+}
+
+
 
 /**
  * Initialize Blockly and the turtle.  Called on page load.
@@ -84,23 +94,51 @@ Hackcraft.init = function() {
               <block type="controls_repeat"> \
                 <field name="TIMES">5</field> \
                 <statement name="DO"> \
-                  <block type="forward"></block> \
+                  <block type="Forward"> \
+                  <next> \
+                  <block type="Forward"><next></next></block></next></block> \
                 </statement> \
               </block> \
             </statement> \
           </block> \
-          <block type="procedures_callnoreturn"> \
-                            <mutation name="MAIN"></mutation> \
-                        </block> \
+          <block type="procedures_defnoreturn"><field name="NAME">TEST</field><statement name="STACK"></statement></block> \
         </xml>';
     BlocklyApps.loadBlocks(defaultXml);
-    Blockly.updateToolbox('<xml id="toolbox" style="display: none">' + Hackcraft.Movement2D + Hackcraft.Movement3D + Hackcraft.PlaceBlock + Hackcraft.Line + Hackcraft.Call + Hackcraft.Repeat + '</xml>');
+    Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
 };
 
 window.addEventListener('load', Hackcraft.init);
 
-Hackcraft.setTools = function(json) {
+Hackcraft.setProgram = function(program) {
+    Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(); });
+    console.log("setting program");
+    console.log(Blockly.UnityJSON.XMLOfJSON(program));
+    BlocklyApps.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
+    var blocks = Blockly.mainWorkspace.getTopBlocks();
+    for (var i = 0; i < blocks.length; i++) {
+        blocks[i].setEditable(false);
+        blocks[i].setDeletable(false);
+    };
+}
 
+Hackcraft.setTools = function(levelInfo) {
+    // var procedureXML = '<xml><block type="procedures_defnoreturn" x="70" y="70"><field name="NAME">MAIN</field></block>';
+    // for (var i = 0; i < levelInfo["funcs"]; i++) {
+    //     procedureXML += '<block type="procedures_defnoreturn" x="' + (270 + 200*i) + '" y="70"><field name="NAME">F' + (i+1) + '</field></block>';
+    // }
+    
+    
+    console.log("updating toolbox");
+    var toolXML = '<xml id="toolbox" style="display: none">';
+    Hackcraft.makeFuncs(levelInfo["funcs"]);
+    for (var command in levelInfo["commands"]) {
+        if (Hackcraft.Commands[command] && levelInfo["commands"][command]) {
+            toolXML += Hackcraft.Commands[command];
+        }
+    }
+    toolXML += '</xml>';
+    console.log(toolXML);
+    Blockly.updateToolbox(toolXML);
 }
 
 /**

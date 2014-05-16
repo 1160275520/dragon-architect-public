@@ -194,7 +194,6 @@ public class AllTheGUI : MonoBehaviour
         }
 
         // instructions and other controls
-#if !UNITY_WEBPLAYER
         if (IsActiveCodeEditor) {
             area = new Rect(SPACING, SPACING + 1.0f / 3 * Screen.height, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
             GUILayout.BeginArea(area);
@@ -233,7 +232,6 @@ public class AllTheGUI : MonoBehaviour
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }
-#endif
 
         if (IsActiveMainControls) {
             area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
@@ -265,7 +263,6 @@ public class AllTheGUI : MonoBehaviour
         }
 
         // program display
-#if !UNITY_WEBPLAYER
         if (IsActiveCodeEditor) {
             area = new Rect(Screen.width - procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING) - SPACING, SPACING, procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING) + SPACING, Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
             GUILayout.BeginArea(area);
@@ -294,7 +291,6 @@ public class AllTheGUI : MonoBehaviour
                 }
             }
         }
-#endif
 
         // time slider
         if (IsActiveTimeSlider) {

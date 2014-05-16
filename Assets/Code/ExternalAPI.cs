@@ -18,6 +18,7 @@ public class ExternalAPI : MonoBehaviour
     void Update() {
         if (isFirstUpdate) {
             sendProgram();
+            sendLevel();
             isFirstUpdate = false;
         }
 
@@ -31,6 +32,11 @@ public class ExternalAPI : MonoBehaviour
     private void sendProgram() {
         var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
         Application.ExternalCall(ExternalApiFunc, OnProgramChange, Json.Format(prog));
+    }
+
+    public void sendLevel() {
+        var level = Serialization.JsonOfLevel(GetComponent<ProgramManager>().MakeLevelInfo());
+        Application.ExternalCall(ExternalApiFunc, "onLevelChange", Json.Format(level));
     }
 
     // external API

@@ -26,6 +26,7 @@
 // Extensions to Blockly's language and JavaScript generator.
 
 Blockly.UnityJSON = {};
+Blockly.UnityCode = {};
 
 Blockly.UnityJSON.idCounter_ = 0;
 
@@ -52,8 +53,10 @@ Blockly.UnityJSON.processBody = function (block) {
     return body;
 }
 
+Blockly.UnityCode['call'] = {}
+
 // LEFT
-Blockly.Blocks['left'] = {
+Blockly.Blocks['Left'] = {
     init: function() {
         this.setColour(160);
         this.appendDummyInput()
@@ -63,12 +66,12 @@ Blockly.Blocks['left'] = {
     }
 };
 
-Blockly.UnityJSON['left'] = function(block) {
+Blockly.UnityJSON['Left'] = function(block) {
     return {"args":[],"meta":{"id":Number(block.id)},"proc":"Left","type":"call"};
 };
 
 // RIGHT
-Blockly.Blocks['right'] = {
+Blockly.Blocks['Right'] = {
     init: function() {
         this.setColour(160);
         this.appendDummyInput()
@@ -78,12 +81,12 @@ Blockly.Blocks['right'] = {
     }
 };
 
-Blockly.UnityJSON['right'] = function(block) {
+Blockly.UnityJSON['Right'] = function(block) {
     return {"args":[],"meta":{"id":Number(block.id)},"proc":"Right","type":"call"};
 };
 
 // FORWARD
-Blockly.Blocks['forward'] = {
+Blockly.Blocks['Forward'] = {
     init: function() {
         this.setColour(160);
         this.appendDummyInput()
@@ -95,12 +98,12 @@ Blockly.Blocks['forward'] = {
     }
 };
 
-Blockly.UnityJSON['forward'] = function(block) {
+Blockly.UnityJSON['Forward'] = function(block) {
     return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Forward","type":"call"};
 };
 
 // UP
-Blockly.Blocks['up'] = {
+Blockly.Blocks['Up'] = {
     init: function() {
         this.setColour(220);
         this.appendDummyInput()
@@ -112,12 +115,12 @@ Blockly.Blocks['up'] = {
     }
 };
 
-Blockly.UnityJSON['up'] = function(block) {
+Blockly.UnityJSON['Up'] = function(block) {
     return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Up","type":"call"};
 };
 
 // DOWN
-Blockly.Blocks['down'] = {
+Blockly.Blocks['Down'] = {
     init: function() {
         this.setColour(220);
         this.appendDummyInput()
@@ -129,12 +132,12 @@ Blockly.Blocks['down'] = {
     }
 };
 
-Blockly.UnityJSON['down'] = function(block) {
+Blockly.UnityJSON['Down'] = function(block) {
     return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Down","type":"call"};
 };
 
 // PLACEBLOCK
-Blockly.Blocks['placeblock'] = {
+Blockly.Blocks['PlaceBlock'] = {
   // Block for moving placeblock.
     init: function() {
         this.setColour(35);
@@ -145,12 +148,12 @@ Blockly.Blocks['placeblock'] = {
     }
 };
 
-Blockly.UnityJSON['placeblock'] = function(block) {
+Blockly.UnityJSON['PlaceBlock'] = function(block) {
     return {"args":[],"meta":{"id":Number(block.id)},"proc":"PlaceBlock","type":"call"};
 };
 
 // FORWARD
-Blockly.Blocks['line'] = {
+Blockly.Blocks['Line'] = {
     init: function() {
         this.setColour(35);
         this.appendDummyInput()
@@ -163,7 +166,7 @@ Blockly.Blocks['line'] = {
     }
 };
 
-Blockly.UnityJSON['line'] = function(block) {
+Blockly.UnityJSON['Line'] = function(block) {
     return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Line","type":"call"};
 };
 
@@ -177,3 +180,59 @@ Blockly.UnityJSON['controls_repeat'] = function(block) {
 Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
     return {"args":[],"meta":{"id":Number(block.id)},"proc":block.getFieldValue("NAME"),"type":"call"};
 }
+
+Blockly.UnityJSON.XMLOfJSON = function(program) {
+    var xml = '<xml>';
+    var funcCount = 0;
+    for (var func in program) {
+        var body = program[func]['body'];
+        if (body.length > 0 || func === "MAIN") {
+            xml += '<block type="procedures_defnoreturn" x="' + (70 + 200*(funcCount++)) + '" y="70"><field name="NAME">' + func + '</field><statement name="STACK">' + Blockly.UnityJSON.stmtToXML(body[0], program);
+            for (var i = 1; i < body.length; i++) {
+                var stmt = body[i];
+                xml += '<next>' + Blockly.UnityJSON.stmtToXML(stmt, program);
+            }
+            if (body.length > 0) { xml += '</block>'; }
+            for (var i = 0; i < body.length - 1; i++) { // don't need a </next> for the first statement in the block
+                xml += '</next></block>';
+            }
+            xml += '</statement></block>';
+        }
+        
+    }
+    return xml + "</xml>";
+}
+
+Blockly.UnityJSON.stmtToXML = function (stmt, program) {
+    if (stmt) {
+        if (stmt['type'] === "call") {
+            if (stmt['args'].length === 0) {
+                if (stmt['proc'] in program) {
+                    return '<block type="procedures_callnoreturn"><mutation name="' + stmt['proc'] + '"></mutation>';
+                } else {
+                    return '<block type="' + stmt['proc'] + '">';
+                }
+            } else {
+                return '<block type="' + stmt['proc'] + '"><field name="VALUE">' + stmt['args'][0] + '</field>';
+            }
+        } else if (stmt['type'] === "repeat") {
+            return '<block type="controls_repeat"><field name="TIMES">' + stmt['numtimes'] + '</field><statement name="DO">' + Blockly.UnityJSON.stmtToXML(stmt['stmt'], program) + '</statement>';
+        } else if (stmt['type'] === "block") {
+            var body = stmt['body'];
+            if (body.length > 0) {
+                var xml = Blockly.UnityJSON.stmtToXML(body[0], program);
+                for (var i = 1; i < body.length; i++) {
+                    var stmt = body[i];
+                    xml += '<next>' + Blockly.UnityJSON.stmtToXML(stmt, program);
+                }
+                xml += '</block>';
+                for (var i = 0; i < body.length - 1; i++) { // don't need a </next> for the first statement in the block
+                    xml += '</next></block>';
+                }
+            }
+            return xml;
+        }
+    }
+    return "";
+}
+
