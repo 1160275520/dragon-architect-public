@@ -11,7 +11,7 @@ public class TLDebug : MonoBehaviour
 
 	void Start () {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "The given program is not quite correct.... Can you fix it? Click <b>RUN</b> to run the program. You can see which program steps are executing by looking at the highlighted statements. It looks like some statements need to be added.";
+        GetComponent<AllTheGUI>().CurrentMessage = "My program is not quite correct.... Can you fix it? Click <b>RUN</b> to run the program. You can see which program steps are executing by looking at the highlighted statements. It looks like some statements need to be added.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("level_debug_01");
 

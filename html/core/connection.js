@@ -506,6 +506,9 @@ Blockly.Connection.prototype.closest = function(maxLimit, dx, dy) {
  * @private
  */
 Blockly.Connection.prototype.checkType_ = function(otherConnection) {
+  if (this.frozen || otherConnection.frozen) {
+    return false;
+  }
   if (!this.check_ || !otherConnection.check_) {
     // One or both sides are promiscuous enough that anything will fit.
     return true;

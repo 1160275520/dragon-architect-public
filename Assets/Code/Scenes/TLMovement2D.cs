@@ -9,7 +9,7 @@ public class TLMovement2D : MonoBehaviour {
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-		GetComponent<AllTheGUI>().CurrentMessage = "Help <b>Sala</b> get to the pink box! Use <b>Forward</b> to complete her program and click <b>RUN</b>.";
+		GetComponent<AllTheGUI>().CurrentMessage = "Help me get to the pink box! Use <b>Forward</b> to complete my program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLMovement2D");
 

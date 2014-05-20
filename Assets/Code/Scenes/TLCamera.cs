@@ -11,7 +11,7 @@ public class TLCamera: MonoBehaviour
 
 	void Start () {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "It's hard to see where the blocks should go from this angle! When you need a better view, use the <b>Rotate Left</b> and <b>Rotate Right</b> buttons to rotate your view. Try it, and solve the challenge!";
+        GetComponent<AllTheGUI>().CurrentMessage = "It's hard to see where the blocks should go from this angle! When you need a better view, use the <b>Rotate Left</b> and <b>Rotate Right</b> buttons to rotate your view. Try it, and help me solve the challenge!";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
 

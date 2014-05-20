@@ -20,7 +20,8 @@ public class LevelHelper : MonoBehaviour
     public void CreateBlueprint(IEnumerable<IntVec3> cells) {
         var grid = GetComponent<Grid>();
         foreach (var c in cells) {
-            GameObject.Instantiate(BlueprintPrefab, grid.CenterOfCell(c), Quaternion.identity);
+            var cube = (GameObject)GameObject.Instantiate(BlueprintPrefab, grid.CenterOfCell(c), Quaternion.identity);
+            cube.GetComponent<BlueprintCube>().GridPosition = c;
         }
     }
 
@@ -57,6 +58,6 @@ public class LevelHelper : MonoBehaviour
     public void WinLevel() {
         // TODO maybe do actual things once you win
         GetComponent<AllTheGUI>().CurrentMessage = "Yay, you win!";
-        GetComponent<AllTheGUI>().IsActiveReturnToLoader = true;
+        GetComponent<AllTheGUI>().IsActiveGotoNextLevel = true;
     }
 }

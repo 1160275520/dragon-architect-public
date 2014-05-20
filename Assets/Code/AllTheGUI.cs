@@ -36,7 +36,8 @@ public class AllTheGUI : MonoBehaviour
     public bool IsActiveCodeEditor = true;
     public bool IsActiveTimeSlider = true;
     public bool IsActiveSaveLoad = true;
-    public bool IsActiveReturnToLoader = false;
+    public bool IsActiveGotoNextLevel = false;
+    public bool IsActiveBlockly = true;
 
     public string CurrentMessage { get; set; }
 
@@ -72,6 +73,10 @@ public class AllTheGUI : MonoBehaviour
             currentlyDragged.Delay -= Time.fixedTime - lastUpdateTime;
         }
         lastUpdateTime = Time.fixedTime;
+
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.L)) {
+            Application.LoadLevel("loader");
+        }
     }
 
     Rect getLastRect()
@@ -141,14 +146,14 @@ public class AllTheGUI : MonoBehaviour
         GUILayoutOption[] options;
 
         if (CurrentMessage != null) {
-            GUI.Box(new Rect(175, SPACING, 450, 250), CurrentMessage, "ButtonBackground");
+            GUI.Box(new Rect(160, SPACING, 600, 125), CurrentMessage, "ButtonBackground");
         }
-        if (IsActiveReturnToLoader) {
+        if (IsActiveGotoNextLevel) {
             var style = new GUIStyle("button");
             style.fontSize = 24;
             style.fontStyle = FontStyle.Bold;
-            if (GUI.Button(new Rect(300, 175, 200, 60), "Return to level select", style)) {
-                Application.LoadLevel("loader");
+            if (GUI.Button(new Rect(360, 145, 200, 60), "Go to next level", style)) {
+                Application.LoadLevel(LoaderGUI.LEVELS[++LoaderGUI.CURRENT_LEVEL_INDEX]);
             }
         }
         // save/load dialog
@@ -194,7 +199,7 @@ public class AllTheGUI : MonoBehaviour
         }
 
         // instructions and other controls
-        if (IsActiveCodeEditor) {
+        if (IsActiveCodeEditor && !IsActiveBlockly) {
             area = new Rect(SPACING, SPACING + 1.0f / 3 * Screen.height, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 2);
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground");
@@ -242,16 +247,18 @@ public class AllTheGUI : MonoBehaviour
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(BUTTON_HEIGHT)
             };
-            if (progman.IsRunning) {
-                makeButton("Reset", new GUILayoutOption[] {
-                GUILayout.Width(BUTTON_COLUMN_WIDTH),
-                GUILayout.Height(2 * BUTTON_HEIGHT)
-            }, () => progman.StopRunning(), false, "StopButton");
-            } else {
-                makeButton("RUN!", new GUILayoutOption[] {
-                GUILayout.Width(BUTTON_COLUMN_WIDTH),
-                GUILayout.Height(2 * BUTTON_HEIGHT)
-            }, () => progman.StartExecution(), false, "RunButton");
+            if (!IsActiveBlockly) {
+                if (progman.IsRunning) {
+                    makeButton("Reset", new GUILayoutOption[] {
+                        GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                        GUILayout.Height(2 * BUTTON_HEIGHT)
+                    }, () => progman.StopRunning(), false, "StopButton");
+                } else {
+                    makeButton("RUN!", new GUILayoutOption[] {
+                        GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                        GUILayout.Height(2 * BUTTON_HEIGHT)
+                    }, () => progman.StartExecution(), false, "RunButton");
+                }
             }
             //makeButton("Undo", options, () => progman.Undo());
             makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
@@ -263,7 +270,7 @@ public class AllTheGUI : MonoBehaviour
         }
 
         // program display
-        if (IsActiveCodeEditor) {
+        if (IsActiveCodeEditor && !IsActiveBlockly) {
             area = new Rect(Screen.width - procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING) - SPACING, SPACING, procedures.Length * (PROGRAM_COLUMN_WIDTH + SPACING) + SPACING, Screen.height - (BUTTON_HEIGHT * 3 + SPACING * 2));
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground", GUILayout.Height(area.height));

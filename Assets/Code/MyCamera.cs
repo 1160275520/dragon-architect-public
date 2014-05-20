@@ -23,6 +23,9 @@ public class MyCamera : MonoBehaviour
         relCameraPosMag = relCameraPos.magnitude - 0.5f;
     }
 
+    public void SetCameraTarget(GameObject target) {
+        player = target.transform;
+    }
 
     void FixedUpdate() {
         var t = Time.fixedTime;

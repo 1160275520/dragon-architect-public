@@ -10,7 +10,7 @@ public class TLPlacement : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-		GetComponent<AllTheGUI>().CurrentMessage = "<b>Sala</b> needs to place some blocks! Use <b>PlaceBlock</b> to complete her program and click <b>RUN</b>.";
+		GetComponent<AllTheGUI>().CurrentMessage = "I need to place some blocks! Use <b>PlaceBlock</b> to complete my program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLPlacement");
 

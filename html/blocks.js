@@ -35,25 +35,12 @@ Blockly.UnityJSON.nextId = function () {
     return Blockly.UnityJSON.idCounter_;
 }
 
+/**
+ * processes the body of block and returns an array of json-ready objects
+ */
 Blockly.UnityJSON.processBody = function (block) {
-    var bodyBlock = block.inputList[1]; // the first element is the procedure name or number of repeats
-    var body = [];
-    // check if there's anything in the body
-    if (bodyBlock.connection && bodyBlock.connection.targetBlock()) {
-        var stmt = bodyBlock.connection.targetBlock();
-        // process stmt
-        body.push(Blockly.UnityJSON[stmt.type].call(stmt, stmt));
-        // iterate over top-level blocks inside body
-        while(stmt.nextConnection && stmt.nextConnection.targetBlock()) {
-            // dispatch appropriately for each type of block
-            stmt = stmt.nextConnection.targetBlock();
-            body.push(Blockly.UnityJSON[stmt.type].call(stmt, stmt));
-        }
-    }
-    return body;
+    return Hackcraft.processBody(block, function (x) { return Blockly.UnityJSON[x.type](x); });
 }
-
-Blockly.UnityCode['call'] = {}
 
 // LEFT
 Blockly.Blocks['Left'] = {
@@ -90,7 +77,7 @@ Blockly.Blocks['Forward'] = {
     init: function() {
         this.setColour(160);
         this.appendDummyInput()
-            .appendField("move forward by")
+            .appendField("forward by")
             .appendField(new Blockly.FieldTextInput('1',
                 Blockly.FieldTextInput.nonnegativeIntegerValidator), "VALUE");
         this.setPreviousStatement(true);
@@ -107,7 +94,7 @@ Blockly.Blocks['Up'] = {
     init: function() {
         this.setColour(220);
         this.appendDummyInput()
-            .appendField("move up by")
+            .appendField("up by")
             .appendField(new Blockly.FieldTextInput('1',
                 Blockly.FieldTextInput.nonnegativeIntegerValidator), "VALUE");
         this.setPreviousStatement(true);
@@ -124,7 +111,7 @@ Blockly.Blocks['Down'] = {
     init: function() {
         this.setColour(220);
         this.appendDummyInput()
-            .appendField("move down by")
+            .appendField("down by")
             .appendField(new Blockly.FieldTextInput('1',
                 Blockly.FieldTextInput.nonnegativeIntegerValidator), "VALUE");
         this.setPreviousStatement(true);
@@ -185,22 +172,25 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     var xml = '<xml>';
     var funcCount = 0;
     for (var func in program) {
-        var body = program[func]['body'];
-        if (body.length > 0 || func === "MAIN") {
-            xml += '<block type="procedures_defnoreturn" x="' + (70 + 200*(funcCount++)) + '" y="70"><field name="NAME">' + func + '</field><statement name="STACK">' + Blockly.UnityJSON.stmtToXML(body[0], program);
-            for (var i = 1; i < body.length; i++) {
-                var stmt = body[i];
-                xml += '<next>' + Blockly.UnityJSON.stmtToXML(stmt, program);
-            }
-            if (body.length > 0) { xml += '</block>'; }
-            for (var i = 0; i < body.length - 1; i++) { // don't need a </next> for the first statement in the block
-                xml += '</next></block>';
-            }
-            xml += '</statement></block>';
-        }
-        
+        xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 3)) + '" y="' + (50 + 500*Math.floor(funcCount/3)) + '"><field name="NAME">' + func + '</field><statement name="STACK">';
+        xml += Blockly.UnityJSON.bodyToXML(program[func]['body'], program);
+        xml += '</statement></block>';
+        funcCount++;
     }
     return xml + "</xml>";
+}
+
+Blockly.UnityJSON.bodyToXML = function (body, program) {
+    var xml = Blockly.UnityJSON.stmtToXML(body[0], program);
+    for (var i = 1; i < body.length; i++) {
+        var stmt = body[i];
+        xml += '<next>' + Blockly.UnityJSON.stmtToXML(stmt, program);
+    }
+    if (body.length > 0) { xml += '</block>'; }
+    for (var i = 0; i < body.length - 1; i++) { // don't need a </next> for the first statement in the block
+        xml += '</next></block>';
+    }
+    return xml;
 }
 
 Blockly.UnityJSON.stmtToXML = function (stmt, program) {
@@ -216,23 +206,14 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
                 return '<block type="' + stmt['proc'] + '"><field name="VALUE">' + stmt['args'][0] + '</field>';
             }
         } else if (stmt['type'] === "repeat") {
-            return '<block type="controls_repeat"><field name="TIMES">' + stmt['numtimes'] + '</field><statement name="DO">' + Blockly.UnityJSON.stmtToXML(stmt['stmt'], program) + '</statement>';
+            return '<block type="controls_repeat"><field name="TIMES">' + stmt['numtimes']['value'] + '</field><statement name="DO">' + Blockly.UnityJSON.stmtToXML(stmt['stmt'], program) + '</statement>';
         } else if (stmt['type'] === "block") {
-            var body = stmt['body'];
-            if (body.length > 0) {
-                var xml = Blockly.UnityJSON.stmtToXML(body[0], program);
-                for (var i = 1; i < body.length; i++) {
-                    var stmt = body[i];
-                    xml += '<next>' + Blockly.UnityJSON.stmtToXML(stmt, program);
-                }
-                xml += '</block>';
-                for (var i = 0; i < body.length - 1; i++) { // don't need a </next> for the first statement in the block
-                    xml += '</next></block>';
-                }
-            }
-            return xml;
+            return Blockly.UnityJSON.bodyToXML(stmt['body'], program);
         }
     }
-    return "";
+    return '';
 }
 
+Blockly.Connection.prototype.freeze = function () {
+    this.frozen = true;
+};
