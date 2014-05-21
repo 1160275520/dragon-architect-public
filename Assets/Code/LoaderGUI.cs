@@ -6,7 +6,7 @@ public class LoaderGUI : MonoBehaviour {
     public static readonly string[] LEVELS = new string[] {
         "tl_movement2d", "tl_placement", "tl_personify", "tl_movement_args", 
         "tl_movement3d", "tl_call", "tl_call2", "tl_repeat", "tl_repeat2",
-        "tl_line", "tl_line", "tl_debug", "tl_loop",
+        "tl_line", "tl_line2", "tl_debug", "tl_loop",
     };
 
 	// Use this for initialization
