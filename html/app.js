@@ -52,6 +52,7 @@ $(function() {
 // SPECIFIC HANDLER FUNCTIONS
 
 function set_program(prog) {
+    console.log(prog);
     send_message("System", "EAPI_SetProgramFromJson", JSON.stringify(prog));
 }
 
@@ -75,7 +76,29 @@ handler.onProgramChange = function(json) {
 
 handler.onLevelChange = function(json) {
     console.log(json);
-    Hackcraft.setTools(JSON.parse(json));
+    var tools = JSON.parse(json)
+    Hackcraft.setTools(tools);
+    // reset run button
+    var b = $('#btn-run')[0];
+    if (jQuery.isEmptyObject(tools)) {
+        b.hidden = true;
+    } else {
+        b.hidden = false;
+        b.innerText = "Run!";
+        b.style.backgroundColor = "#37B03F";
+        b.style.width = $('.blocklyFlyoutBackground')[0].getBoundingClientRect().width + 'px';
+    }
+    is_running = false;
+    set_is_running(is_running);
+}
+
+handler.onStatementHighlight = function(id) {
+    console.log("highlighting " + id)
+    if (id) {
+        Blockly.mainWorkspace.getBlockById(id.toString()).select();
+    } else {
+        Blockly.mainWorkspace.getAllBlocks().map(function (x) { x.unselect(); }) // clear final highlight
+    }
 }
 
 return onHackcraftEvent;

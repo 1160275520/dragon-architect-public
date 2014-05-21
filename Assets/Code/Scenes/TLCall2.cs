@@ -9,10 +9,10 @@ public class TLCall2 : MonoBehaviour
 
 	void Start() {
         var lh = GetComponent<LevelHelper>();
-		GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, try to place at least 15 blocks. Use the <b>Call</b> statement to tell <b>Sala</b> to do the same action many times.";
+		GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me place at least 15 blocks. Use the purple <b>F1</b> block to tell me to do the same action many times.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
-
+        Debug.Log("proc count in TLCall2.start = " + GetComponent<ProgramManager>().Manipulator.Program.Procedures.Count);
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(15) });
 	}
 

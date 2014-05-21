@@ -17,7 +17,9 @@ public class TLPersonify : MonoBehaviour {
     void Start() {
         GetComponent<AllTheGUI>().CurrentMessage = instructions;
         var progman = GetComponent<ProgramManager>();
-        foreach (var p in progman.AvailableProcedures) progman.Manipulator.ClearProcedure(p);
+        progman.Clear();
+
+        FindObjectOfType<MyCamera>().SetCameraTarget(GameObject.Find("Girl"));
 
         var lh = GetComponent<LevelHelper>();
         FindObjectOfType<PersonController>().Position = new IntVec3(-4, 0, 0);
@@ -35,7 +37,7 @@ public class TLPersonify : MonoBehaviour {
     void Update() {
 
         if (winPredicate() && !coding) {
-			instructions = "Now have <b>Sala</b> put blocks on the blue boxes the same way you did. Use <b>Forward</b>, <b>Right</b>, and <b>PlaceBlock</b>.";
+			instructions = "Now have me put blocks on the blue boxes the same way you did. Use <b>Forward</b>, <b>Right</b>, and <b>PlaceBlock</b>.";
             var progman = GetComponent<ProgramManager>();
             var grid = GetComponent<Grid>();
             var lh = GetComponent<LevelHelper>();
@@ -57,6 +59,8 @@ public class TLPersonify : MonoBehaviour {
             var gui = GetComponent<AllTheGUI>();
             gui.IsActiveCodeEditor = true;
             gui.IsActiveMainControls = true;
+
+            FindObjectOfType<MyCamera>().SetCameraTarget(GameObject.Find("Robot"));
 
             FindObjectOfType<PersonController>().enabled = false;
             coding = true;

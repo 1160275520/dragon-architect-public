@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using System;
+using System.Linq;
 using Hackcraft;
 using Microsoft.FSharp.Collections;
 
@@ -8,6 +10,7 @@ public class ExternalAPI : MonoBehaviour
     public const string ExternalApiFunc = "onHackcraftEvent";
     public const string OnSystemStart = "onSystemStart";
     public const string OnProgramChange = "onProgramChange";
+    public const string OnLevelChange = "onLevelChange";
 
     private bool isFirstUpdate;
 
@@ -17,8 +20,12 @@ public class ExternalAPI : MonoBehaviour
 
     void Update() {
         if (isFirstUpdate) {
-            sendProgram();
-            sendLevel();
+            try {
+                SendProgram();
+                SendLevel();
+            } catch (NullReferenceException) {
+                Debug.Log("null reference on first update, expected on level loader");
+            }
             isFirstUpdate = false;
         }
 
@@ -29,15 +36,28 @@ public class ExternalAPI : MonoBehaviour
         // TODO jk, ignore this for now because it never changes during puzzles!
     }
 
-    private void sendProgram() {
+    public void ClearLevel() {
+        Application.ExternalCall(ExternalApiFunc, OnProgramChange, "{}");
+        Application.ExternalCall(ExternalApiFunc, OnLevelChange, "{}");
+    }
+
+    public void SendProgram() {
         var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
         Application.ExternalCall(ExternalApiFunc, OnProgramChange, Json.Format(prog));
     }
 
-    public void sendLevel() {
+    public void SendLevel() {
         var level = Serialization.JsonOfLevel(GetComponent<ProgramManager>().MakeLevelInfo());
-        Application.ExternalCall(ExternalApiFunc, "onLevelChange", Json.Format(level));
+        Application.ExternalCall(ExternalApiFunc, OnLevelChange, Json.Format(level));
     }
+
+    public void SendCurrentStatement() {
+        try {
+            Application.ExternalCall(ExternalApiFunc, "onStatementHighlight", GetComponent<ProgramManager>().LastExecuted.First());
+        } catch (InvalidOperationException) {
+            Application.ExternalCall(ExternalApiFunc, "onStatementHighlight", ""); // clear final highlight when done executing
+
+        }}
 
     // external API
 

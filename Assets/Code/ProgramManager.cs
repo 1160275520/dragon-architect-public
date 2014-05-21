@@ -35,7 +35,8 @@ public class ProgramManager : MonoBehaviour {
         map.Add(new Tuple<string, bool>("line", IsAvailLine));
         map.Add(new Tuple<string, bool>("call", IsAvailCall));
         map.Add(new Tuple<string, bool>("repeat", IsAvailRepeat));
-        var li = new LevelInfo(new Microsoft.FSharp.Collections.FSharpMap<string, bool>(map), NumHelperFuncs);
+        var li = new LevelInfo(new Microsoft.FSharp.Collections.FSharpMap<string, bool>(map), NumHelperFuncs, 
+                               new Microsoft.FSharp.Collections.FSharpSet<string>(lockedProcedures));
         return li;
     }
 
@@ -102,6 +103,7 @@ public class ProgramManager : MonoBehaviour {
     }
 
     public void Clear() {
+        Debug.Log("proc count in progman.clear = " + GetComponent<ProgramManager>().Manipulator.Program.Procedures.Count);
         var procs = from kvp in Manipulator.Program.Procedures select kvp.Key;
         foreach (var p in procs) {
             Manipulator.ClearProcedure(p);
@@ -143,14 +145,18 @@ public class ProgramManager : MonoBehaviour {
 
     void Awake() {
         Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
-        LoadProgram("demo");
+        foreach (var proc in AvailableProcedures) {
+            Manipulator.CreateProcedure(proc);
+        }
+        Debug.Log("proc count in progman.awake = " + Manipulator.Program.Procedures.Count);
     }
-
-	void Start () {
+    
+    void Start () {
         IsExecuting = false;
         IsCheckingForProgramChanges = true;
-	}
-
+        Debug.Log("proc count in progman.start = " + Manipulator.Program.Procedures.Count);
+    }
+    
     void EvalProgram() {
         if (IsCheckingForProgramChanges && !IsRunning && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
@@ -178,9 +184,11 @@ public class ProgramManager : MonoBehaviour {
             currentStateIndex++;
             if (currentStateIndex >= States.Length) {
                 IsExecuting = false;
+                GetComponent<ExternalAPI>().SendCurrentStatement(); // clear final highlight
                 // leave IsRunning set to true
             } else {
                 setGameState(currentStateIndex);
+                GetComponent<ExternalAPI>().SendCurrentStatement();
             }
             lastStatementExecutionTime = Time.fixedTime;
         }

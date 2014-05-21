@@ -3,7 +3,6 @@
   <head>
     <meta charset=UTF-8>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <!-- <link rel="stylesheet" type="text/css" href="common.css"> -->
     <script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script>
     <script src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
     <script src="app.js"></script>
@@ -12,11 +11,24 @@
     <script type="text/javascript" src="_soy/soyutils.js"></script>
   </head>
   <body>    
-     <script type="text/javascript">
-    document.write(Hackcraft.start({}, null,
+    <script type="text/javascript">
+      document.write(Hackcraft.start({}, null,
         {lang: BlocklyApps.LANG,
          langSrc: BlocklyApps.languagePack()}));
     </script>
-    <button id="btn-run">Run!</button>
+    <button id="btn-run" hidden="true">Run!</button>
+    <script type="text/javascript">
+    var toggleRun = function () {
+      var b = $('#btn-run')[0];
+      if (b.innerText === "Run!") {
+        b.innerText = "Reset";
+        b.style.backgroundColor = "#B03737";
+      } else {        
+        b.innerText = "Run!";
+        b.style.backgroundColor = "#37B03F";
+      }
+    }
+    $('#btn-run')[0].onclick = toggleRun;
+    </script>
   </body>
 </html>

@@ -36,6 +36,7 @@ BlocklyApps.LANG = BlocklyApps.getLang();
 document.write('<script type="text/javascript" src="generated/' +
                BlocklyApps.LANG + '.js"></script>\n');
 
+// dictionary of custom block xml
 Hackcraft.Commands = {"move2" :  '<block type="Forward"></block> \
                                   <block type="Left"></block> \
                                   <block type="Right"></block>',
@@ -45,21 +46,20 @@ Hackcraft.Commands = {"move2" :  '<block type="Forward"></block> \
                       "line" :   '<block type="Line"></block>',
                       "repeat" : '<block type="controls_repeat"></block>'};
 
+/**
+ * Create call blocks for the helper functions present
+ */
 Hackcraft.makeFuncs = function (num) {
-    Hackcraft.Commands['call'] = '<block type="procedures_callnoreturn"> \
-                                    <mutation name="MAIN"></mutation> \
-                                  </block>';
+    Hackcraft.Commands['call'] = '';
     for (var i = 0; i < num; i++) {
         Hackcraft.Commands['call'] += '<block type="procedures_callnoreturn"> \
                                          <mutation name="F'+ (i+1) + '"></mutation> \
                                        </block>';
     };
-}
-
-
+};
 
 /**
- * Initialize Blockly and the turtle.  Called on page load.
+ * Initialize Blockly.  Called on page load.
  */
 Hackcraft.init = function() {
     BlocklyApps.init();
@@ -103,34 +103,69 @@ Hackcraft.init = function() {
           </block> \
           <block type="procedures_defnoreturn"><field name="NAME">TEST</field><statement name="STACK"></statement></block> \
         </xml>';
-    BlocklyApps.loadBlocks(defaultXml);
+    // BlocklyApps.loadBlocks(defaultXml);
     Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
 };
 
 window.addEventListener('load', Hackcraft.init);
 
+/**
+ * set blocks making up current program
+ */
 Hackcraft.setProgram = function(program) {
+    // clear existing blocks
     Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(); });
+    
     console.log("setting program");
     console.log(Blockly.UnityJSON.XMLOfJSON(program));
     BlocklyApps.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
+    
     var blocks = Blockly.mainWorkspace.getTopBlocks();
+    // set maximum blocks to 15 per function
+    Blockly.mainWorkspace.maxBlocks = blocks.length * 15;
+
+    // recolor functions to differentiate MAIN from helpers
+    if (blocks.length > 0) {
+        blocks.filter(function (x) { return x.getFieldValue("NAME") === "MAIN"; })[0].setColour(260);
+        blocks.filter(function (x) { return x.getFieldValue("NAME") !== "MAIN"; }).map(function (x) { x.setColour(315); });
+    }
+    // prevent renaming and deleting existing procedures 
     for (var i = 0; i < blocks.length; i++) {
         blocks[i].setEditable(false);
         blocks[i].setDeletable(false);
+        blocks[i].contextMenu = false;
     };
-}
+};
 
-Hackcraft.setTools = function(levelInfo) {
-    // var procedureXML = '<xml><block type="procedures_defnoreturn" x="70" y="70"><field name="NAME">MAIN</field></block>';
-    // for (var i = 0; i < levelInfo["funcs"]; i++) {
-    //     procedureXML += '<block type="procedures_defnoreturn" x="' + (270 + 200*i) + '" y="70"><field name="NAME">F' + (i+1) + '</field></block>';
-    // }
-    
-    
+/**
+ * prevent procedure from being modifed in any way
+ */
+Hackcraft.freezeBody = function(block) {
+    console.log("freezing " + block);
+    block.inputList[1].connection.freeze();
+    function freezeBlock(b) {
+        b.setMovable(false);
+        b.nextConnection.freeze();
+        b.setDeletable(false);
+        b.contextMenu = false;
+    }
+    Hackcraft.processBody(block, function tmp(x) { 
+        freezeBlock(x);
+        if (x.inputList.some(function (i) { return i.connection != null; })) {
+            Hackcraft.processBody(x, tmp);
+        }
+    });
+};
+
+/**
+ * set which blocks are available
+ */
+Hackcraft.setTools = function(levelInfo) {    
     console.log("updating toolbox");
     var toolXML = '<xml id="toolbox" style="display: none">';
-    Hackcraft.makeFuncs(levelInfo["funcs"]);
+    if (levelInfo["funcs"]) {
+        Hackcraft.makeFuncs(levelInfo["funcs"]);
+    }
     for (var command in levelInfo["commands"]) {
         if (Hackcraft.Commands[command] && levelInfo["commands"][command]) {
             toolXML += Hackcraft.Commands[command];
@@ -139,10 +174,16 @@ Hackcraft.setTools = function(levelInfo) {
     toolXML += '</xml>';
     console.log(toolXML);
     Blockly.updateToolbox(toolXML);
-}
+
+    if (levelInfo["locks"]) {
+        levelInfo["locks"].forEach(function (l) {
+            Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === l; })[0]);
+        });
+    }
+};
 
 /**
- * Execute the user's code.  Heaven help us...
+ * get json-ready version of current program
  */
 Hackcraft.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
@@ -161,3 +202,34 @@ Hackcraft.getProgram = function() {
     }
     return program;
 };
+
+/**
+ * 
+ */
+ Hackcraft.processBody = function(block, callback) {
+    var bodyBlock = block.inputList[1];
+    var body = [];
+    if (bodyBlock.connection && bodyBlock.connection.targetBlock()) {
+        var stmt = bodyBlock.connection.targetBlock();
+        // process stmt
+        body.push(callback(stmt));
+        // iterate over top-level blocks inside body
+        while(stmt.nextConnection && stmt.nextConnection.targetBlock()) {
+            // dispatch appropriately for each type of block
+            stmt = stmt.nextConnection.targetBlock();
+            body.push(callback(stmt));
+        }
+    }
+    return body;
+ };
+
+ Hackcraft.testProcessBody = function() {
+    var b = Blockly.mainWorkspace.getTopBlocks()[0];
+    return Hackcraft.processBody(b, function tmp(x) { 
+        if (x.inputList.some(function (i) { return i.connection != null; })) {
+            return x.toString(), Hackcraft.processBody(x, tmp);
+        } else {
+            return x.toString();
+        }
+    });
+ };
