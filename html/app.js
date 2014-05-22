@@ -46,6 +46,7 @@ $(function() {
         set_program(Hackcraft.getProgram());
         is_running = !is_running;
         set_is_running(is_running);
+        Blockly.mainWorkspace.traceOn(is_running);
     });
 });
 
@@ -95,9 +96,9 @@ handler.onLevelChange = function(json) {
 handler.onStatementHighlight = function(id) {
     console.log("highlighting " + id)
     if (id) {
-        Blockly.mainWorkspace.getBlockById(id.toString()).select();
+        Blockly.mainWorkspace.highlightBlock(id.toString());
     } else {
-        Blockly.mainWorkspace.getAllBlocks().map(function (x) { x.unselect(); }) // clear final highlight
+        Blockly.mainWorkspace.highlightBlock(id.toString());
     }
 }
 
