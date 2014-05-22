@@ -13,7 +13,7 @@ public class TLMovementArgs : MonoBehaviour
 		GetComponent<AllTheGUI>().CurrentMessage = "Help me put blocks on the blue boxes! The number after each <b>Forward</b> tells me how many spaces to move. Change the numbers to complete my program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLMovementArgs");
-        progman.SetIsEditable("Main", false);
+        progman.SetIsEditable("MAIN", false);
 
         var template = new IntVec3[] {
                 new IntVec3(0,0,3),

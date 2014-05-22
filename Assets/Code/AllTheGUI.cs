@@ -239,12 +239,12 @@ public class AllTheGUI : MonoBehaviour
         }
 
         if (IsActiveMainControls) {
-            area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 10, Screen.height - SPACING * 1.5f);
+            area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 30, Screen.height - SPACING * 1.5f);
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground");
             GUILayout.Label("Click to\ndo things", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 1.5f));
             options = new GUILayoutOption[] {
-                GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                GUILayout.Width(BUTTON_COLUMN_WIDTH+20),
                 GUILayout.Height(BUTTON_HEIGHT)
             };
             if (!IsActiveBlockly) {

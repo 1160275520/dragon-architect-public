@@ -99,6 +99,7 @@ public class MyCamera : MonoBehaviour
     }
 
     public void Rotate(float degrees) {
+        Debug.Log("rotating " + degrees);
         relCameraPos = Quaternion.AngleAxis(degrees, Vector3.up) * relCameraPos;
     }
 

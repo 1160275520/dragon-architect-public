@@ -41,7 +41,7 @@ Hackcraft.messages = function(opt_data, opt_ignored) {
 
 
 Hackcraft.start = function(opt_data, opt_ignored) {
-  return Hackcraft.messages(null) + '<table width="100%"><tr><td><h1><span id="title"></span></h1></td><td class="farSide"><select id="languageMenu"></select></td></tr></table><div id="unityPlayer"></div><script type="text/javascript" src="blockly_uncompressed.js"><\/script><script type="text/javascript" src="blocks_compressed.js"><\/script><script type="text/javascript" src="javascript_compressed.js"><\/script><script type="text/javascript" src="blocks.js"><\/script>' + Hackcraft.toolbox(null) + '<div id="blockly"></div>';
+  return Hackcraft.messages(null) + '<table width="100%"><tr><td><h1><span id="title"></span></h1></td><td class="farSide"><select id="languageMenu"></select></td></tr></table><div id="unityPlayer"></div><script type="text/javascript" src="blockly_compressed.js"><\/script><script type="text/javascript" src="blocks_compressed.js"><\/script><script type="text/javascript" src="javascript_compressed.js"><\/script><script type="text/javascript" src="blocks.js"><\/script>' + Hackcraft.toolbox(null) + '<div id="blockly"></div>';
 };
 
 
