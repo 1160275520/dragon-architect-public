@@ -451,6 +451,13 @@ Blockly.BlockSvg.prototype.addSelect = function() {
   this.svgGroup_.parentNode.appendChild(this.svgGroup_);
 };
 
+Blockly.BlockSvg.prototype.addNewGlow = function() {
+  Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+                    'blocklyNew');
+  // Move the selected block to the top of the stack.
+  this.svgGroup_.parentNode.appendChild(this.svgGroup_);
+};
+
 /**
  * Unselect this block.  Remove its highlighting.
  */

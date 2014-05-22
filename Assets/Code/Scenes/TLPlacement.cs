@@ -13,7 +13,7 @@ public class TLPlacement : MonoBehaviour
 		GetComponent<AllTheGUI>().CurrentMessage = "I need to place some blocks! Use <b>PlaceBlock</b> to complete my program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLPlacement");
-
+        progman.SetHighlighted("PlaceBlock", true);
         var template = new IntVec3[] {
             new IntVec3(0,0,3),
             new IntVec3(0,0,4),

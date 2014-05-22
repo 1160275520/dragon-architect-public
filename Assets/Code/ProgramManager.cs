@@ -36,7 +36,8 @@ public class ProgramManager : MonoBehaviour {
         map.Add(new Tuple<string, bool>("call", IsAvailCall));
         map.Add(new Tuple<string, bool>("repeat", IsAvailRepeat));
         var li = new LevelInfo(new Microsoft.FSharp.Collections.FSharpMap<string, bool>(map), NumHelperFuncs, 
-                               new Microsoft.FSharp.Collections.FSharpSet<string>(lockedProcedures));
+                               new Microsoft.FSharp.Collections.FSharpSet<string>(lockedProcedures),
+                               new Microsoft.FSharp.Collections.FSharpSet<string>(highlightBlocks));
         return li;
     }
 
@@ -56,6 +57,20 @@ public class ProgramManager : MonoBehaviour {
             lockedProcedures.Remove(proc);
         } else {
             lockedProcedures.Add(proc);
+        }
+    }
+
+    private HashSet<string> highlightBlocks = new HashSet<string>();
+
+    public bool IsHighlighted(string block) {
+        return highlightBlocks.Contains(block);
+    }
+
+    public void SetHighlighted(string block, bool b) {
+        if (b) { 
+            highlightBlocks.Add(block);
+        } else {
+            highlightBlocks.Remove(block);
         }
     }
 

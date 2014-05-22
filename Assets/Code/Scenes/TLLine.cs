@@ -12,7 +12,7 @@ public class TLLine : MonoBehaviour
         GetComponent<AllTheGUI>().CurrentMessage = "The <b>Line</b> statement uses <b>Repeat</b> on <b>Forward</b> and <b>PlaceBlock</b>. Use the <b>Line</b> statement to do the same thing as the commands already in my program.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("level_line_01");
-
+        progman.SetHighlighted("Line", true);
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 

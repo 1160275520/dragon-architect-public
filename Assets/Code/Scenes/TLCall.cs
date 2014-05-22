@@ -14,6 +14,7 @@ public class TLCall : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
         progman.LoadProgram("level_call_01");
+        progman.SetHighlighted("procedures_callnoreturn", true);
 
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}

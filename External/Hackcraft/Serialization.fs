@@ -127,5 +127,6 @@ let JsonOfLevel(level:LevelInfo) =
             ("commands", Json.Object (Map.map jsonOfAvail level.AvailCommands)); 
             ("funcs", jint level.NumHelperFuncs);
             ("locks", jarrmap jstr level.LockedProcs);
+            ("highlights", jarrmap jstr level.HighlightBlocks);
         ])
     )

@@ -160,7 +160,7 @@ Hackcraft.freezeBody = function(block) {
 /**
  * set which blocks are available
  */
-Hackcraft.setTools = function(levelInfo) {    
+Hackcraft.setLevel = function(levelInfo) {    
     console.log("updating toolbox");
     var toolXML = '<xml id="toolbox" style="display: none">';
     if (levelInfo["funcs"]) {
@@ -174,6 +174,14 @@ Hackcraft.setTools = function(levelInfo) {
     toolXML += '</xml>';
     console.log(toolXML);
     Blockly.updateToolbox(toolXML);
+
+    if (levelInfo["highlights"]) {
+        Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
+            if ($.inArray(b.type, levelInfo["highlights"]) > -1) {
+                b.svg_.addNewGlow();
+            }
+        });
+    }
 
     if (levelInfo["locks"]) {
         levelInfo["locks"].forEach(function (l) {

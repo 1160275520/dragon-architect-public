@@ -12,7 +12,7 @@ public class TLRepeat : MonoBehaviour
         var lh = GetComponent<LevelHelper>();
 		GetComponent<AllTheGUI>().CurrentMessage = "The <b>Repeat</b> statement lets me do everything inside multiple times. Help me use the <b>Repeat</b> statement and see what it does.";
         var progman = GetComponent<ProgramManager>();
-
+        progman.SetHighlighted("controls_repeat", true);
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 

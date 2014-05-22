@@ -13,7 +13,7 @@ public class TLMovement3D : MonoBehaviour
 		GetComponent<AllTheGUI>().CurrentMessage = "Help me get to the pink box! Use <b>Up</b> to complete my program and click <b>RUN</b>.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLMovement3D");
-
+        progman.SetHighlighted("Up", true);
         var template = new IntVec3[] {
             new IntVec3(3,6,0),
         };

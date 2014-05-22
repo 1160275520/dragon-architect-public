@@ -77,11 +77,11 @@ handler.onProgramChange = function(json) {
 
 handler.onLevelChange = function(json) {
     console.log(json);
-    var tools = JSON.parse(json)
-    Hackcraft.setTools(tools);
+    var levelInfo = JSON.parse(json)
+    Hackcraft.setLevel(levelInfo);
     // reset run button
     var b = $('#btn-run')[0];
-    if (jQuery.isEmptyObject(tools)) {
+    if (jQuery.isEmptyObject(levelInfo)) {
         b.hidden = true;
     } else {
         b.hidden = false;
@@ -90,7 +90,6 @@ handler.onLevelChange = function(json) {
         b.style.width = $('.blocklyFlyoutBackground')[0].getBoundingClientRect().width + 'px';
     }
     is_running = false;
-    set_is_running(is_running);
 }
 
 handler.onStatementHighlight = function(id) {
