@@ -46,6 +46,8 @@ Hackcraft.Commands = {"move2" :  '<block type="Forward"></block> \
                       "line" :   '<block type="Line"></block>',
                       "repeat" : '<block type="controls_repeat"></block>'};
 
+
+
 /**
  * Create call blocks for the helper functions present
  */
@@ -57,6 +59,23 @@ Hackcraft.makeFuncs = function (num) {
                                        </block>';
     };
 };
+
+Hackcraft.makeCounter = function() {
+    var blocksLeft = Blockly.mainWorkspace.maxBlocks - Blockly.mainWorkspace.getAllBlocks().length;
+    if (blocksLeft < 5) {
+        $("#statement-counter")[0].innerHTML = blocksLeft + " blocks left.";
+    } else { 
+        $("#statement-counter")[0].innerHTML = "";
+    }
+    var arrow = $("#trash-arrow")[0];
+    if (blocksLeft == 0) {
+        arrow.style.visibility = "visible";
+        arrow.style.webkitAnimationPlayState = "running";
+    } else {
+        arrow.style.visibility = "hidden";
+        arrow.style.webkitAnimationPlayState = "paused";
+    }
+}
 
 /**
  * Initialize Blockly.  Called on page load.
@@ -105,6 +124,8 @@ Hackcraft.init = function() {
         </xml>';
     // BlocklyApps.loadBlocks(defaultXml);
     Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
+
+    Blockly.bindEvent_(Blockly.mainWorkspace.svgBlockCanvas_, 'blocklyWorkspaceChange', this, Hackcraft.makeCounter);
 };
 
 window.addEventListener('load', Hackcraft.init);
@@ -122,7 +143,7 @@ Hackcraft.setProgram = function(program) {
     
     var blocks = Blockly.mainWorkspace.getTopBlocks();
     // set maximum blocks to 15 per function
-    Blockly.mainWorkspace.maxBlocks = blocks.length * 15;
+    Blockly.mainWorkspace.maxBlocks = blocks.length * 15;    
 
     // recolor functions to differentiate MAIN from helpers
     if (blocks.length > 0) {

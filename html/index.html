@@ -4,18 +4,19 @@
     <meta charset=UTF-8>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script>
-    <script src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
-    <script src="app.js"></script>
+    <script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
+    <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="common.js"></script>
     <script type="text/javascript" src="hackcraft.js"></script>
     <script type="text/javascript" src="soyutils.js"></script>
   </head>
-  <body>    
+  <body>
     <script type="text/javascript">
       document.write(Hackcraft.start({}, null,
         {lang: BlocklyApps.LANG,
          langSrc: BlocklyApps.languagePack()}));
     </script>
+    <span id="statement-counter"></span>    
     <button id="btn-run" hidden="true">Run!</button>
     <script type="text/javascript">
     var toggleRun = function () {
@@ -30,5 +31,7 @@
     }
     $('#btn-run')[0].onclick = toggleRun;
     </script>
+    <img id="trash-arrow" src="media/arrow.png"/>
+    <p class="triangle-isosceles">test speech bubble, please ignore</p>
   </body>
 </html>
