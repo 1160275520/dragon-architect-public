@@ -6,7 +6,7 @@ using Hackcraft;
 public class TLFinal : MonoBehaviour {
 
     void Start() {
-		GetComponent<AllTheGUI>().CurrentMessage = "Use what you've learned to help me build something awesome!";
+//		GetComponent<AllTheGUI>().CurrentMessage = "Use what you've learned to help me build something awesome!";
     }
 
     void Update() {

@@ -49,6 +49,7 @@ public class AllTheGUI : MonoBehaviour
     private Rect area;
     private float lastUpdateTime = 0.0f;
 
+    private Vector3 salaPos;
     private bool isFirstUpdate = true;
     private Action currentModalWindow = null;
     private string currentlyTypedFilename = "";
@@ -77,6 +78,10 @@ public class AllTheGUI : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.L)) {
             Application.LoadLevel("loader");
         }
+    }
+
+    void LateUpdate() {
+        salaPos = GameObject.Find("Robot").transform.position;
     }
 
     Rect getLastRect()
@@ -146,7 +151,19 @@ public class AllTheGUI : MonoBehaviour
         GUILayoutOption[] options;
 
         if (CurrentMessage != null) {
-            GUI.Box(new Rect(160, SPACING, 600, 125), CurrentMessage, "ButtonBackground");
+            GUI.Box(new Rect(160, SPACING, Math.Min(600, Screen.width - 160 - SPACING), 125), CurrentMessage, "ButtonBackground");
+//            var offsetX = 25;
+//            if (Camera.main.transform.position.x < salaPos.x) {
+//                offsetX *= -1;
+//            }
+//            Debug.Log(offsetX);
+//            var screenPos = Camera.main.WorldToScreenPoint(salaPos);
+//            GUI.BeginGroup(new Rect(screenPos.x, Screen.height - screenPos.y - 75, 50, 50));
+//            GUI.Label(new Rect(0, 0, 50, 50), "", "SpeechBubble");
+//            var style = new GUIStyle("Label");
+//            style.normal.textColor = Color.black;
+//            GUI.Label(new Rect(13, 13, 35, 35), "...", style);
+//            GUI.EndGroup();
         }
         if (IsActiveGotoNextLevel) {
             var style = new GUIStyle("button");

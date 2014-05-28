@@ -279,7 +279,7 @@ BlocklyApps.languagePack = function() {
  */
 BlocklyApps.init = function() {
   // Set the page title with the content of the H1 title.
-  document.title = document.getElementById('title').textContent;
+  document.title = "cubecodegoodtimes";//document.getElementById('title').textContent;
 
   // Set the HTML's language and direction.
   // document.dir fails in Mozilla, use document.body.parentNode.dir instead.
@@ -289,31 +289,31 @@ BlocklyApps.init = function() {
   document.head.parentElement.setAttribute('lang', BlocklyApps.LANG);
 
   // Sort languages alphabetically.
-  var languages = [];
-  for (var i = 0; i < BlocklyApps.LANGUAGES.length; i++) {
-    var lang = BlocklyApps.LANGUAGES[i];
-    languages.push([BlocklyApps.LANGUAGE_NAME[lang], lang]);
-  }
-  var comp = function(a, b) {
-    // Sort based on first argument ('English', 'Русский', '简体字', etc).
-    if (a[0] > b[0]) return 1;
-    if (a[0] < b[0]) return -1;
-    return 0;
-  };
-  languages.sort(comp);
-  // Populate the language selection menu.
-  var languageMenu = document.getElementById('languageMenu');
-  languageMenu.options.length = 0;
-  for (var i = 0; i < languages.length; i++) {
-    var tuple = languages[i];
-    var lang = tuple[tuple.length - 1];
-    var option = new Option(tuple[0], lang);
-    if (lang == BlocklyApps.LANG) {
-      option.selected = true;
-    }
-    languageMenu.options.add(option);
-  }
-  languageMenu.addEventListener('change', BlocklyApps.changeLanguage, true);
+  // var languages = [];
+  // for (var i = 0; i < BlocklyApps.LANGUAGES.length; i++) {
+  //   var lang = BlocklyApps.LANGUAGES[i];
+  //   languages.push([BlocklyApps.LANGUAGE_NAME[lang], lang]);
+  // }
+  // var comp = function(a, b) {
+  //   // Sort based on first argument ('English', 'Русский', '简体字', etc).
+  //   if (a[0] > b[0]) return 1;
+  //   if (a[0] < b[0]) return -1;
+  //   return 0;
+  // };
+  // languages.sort(comp);
+  // // Populate the language selection menu.
+  // var languageMenu = document.getElementById('languageMenu');
+  // languageMenu.options.length = 0;
+  // for (var i = 0; i < languages.length; i++) {
+  //   var tuple = languages[i];
+  //   var lang = tuple[tuple.length - 1];
+  //   var option = new Option(tuple[0], lang);
+  //   if (lang == BlocklyApps.LANG) {
+  //     option.selected = true;
+  //   }
+  //   languageMenu.options.add(option);
+  // }
+  // languageMenu.addEventListener('change', BlocklyApps.changeLanguage, true);
 
   // Disable the link button if page isn't backed by App Engine storage.
   var linkButton = document.getElementById('linkButton');

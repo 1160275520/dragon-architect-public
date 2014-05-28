@@ -23,6 +23,7 @@ public class ExternalAPI : MonoBehaviour
             try {
                 SendProgram();
                 SendLevel();
+//                SendInstructions();
             } catch (NullReferenceException) {
                 Debug.Log("null reference on first update, expected on level loader");
             }
@@ -57,7 +58,12 @@ public class ExternalAPI : MonoBehaviour
         } catch (InvalidOperationException) {
             Application.ExternalCall(ExternalApiFunc, "onStatementHighlight", ""); // clear final highlight when done executing
 
-        }}
+        }
+    }
+
+    public void SendInstructions() {
+        Application.ExternalCall(ExternalApiFunc, "onInstructionsChange", GetComponent<AllTheGUI>().CurrentMessage);
+    }
 
     // external API
 

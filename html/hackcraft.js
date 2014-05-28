@@ -57,7 +57,7 @@ Hackcraft.makeFuncs = function (num) {
         Hackcraft.Commands['call'] += '<block type="procedures_callnoreturn"> \
                                          <mutation name="F'+ (i+1) + '"></mutation> \
                                        </block>';
-    };
+    }
 };
 
 Hackcraft.makeCounter = function() {
@@ -75,7 +75,7 @@ Hackcraft.makeCounter = function() {
         arrow.style.visibility = "hidden";
         arrow.style.webkitAnimationPlayState = "paused";
     }
-}
+};
 
 /**
  * Initialize Blockly.  Called on page load.
@@ -88,8 +88,8 @@ Hackcraft.init = function() {
     var onresize = function(e) {
         var top = unity.offsetTop;
         blocklyDiv.style.top = Math.max(10, top - window.pageYOffset) + 'px';
-        blocklyDiv.style.left = '788px';
-        blocklyDiv.style.width = (window.innerWidth - 808) + 'px';
+        blocklyDiv.style.left = (unity.firstChild.getBoundingClientRect().width + 25) + 'px';
+        blocklyDiv.style.width = (window.innerWidth - unity.firstChild.getBoundingClientRect().width) + 'px';
     };
     window.addEventListener('scroll', function() {
         onresize();
@@ -233,7 +233,8 @@ Hackcraft.getProgram = function() {
 };
 
 /**
- * 
+ * iterates over the blocks in a body, invoking callback on each one
+ * callback needs to handle recursively processing nested bodies, if applicable
  */
  Hackcraft.processBody = function(block, callback) {
     var bodyBlock = block.inputList[1];
@@ -252,13 +253,14 @@ Hackcraft.getProgram = function() {
     return body;
  };
 
- Hackcraft.testProcessBody = function() {
-    var b = Blockly.mainWorkspace.getTopBlocks()[0];
-    return Hackcraft.processBody(b, function tmp(x) { 
-        if (x.inputList.some(function (i) { return i.connection != null; })) {
-            return x.toString(), Hackcraft.processBody(x, tmp);
-        } else {
-            return x.toString();
-        }
-    });
- };
+ Hackcraft.setInstructions = function (instructions) {
+    console.log("setting instructions");
+    var msg = $('#instructions')[0];
+    if (instructions) {
+        msg.style.visibility = "visible";
+        msg.innerHTML = "\"" + instructions + "\"";
+    } else {
+        msg.style.visibility = "hidden";
+        msg.innerHTML = "";
+    }
+ }

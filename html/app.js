@@ -17,15 +17,15 @@ function send_message(object, method, arg) {
 
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
-    console.log(handler[func]);
     handler[func](arg);
 }
 
 // startup
 $(function() {
+    var dim = Math.min(768, window.innerWidth / 2)
     var config = {
-        width: 768,
-        height: 768,
+        width: dim,
+        height: dim,
         params: { enableDebugging:"0" }
     };
 
@@ -34,19 +34,16 @@ $(function() {
 
     // button/ui callbacks have to be setup inside this block
 
-    $('#btn-load').on('click', function() {
-        set_stage(possible_stages[8]);
-    });
-
-    $('#btn-setprog').on('click', function() {
-        set_program(Hackcraft.getProgram());
-    });
-
     $('#btn-run').on('click', function() {
         set_program(Hackcraft.getProgram());
         is_running = !is_running;
         set_is_running(is_running);
         Blockly.mainWorkspace.traceOn(is_running);
+        var b = $('#btn-run')[0];
+        var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
+        var selfRect = b.getBoundingClientRect();
+        b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
+        b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
     });
 });
 
@@ -77,7 +74,7 @@ handler.onProgramChange = function(json) {
 
 handler.onLevelChange = function(json) {
     console.log(json);
-    var levelInfo = JSON.parse(json)
+    var levelInfo = JSON.parse(json);
     Hackcraft.setLevel(levelInfo);
     // reset run button
     var b = $('#btn-run')[0];
@@ -87,7 +84,16 @@ handler.onLevelChange = function(json) {
         b.hidden = false;
         b.innerText = "Run!";
         b.style.backgroundColor = "#37B03F";
-        b.style.width = $('.blocklyFlyoutBackground')[0].getBoundingClientRect().width + 'px';
+        var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
+        var selfRect = b.getBoundingClientRect();
+        b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
+        b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
+        // b.style.width = rect.width + 'px';
+        // b.style.left = rect.left + 'px';
+        // var toolBlocks = Blockly.mainWorkspace.flyout_.workspace_.topBlocks_;
+        // var lastTool = toolBlocks[toolBlocks.length - 1];
+        // rect = lastTool.svg_.svgGroup_.getBoundingClientRect();
+        // b.style.top = (rect.bottom + 25) + 'px';
     }
     is_running = false;
 }
@@ -99,6 +105,10 @@ handler.onStatementHighlight = function(id) {
     } else {
         Blockly.mainWorkspace.highlightBlock(id.toString());
     }
+}
+
+handler.onInstructionsChange = function(msg) {
+    Hackcraft.setInstructions(msg);
 }
 
 return onHackcraftEvent;
