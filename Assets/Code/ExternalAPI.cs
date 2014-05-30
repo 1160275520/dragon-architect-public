@@ -23,7 +23,7 @@ public class ExternalAPI : MonoBehaviour
             try {
                 SendProgram();
                 SendLevel();
-//                SendInstructions();
+                SendInstructions();
             } catch (NullReferenceException) {
                 Debug.Log("null reference on first update, expected on level loader");
             }

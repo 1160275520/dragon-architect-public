@@ -11,7 +11,7 @@ public class TLRepeat2 : MonoBehaviour
 
 	void Start () {
         var lh = GetComponent<LevelHelper>();
-		GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me make a 5x5 vertical wall. Use the <b>Repeat</b> statement to tell me to do the same action many times.";
+        GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me make a 5x5 vertical wall. Use <object data=\"media/repeat.svg\" style=\"vertical-align:middle\"></object> to tell me to do the same action many times.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
         progman.SetHighlighted("controls_repeat", true);

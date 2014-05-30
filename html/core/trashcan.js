@@ -85,7 +85,7 @@ Blockly.Trashcan.prototype.MARGIN_BOTTOM_ = 35;
  * @type {number}
  * @private
  */
-Blockly.Trashcan.prototype.MARGIN_SIDE_ = 35;
+Blockly.Trashcan.prototype.MARGIN_SIDE_ = 55;
 
 /**
  * Extent of hotspot on all sides beyond the size of the image.

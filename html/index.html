@@ -16,9 +16,14 @@
         {lang: BlocklyApps.LANG,
          langSrc: BlocklyApps.languagePack()}));
     </script>
+    <p id="instructions">test instructions</p>
     <span id="statement-counter"></span>    
     <button id="btn-run" hidden="true">Run!</button>
+    <img id="trash-arrow" src="media/arrow.png"/>
+    <button id="btn-undo">Undo</button>
+    
     <script type="text/javascript">
+    // run button
     var toggleRun = function () {
       var b = $('#btn-run')[0];
       if (b.innerText === "Run!") {
@@ -30,7 +35,9 @@
       }
     }
     $('#btn-run')[0].onclick = toggleRun;
+
+    // undo button 
+    $('#btn-undo')[0].onclick = Hackcraft.undo;
     </script>
-    <img id="trash-arrow" src="media/arrow.png"/>
   </body>
 </html>

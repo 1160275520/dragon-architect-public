@@ -151,7 +151,7 @@ public class AllTheGUI : MonoBehaviour
         GUILayoutOption[] options;
 
         if (CurrentMessage != null) {
-            GUI.Box(new Rect(160, SPACING, Math.Min(600, Screen.width - 160 - SPACING), 125), CurrentMessage, "ButtonBackground");
+//            GUI.Box(new Rect(160, SPACING, Math.Min(600, Screen.width - 160 - SPACING), 125), CurrentMessage, "ButtonBackground");
 //            var offsetX = 25;
 //            if (Camera.main.transform.position.x < salaPos.x) {
 //                offsetX *= -1;

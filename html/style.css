@@ -13,16 +13,9 @@
 
 #blockly {
   position: absolute;
-  bottom: 10px;,
-/*  -webkit-transform: scale(0.75);
-  transform: scale(0.75);*/
+  bottom: 10px;
   max-width: 100%;
   width: auto;
-}
-
-#unityPlayer {
-/*  -webkit-transform: scale(0.75);
-  -webkit-transform-origin: 0 0;*/
 }
 
 body {
@@ -39,50 +32,70 @@ body {
   position: absolute;
   font-size: 18pt;
   font-family: sans-serif;
-  top: 50px;
-  left: 950px;
+  top: 10px;
+}
+
+@-webkit-keyframes trash-arrow {
+  0%   {-webkit-transform: rotate(90deg) translate(0px,0px); }
+  50%  {-webkit-transform: rotate(90deg) translate(0px,50px);}
+  100% {-webkit-transform: rotate(90deg) translate(0px,0px); }
+}
+
+@keyframes trash-arrow {
+  0%   {transform: rotate(90deg) translate(0px,0px);}
+  50%  {transform: rotate(90deg) translate(0px,50px);}
+  100% {transform: rotate(90deg) translate(0px,0px);}
 }
 
 #trash-arrow {
   position: absolute;
   height: 150px;
-  -webkit-transform:rotate(90deg);
-  transform:rotate(90deg);
-  top: 880px;
-  left: 1750px;
-  -webkit-animation: trash-arrow 2s infinite alternate ease-in-out paused;
-  animation: trash-arrow 2s infinite alternate ease-in-out paused;
+  -webkit-animation-name: trash-arrow;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-play-state: paused;
+  animation-name: trash-arrow;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  animation-play-state: paused;
   visibility: hidden;
 }
 
-@-webkit-keyframes trash-arrow {
-  0%   {left: 1750px;}
-  50%  {left: 1700px;}
-  100% {left: 1750px;}
-}
-
-@keyframes trash-arrow {
-  0%   {left: 1750px;}
-  50%  {left: 1700px;}
-  100% {left: 1750px;}
+#btn-undo {
+  position: absolute;
+  font-size: 16pt;
 }
 
 #instructions {
-  /*position:absolute;*/
-  top: 0px;
-  left: 0px;
+  position:absolute;
+  top: 10px;
+  left: 160px;
   padding:15px;
-  /*margin:1em 0 3em;*/
-  color:#000;
+  margin:1em 0 3em;
+  color:#fff;
   font-family: monospace;
-  visibility: hidden;
-  background:#F5D7F3; /* default background for browsers without gradient support */
-  /* css3 */
-  background:-webkit-gradient(linear, 0 0, 0 100%, from(#F5E6F4), to(#F5D7F3));
-  background:-moz-linear-gradient(#F5E6F4, #F5D7F3);
-  background:-o-linear-gradient(#F5E6F4, #F5D7F3);
-  background:linear-gradient(#F5E6F4, #F5D7F3);
-  -webkit-border-radius:10px;
-  -moz-border-radius:10px;
+  background: #333; /* default background for browsers without gradient support */
+  opacity: 0.8;
   border-radius:10px;
+}
+
+/* creates the narrower right-angled triangle */
+#instructions:after {
+  content:"";
+  position:absolute;
+  bottom:-20px; /* value = - border-top-width - border-bottom-width */
+  left:80px; /* value = (:before's left) + (:before's border-right/left-width)  - (:after's border-right/left-width) */
+  border:0;
+  border-right-width:10px; /* vary this value to change the angle of the vertex */
+  border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :before */
+  border-style:solid;
+  border-color:transparent #333;
+  opacity: 0.8;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
 }

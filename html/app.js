@@ -45,6 +45,7 @@ $(function() {
         b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
         b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
     });
+    $('#instructions')[0].hidden = true;
 });
 
 // SPECIFIC HANDLER FUNCTIONS
@@ -76,6 +77,7 @@ handler.onLevelChange = function(json) {
     console.log(json);
     var levelInfo = JSON.parse(json);
     Hackcraft.setLevel(levelInfo);
+    Hackcraft.history = new Array();
     // reset run button
     var b = $('#btn-run')[0];
     if (jQuery.isEmptyObject(levelInfo)) {
