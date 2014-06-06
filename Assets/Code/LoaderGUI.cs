@@ -4,9 +4,9 @@ using System.Collections;
 public class LoaderGUI : MonoBehaviour {
 
     public static readonly string[] LEVELS = new string[] {
-        "tl_movement2d", "tl_placement", "tl_personify", "tl_movement_args", 
-        "tl_movement3d", "tl_camera", "tl_call", "tl_call2", "tl_repeat", "tl_repeat2",
-        "tl_line", "tl_line2", "tl_debug", "tl_final",
+        "tl_movement2d", "tl_placement", "tl_movement_args", 
+        "tl_movement3d", "tl_call", "tl_call2", "tl_repeat", "tl_repeat2",
+        "tl_final",
     };
 
     public static int CURRENT_LEVEL_INDEX = 0;

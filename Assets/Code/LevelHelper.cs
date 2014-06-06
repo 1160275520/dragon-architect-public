@@ -10,6 +10,8 @@ public class LevelHelper : MonoBehaviour
     public GameObject BlueprintPrefab;
     public GameObject RobotTargetPrefab;
 
+    private List<UnityEngine.Object> targets = new List<UnityEngine.Object>();
+
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {
         var progman = GetComponent<ProgramManager>();
@@ -26,11 +28,14 @@ public class LevelHelper : MonoBehaviour
     }
 
     /// Instantiates the target prefab for each of the given cells.
-    public void CreateRobotTarget(IEnumerable<IntVec3> cells) {
+    public void CreateRobotTarget(IntVec3 cell) {
         var grid = GetComponent<Grid>();
-        foreach (var c in cells) {
-            GameObject.Instantiate(RobotTargetPrefab, grid.CenterOfCell(c), Quaternion.identity);
-        }
+        // offset prefab since robot floats one above its actual location
+        targets.Add(GameObject.Instantiate(RobotTargetPrefab, grid.CenterOfCell(cell + new IntVec3(0,1,0)), Quaternion.identity));
+    }
+
+    public void ClearRobotTargets() {
+        targets.ForEach((UnityEngine.Object g) => GameObject.Destroy(g));
     }
 
     /// Create a function that checks the current state of the grid and returns true iff it exactly matches
@@ -48,6 +53,10 @@ public class LevelHelper : MonoBehaviour
             var grid = GetComponent<Grid>();
             return grid.AllCells.Count() >= numBlocks;
         };
+    }
+
+    public Func<bool> CreateTargetPredicate(IntVec3 cell) {
+        return () => FindObjectOfType<RobotController>().Robot.Position.Equals(cell);
     }
 
     /// Returns a function that evaluates to true iff all the given predicates evaluate to true.

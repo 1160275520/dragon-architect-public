@@ -41,7 +41,7 @@ public class TLPersonify : MonoBehaviour {
             var progman = GetComponent<ProgramManager>();
             var grid = GetComponent<Grid>();
             var lh = GetComponent<LevelHelper>();
-            progman.InitGrid = grid.AllCells;
+//            progman.InitGrid = grid.AllCells;
 
             var salaBlueprint = new IntVec3[] {
                 new IntVec3(0,0,3),

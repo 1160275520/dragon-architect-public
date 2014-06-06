@@ -294,15 +294,21 @@ Hackcraft.getXML = function() {
     return body;
  };
 
+/**
+ * set the html for the instructions, sizing the speech buble appropriately
+ * if instructions is the empty string, speech bubble is hidden instead
+ */
  Hackcraft.setInstructions = function (instructions) {
     console.log("setting instructions");
     var msg = $('#instructions')[0];
+    $('#instructions').removeClass("speechBubble");
     if (instructions) {
         msg.hidden = false;
         msg.innerHTML = "\"" + instructions + "\"";
         var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
         var selfRect = msg.getBoundingClientRect();
         msg.style.maxWidth = (rect.width - selfRect.left - 25) + 'px'; // 25 to account for padding and space from edge
+        $('#instructions').addClass("speechBubble");
     } else {
         msg.hidden = true;
         msg.innerHTML = "";

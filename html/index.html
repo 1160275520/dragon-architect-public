@@ -3,7 +3,10 @@
   <head>
     <meta charset=UTF-8>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script>
+    <!-- <script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script> -->
+    <link rel="stylesheet" href="slider.css">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="common.js"></script>
@@ -21,7 +24,18 @@
     <button id="btn-run" hidden="true">Run!</button>
     <img id="trash-arrow" src="media/arrow.png"/>
     <button id="btn-undo">Undo</button>
-    
+<!--     <p>
+      <label for="amount">Delay per command:</label>
+      <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
+    </p> -->
+    <div id="sliderContainer">
+      <div id="sliderSteps">
+        <span class="tick" >Slow</span>
+        <span class="tick" style="left: 30%;">Medium</span>
+        <span class="tick" style="left: 60%;">Fast</span>
+      </div>
+      <div id="slider"></div>
+    </div>
     <script type="text/javascript">
     // run button
     var toggleRun = function () {

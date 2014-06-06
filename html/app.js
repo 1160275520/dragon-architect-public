@@ -46,6 +46,19 @@ $(function() {
         b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
     });
     $('#instructions')[0].hidden = true;
+
+    // speed slider
+    $(function() {
+      $( "#slider" ).slider({
+        value:0.5,
+        min: 0.0,
+        max: 1.0,
+        step: 0.05,
+        slide: function( event, ui ) {
+          send_message("System", "EAPI_SetDelayPerCommand", (1 - ui.value).toString());
+        }
+      });
+    });
 });
 
 // SPECIFIC HANDLER FUNCTIONS
@@ -82,8 +95,10 @@ handler.onLevelChange = function(json) {
     var b = $('#btn-run')[0];
     if (jQuery.isEmptyObject(levelInfo)) {
         b.hidden = true;
+        $('#sliderContainer')[0].style.visibility = "hidden";
     } else {
         b.hidden = false;
+        $('#sliderContainer')[0].style.visibility = "visible";
         b.innerText = "Run!";
         b.style.backgroundColor = "#37B03F";
         var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
@@ -111,6 +126,12 @@ handler.onStatementHighlight = function(id) {
 
 handler.onInstructionsChange = function(msg) {
     Hackcraft.setInstructions(msg);
+}
+
+handler.onSetColors = function(json) {
+    var colors = JSON.parse(json);
+    Blockly.FieldColour.COLOURS = colors;
+    Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
 }
 
 return onHackcraftEvent;

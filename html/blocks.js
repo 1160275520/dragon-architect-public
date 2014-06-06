@@ -130,6 +130,7 @@ Blockly.Blocks['PlaceBlock'] = {
         this.setColour(35);
         this.appendDummyInput()
             .appendField("place block")
+            .appendField(new Blockly.FieldColour('#5cab32'), 'COLOUR');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }

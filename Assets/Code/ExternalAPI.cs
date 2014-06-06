@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Hackcraft;
 using Microsoft.FSharp.Collections;
+using Newtonsoft.Json;
 
 public class ExternalAPI : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class ExternalAPI : MonoBehaviour
     public const string OnSystemStart = "onSystemStart";
     public const string OnProgramChange = "onProgramChange";
     public const string OnLevelChange = "onLevelChange";
+    public const string OnStatementHighlight = "onStatementHighlight";
+    public const string OnInstructionsChange = "onInstructionsChange";
 
     private bool isFirstUpdate;
 
@@ -21,6 +24,7 @@ public class ExternalAPI : MonoBehaviour
     void Update() {
         if (isFirstUpdate) {
             try {
+                SendColors();
                 SendProgram();
                 SendLevel();
                 SendInstructions();
@@ -54,15 +58,18 @@ public class ExternalAPI : MonoBehaviour
 
     public void SendCurrentStatement() {
         try {
-            Application.ExternalCall(ExternalApiFunc, "onStatementHighlight", GetComponent<ProgramManager>().LastExecuted.First());
+            Application.ExternalCall(ExternalApiFunc, OnStatementHighlight, GetComponent<ProgramManager>().LastExecuted.First());
         } catch (InvalidOperationException) {
-            Application.ExternalCall(ExternalApiFunc, "onStatementHighlight", ""); // clear final highlight when done executing
-
+            Application.ExternalCall(ExternalApiFunc, OnStatementHighlight, ""); // clear final highlight when done executing
         }
     }
 
     public void SendInstructions() {
-        Application.ExternalCall(ExternalApiFunc, "onInstructionsChange", GetComponent<AllTheGUI>().CurrentMessage);
+        Application.ExternalCall(ExternalApiFunc, OnInstructionsChange, GetComponent<AllTheGUI>().CurrentMessage);
+    }
+
+    public void SendColors() {
+        Application.ExternalCall(ExternalApiFunc, "onSetColors", JsonConvert.SerializeObject(Cube.AvailableColors));
     }
 
     // external API
@@ -80,5 +87,9 @@ public class ExternalAPI : MonoBehaviour
         } else {
             progman.StopRunning();
         }
+    }
+
+    public void EAPI_SetDelayPerCommand(string delay) {
+        GetComponent<ProgramManager>().DelayPerCommand = (float)Convert.ToDouble(delay);
     }
 }

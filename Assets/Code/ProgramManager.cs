@@ -14,7 +14,7 @@ public class ProgramManager : MonoBehaviour {
     public ImperativeAstManipulator Manipulator { get; private set; }
     public ImmArr<Simulator.StepState> States { get; private set; }
 
-    public IEnumerable<IntVec3> InitGrid = new List<IntVec3>();
+//    public IEnumerable<IntVec3> InitGrid = new List<IntVec3>();
 
     public bool IsAvail2DMovement = true;
     public bool IsAvail3DMovement = true;
@@ -180,7 +180,7 @@ public class ProgramManager : MonoBehaviour {
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
             var robot = FindObjectOfType<RobotController>();
-            var grid = new GridStateTracker(InitGrid);
+            var grid = new GridStateTracker(new List<IntVec3>());
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
             States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);

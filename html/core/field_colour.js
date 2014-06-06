@@ -102,12 +102,12 @@ Blockly.FieldColour.prototype.setValue = function(colour) {
  * http://docs.closure-library.googlecode.com/git/closure_goog_ui_colorpicker.js.source.html
  * @type {!Array.<string>}
  */
-Blockly.FieldColour.COLOURS = goog.ui.ColorPicker.SIMPLE_GRID_COLORS;
-
+//Blockly.FieldColour.COLOURS = goog.ui.ColorPicker.SIMPLE_GRID_COLORS;
+Blockly.FieldColour.COLOURS = ['#5cab32', '#ff0000']
 /**
  * Number of columns in the palette.
  */
-Blockly.FieldColour.COLUMNS = 7;
+Blockly.FieldColour.COLUMNS = 2;
 
 /**
  * Create a palette under the colour field.

@@ -11,17 +11,22 @@ public class TLRepeat2 : MonoBehaviour
 
 	void Start () {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me make a 5x5 vertical wall. Use <object data=\"media/repeat.svg\" style=\"vertical-align:middle\"></object> to tell me to do the same action many times.";
+        GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me make a 10x10 square. You might want to use one <object data=\"media/repeat.svg\" style=\"vertical-align:middle\"></object> and one <object data=\"media/repeat4.svg\" style=\"vertical-align:middle\"></object>.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
         progman.SetHighlighted("controls_repeat", true);
 
         var template = new List<IntVec3>();
-        const int size = 5;
-        const int offset = 3;
+        const int size = 10;
+        const int offset = 1;
         for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                template.Add(new IntVec3(x + offset, y, 0));
+            if (x == 0 || x == size - 1) {
+                for (int z = 0; z < size; z++) {
+                    template.Add(new IntVec3(x, 0, z + offset));
+                }
+            } else {
+                template.Add(new IntVec3(x, 0, offset));
+                template.Add(new IntVec3(x, 0, size - 1 + offset));
             }
         }
 
