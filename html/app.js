@@ -93,12 +93,12 @@ handler.onLevelChange = function(json) {
     Hackcraft.history = new Array();
     // reset run button
     var b = $('#btn-run')[0];
+    var slider = $('#sliderContainer')[0];
     if (jQuery.isEmptyObject(levelInfo)) {
         b.hidden = true;
-        $('#sliderContainer')[0].style.visibility = "hidden";
+        slider.style.visibility = "hidden";
     } else {
         b.hidden = false;
-        $('#sliderContainer')[0].style.visibility = "visible";
         b.innerText = "Run!";
         b.style.backgroundColor = "#37B03F";
         var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
@@ -111,6 +111,9 @@ handler.onLevelChange = function(json) {
         // var lastTool = toolBlocks[toolBlocks.length - 1];
         // rect = lastTool.svg_.svgGroup_.getBoundingClientRect();
         // b.style.top = (rect.bottom + 25) + 'px';
+        slider.style.visibility = "visible";
+        var selfRect = slider.getBoundingClientRect();
+        slider.style.top = (rect.bottom - selfRect.height - 2) + 'px';
     }
     is_running = false;
 }
