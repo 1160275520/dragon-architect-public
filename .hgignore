@@ -23,6 +23,7 @@ html/hackcraft/
 *.booproj
 *.dll
 *.dll.meta
+*.pyc
 .DS_Store
 Hackcraft.app/
 *.exe
