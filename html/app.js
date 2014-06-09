@@ -22,7 +22,7 @@ function onHackcraftEvent(func, arg) {
 
 // startup
 $(function() {
-    var dim = Math.min(768, window.innerWidth / 2)
+    var dim = Math.min(768, window.innerHeight - 120);
     var config = {
         width: dim,
         height: dim,
@@ -45,7 +45,7 @@ $(function() {
         b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
         b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
     });
-    $('#instructions')[0].hidden = true;
+    $('#instructions')[0].style.visibility = "hidden";
 
     // speed slider
     $(function() {
@@ -104,7 +104,7 @@ handler.onLevelChange = function(json) {
         var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
         var selfRect = b.getBoundingClientRect();
         b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
-        b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
+        b.style.top = (rect.bottom + 2) + 'px';
         // b.style.width = rect.width + 'px';
         // b.style.left = rect.left + 'px';
         // var toolBlocks = Blockly.mainWorkspace.flyout_.workspace_.topBlocks_;
@@ -113,7 +113,7 @@ handler.onLevelChange = function(json) {
         // b.style.top = (rect.bottom + 25) + 'px';
         slider.style.visibility = "visible";
         var selfRect = slider.getBoundingClientRect();
-        slider.style.top = (rect.bottom - selfRect.height - 2) + 'px';
+        slider.style.top = (rect.bottom + 2) + 'px';
     }
     is_running = false;
 }

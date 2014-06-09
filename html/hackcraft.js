@@ -66,8 +66,9 @@ Hackcraft.makeFuncs = function (num) {
 Hackcraft.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.maxBlocks - Blockly.mainWorkspace.getAllBlocks().length;
     var counter = $("#statement-counter")[0];
-    counter.style.top = "15px";
-    counter.style.left = (Blockly.mainWorkspace.flyout_.workspace_.getCanvas().getBoundingClientRect().right + 35) + "px";
+    var rect = Blockly.mainWorkspace.flyout_.workspace_.getCanvas().getBoundingClientRect();
+    counter.style.top = rect.top + "px";
+    counter.style.left = (rect.right + 35) + "px";
     if (blocksLeft < 5) {
         counter.innerHTML = blocksLeft + " blocks left.";
     } else { 
@@ -302,15 +303,18 @@ Hackcraft.getXML = function() {
     console.log("setting instructions");
     var msg = $('#instructions')[0];
     $('#instructions').removeClass("speechBubble");
+    msg.style.visibility = "hidden";
     if (instructions) {
-        msg.hidden = false;
         msg.innerHTML = "\"" + instructions + "\"";
-        var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
-        var selfRect = msg.getBoundingClientRect();
-        msg.style.maxWidth = (rect.width - selfRect.left - 25) + 'px'; // 25 to account for padding and space from edge
-        $('#instructions').addClass("speechBubble");
+        setTimeout(function () { // XXX timeout necessary to hide inexplicable resizing during layout of new html
+            msg.style.visibility = "visible";
+            var selfRect = msg.getBoundingClientRect();
+            console.log(selfRect)
+            msg.style.top = (100 - (selfRect.height + 30)) / 2 + 'px'; // center in the 100px of space to work with, 30 for padding
+            $('#instructions').addClass("speechBubble");
+        }, 500);        
     } else {
-        msg.hidden = true;
+        msg.style.visibility = "hidden";
         msg.innerHTML = "";
     }
  }
