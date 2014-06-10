@@ -22,7 +22,7 @@ function onHackcraftEvent(func, arg) {
 
 // startup
 $(function() {
-    var dim = Math.min(768, window.innerHeight - 120);
+    var dim = Math.min(768, window.innerHeight - 160);
     var config = {
         width: dim,
         height: dim,
@@ -43,7 +43,7 @@ $(function() {
         var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
         var selfRect = b.getBoundingClientRect();
         b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
-        b.style.top = (rect.bottom - selfRect.height - 2) + 'px'; // 2 to account for padding, etc.
+        b.style.top = (rect.bottom + 2) + 'px'; // 2 to account for padding, etc.
     });
     $('#instructions')[0].style.visibility = "hidden";
 
