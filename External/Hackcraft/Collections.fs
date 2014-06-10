@@ -8,6 +8,8 @@ type ImmArr<'T> private(arr : 'T[]) =
     member x.Item with get idx = arr.[idx]
     member x.Length = arr.Length
 
+    member x.Map f = ImmArr (Array.map f arr)
+
     interface IEnumerable with
         member x.GetEnumerator() = (arr :> IEnumerable<'T>).GetEnumerator() :> IEnumerator
 
@@ -16,6 +18,8 @@ type ImmArr<'T> private(arr : 'T[]) =
 
 module ImmArr =
     let ofSeq (s: #seq<'a>) = ImmArr (s)
+    let empty () = ofSeq []
+    let map f (x:ImmArr<'a>) = x.Map f
 
 module MyList =
     let rec skip n (list:'a list) =
