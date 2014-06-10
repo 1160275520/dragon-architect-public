@@ -8,18 +8,18 @@
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject2.js"></script>
+    <script type="text/javascript" src="blockly_uncompressed.js"></script>
+    <script type="text/javascript" src="customBlocks.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <script type="text/javascript" src="common.js"></script>
     <script type="text/javascript" src="hackcraft.js"></script>
-    <script type="text/javascript" src="soyutils.js"></script>
   </head>
   <body>
     <div id="unityPlayer"></div>
-    <script type="text/javascript">
-      document.write(Hackcraft.start({}, null,
-        {lang: BlocklyApps.LANG,
-         langSrc: BlocklyApps.languagePack()}));
-    </script>
+    <xml id="toolbox" style="display: none">
+      <block type="Forward"></block>
+    </xml>
+    <div id="blockly"></div>
     <p id="instructions">test instructions</p>
     <span id="statement-counter"></span>    
     <button id="btn-run" hidden="true">Run!</button>
