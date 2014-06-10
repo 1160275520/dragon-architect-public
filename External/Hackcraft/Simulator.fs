@@ -67,6 +67,7 @@ let ExecuteStep program (state:State) =
                 state.CallStack <- {Args=head.Args; ToExecute=List.ofSeq b} :: state.CallStack
                 None
             | Call {Proc=procname; Args=args} ->
+                let args = ImmArr.map (Evaluate state) args
                 state.CallStack <- {Args=args; ToExecute=getProc program procname} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
@@ -74,7 +75,9 @@ let ExecuteStep program (state:State) =
                 let toAdd = List.init ntimes (fun _ -> stmt)
                 state.CallStack <- {Args=head.Args; ToExecute=toAdd} :: state.CallStack
                 None
-            | Command cmd -> Some cmd
+            | Command (cmd, args) ->
+                let args = ImmArr.map (Evaluate state) args
+                Some (Robot.Command (cmd, args))
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
 let ExecuteUntilCommand program state =
@@ -86,7 +89,7 @@ let ExecuteUntilCommand program state =
 let IsDone (state:State) = state.CallStack.IsEmpty
 
 type StepState = {
-    Command: string;
+    Command: Robot.Command;
     LastExecuted: Statement list;
     Robot: Robot.IRobot;
     Grid: ImmArr<IntVec3>;
@@ -95,7 +98,7 @@ type StepState = {
 let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRobot) =
     let MAX_ITER = 10000
     let state = CreateState program mainFunc
-    let mutable steps = [{Command=""; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}]
+    let mutable steps = [{Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}]
     let mutable isDone = false
     let mutable numSteps = 0
     while not (IsDone state) && numSteps < MAX_ITER do

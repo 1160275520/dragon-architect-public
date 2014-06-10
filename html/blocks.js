@@ -86,7 +86,7 @@ Blockly.Blocks['Forward'] = {
 };
 
 Blockly.UnityJSON['Forward'] = function(block) {
-    return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Forward","type":"call"};
+    return {"args":[{"type":"literal", "value":block.getFieldValue("VALUE")}],"meta":{"id":Number(block.id)},"proc":"Forward","type":"call"};
 };
 
 // UP
@@ -103,7 +103,7 @@ Blockly.Blocks['Up'] = {
 };
 
 Blockly.UnityJSON['Up'] = function(block) {
-    return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Up","type":"call"};
+    return {"args":[{"type":"literal", "value":block.getFieldValue("VALUE")}],"meta":{"id":Number(block.id)},"proc":"Up","type":"call"};
 };
 
 // DOWN
@@ -120,7 +120,7 @@ Blockly.Blocks['Down'] = {
 };
 
 Blockly.UnityJSON['Down'] = function(block) {
-    return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Down","type":"call"};
+    return {"args":[{"type":"literal", "value":block.getFieldValue("VALUE")}],"meta":{"id":Number(block.id)},"proc":"Down","type":"call"};
 };
 
 // PLACEBLOCK
@@ -155,7 +155,7 @@ Blockly.Blocks['Line'] = {
 };
 
 Blockly.UnityJSON['Line'] = function(block) {
-    return {"args":[block.getFieldValue("VALUE")],"meta":{"id":Number(block.id)},"proc":"Line","type":"call"};
+    return {"args":[{"type":"literal", "value":block.getFieldValue("VALUE")}],"meta":{"id":Number(block.id)},"proc":"Line","type":"call"};
 };
 
 // REPEAT
@@ -204,7 +204,7 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
                     return '<block type="' + stmt['proc'] + '">';
                 }
             } else {
-                return '<block type="' + stmt['proc'] + '"><field name="VALUE">' + stmt['args'][0] + '</field>';
+                return '<block type="' + stmt['proc'] + '"><field name="VALUE">' + stmt['args'][0].value + '</field>';
             }
         } else if (stmt['type'] === "repeat") {
             return '<block type="controls_repeat"><field name="TIMES">' + stmt['numtimes']['value'] + '</field><statement name="DO">' + Blockly.UnityJSON.stmtToXML(stmt['stmt'], program) + '</statement>';

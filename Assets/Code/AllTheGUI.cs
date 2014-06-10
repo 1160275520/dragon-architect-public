@@ -108,25 +108,25 @@ public class AllTheGUI : MonoBehaviour
 
         switch (name.ToLower()) {
             case "forward":
-                return Imperative.NewCall(NextId(), "Forward", new object[] { "1" });
+                return Imperative.NewCallL1(NextId(), "Forward", "1");
             case "up":
-                return Imperative.NewCall(NextId(), "Up", new object[] { "1" });
+                return Imperative.NewCallL1(NextId(), "Up", "1");
             case "down":
-                return Imperative.NewCall(NextId(), "Down", new object[] { "1" });
+                return Imperative.NewCallL1(NextId(), "Down", "1");
             case "left":
-                return Imperative.NewCall(NextId(), "Left", new object[] { });
+                return Imperative.NewCall0(NextId(), "Left");
             case "right":
-                return Imperative.NewCall(NextId(), "Right", new object[] { });
+                return Imperative.NewCall0(NextId(), "Right");
             case "placeblock":
-                return Imperative.NewCall(NextId(), "PlaceBlock", new object[] { });
+                return Imperative.NewCall0(NextId(), "PlaceBlock");
             case "removeblock":
-                return Imperative.NewCall(NextId(), "RemoveBlock", new object[] { });
+                return Imperative.NewCall0(NextId(), "RemoveBlock");
             case "line":
-                return Imperative.NewCall(NextId(), "Line", new object[] { "5" });
+                return Imperative.NewCallL1(NextId(), "Line", "5");
             case "repeat":
-                return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, lastProc, new object[] { }), Imperative.Expression.NewLiteral("5"));
+                return Imperative.NewRepeat(NextId(), Imperative.NewCall0(0, lastProc), Imperative.Expression.NewLiteral("5"));
             case "call":
-                return Imperative.NewCall(NextId(), lastProc, new object[] { });
+                return Imperative.NewCall0(NextId(), lastProc);
             default:
                 throw new ArgumentException(name + " is not a recognized instruction name.");
         }
@@ -419,7 +419,7 @@ public class AllTheGUI : MonoBehaviour
         }
 
 
-        var arg1 = call.Args.Count() > 0 ? call.Args [0] as string : null;
+        var arg1 = call.Args.Count() > 0 ? (call.Args[0] as Imperative.Expression.Literal).Item as string : null;
         string newArg1 = null;
         if (arg1 != null) {
             GUI.SetNextControlName(procName + statement.Meta.Id + "TextField");
@@ -431,7 +431,7 @@ public class AllTheGUI : MonoBehaviour
         if (newArg1 == arg1 && newProcName == procName) {
             return null;
         } else {
-            return Imperative.NewCall(NextId(), newProcName, newArg1 == null ? new object[] {} : new object[] { newArg1 });
+            return Imperative.NewCall(NextId(), newProcName, newArg1 == null ? new Imperative.Expression[] {} : new Imperative.Expression[] { Imperative.Expression.NewLiteral(newArg1) });
         }
         
     }
@@ -458,7 +458,7 @@ public class AllTheGUI : MonoBehaviour
         if (procName == newProcName && numTimes == newNumTimes) {
             return null;
         } else {
-            return Imperative.NewRepeat(NextId(), Imperative.NewCall(0, newProcName, new object[]{}), Imperative.Expression.NewLiteral(newNumTimes));
+            return Imperative.NewRepeat(NextId(), Imperative.NewCall0(0, newProcName), Imperative.Expression.NewLiteral(newNumTimes));
         }
     }
 

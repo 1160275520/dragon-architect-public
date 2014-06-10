@@ -24,19 +24,17 @@ let JsonOfProgram (program:Program) =
         )
 
     let jsonOfExpr (expr:Expression) =
-        let fields =
-            match expr with
-            | Literal o -> [("type", jstr "literal"); ("value", jsonOfObj o)]
-            | Argument a -> [("type", jstr "argument"); ("index", jint a)]
-        Json.Object (Map.ofList fields)
+        match expr with
+        | Literal o -> [("type", jstr "argument"); ("value", jsonOfObj o)] |> Map.ofList |> Json.Object
+        | Argument a -> [("type", jstr "argument"); ("index", jint a)] |> Map.ofList |> Json.Object
 
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
             match stmt.Stmt with
             | Block b -> [("type", jstr "block"); ("body", jarr (Seq.map jsonOfStmt b))]
-            | Call c -> [("type", jstr "call"); ("proc", jstr c.Proc); ("args", jarrmap jsonOfObj c.Args)]
+            | Call c -> [("type", jstr "call"); ("proc", jstr c.Proc); ("args", jarrmap jsonOfExpr c.Args)]
             | Repeat r -> [("type", jstr "repeat"); ("stmt", jsonOfStmt r.Stmt); ("numtimes", jsonOfExpr r.NumTimes)]
-            | Command c -> [("type", jstr "command"); ("command", jstr c)]
+            | Command (c, a) -> [("type", jstr "command"); ("command", jstr c); ("args", jarrmap jsonOfExpr a)]
         Json.Object (Map.ofList (("meta", jsonOfMeta stmt.Meta) :: fields))
 
     let jsonOfProc name (proc:Procedure) =
@@ -84,9 +82,9 @@ let ProgramOfJson (json:Json.JsonValue) =
             let stmt =
                 match jstmt.["type"].AsString with
                 | "block" -> Block (ImmArr.ofSeq (jstmt.["body"].AsArray |> Seq.map parseStmt))
-                | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseObject)}
+                | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseExpr)}
                 | "repeat" -> Repeat {Stmt=parseStmt jstmt.["stmt"]; NumTimes=parseExpr jstmt.["numtimes"]}
-                | "command" -> Command jstmt.["command"].AsString
+                | "command" -> Command (jstmt.["command"].AsString, ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseExpr))
                 | t -> invalidArg "j" ("invalid statement type " + t)
             {Meta=parseMeta jstmt.["meta"]; Stmt=stmt}
         with

@@ -19,13 +19,13 @@ module Imperative =
         member x.AsLiteral = match x with Literal o -> o | _ -> invalidOp "not a literal"
         member x.AsArgument = match x with Argument i -> i | _ -> invalidOp "not a argument"
 
-    type Call = { Proc:string; Args:ImmArr<obj>; }
+    type Call = { Proc:string; Args:ImmArr<Expression>; }
     type Repeat = { Stmt:Statement; NumTimes:Expression; }
     and StatementT =
     | Block of ImmArr<Statement>
     | Call of Call
     | Repeat of Repeat
-    | Command of string
+    | Command of string * ImmArr<Expression>
     and Statement = {
         Stmt: StatementT;
         Meta: Meta;
@@ -40,8 +40,11 @@ module Imperative =
     let NewStatement id stmt = {Stmt=stmt; Meta={Id=id}}
     let NewBlock id list = NewStatement id (Block list)
     let NewCall id proc args = NewStatement id (Call({Proc=proc; Args=ImmArr.ofSeq args;}))
+    let NewCallL1 id proc literalArg = NewCall id proc [Literal literalArg]
+    let NewCall0 id proc = NewCall id proc []
     let NewRepeat id stmt nt = NewStatement id (Repeat({Stmt=stmt; NumTimes=nt;}))
-    let NewCommand id cmd = NewStatement id (Command cmd)
+    let NewCommand id cmd args = NewStatement id (Command (cmd, args))
+    let NewCommandZ id cmd = NewStatement id (Command (cmd, ImmArr.empty ()))
 
     type Procedure = {
         Arity: int;
@@ -88,13 +91,13 @@ module Library =
 
     let Builtins =
         Map([
-            ("Forward", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "forward") (Argument 0)]});
-            ("Right", {Arity=0; Body=arr [NewCommand 0 "right"]});
-            ("Left", {Arity=0; Body=arr [NewCommand 0 "left"]});
-            ("Up", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "up") (Argument 0)]});
-            ("Down", {Arity=1; Body=arr [NewRepeat 0 (NewCommand 0 "down") (Argument 0)]});
-            ("TurnAround", {Arity=0; Body=arr [NewCommand 0 "right"; NewCommand 0 "right"]});
-            ("PlaceBlock", {Arity=0; Body=arr [NewCommand 0 "block"]});
-            ("RemoveBlock", {Arity=0; Body=arr [NewCommand 0 "remove"]});
-            ("Line", {Arity=1; Body=arr [NewRepeat 0 (NewBlock 0 (ImmArr.ofSeq [NewCommand 0 "block"; NewCommand 0 "forward"])) (Argument 0)]});
+            ("Forward", {Arity=1; Body=arr [NewRepeat 0 (NewCommandZ 0 "forward") (Argument 0)]});
+            ("Right", {Arity=0; Body=arr [NewCommandZ 0 "right"]});
+            ("Left", {Arity=0; Body=arr [NewCommandZ 0 "left"]});
+            ("Up", {Arity=1; Body=arr [NewRepeat 0 (NewCommandZ 0 "up") (Argument 0)]});
+            ("Down", {Arity=1; Body=arr [NewRepeat 0 (NewCommandZ 0 "down") (Argument 0)]});
+            ("TurnAround", {Arity=0; Body=arr [NewCommandZ 0 "right"; NewCommandZ 0 "right"]});
+            ("PlaceBlock", {Arity=1; Body=arr [NewCommand 0 "block" (ImmArr.ofSeq [Argument 0])]});
+            ("RemoveBlock", {Arity=0; Body=arr [NewCommandZ 0 "remove"]});
+            ("Line", {Arity=1; Body=arr [NewRepeat 0 (NewBlock 0 (ImmArr.ofSeq [NewCommandZ 0 "block"; NewCommandZ 0 "forward"])) (Argument 0)]});
         ])
