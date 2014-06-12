@@ -20,7 +20,19 @@ public class Global : MonoBehaviour {
     }
 
     private void handleLog(string logString, string stackTrace, LogType type) {
-        Application.ExternalEval(string.Format("console.log(\"UNITY {0}: {1}\")", type.ToString(), logString.Replace("\"", "\\\"")));
+        string logfn;
+        switch (type) {
+            case LogType.Log:
+                logfn = "info";
+                break;
+            case LogType.Warning:
+                logfn = "warn";
+                break;
+            default:
+                logfn = "error";
+                break;
+        }
+        Application.ExternalEval(string.Format("console.{0}(\"UNITY {1}: {2}\")", logfn, type.ToString(), logString.Replace("\"", "\\\"")));
 	}
 
     // External API function

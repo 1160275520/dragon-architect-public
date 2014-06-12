@@ -183,6 +183,7 @@ public class ProgramManager : MonoBehaviour {
             var grid = new GridStateTracker(new List<IntVec3>());
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
+			Debug.Log(Json.Format(Serialization.JsonOfProgram(Manipulator.Program)));
             States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
             Debug.Log(States.Length + " states in program");
             if (isOldIndexAtEnd) {

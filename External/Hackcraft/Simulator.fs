@@ -39,10 +39,12 @@ let private exprAsInt meta (o:obj) =
 let CreateState program mainProcName =
     {CallStack=[{Args=ImmArr.ofSeq []; ToExecute=getProc program mainProcName;}]; LastExecuted=[];}
 
-let Evaluate (state:State) expression =
+let Evaluate (state:State) meta expression =
     match expression with
     | Literal x -> x
-    | Argument idx -> state.CallStack.Head.Args.[idx]
+    | Argument idx ->
+        try state.CallStack.Head.Args.[idx]
+        with :? System.IndexOutOfRangeException as e -> runtimeError meta (sprintf "Invalid argument index %d, arguments are only length %d" idx state.CallStack.Head.Args.Length)
 
 /// Executes a single line of the program, returning a robot command, if any.
 let ExecuteStep program (state:State) =
@@ -67,16 +69,16 @@ let ExecuteStep program (state:State) =
                 state.CallStack <- {Args=head.Args; ToExecute=List.ofSeq b} :: state.CallStack
                 None
             | Call {Proc=procname; Args=args} ->
-                let args = ImmArr.map (Evaluate state) args
+                let args = ImmArr.map (Evaluate state stmt.Meta) args
                 state.CallStack <- {Args=args; ToExecute=getProc program procname} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
-                let ntimes = Evaluate state ntimesExpr |> exprAsInt stmt.Meta
+                let ntimes = Evaluate state stmt.Meta ntimesExpr |> exprAsInt stmt.Meta
                 let toAdd = List.init ntimes (fun _ -> stmt)
                 state.CallStack <- {Args=head.Args; ToExecute=toAdd} :: state.CallStack
                 None
             | Command (cmd, args) ->
-                let args = ImmArr.map (Evaluate state) args
+                let args = ImmArr.map (Evaluate state stmt.Meta) args
                 Some (Robot.Command (cmd, args))
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
