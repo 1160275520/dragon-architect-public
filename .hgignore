@@ -9,7 +9,6 @@ obj/
 UnityGenerated/
 Library/
 ExportedObj/
-Build/
 ProjectSettings/Physics2DSettings.asset
 html/hackcraft/
 *.svd
