@@ -85,8 +85,6 @@ module Imperative =
 
 module Library =
     open Imperative
-    type private C = RobotCommand
-
     let private arr = ImmArr.ofSeq
 
     let Builtins =
