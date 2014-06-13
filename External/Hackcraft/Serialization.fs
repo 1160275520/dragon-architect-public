@@ -25,7 +25,7 @@ let JsonOfProgram (program:Program) =
 
     let jsonOfExpr (expr:Expression) =
         match expr with
-        | Literal o -> [("type", jstr "argument"); ("value", jsonOfObj o)] |> Map.ofList |> Json.Object
+        | Literal o -> [("type", jstr "literal"); ("value", jsonOfObj o)] |> Map.ofList |> Json.Object
         | Argument a -> [("type", jstr "argument"); ("index", jint a)] |> Map.ofList |> Json.Object
 
     let rec jsonOfStmt (stmt:Statement) =

@@ -108,14 +108,14 @@ Blockly.Blocks['PlaceBlock'] = {
         this.setColour(35);
         this.appendDummyInput()
             .appendField("place block")
-            .appendField(new Blockly.FieldColour('#5cab32'), 'COLOUR');
+            .appendField(new Blockly.FieldColour('#5cab32'), 'VALUE');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
 
 Blockly.UnityJSON['PlaceBlock'] = function(block) {
-    return {"args":[],"meta":{"id":Number(block.id)},"proc":"PlaceBlock","type":"call"};
+    return {"args":[{"type":"literal", "value":block.getFieldValue("VALUE")}],"meta":{"id":Number(block.id)},"proc":"PlaceBlock","type":"call"};
 };
 
 // FORWARD
