@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using Hackcraft;
 using Microsoft.FSharp.Collections;
-using Newtonsoft.Json;
 
 public class ExternalAPI : MonoBehaviour
 {
@@ -69,7 +68,7 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void SendColors() {
-        Application.ExternalCall(ExternalApiFunc, "onSetColors", JsonConvert.SerializeObject(Cube.AvailableColors));
+        Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Format(Json.fromObject(Cube.AvailableColors)));
     }
 
     // external API

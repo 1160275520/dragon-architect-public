@@ -114,3 +114,14 @@ type JsonValue with
     member t.AsBool = match t with Bool(x) -> x | _ -> invalidOp ((Format t) + " is not a bool")
     member t.AsArray = match t with Array(x) -> x | _ -> invalidOp ((Format t) + " is not an array")
     member t.AsObject = match t with Object(x) -> x | _ -> invalidOp ((Format t) + " is not an object")
+
+/// Create a JsonValue from any System.Object.
+let rec fromObject (obj:obj) =
+    match obj with
+    | null -> Null
+    | :? string as x -> String x
+    | :? int as x -> Int x
+    | :? bool as x -> Bool x
+    | :? System.Collections.IEnumerable as x -> Seq.cast x |> Seq.map fromObject |> Array.ofSeq |> Array
+    | _ -> invalidArg "obj" (sprintf "Cannot convert type '%s' to json!" (obj.GetType().Name))
+
