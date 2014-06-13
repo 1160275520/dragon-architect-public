@@ -34,7 +34,9 @@ type BasicImperativeRobot(aPos, aDir) =
                 | "down" -> pos <- if pos.Y > 0 then pos - IntVec3.UnitY else pos
                 | "left" -> dir <- IntVec3 (-dir.Z, 0, dir.X)
                 | "right" -> dir <- IntVec3 (dir.Z, 0, -dir.X)
-                | "block" -> grid.AddObject pos
+                | "block" ->
+                    let block = System.Array.IndexOf(BasicImperativeRobot.Colors, command.Args.[0])
+                    grid.AddObject pos block
                 | "remove" -> grid.RemoveObject pos
                 | _ -> ()
             else ()

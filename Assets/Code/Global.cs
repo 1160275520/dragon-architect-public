@@ -19,20 +19,27 @@ public class Global : MonoBehaviour {
         Application.RegisterLogCallback(null);
     }
 
+    private void log(string logFn, string logTypeName, string message) {
+        var s = Json.Format(Json.JsonValue.NewString("UNITY " + logTypeName + ": " + message));
+        Application.ExternalEval(string.Format("console.{0}({1})", logFn, s));
+    }
+
     private void handleLog(string logString, string stackTrace, LogType type) {
-        string logfn;
         switch (type) {
             case LogType.Log:
-                logfn = "info";
+                log("info", type.ToString(), logString);
                 break;
             case LogType.Warning:
-                logfn = "warn";
+                log("warn", type.ToString(), logString);
                 break;
+            case LogType.Exception:
+                log("error", type.ToString(), logString);
+                log("error", type.ToString(), stackTrace);
+                return;
             default:
-                logfn = "error";
+                log("error", type.ToString(), logString);
                 break;
         }
-        Application.ExternalEval(string.Format("console.{0}(\"UNITY {1}: {2}\")", logfn, type.ToString(), logString.Replace("\"", "\\\"")));
 	}
 
     // External API function

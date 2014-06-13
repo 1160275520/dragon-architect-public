@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hackcraft;
 
 public class Grid : MonoBehaviour {
@@ -64,8 +65,8 @@ public class Grid : MonoBehaviour {
         }
     }
 
-    public void SetGrid(ImmArr<IntVec3> state) {
-        var set = new HashSet<IntVec3>(state);
+    public void SetGrid(ImmArr<KeyValuePair<IntVec3,int>> state) {
+        var set = new HashSet<IntVec3>(state.Select(x => x.Key));
         var toRemove = new List<IntVec3>();
         var prefab = FindObjectOfType<RobotController>().HeldPrefab;
         foreach (var kvp in grid) {
@@ -75,7 +76,7 @@ public class Grid : MonoBehaviour {
             }
         }
         foreach (var idx in state) {
-            AddObject(idx, prefab);
+            AddObject(idx.Key, prefab);
         }
         foreach (var idx in toRemove) {
             RemoveObject(idx);

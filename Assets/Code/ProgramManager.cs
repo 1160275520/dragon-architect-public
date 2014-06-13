@@ -180,7 +180,7 @@ public class ProgramManager : MonoBehaviour {
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
             var robot = FindObjectOfType<RobotController>();
-            var grid = new GridStateTracker(new List<IntVec3>());
+            var grid = GridStateTracker.Empty();
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
 			Debug.Log(Json.Format(Serialization.JsonOfProgram(Manipulator.Program)));

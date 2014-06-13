@@ -7,6 +7,7 @@ let private runtimeError (meta:Ast.Imperative.Meta) msg = raise (RuntimeError (s
 
 open Hackcraft.Ast.Imperative
 open Hackcraft.Ast.Library
+open System.Collections.Generic
 
 type CallStackState = {
     Args: ImmArr<obj>;
@@ -94,7 +95,7 @@ type StepState = {
     Command: Robot.Command;
     LastExecuted: Statement list;
     Robot: Robot.IRobot;
-    Grid: ImmArr<IntVec3>;
+    Grid: ImmArr<KeyValuePair<IntVec3,Block>>;
 }
 
 let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRobot) =
