@@ -70,7 +70,7 @@ Hackcraft.makeCounter = function() {
 };
 
 Hackcraft.addToHistory = function () {
-    console.log("adding to history, locked = "+Hackcraft.ignoreNextHistory);
+    //console.log("adding to history, locked = "+Hackcraft.ignoreNextHistory);
     if (Hackcraft.ignoreNextHistory) {
         Hackcraft.ignoreNextHistory = false;
         return;
@@ -143,9 +143,9 @@ Hackcraft.clearProgram= function () {
 Hackcraft.setProgram = function(program) {
     Hackcraft.ignoreNextHistory = true;
     Hackcraft.clearProgram();
-    
-    console.log("setting program");
-    console.log(Blockly.UnityJSON.XMLOfJSON(program));
+
+    //console.log("setting program");
+    //console.log(Blockly.UnityJSON.XMLOfJSON(program));
     Hackcraft.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
     Hackcraft.curProgramStr = Hackcraft.getXML();
 };
@@ -176,7 +176,7 @@ Hackcraft.loadBlocks = function (blocksXML) {
  * prevent procedure from being modifed in any way
  */
 Hackcraft.freezeBody = function(block) {
-    console.log("freezing " + block);
+    //console.log("freezing " + block);
     block.inputList[1].connection.freeze();
     function freezeBlock(b) {
         b.setMovable(false);
@@ -196,7 +196,7 @@ Hackcraft.freezeBody = function(block) {
  * set which blocks are available
  */
 Hackcraft.setLevel = function(levelInfo) {    
-    console.log("updating toolbox");
+    //console.log("updating toolbox");
     var toolXML = '<xml id="toolbox" style="display: none">';
     if (levelInfo["funcs"]) {
         Hackcraft.makeFuncs(levelInfo["funcs"]);
@@ -207,7 +207,7 @@ Hackcraft.setLevel = function(levelInfo) {
         }
     }
     toolXML += '</xml>';
-    console.log(toolXML);
+    //console.log(toolXML);
     Blockly.updateToolbox(toolXML);
 
     if (levelInfo["highlights"]) {
@@ -280,8 +280,8 @@ Hackcraft.getXML = function() {
  * if instructions is the empty string, speech bubble is hidden instead
  */
 Hackcraft.setInstructions = function (instructions) {
-    console.log("setting instructions");
-    console.log(instructions);
+    //console.log("setting instructions");
+    //console.log(instructions);
     var msg = $('#instructions')[0];
     $('#instructions').removeClass("speechBubble");
     msg.style.visibility = "hidden";
@@ -290,10 +290,10 @@ Hackcraft.setInstructions = function (instructions) {
         setTimeout(function () { // XXX timeout necessary to hide inexplicable resizing during layout of new html
             msg.style.visibility = "visible";
             var selfRect = msg.getBoundingClientRect();
-            console.log(selfRect)
+            //console.log(selfRect)
             msg.style.top = (100 - (selfRect.height + 30)) / 2 + 'px'; // center in the 100px of space to work with, 30 for padding
             $('#instructions').addClass("speechBubble");
-        }, 500);        
+        }, 500);
     } else {
         msg.style.visibility = "hidden";
         msg.innerHTML = "";

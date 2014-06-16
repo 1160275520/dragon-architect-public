@@ -16,7 +16,7 @@ GameObject:
   - 114: {fileID: 11400010}
   m_Layer: 0
   m_Name: System
-  m_TagString: Untagged
+  m_TagString: System
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,6 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StandardTexture: {fileID: 2800000, guid: 14dba24e740da4d1bb766830b0461f8e, type: 3}
+  AvailableMaterials: []
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

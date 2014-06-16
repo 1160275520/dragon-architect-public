@@ -81,6 +81,10 @@ public class Grid : MonoBehaviour {
         foreach (var idx in toRemove) {
             RemoveObject(idx);
         }
+        foreach (var kvp in state) {
+            var obj = this[kvp.Key];
+            obj.GetComponent<Cube>().CubeId = kvp.Value;
+        }
     }
 
     public void Undo() {

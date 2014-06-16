@@ -118,7 +118,7 @@ public class ProgramManager : MonoBehaviour {
     }
 
     public void Clear() {
-        Debug.Log("proc count in progman.clear = " + GetComponent<ProgramManager>().Manipulator.Program.Procedures.Count);
+        //Debug.Log("proc count in progman.clear = " + GetComponent<ProgramManager>().Manipulator.Program.Procedures.Count);
         var procs = from kvp in Manipulator.Program.Procedures select kvp.Key;
         foreach (var p in procs) {
             Manipulator.ClearProcedure(p);
@@ -128,7 +128,7 @@ public class ProgramManager : MonoBehaviour {
     }
 
     private void setGameState(int index) {
-        Debug.Log("setting to " + index);
+        //Debug.Log("setting to " + index);
         var robot = FindObjectOfType<RobotController>();
         var grid = GetComponent<Grid>();
         currentStateIndex = index;
@@ -163,19 +163,19 @@ public class ProgramManager : MonoBehaviour {
         foreach (var proc in AvailableProcedures) {
             Manipulator.CreateProcedure(proc);
         }
-        Debug.Log("proc count in progman.awake = " + Manipulator.Program.Procedures.Count);
+        //Debug.Log("proc count in progman.awake = " + Manipulator.Program.Procedures.Count);
     }
     
     void Start () {
         IsExecuting = false;
         IsCheckingForProgramChanges = true;
-        Debug.Log("proc count in progman.start = " + Manipulator.Program.Procedures.Count);
+        //Debug.Log("proc count in progman.start = " + Manipulator.Program.Procedures.Count);
     }
     
     void EvalProgram() {
         if (IsCheckingForProgramChanges && !IsRunning && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
-            Debug.Log("program is dirty!");
+            //Debug.Log("program is dirty!");
 
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
@@ -183,9 +183,9 @@ public class ProgramManager : MonoBehaviour {
             var grid = GridStateTracker.Empty();
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
-			Debug.Log(Json.Format(Serialization.JsonOfProgram(Manipulator.Program)));
+			//Debug.Log(Json.Format(Serialization.JsonOfProgram(Manipulator.Program)));
             States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
-            Debug.Log(States.Length + " states in program");
+            //Debug.Log(States.Length + " states in program");
             if (isOldIndexAtEnd) {
                 currentStateIndex = States.Length;
             }

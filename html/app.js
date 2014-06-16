@@ -81,13 +81,13 @@ handler.onSystemStart = function(json) {
 }
 
 handler.onProgramChange = function(json) {
-    console.log(json);
+    //console.log(json);
     program = JSON.parse(json);
     Hackcraft.setProgram(program);
 }
 
 handler.onLevelChange = function(json) {
-    console.log(json);
+    //console.log(json);
     var levelInfo = JSON.parse(json);
     Hackcraft.setLevel(levelInfo);
     Hackcraft.history = new Array();
@@ -119,7 +119,7 @@ handler.onLevelChange = function(json) {
 }
 
 handler.onStatementHighlight = function(id) {
-    console.log("highlighting " + id)
+    //console.log("highlighting " + id)
     if (id) {
         Blockly.mainWorkspace.highlightBlock(id.toString());
     } else {
