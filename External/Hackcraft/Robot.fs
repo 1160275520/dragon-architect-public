@@ -21,7 +21,7 @@ type BasicImperativeRobot(aPos, aDir) =
     let mutable pos = aPos
     let mutable dir = aDir
 
-    static member Colors = [| "#000000"; "#FFFFFF"; |]
+    static member Colors = [| "#5cab32"; "#000000"; "#ffffff"; "#ff0000" |]
 
     interface IRobot with
         member x.Position = pos

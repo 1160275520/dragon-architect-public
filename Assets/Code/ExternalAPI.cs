@@ -68,7 +68,7 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void SendColors() {
-        Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Format(Json.fromObject(Cube.AvailableColors)));
+        Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Format(Json.fromObject(CubeTextures.AvailableColors)));
     }
 
     // external API
