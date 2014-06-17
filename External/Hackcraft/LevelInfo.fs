@@ -9,7 +9,7 @@ type LevelInfo(qid, availCommands, numHelperFuncs, lockedProcs, highlightBlocks)
 
     member x.ToJson () =
         Json.objectOf [
-            "qid", Json.Int x.Qid
+            "qid", Json.Int x.Qid;
             "commands", Json.fromObject x.AvailCommands;
             "funcs", Json.Int x.NumHelperFuncs;
             "locks", Json.fromObject x.LockedProcs;
