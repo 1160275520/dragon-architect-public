@@ -21,6 +21,8 @@ public class MyCamera : MonoBehaviour
         // Setting the relative position as the initial relative position of the camera in the scene.
         relCameraPos = transform.position - player.position;
         relCameraPosMag = relCameraPos.magnitude - 0.5f;
+
+        Rotate(10);
     }
 
     public void SetCameraTarget(GameObject target) {
