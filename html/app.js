@@ -49,7 +49,7 @@ $(function() {
 
         if (questLogger) {
             if (is_running) {
-                questLogger.logProgramExecutionStarted(program);
+                questLogger.logProgramExecutionStarted(JSON.stringify(program));
             } else {
                 questLogger.logProgramExecutionReset();
             }
@@ -74,8 +74,9 @@ $(function() {
 // SPECIFIC HANDLER FUNCTIONS
 
 function set_program(prog) {
-    console.log(prog);
-    send_message("System", "EAPI_SetProgramFromJson", JSON.stringify(prog));
+    var s = JSON.stringify(prog)
+    console.info(s);
+    send_message("System", "EAPI_SetProgramFromJson", s);
 }
 
 function set_stage(stage_id) {
