@@ -36,7 +36,8 @@ $(function() {
     HackcraftLogging.initialize();
 
     $('#btn-run').on('click', function() {
-        set_program(Hackcraft.getProgram());
+        var program = Hackcraft.getProgram();
+        set_program(program);
         is_running = !is_running;
         set_is_running(is_running);
         Blockly.mainWorkspace.traceOn(is_running);
@@ -45,6 +46,14 @@ $(function() {
         var selfRect = b.getBoundingClientRect();
         b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
         b.style.top = (rect.bottom + 2) + 'px'; // 2 to account for padding, etc.
+
+        if (questLogger) {
+            if (is_running) {
+                questLogger.logProgramExecutionStarted(program);
+            } else {
+                questLogger.logProgramExecutionReset();
+            }
+        }
     });
     $('#instructions')[0].style.visibility = "hidden";
 

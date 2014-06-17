@@ -184,7 +184,7 @@ Hackcraft.freezeBody = function(block) {
         b.setDeletable(false);
         b.contextMenu = false;
     }
-    Hackcraft.processBody(block, function tmp(x) { 
+    Hackcraft.processBody(block, function tmp(x) {
         freezeBlock(x);
         if (x.inputList.some(function (i) { return i.connection != null; })) {
             Hackcraft.processBody(x, tmp);
@@ -195,7 +195,7 @@ Hackcraft.freezeBody = function(block) {
 /**
  * set which blocks are available
  */
-Hackcraft.setLevel = function(levelInfo) {    
+Hackcraft.setLevel = function(levelInfo) {
     //console.log("updating toolbox");
     var toolXML = '<xml id="toolbox" style="display: none">';
     if (levelInfo.funcs) {

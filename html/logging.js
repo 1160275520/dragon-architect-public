@@ -17,18 +17,17 @@ self.initialize = function() {
     var gameName = "dev";
     var gameId = 10;
     var versionId = 1;
-    var categoryId = 0;
+    var categoryId = 23;
 
     var props = new cgs.user.CgsUserProperties(
         skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
 
     //Enable saving of data to server.
     props.enableCaching();
-    props.setForceUid("test_user");
+    //props.setForceUid("test_user");
 
     //Wait to save data until everything has been loaded.
-    props.setCompleteCallback(function(response)
-    {
+    props.setCompleteCallback(function(response) {
         console.log("Test save data is: " + user.getSave("test"));
         user.setSave("test", Math.floor((Math.random() * 10) + 1));
     });
@@ -60,8 +59,9 @@ self.startQuest = function(qid) {
     var AID = {
         PuzzleExecuted: 1001,
         PuzzleSolved: 1002,
-        ProgramExecuted: 2001,
-        ProgramExecutionSpeedAdjusted: 2002
+        ProgramExecutionStarted: 2001,
+        ProgramExecutionReset: 2002,
+        ProgramExecutionSpeedAdjusted: 2005
     };
 
     function log(actionId, actionDetail) {
@@ -72,8 +72,12 @@ self.startQuest = function(qid) {
         user.logQuestAction(questAction);
     };
 
-    questLogger.logProgramExecuted = function() {
-        log(AID.ProgramExecuted, {});
+    questLogger.logProgramExecutionStarted = function(program) {
+        log(AID.ProgramExecutionStarted, {program:program});
+    };
+
+    questLogger.logProgramExecutionReset = function() {
+        log(AID.ProgramExecutionReset, {});
     };
 
     questLogger.logQuestEnd = function() {
