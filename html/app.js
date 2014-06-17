@@ -1,11 +1,10 @@
-onHackcraftEvent = (function(){
-"use strict";
+onHackcraftEvent = (function(){ "use strict";
 
 var possible_stages;
 var program;
 var unityObject;
 var is_running = false;
-
+var questLogger;
 var handler = {};
 
 // GENERIC UNITY API SETUP AND MARSHALLING
@@ -33,6 +32,8 @@ $(function() {
     unityObject.initPlugin(jQuery("#unityPlayer")[0], "hackcraft/hackcraft.unity3d");
 
     // button/ui callbacks have to be setup inside this block
+
+    HackcraftLogging.initialize();
 
     $('#btn-run').on('click', function() {
         set_program(Hackcraft.getProgram());
@@ -87,7 +88,7 @@ handler.onProgramChange = function(json) {
 }
 
 handler.onLevelChange = function(json) {
-    //console.log(json);
+    console.log(json);
     var levelInfo = JSON.parse(json);
     Hackcraft.setLevel(levelInfo);
     Hackcraft.history = new Array();
@@ -116,6 +117,8 @@ handler.onLevelChange = function(json) {
         slider.style.top = (rect.bottom + 2) + 'px';
     }
     is_running = false;
+
+    questLogger = HackcraftLogging.startQuest(23);
 }
 
 handler.onStatementHighlight = function(id) {

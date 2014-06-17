@@ -112,14 +112,15 @@ Type.createEmptyInstance = function(cl) {
 	return new empty();
 };
 var cgs = {};
-cgs.CgsApiSimple = $hx_exports.cgs.CgsApi = function(requestHandler,defaultCache,defaultUserManager) {
+cgs.CgsApiSimple = $hx_exports.cgs.CgsApi = function(requestHandler,serverTag,defaultCache,defaultUserManager) {
+	if(serverTag == null) serverTag = "dev";
 	this._lastGameId = 0;
 	this._releaseMode = "DEV";
 	if(defaultUserManager != null) this._userManager = defaultUserManager; else this._userManager = new cgs.user.CgsUserManager();
 	this._abTestingProperties = new cgs.server.abtesting.AbTestingVariables();
 	this.setUrlRequestHandler(requestHandler);
 	this._cache = defaultCache;
-	this.updateNtpTime();
+	this.updateNtpTime(serverTag);
 };
 cgs.CgsApiSimple.__name__ = true;
 cgs.CgsApiSimple.prototype = {
@@ -175,8 +176,8 @@ cgs.CgsApiSimple.prototype = {
 		var service = new cgs.server.services.IntegrationDataService(this._requestHandler,server,props.getServerTag(),props.getServerVersion());
 		return service;
 	}
-	,updateNtpTime: function() {
-		if(this._ntpTime == null) this._ntpTime = new cgs.server.services.NtpTimeService(this._requestHandler);
+	,updateNtpTime: function(serverTag) {
+		if(this._ntpTime == null) this._ntpTime = new cgs.server.services.NtpTimeService(this._requestHandler,serverTag);
 	}
 	,getUserManager: function() {
 		return this._userManager;
@@ -745,7 +746,7 @@ cgs.cache._CgsCache.PrivateCache.prototype = {
 			try {
 				this.m_sharedObject.flush();
 			} catch( err ) {
-				console.log("ERROR: Flush Failed! " + Std.string(err.message));
+				console.log("ERROR: Local flush failed! " + Std.string(err.message));
 			}
 		}
 	}
@@ -757,7 +758,7 @@ cgs.cache._CgsCache.PrivateCache.prototype = {
 			try {
 				this.m_sharedObject.flush();
 			} catch( err ) {
-				console.log("ERROR: Flush Failed! " + Std.string(err.message));
+				console.log("ERROR: Local flush failed! " + Std.string(err.message));
 			}
 		}
 	}
@@ -766,7 +767,7 @@ cgs.cache._CgsCache.PrivateCache.prototype = {
 		try {
 			this.m_sharedObject.flush();
 		} catch( err ) {
-			console.log("ERROR: Flush Failed! " + Std.string(err.message));
+			console.log("ERROR: Local flush failed! " + Std.string(err.message));
 			result = false;
 		}
 		return result;
@@ -8398,9 +8399,9 @@ cgs.server.utils.INtpTime.__name__ = true;
 cgs.server.utils.INtpTime.prototype = {
 	__class__: cgs.server.utils.INtpTime
 };
-cgs.server.services.NtpTimeService = function(requestHandler) {
+cgs.server.services.NtpTimeService = function(requestHandler,serverTag) {
 	this._serverTime = -1;
-	cgs.server.services.RemoteService.call(this,requestHandler,cgs.server.services.NtpTimeService.TIME_URL);
+	cgs.server.services.RemoteService.call(this,requestHandler,serverTag == cgs.server.CGSServerProps.PRODUCTION_SERVER?cgs.server.services.NtpTimeService.TIME_URL:cgs.server.services.NtpTimeService.DEV_TIME_URL);
 	this._timeCallbacks = new Array();
 	this.requestTime();
 };
@@ -10165,6 +10166,7 @@ cgs.server.CGSServerConstants.serverLatency = 5;
 cgs.server.CGSServerProps.DELAYED_DATA_LEVEL = 0;
 cgs.server.CGSServerProps.IMMEDIATE_DATA_LEVEL = 1;
 cgs.server.CGSServerProps.LOCAL_SERVER = "local";
+cgs.server.CGSServerProps.DEV_SERVER = "dev";
 cgs.server.CGSServerProps.DEVELOPMENT_SERVER = "dev";
 cgs.server.CGSServerProps.STAGING_SERVER = "staging";
 cgs.server.CGSServerProps.PRODUCTION_SERVER = "prd";
@@ -10315,6 +10317,7 @@ cgs.server.services.CgsServerApi.LOG_NO_ACTIONS = 4;
 cgs.server.services.CgsServerApi.LOG_NO_DATA = 6;
 cgs.server.services.CgsServerApi.LOG_AND_SAVE_NO_DATA = 7;
 cgs.server.services.NtpTimeService.TIME_URL = "http://prd.integration.centerforgamescience.com" + "/cgs/apps/integration/v2/time.php";
+cgs.server.services.NtpTimeService.DEV_TIME_URL = "http://dev.integration.centerforgamescience.com" + "/cgs/apps/integration/v2/time.php";
 cgs.utils.Base64.BASE_64_ENCODING_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 cgs.utils.Base64.BASE_64_ENCODING_BYTES = haxe.io.Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 cgs.utils.Base64.BASE_64_PADDING = "=";
