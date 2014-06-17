@@ -198,28 +198,28 @@ Hackcraft.freezeBody = function(block) {
 Hackcraft.setLevel = function(levelInfo) {    
     //console.log("updating toolbox");
     var toolXML = '<xml id="toolbox" style="display: none">';
-    if (levelInfo["funcs"]) {
-        Hackcraft.makeFuncs(levelInfo["funcs"]);
+    if (levelInfo.funcs) {
+        Hackcraft.makeFuncs(levelInfo.funcs);
     }
-    for (var command in levelInfo["commands"]) {
-        if (Hackcraft.Commands[command] && levelInfo["commands"][command]) {
+    _.each(levelInfo.commands, function(command) {
+        if (Hackcraft.Commands[command]) {
             toolXML += Hackcraft.Commands[command];
         }
-    }
+    });
     toolXML += '</xml>';
     //console.log(toolXML);
     Blockly.updateToolbox(toolXML);
 
-    if (levelInfo["highlights"]) {
+    if (levelInfo.highlights) {
         Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
-            if ($.inArray(b.type, levelInfo["highlights"]) > -1) {
+            if ($.inArray(b.type, levelInfo.highlights) > -1) {
                 b.svg_.addNewGlow();
             }
         });
     }
 
-    if (levelInfo["locks"]) {
-        levelInfo["locks"].forEach(function (l) {
+    if (levelInfo.locks) {
+        levelInfo.locks.forEach(function (l) {
             Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === l; })[0]);
         });
     }

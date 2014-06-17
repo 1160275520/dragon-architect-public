@@ -52,6 +52,7 @@ self.startQuest = function(qid) {
         user.logQuestStart(questId, questHash, details, function(response) {
             //Callback is optional and usually is only used for testing.
         }, localDqid);
+        console.info('logging quest start for qid ' + qid);
     }
 
     var questLogger = {};
@@ -80,6 +81,7 @@ self.startQuest = function(qid) {
         user.logQuestEnd(questEndDetail, function(response) {
             //Callback is optional and usually is only used for testing.
         }, localDqid);
+        console.info('logging quest end for qid ' + qid);
     };
 
     start();

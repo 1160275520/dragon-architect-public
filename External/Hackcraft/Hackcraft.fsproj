@@ -40,11 +40,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base.fs" />
+    <Compile Include="Json.fs" />
     <Compile Include="Math.fs" />
     <Compile Include="Collections.fs" />
-    <Compile Include="Lex.fs" />
     <Compile Include="LevelInfo.fs" />
-    <Compile Include="Json.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="AstManipulator.fs" />
     <Compile Include="Serialization.fs" />

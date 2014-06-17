@@ -35,9 +35,13 @@ public class ProgramManager : MonoBehaviour {
         map.Add(new Tuple<string, bool>("line", IsAvailLine));
         map.Add(new Tuple<string, bool>("call", IsAvailCall));
         map.Add(new Tuple<string, bool>("repeat", IsAvailRepeat));
-        var li = new LevelInfo(new Microsoft.FSharp.Collections.FSharpMap<string, bool>(map), NumHelperFuncs, 
-                               new Microsoft.FSharp.Collections.FSharpSet<string>(lockedProcedures),
-                               new Microsoft.FSharp.Collections.FSharpSet<string>(highlightBlocks));
+        var li = new LevelInfo(
+            Application.loadedLevel,
+            map.Where(kvp => kvp.Item2).Select(kvp => kvp.Item1),
+            NumHelperFuncs, 
+            lockedProcedures,
+            highlightBlocks
+        );
         return li;
     }
 

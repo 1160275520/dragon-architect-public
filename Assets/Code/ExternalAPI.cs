@@ -51,7 +51,7 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void SendLevel() {
-        var level = Serialization.JsonOfLevel(GetComponent<ProgramManager>().MakeLevelInfo());
+        var level = GetComponent<ProgramManager>().MakeLevelInfo().ToJson();
         Application.ExternalCall(ExternalApiFunc, OnLevelChange, Json.Format(level));
     }
 

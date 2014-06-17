@@ -107,24 +107,4 @@ let ProgramOfJson (json:Json.JsonValue) =
         :? System.ArgumentException -> reraise ()
         | e -> argexn e json "cannot parse program"
 
-(*
-let SaveFile filename program =
-    let text = Json.Format (JsonOfProgram program)
-    use file = System.IO.File.OpenWrite(filename)
-    use writer = new System.IO.StreamWriter(file)
-    writer.Write text
-*)
-
 let Load text = ProgramOfJson (Json.Parse text)
-
-let JsonOfLevel(level:LevelInfo) = 
-    let jsonOfAvail commands b = 
-        jbool b
-    Json.Object (
-        Map([
-            ("commands", Json.Object (Map.map jsonOfAvail level.AvailCommands)); 
-            ("funcs", jint level.NumHelperFuncs);
-            ("locks", jarrmap jstr level.LockedProcs);
-            ("highlights", jarrmap jstr level.HighlightBlocks);
-        ])
-    )

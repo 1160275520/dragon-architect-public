@@ -1,4 +1,4 @@
-onHackcraftEvent = (function(){ "use strict";
+var onHackcraftEvent = (function(){ "use strict";
 
 var possible_stages;
 var program;
@@ -90,6 +90,7 @@ handler.onProgramChange = function(json) {
 handler.onLevelChange = function(json) {
     console.log(json);
     var levelInfo = JSON.parse(json);
+
     Hackcraft.setLevel(levelInfo);
     Hackcraft.history = new Array();
     // reset run button
@@ -118,7 +119,15 @@ handler.onLevelChange = function(json) {
     }
     is_running = false;
 
-    questLogger = HackcraftLogging.startQuest(23);
+    // clear old quest logger if it exists
+    if (questLogger) {
+        questLogger.logQuestEnd();
+        questLogger = null;
+    }
+    // then start new quest logger if this is not an empty level
+    if (levelInfo.hasOwnProperty('qid')) {
+        questLogger = HackcraftLogging.startQuest(levelInfo.qid);
+    }
 }
 
 handler.onStatementHighlight = function(id) {
