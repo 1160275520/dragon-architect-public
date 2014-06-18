@@ -11,6 +11,8 @@ Library/
 ExportedObj/
 ProjectSettings/Physics2DSettings.asset
 html/hackcraft/
+server/venv/
+*.db
 *.svd
 *.userprefs
 *.csproj
