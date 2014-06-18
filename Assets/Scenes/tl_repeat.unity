@@ -366,10 +366,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 348876642}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 437140f86d35548f9b97c65b2117ce3a, type: 3}
+  m_Script: {fileID: 11500000, guid: e657acdaa0281a545bd9d26ae1d7df04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StandardTexture: {fileID: 2800000, guid: 14dba24e740da4d1bb766830b0461f8e, type: 3}
+  CubeId: -1
 --- !u!1001 &374522299
 Prefab:
   m_ObjectHideFlags: 0
@@ -571,10 +571,11 @@ GameObject:
   - 114: {fileID: 1088182277}
   - 114: {fileID: 1088182280}
   - 114: {fileID: 1088182279}
+  - 114: {fileID: 1088182281}
   - 114: {fileID: 1088182278}
   m_Layer: 0
   m_Name: System
-  m_TagString: Untagged
+  m_TagString: System
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -639,9 +640,9 @@ MonoBehaviour:
   IsAvail3DMovement: 1
   IsAvailPlaceBlock: 1
   IsAvailLine: 0
-  IsAvailCall: 0
+  IsAvailCall: 1
   IsAvailRepeat: 1
-  NumHelperFuncs: 0
+  NumHelperFuncs: 1
 --- !u!114 &1088182278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -679,6 +680,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BlueprintPrefab: {fileID: 100000, guid: 107c608d711044347a5cab670c4d5c10, type: 2}
   RobotTargetPrefab: {fileID: 100000, guid: 4968a696f9eef214582f1ae0a2635236, type: 2}
+--- !u!114 &1088182281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400010, guid: 3aba1f2a0bfc49d45885938b1493dbc9,
+    type: 2}
+  m_PrefabInternal: {fileID: 1836301553}
+  m_GameObject: {fileID: 1088182273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437140f86d35548f9b97c65b2117ce3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StandardTexture: {fileID: 2800000, guid: 14dba24e740da4d1bb766830b0461f8e, type: 3}
+  AvailableMaterials: []
 --- !u!1 &1248465585
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,7 +1060,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 3aba1f2a0bfc49d45885938b1493dbc9, type: 2}
       propertyPath: NumHelperFuncs
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 3aba1f2a0bfc49d45885938b1493dbc9, type: 2}
       propertyPath: IsAvailRepeat
@@ -1065,7 +1080,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 3aba1f2a0bfc49d45885938b1493dbc9, type: 2}
       propertyPath: IsAvailCall
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3aba1f2a0bfc49d45885938b1493dbc9, type: 2}

@@ -14,6 +14,7 @@ public class TLCall : MonoBehaviour
         var f1 = "<object data=\"media/f1.svg\" style=\"vertical-align:middle\"></object>";
         var msg = String.Format("A procedure (like <b>F1</b>) can be used inside another procedure (like <b>MAIN</b>). {0} does everything inside <b>F1</b>. You can use {0} multiple times to do the same thing multiple times. Fill the blueprint using {0}!", f1);
         GetComponent<AllTheGUI>().CurrentMessage = msg;
+
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
         progman.LoadProgram("level_call_01");
@@ -33,19 +34,5 @@ public class TLCall : MonoBehaviour
         if (winPredicate()) {
             GetComponent<LevelHelper>().WinLevel();
         }
-    }
-
-    private bool programWinPredicate() {
-        var program = GetComponent<ProgramManager>().Manipulator.Program;
-
-        bool isCall = false;
-
-        Imperative.iterStatementPA(program.Procedures["MAIN"], (s) => {
-            if (s.Stmt.IsCall && !Library.Builtins.ContainsKey(s.Stmt.AsCall.Proc)) {
-                isCall = true;
-            }
-        });
-
-        return isCall;
     }
 }
