@@ -80,6 +80,7 @@ let rec fromObject (obj:obj) =
     | :? IDictionary<string,obj> as x -> x |> Seq.map (fun kvp -> (kvp.Key, fromObject kvp.Value)) |> objectOf
     | :? IDictionary as x -> Seq.cast<DictionaryEntry> x |> Seq.map (fun kvp -> (kvp.Key :?> string, fromObject kvp.Value)) |> objectOf
     | :? IEnumerable as x -> Seq.cast x |> Seq.map fromObject |> arrayOf
+    | _ when obj.GetType().IsEnum -> String (System.Enum.GetName(obj.GetType(), obj))
     | _ -> invalidArg "obj" (sprintf "Cannot convert type '%s' to json!" (obj.GetType().Name))
 
 /// Information about a JsonValue's relation to it's parent.
