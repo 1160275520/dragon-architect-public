@@ -1,3 +1,18 @@
+
+#titleScreen, #levelSelector {
+    margin: 30px;
+    border: 1px solid black;
+    padding: 30px;
+}
+
+/* TODO pick a non-crap styling for these things */
+#titleScreen *, #levelSelector h1, #levelSelector > button {
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px;
+    display: block;
+}
+
 #btn-run {
   background-color: #37B03F;
   font-size: 32pt;

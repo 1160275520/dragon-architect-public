@@ -19,21 +19,99 @@ function onHackcraftEvent(func, arg) {
     handler[func](arg);
 }
 
+
+var unityPlayer = function(){
+    var self = {};
+
+    self.initialize = function() {
+        var dim = Math.min(768, window.innerHeight - 160);
+        var config = {
+            width: dim,
+            height: dim,
+            params: { enableDebugging:"0" }
+        };
+
+        unityObject = new UnityObject2(config);
+        unityObject.initPlugin(jQuery("#unityPlayer")[0], "hackcraft/hackcraft.unity3d");
+    }
+
+    // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
+
+    var oldUnityWidth, oldUnityHeight;
+
+    self.hide = function() {
+        var u = $('#unityPlayer embed');
+        if (!oldUnityWidth) {
+            oldUnityWidth = u.width();
+            oldUnityHeight = u.height();
+        }
+        u.width(1).height(1);
+    }
+
+    self.show = function() {
+        var u = $('#unityPlayer embed');
+        console.info('showing unity player');
+        u.width(oldUnityWidth).height(oldUnityHeight);
+        oldUnityWidth = null;
+        oldUnityHeight = null;
+    }
+
+    return self;
+}();
+
+function hideAll() {
+    unityPlayer.hide();
+    $('#codeEditor, #puzzleModeUI, #creativeModeUI, #levelSelector, #titleScreen, #galleryUI').hide();
+}
+
+function setState_title() {
+    hideAll();
+    $('#titleScreen').show();
+}
+
+function setState_levelSelect() {
+    hideAll();
+
+    // check if level selector is initialized, and initialize if not
+    if ($('levelList li').length === 0 && possible_stages) {
+        var list = $('#levelList');
+        _.each(possible_stages, function(item) {
+            var button = $('<li><button>' + item + '</button></li>').appendTo(list);
+            button.on('click', function() { setState_puzzle(item); });
+        });
+    } else if (!possible_stages) {
+        console.warn("level selector visited without initialized possible level list!");
+    }
+
+    $('#levelSelector').show();
+}
+
+function setState_puzzle(puzzleId) {
+    console.info('starting puzzle ' + puzzleId);
+    hideAll();
+    $('#codeEditor, #puzzleModeUI').show();
+    unityPlayer.show();
+    set_stage(puzzleId);
+}
+
 // startup
 $(function() {
-    var dim = Math.min(768, window.innerHeight - 160);
-    var config = {
-        width: dim,
-        height: dim,
-        params: { enableDebugging:"0" }
-    };
 
-    unityObject = new UnityObject2(config);
-    unityObject.initPlugin(jQuery("#unityPlayer")[0], "hackcraft/hackcraft.unity3d");
+    // set up callbacks for transitions between application state
+    ////////////////////////////////////////////////////////////////////////////////
 
-    // button/ui callbacks have to be setup inside this block
+    $('#button_title_to_levelSelect').on('click', setState_levelSelect);
+    $('#button_levelSelect_to_title').on('click', setState_title);
+
+    // initialize subsystems (mainly unity and logging)
+    ////////////////////////////////////////////////////////////////////////////////
+
+    unityPlayer.initialize();
 
     HackcraftLogging.initialize();
+
+    // set up some of the callbacks for code editing UI
+    ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
         var program = Hackcraft.getProgram();
@@ -59,30 +137,27 @@ $(function() {
 
     // run button
     $('#btn-run').on('click', function () {
-      var b = $('#btn-run')[0];
-      if (b.innerText === "Run!") {
-        b.innerText = "Reset";
-        b.style.backgroundColor = "#B03737";
-      } else {
-        b.innerText = "Run!";
-        b.style.backgroundColor = "#37B03F";
-      }
+        var b = $('#btn-run')[0];
+        if (b.innerText === "Run!") {
+            b.innerText = "Reset";
+            b.style.backgroundColor = "#B03737";
+        } else {
+            b.innerText = "Run!";
+            b.style.backgroundColor = "#37B03F";
+        }
     });
 
     // undo button
     $('#btn-undo').on('click', Hackcraft.undo);
 
-    // speed slider
-    $(function() {
-      $( "#slider" ).slider({
+    $( "#slider" ).slider({
         value:0.5,
         min: 0.0,
         max: 1.0,
         step: 0.05,
         slide: function( event, ui ) {
-          send_message("System", "EAPI_SetDelayPerCommand", (1 - ui.value).toString());
+            send_message("System", "EAPI_SetDelayPerCommand", (1 - ui.value).toString());
         }
-      });
     });
 });
 
@@ -104,6 +179,7 @@ function set_is_running(is_running) {
 
 handler.onSystemStart = function(json) {
     possible_stages = JSON.parse(json);
+    setState_title();
 }
 
 handler.onProgramChange = function(json) {
