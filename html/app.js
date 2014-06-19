@@ -49,11 +49,12 @@ var unityPlayer = function(){
     }
 
     self.show = function() {
-        var u = $('#unityPlayer embed');
-        console.info('showing unity player');
-        u.width(oldUnityWidth).height(oldUnityHeight);
-        oldUnityWidth = null;
-        oldUnityHeight = null;
+        if (oldUnityWidth) {
+            var u = $('#unityPlayer embed');
+            u.width(oldUnityWidth).height(oldUnityHeight);
+            oldUnityWidth = null;
+            oldUnityHeight = null;
+        }
     }
 
     return self;
