@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset=UTF-8>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="style.css">
-    <!-- <script type='text/javascript' src='https://ssl-webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/jquery.min.js'></script> -->
     <link rel="stylesheet" href="slider.css">
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -20,44 +19,29 @@
     <script src="blockly/hackcraft.js"></script>
   </head>
   <body>
-    <div id="unityPlayer"></div>
+    <!-- major UI sections need to be grouped in together in a single element for easy visibility toggling -->
+    <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
     <xml id="toolbox" style="display: none">
       <block type="Forward"></block>
     </xml>
-    <div id="blockly"></div>
-    <p id="instructions">test instructions</p>
-    <span id="statement-counter"></span>    
-    <button id="btn-run" hidden="true">Run!</button>
-    <img id="trash-arrow" src="media/arrow.png"/>
-    <button id="btn-undo">Undo</button>
-<!--     <p>
-      <label for="amount">Delay per command:</label>
-      <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold;">
-    </p> -->
-    <div id="sliderContainer">
-      <div id="sliderSteps">
-        <span class="tick" >Slow</span>
-        <span class="tick" style="left: 30%;">Medium</span>
-        <span class="tick" style="left: 60%;">Fast</span>
+    <!-- the unity player window -->
+    <div id="unityPlayer"></div>
+    <!-- the code editor and related UI -->
+    <div id="codeEditor">
+      <div id="blockly"></div>
+      <p id="statement-counter"></p>
+      <img id="trash-arrow" src="media/arrow.png"/>
+      <p id="instructions">test instructions</p>
+      <button id="btn-run" hidden="true">Run!</button>
+      <button id="btn-undo">Undo</button>
+      <div id="sliderContainer">
+        <div id="sliderSteps">
+          <span class="tick" >Slow</span>
+          <span class="tick" style="left: 30%;">Medium</span>
+          <span class="tick" style="left: 60%;">Fast</span>
+        </div>
+        <div id="slider"></div>
       </div>
-      <div id="slider"></div>
     </div>
-    <script type="text/javascript">
-    // run button
-    var toggleRun = function () {
-      var b = $('#btn-run')[0];
-      if (b.innerText === "Run!") {
-        b.innerText = "Reset";
-        b.style.backgroundColor = "#B03737";
-      } else {        
-        b.innerText = "Run!";
-        b.style.backgroundColor = "#37B03F";
-      }
-    }
-    $('#btn-run')[0].onclick = toggleRun;
-
-    // undo button 
-    $('#btn-undo')[0].onclick = Hackcraft.undo;
-    </script>
   </body>
 </html>

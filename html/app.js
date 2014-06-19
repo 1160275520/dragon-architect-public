@@ -57,6 +57,21 @@ $(function() {
     });
     $('#instructions')[0].style.visibility = "hidden";
 
+    // run button
+    $('#btn-run').on('click', function () {
+      var b = $('#btn-run')[0];
+      if (b.innerText === "Run!") {
+        b.innerText = "Reset";
+        b.style.backgroundColor = "#B03737";
+      } else {
+        b.innerText = "Run!";
+        b.style.backgroundColor = "#37B03F";
+      }
+    });
+
+    // undo button
+    $('#btn-undo').on('click', Hackcraft.undo);
+
     // speed slider
     $(function() {
       $( "#slider" ).slider({
@@ -142,6 +157,7 @@ handler.onLevelChange = function(json) {
 
 handler.onStatementHighlight = function(id) {
     //console.log("highlighting " + id)
+    // XXX edbutler are these conditional bodies supposed to be different...?
     if (id) {
         Blockly.mainWorkspace.highlightBlock(id.toString());
     } else {
