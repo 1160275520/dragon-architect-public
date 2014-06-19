@@ -19,6 +19,8 @@ class SavedProcedure(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contents = db.Column(db.Unicode) # program json
     creator_id = db.Column(db.Unicode, db.ForeignKey('player.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey(id)) # which procedure this was remixed from
+
     creator = db.relationship('Player', backref=db.backref('saved_procedures', lazy='dynamic'))
 
 def main():
