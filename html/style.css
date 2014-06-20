@@ -17,7 +17,12 @@ p {
     margin: 2px;
 }
 
+h1 {
+    margin: auto;
+}
+
 #someheaderthingy {
+    display: flex;
     height: 100px;
     background: #ffeedd;
 }
@@ -33,7 +38,7 @@ p {
 }
 
 /* TODO pick a non-crap styling for these things */
-.titleScreen *, .levelSelector h1, .levelSelector > button {
+.titleScreen *, .levelSelector h2, .levelSelector > button {
     text-align: center;
     margin: 20px auto;
     padding: 10px;

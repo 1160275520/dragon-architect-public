@@ -25,13 +25,13 @@
     <xml id="toolbox" style="display: none">
       <block type="Forward"></block>
     </xml>
-    <!-- UI related to puzzle mode -->
-    <div id="someheaderthingy">
-    </div>
+    <!-- persistent header -->
+    <header id="someheaderthingy">
+      <h1>I am a game not called Hackcraft!</h1>
+    </header>
     <div id="main">
-      <!-- major UI sections need to be grouped in together in a single element for easy visibility toggling -->
-      <!-- the unity player window -->
       <div class="mainLeftSide">
+        <!-- the unity player window -->
         <div id="unityPlayer"></div>
         <div class="codeEditor">
           <button id="btn-run">Run!</button>
@@ -44,6 +44,7 @@
             <div id="slider"></div>
           </div>
         </div>
+        <!-- UI related to puzzle mode -->
         <div id="instructionsContainer" class="puzzleModeUI">
           <p id="instructions">test instructions</p>
         </div>
@@ -61,13 +62,13 @@
       <div class="creativeModeUI"></div>
       <!-- level selector UI -->
       <div class="levelSelector">
-        <h1>I am the level selector!</h1>
+        <h2>I am the level selector!</h2>
         <button id="button_levelSelect_to_title">Back to title</button>
         <ul id="levelList"></ul>
       </div>
       <!-- the title screen -->
       <div class="titleScreen">
-        <h1>I am the title screen!</h1>
+        <h2>I am the title screen!</h2>
         <button id="button_title_to_levelSelect">Go to level select</button>
       </div>
     </div>
