@@ -57,28 +57,14 @@ var unityPlayer = function(){
 
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
 
-    var oldUnityWidth, oldUnityHeight;
-
     self.hide = function() {
-        /*
         var u = $('#unityPlayer embed, #unityPlayer');
-        if (!oldUnityWidth) {
-            oldUnityHeight = self.height();
-            oldUnityWidth = self.width();
-        }
-        u.width(1).height(1);
-        */
+        u.css('width', '1px').css('height', '1px');
     }
 
     self.show = function() {
-        /*
-        if (oldUnityWidth) {
-            var u = $('#unityPlayer embed, #unityPlayer');
-            //u.width(oldUnityWidth).height(oldUnityHeight);
-            oldUnityWidth = null;
-            oldUnityHeight = null;
-        }
-        */
+        var u = $('#unityPlayer embed, #unityPlayer');
+        u.css('width', '100%').css('height', '100%');
     }
 
     return self;
@@ -200,8 +186,8 @@ function set_is_running(is_running) {
 
 handler.onSystemStart = function(json) {
     possible_stages = JSON.parse(json);
-    //setState_title();
-    setState_puzzle(possible_stages[5]);
+    setState_title();
+    //setState_puzzle(possible_stages[5]);
 }
 
 handler.onProgramChange = function(json) {
