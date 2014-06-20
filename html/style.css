@@ -130,6 +130,11 @@ p {
     visibility: hidden;
 }
 
+#instructionsContainer {
+    position: relative;
+    height: 100px;
+}
+
 #instructions {
     position:absolute;
     top: 0px;

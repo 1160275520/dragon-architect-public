@@ -204,17 +204,8 @@ handler.onLevelChange = function(json) {
         b.style.backgroundColor = "#37B03F";
         var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
         var selfRect = b.getBoundingClientRect();
-        b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
-        b.style.top = (rect.bottom + 2) + 'px';
-        // b.style.width = rect.width + 'px';
-        // b.style.left = rect.left + 'px';
-        // var toolBlocks = Blockly.mainWorkspace.flyout_.workspace_.topBlocks_;
-        // var lastTool = toolBlocks[toolBlocks.length - 1];
-        // rect = lastTool.svg_.svgGroup_.getBoundingClientRect();
-        // b.style.top = (rect.bottom + 25) + 'px';
         slider.style.visibility = "visible";
         var selfRect = slider.getBoundingClientRect();
-        slider.style.top = (rect.bottom + 2) + 'px';
     }
     is_running = false;
 
