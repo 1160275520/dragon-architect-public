@@ -1,4 +1,8 @@
 
+p {
+    margin: 2px;
+}
+
 #someheaderthingy {
     height: 100px;
     background: #ffeedd;
@@ -39,208 +43,198 @@
     position: absolute;
 }
 
+.mainRightSide {
+    position: relative;
+}
+
 #unityPlayer {
     width: 768px;
     height: 700px;
 }
 
 #languageMenu {
-  vertical-align: top;
-  margin-top: 12px;
-  visibility: hidden;
-}
-
-#statement-counter {
-  position: absolute;
-  font-size: 18pt;
-  font-family: sans-serif;
-  top: 10px;
-}
-
-@-webkit-keyframes trash-arrow {
-  0%   {-webkit-transform: rotate(90deg) translate(0px,0px); }
-  50%  {-webkit-transform: rotate(90deg) translate(0px,50px);}
-  100% {-webkit-transform: rotate(90deg) translate(0px,0px); }
-}
-
-@keyframes trash-arrow {
-  0%   {transform: rotate(90deg) translate(0px,0px);}
-  50%  {transform: rotate(90deg) translate(0px,50px);}
-  100% {transform: rotate(90deg) translate(0px,0px);}
-}
-
-#trash-arrow {
-  position: absolute;
-  height: 150px;
-  -webkit-animation-name: trash-arrow;
-  -webkit-animation-duration: 2s;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-direction: alternate;
-  -webkit-animation-timing-function: ease-in-out;
-  -webkit-animation-play-state: paused;
-  animation-name: trash-arrow;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-timing-function: ease-in-out;
-  animation-play-state: paused;
-  visibility: hidden;
+    vertical-align: top;
+    margin-top: 12px;
+    visibility: hidden;
 }
 
 #btn-undo {
-  position: absolute;
-  font-size: 16pt;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 16pt;
+}
+
+#statement-counter {
+    position: absolute;
+    left: 190px;
+    top: 20px;
+    font-size: 18pt;
+    font-family: sans-serif;
+}
+
+@-webkit-keyframes trash-arrow {
+    0%   {-webkit-transform: rotate(90deg) translate(0px,0px); }
+    50%  {-webkit-transform: rotate(90deg) translate(0px,50px);}
+    100% {-webkit-transform: rotate(90deg) translate(0px,0px); }
+}
+
+@keyframes trash-arrow {
+    0%   {transform: rotate(90deg) translate(0px,0px);}
+    50%  {transform: rotate(90deg) translate(0px,50px);}
+    100% {transform: rotate(90deg) translate(0px,0px);}
+}
+
+#trash-arrow {
+    position: absolute;
+    right: 125px;
+    bottom: -10px;
+    height: 150px;
+    -webkit-animation-name: trash-arrow;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-play-state: paused;
+    animation-name: trash-arrow;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+    animation-play-state: paused;
+    visibility: hidden;
 }
 
 #instructions {
-  position:absolute;
-  top: 0px;
-  left: 10px;
-  padding:5px;
-  margin:0.5em 0 2em;
-  color:#fff;
-  font-family: monospace;
-  background: #333; /* default background for browsers without gradient support */
-  opacity: 0.8;
-  border-radius:10px;
+    position:absolute;
+    top: 0px;
+    left: 10px;
+    padding:5px;
+    margin:0.5em 0 2em;
+    color:#fff;
+    font-family: monospace;
+    background: #333; /* default background for browsers without gradient support */
+    opacity: 0.8;
+    border-radius:10px;
 }
 
 #instructions:before {
-  content:"";
-  position:absolute;
-  bottom:-20px; /* value = - border-top-width - border-bottom-width */
-  left:60px; /* controls horizontal position */
-  border:0;
-  border-right-width:30px; /* vary this value to change the angle of the vertex */
-  border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :after */
-  border-style:solid;
-  border-color:transparent #333;
-  /* reduce the damage in FF3.0 */
-  display:block;
-  width:0;
+    content:"";
+    position:absolute;
+    bottom:-20px; /* value = - border-top-width - border-bottom-width */
+    left:60px; /* controls horizontal position */
+    border:0;
+    border-right-width:30px; /* vary this value to change the angle of the vertex */
+    border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :after */
+    border-style:solid;
+    border-color:transparent #333;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
 }
 
 /* creates the narrower right-angled triangle */
 #instructions:after {
-  content:"";
-  position:absolute;
-  bottom:-20px; /* value = - border-top-width - border-bottom-width */
-  left:80px; /* value = (:before's left) + (:before's border-right/left-width)  - (:after's border-right/left-width) */
-  border:0;
-  border-right-width:10px; /* vary this value to change the angle of the vertex */
-  border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :before */
-  border-style:solid;
-  border-color:transparent #333;
-  opacity: 0.8;
-  /* reduce the damage in FF3.0 */
-  display:block;
-  width:0;
+    content:"";
+    position:absolute;
+    bottom:-20px; /* value = - border-top-width - border-bottom-width */
+    left:80px; /* value = (:before's left) + (:before's border-right/left-width)  - (:after's border-right/left-width) */
+    border:0;
+    border-right-width:10px; /* vary this value to change the angle of the vertex */
+    border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :before */
+    border-style:solid;
+    border-color:transparent #333;
+    opacity: 0.8;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
 }
 
-/*#instructions:before {
-  content:"";
-  position:absolute;
-  bottom:-230px;
-  left:0;
-  border-width:0 100px 260px 0;
-  border-style:solid;
-  border-color:transparent #333;
-}*/
-
-/*#instructions:after {
-  content:"";
-  position:absolute;
-  bottom:-140px;
-  left:85px;
-  border-width: 0 0 140px 55px;
-  border-style:solid;
-  border-color:transparent #333;
-}*/
-
 @-webkit-keyframes speechBubble {
-  0% {
-    opacity: 0;
-    -webkit-transform: translateY(0px);
-    transform: translateY(0px);
-  }
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+    }
 
-  40% {
-    opacity: 0.8;
-    -webkit-transform: translateY(0px);
-    transform: translateY(0px);
-  }
+    40% {
+        opacity: 0.8;
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+    }
 
-  70%, 75%, 85%, 95%, 100% {
-    -webkit-transform: translateY(0px);
-    transform: translateY(0px);
-  }
+    70%, 75%, 85%, 95%, 100% {
+        -webkit-transform: translateY(0px);
+        transform: translateY(0px);
+    }
 
-  80% {
-    -webkit-transform: translateY(-30px);
-    transform: translateY(-30px);
-  }
+    80% {
+        -webkit-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
 
-  90% {
-    -webkit-transform: translateY(-15px);
-    transform: translateY(-15px);
-  }
+    90% {
+        -webkit-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
 }
 
 @keyframes speechBubble {
-  0% {
-    opacity: 0;
-    -webkit-transform: translateY(230px);
-    -ms-transform: translateY(230px);
-    transform: translateY(230px);
-  }
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(230px);
+        -ms-transform: translateY(230px);
+        transform: translateY(230px);
+    }
 
-  40% {
-    opacity: 0.8;
-    -webkit-transform: translateY(210px);
-    -ms-transform: translateY(210px);
-    transform: translateY(210px);
-  }
+    40% {
+        opacity: 0.8;
+        -webkit-transform: translateY(210px);
+        -ms-transform: translateY(210px);
+        transform: translateY(210px);
+    }
 
-  70%, 75%, 85%, 95%, 100% {
-    -webkit-transform: translateY(0px);
-    -ms-transform: translateY(0px);
-    transform: translateY(0px);
-  }
+    70%, 75%, 85%, 95%, 100% {
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
 
-  80% {
-    -webkit-transform: translateY(-30px);
-    -ms-transform: translateY(-30px);
-    transform: translateY(-30px);
-  }
+    80% {
+        -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
 
-  90% {
-    -webkit-transform: translateY(-15px);
-    -ms-transform: translateY(-15px);
-    transform: translateY(-15px);
-  }
+    90% {
+        -webkit-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
 }
 
 .speechBubble {
-  -webkit-animation-name: speechBubble;
-  animation-name: speechBubble;
-  -webkit-animation-duration: 2s;
-  animation-duration: 2s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+    -webkit-animation-name: speechBubble;
+    animation-name: speechBubble;
+    -webkit-animation-duration: 2s;
+    animation-duration: 2s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
 }
 
 .tick { 
-  position: relative;
-  text-align:center;
-  font-family: monospace;
-  font-weight: bold;
+    position: relative;
+    text-align:center;
+    font-family: monospace;
+    font-weight: bold;
 }
 
 #sliderContainer {
-  width: 300px;
-  background-color: rgba(90, 90, 90, 0.2);
-  border-color: #000;
-  border-width: 2px;
-  border-style: solid;
-  padding: 5px;
+    width: 300px;
+    background-color: rgba(90, 90, 90, 0.2);
+    border-color: #000;
+    border-width: 2px;
+    border-style: solid;
+    padding: 5px;
 }
+

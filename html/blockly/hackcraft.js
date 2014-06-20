@@ -46,18 +46,12 @@ Hackcraft.makeFuncs = function (num) {
 Hackcraft.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.maxBlocks - Blockly.mainWorkspace.getAllBlocks().length;
     var counter = $("#statement-counter")[0];
-    var rect = Blockly.mainWorkspace.flyout_.workspace_.getCanvas().getBoundingClientRect();
-    counter.style.top = rect.top + "px";
-    counter.style.left = (rect.right + 35) + "px";
     if (blocksLeft < 5) {
         counter.innerHTML = blocksLeft + " blocks left.";
     } else { 
         counter.innerHTML = "";
     }
     var arrow = $("#trash-arrow")[0];
-    var rect = Blockly.mainWorkspace.trashcan.svgGroup_.getBoundingClientRect();
-    arrow.style.top = (rect.top - arrow.width/2) + "px";
-    arrow.style.left = (rect.left - arrow.height) + "px";
     if (blocksLeft == 0) {
         arrow.style.visibility = "visible";
         arrow.style.webkitAnimationPlayState = "running";
@@ -103,23 +97,9 @@ Hackcraft.init = function() {
          toolbox: toolbox,
          trashcan: true});
 
-    var blocklyDiv = document.getElementById('blockly');
-    var unity = document.getElementById('unityPlayer');
-    var undo = document.getElementById('btn-undo');
-    var onresize = function(e) {
-        var top = unity.offsetTop;
-        var rect = Blockly.mainWorkspace.trashcan.svgGroup_.getBoundingClientRect();
-        var selfRect = undo.getBoundingClientRect();
-        undo.style.top = (rect.top - selfRect.height - 25) + 'px';
-        undo.style.left = (rect.left + rect.width/2 - selfRect.width/2) + 'px';
-    };
     window.addEventListener('scroll', function() {
-        onresize();
         Blockly.fireUiEvent(window, 'resize');
     });
-    window.addEventListener('resize', onresize);
-    onresize();
-
 
     Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
 
