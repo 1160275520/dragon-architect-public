@@ -36,23 +36,13 @@ var unityPlayer = function(){
     self.initialize = function() {
         var div = $("#unityPlayer");
 
-        // XXX TODO disable dynamic sizing for now until we clean up positioning
-        //var dim = Math.min(768, window.innerHeight - 160);
         var config = {
-            //width: '100%',
-            //height: '100%',
             params: { enableDebugging:"0" }
         };
 
         unityObject = new UnityObject2(config);
         unityObject.initPlugin(div[0], "hackcraft/hackcraft.unity3d");
 
-        /*
-        $(window).resize(function(arg1, arg2) {
-            console.log('foo');
-            div.width(div.parent().width());
-        });
-        */
     }
 
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
