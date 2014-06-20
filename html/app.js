@@ -74,7 +74,7 @@ function setState_levelSelect() {
     hideAll();
 
     // check if level selector is initialized, and initialize if not
-    if ($('levelList li').length === 0 && possible_stages) {
+    if ($('#levelList li').length === 0 && possible_stages) {
         var list = $('#levelList');
         _.each(possible_stages, function(item) {
             var button = $('<li><button>' + item + '</button></li>').appendTo(list);
