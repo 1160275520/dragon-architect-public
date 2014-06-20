@@ -39,13 +39,20 @@ var unityPlayer = function(){
         // XXX TODO disable dynamic sizing for now until we clean up positioning
         //var dim = Math.min(768, window.innerHeight - 160);
         var config = {
-            width: div.width(),
-            height: div.height(),
+            //width: '100%',
+            //height: '100%',
             params: { enableDebugging:"0" }
         };
 
         unityObject = new UnityObject2(config);
         unityObject.initPlugin(div[0], "hackcraft/hackcraft.unity3d");
+
+        /*
+        $(window).resize(function(arg1, arg2) {
+            console.log('foo');
+            div.width(div.parent().width());
+        });
+        */
     }
 
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
@@ -53,21 +60,25 @@ var unityPlayer = function(){
     var oldUnityWidth, oldUnityHeight;
 
     self.hide = function() {
+        /*
         var u = $('#unityPlayer embed, #unityPlayer');
         if (!oldUnityWidth) {
             oldUnityHeight = self.height();
             oldUnityWidth = self.width();
         }
         u.width(1).height(1);
+        */
     }
 
     self.show = function() {
+        /*
         if (oldUnityWidth) {
             var u = $('#unityPlayer embed, #unityPlayer');
-            u.width(oldUnityWidth).height(oldUnityHeight);
+            //u.width(oldUnityWidth).height(oldUnityHeight);
             oldUnityWidth = null;
             oldUnityHeight = null;
         }
+        */
     }
 
     return self;
@@ -121,8 +132,8 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     unityPlayer.initialize();
-    $('.mainLeftSide').css('width', unityPlayer.width() + 'px');
-    $('.mainRightSide').css('margin-left', unityPlayer.width() + 'px');
+    //$('.mainLeftSide').css('width', unityPlayer.width() + 'px');
+    //$('.mainRightSide').css('margin-left', unityPlayer.width() + 'px');
     Hackcraft.init();
     HackcraftLogging.initialize();
 
@@ -189,7 +200,8 @@ function set_is_running(is_running) {
 
 handler.onSystemStart = function(json) {
     possible_stages = JSON.parse(json);
-    setState_title();
+    //setState_title();
+    setState_puzzle(possible_stages[5]);
 }
 
 handler.onProgramChange = function(json) {
