@@ -5,6 +5,14 @@
           box-sizing: border-box;
 }
 
+html {
+    font-family: "Open Sans";
+}
+
+body {
+    margin: 8px;
+}
+
 p {
     margin: 2px;
 }
