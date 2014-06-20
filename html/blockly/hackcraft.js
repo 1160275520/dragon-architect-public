@@ -92,7 +92,7 @@ Hackcraft.undo = function () {
 }
 
 /**
- * Initialize Blockly.  Called on page load.
+ * Initialize Blockly.  Called by app.js
  */
 Hackcraft.init = function() {
     BlocklyApps.init();
@@ -108,9 +108,6 @@ Hackcraft.init = function() {
     var undo = document.getElementById('btn-undo');
     var onresize = function(e) {
         var top = unity.offsetTop;
-        blocklyDiv.style.top = Math.max(10, top - window.pageYOffset) + 'px';
-        blocklyDiv.style.left = (unity.firstChild.getBoundingClientRect().width + 25) + 'px';
-        blocklyDiv.style.width = (window.innerWidth - unity.firstChild.getBoundingClientRect().width) + 'px';
         var rect = Blockly.mainWorkspace.trashcan.svgGroup_.getBoundingClientRect();
         var selfRect = undo.getBoundingClientRect();
         undo.style.top = (rect.top - selfRect.height - 25) + 'px';
@@ -129,8 +126,6 @@ Hackcraft.init = function() {
     Blockly.addChangeListener(Hackcraft.makeCounter);
     Blockly.addChangeListener(Hackcraft.addToHistory);
 };
-
-window.addEventListener('load', Hackcraft.init);
 
 Hackcraft.clearProgram= function () {
     // clear existing blocks

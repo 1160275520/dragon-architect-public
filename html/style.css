@@ -1,12 +1,21 @@
 
-#titleScreen, #levelSelector {
+#someheaderthingy {
+    height: 100px;
+    background: #ffeedd;
+}
+
+#main {
+    position: relative;
+}
+
+.titleScreen, .levelSelector {
     margin: 30px;
     border: 1px solid black;
     padding: 30px;
 }
 
 /* TODO pick a non-crap styling for these things */
-#titleScreen *, #levelSelector h1, #levelSelector > button {
+.titleScreen *, .levelSelector h1, .levelSelector > button {
     text-align: center;
     margin: 20px auto;
     padding: 10px;
@@ -17,29 +26,22 @@
   background-color: #37B03F;
   font-size: 32pt;
   font-weight: bold;
-  position: absolute;
+  float: right;
 }
 
-#toolbarDiv {
-  text-align: center;
-  width: 400px;
-  padding-top: 1em;
-}
 
 #blockly {
-  position: absolute;
-  bottom: 10px;
-  max-width: 100%;
   width: auto;
+  height: 800px;
+}
+
+.mainLeftSide {
+    position: absolute;
 }
 
 #unityPlayer {
-  position: absolute;
-  top: 100px;
-}
-
-body {
-  overflow: hidden;
+    width: 768px;
+    height: 700px;
 }
 
 #languageMenu {
@@ -235,13 +237,10 @@ body {
 }
 
 #sliderContainer {
-  width: 300px; 
-  display: block; 
-  position: absolute; 
+  width: 300px;
   background-color: rgba(90, 90, 90, 0.2);
   border-color: #000;
   border-width: 2px;
   border-style: solid;
   padding: 5px;
-  visibility: hidden;
 }

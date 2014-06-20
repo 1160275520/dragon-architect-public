@@ -19,49 +19,55 @@
     <script src="blockly/hackcraft.js"></script>
   </head>
   <body>
-    <!-- major UI sections need to be grouped in together in a single element for easy visibility toggling -->
     <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
     <xml id="toolbox" style="display: none">
       <block type="Forward"></block>
     </xml>
-    <!-- the unity player window -->
-    <div id="unityPlayer"></div>
-    <!-- the code editor and related UI -->
-    <div id="codeEditor">
-      <div id="blockly"></div>
-      <p id="statement-counter"></p>
-      <img id="trash-arrow" src="media/arrow.png"/>
-      <button id="btn-run" hidden="true">Run!</button>
-      <button id="btn-undo">Undo</button>
-      <div id="sliderContainer">
-        <div id="sliderSteps">
-          <span class="tick" >Slow</span>
-          <span class="tick" style="left: 30%;">Medium</span>
-          <span class="tick" style="left: 60%;">Fast</span>
-        </div>
-        <div id="slider"></div>
-      </div>
-    </div>
     <!-- UI related to puzzle mode -->
-    <div id="puzzleModeUI">
+    <div id="someheaderthingy" class="puzzleModeUI">
       <p id="instructions">test instructions</p>
     </div>
-    <!-- UI related to free edit mode -->
-    <div id="creativeModeUI">
-
+    <div id="main">
+      <!-- major UI sections need to be grouped in together in a single element for easy visibility toggling -->
+      <!-- the unity player window -->
+      <div class="mainLeftSide">
+        <div id="unityPlayer"></div>
+        <div class="codeEditor">
+          <button id="btn-run">Run!</button>
+          <div id="sliderContainer">
+            <div id="sliderSteps">
+              <span class="tick" >Slow</span>
+              <span class="tick" style="left: 30%;">Medium</span>
+              <span class="tick" style="left: 60%;">Fast</span>
+            </div>
+            <div id="slider"></div>
+          </div>
+        </div>
+      </div>
+      <!-- the code editor and related UI -->
+      <div class="codeEditor mainRightSide">
+        <div id="blockly"></div>
+      </div>
+      <div class="codeEditor">
+        <p id="statement-counter"></p>
+        <img id="trash-arrow" src="media/arrow.png"/>
+        <button id="btn-undo">Undo</button>
+      </div>
+      <!-- UI for the gallery view (that isn't in unity) -->
+      <div class="galleryUI"></div>
+      <!-- UI related to free edit mode -->
+      <div class="creativeModeUI"></div>
+      <!-- level selector UI -->
+      <div class="levelSelector">
+        <h1>I am the level selector!</h1>
+        <button id="button_levelSelect_to_title">Back to title</button>
+        <ul id="levelList"></ul>
+      </div>
+      <!-- the title screen -->
+      <div class="titleScreen">
+        <h1>I am the title screen!</h1>
+        <button id="button_title_to_levelSelect">Go to level select</button>
+      </div>
     </div>
-    <!-- level selector UI -->
-    <div id="levelSelector">
-      <h1>I am the level selector!</h1>
-      <button id="button_levelSelect_to_title">Back to title</button>
-      <ul id="levelList"></ul>
-    </div>
-    <!-- the title screen -->
-    <div id="titleScreen">
-      <h1>I am the title screen!</h1>
-      <button id="button_title_to_levelSelect">Go to level select</button>
-    </div>
-    <!-- UI for the gallery view (that isn't in unity) -->
-    <div id="galleryUI"></div>
   </body>
 </html>

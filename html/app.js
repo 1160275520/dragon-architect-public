@@ -23,16 +23,29 @@ function onHackcraftEvent(func, arg) {
 var unityPlayer = function(){
     var self = {};
 
+    // TODO have these return correct values even when the thing isn't visible
+
+    self.width = function() {
+        return $('#unityPlayer embed').width();
+    }
+
+    self.height = function() {
+        return $('#unityPlayer embed').height();
+    }
+
     self.initialize = function() {
-        var dim = Math.min(768, window.innerHeight - 160);
+        var div = $("#unityPlayer");
+
+        // XXX TODO disable dynamic sizing for now until we clean up positioning
+        //var dim = Math.min(768, window.innerHeight - 160);
         var config = {
-            width: dim,
-            height: dim,
+            width: div.width(),
+            height: div.height(),
             params: { enableDebugging:"0" }
         };
 
         unityObject = new UnityObject2(config);
-        unityObject.initPlugin(jQuery("#unityPlayer")[0], "hackcraft/hackcraft.unity3d");
+        unityObject.initPlugin(div[0], "hackcraft/hackcraft.unity3d");
     }
 
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
@@ -40,17 +53,17 @@ var unityPlayer = function(){
     var oldUnityWidth, oldUnityHeight;
 
     self.hide = function() {
-        var u = $('#unityPlayer embed');
+        var u = $('#unityPlayer embed, #unityPlayer');
         if (!oldUnityWidth) {
-            oldUnityWidth = u.width();
-            oldUnityHeight = u.height();
+            oldUnityHeight = self.height();
+            oldUnityWidth = self.width();
         }
         u.width(1).height(1);
     }
 
     self.show = function() {
         if (oldUnityWidth) {
-            var u = $('#unityPlayer embed');
+            var u = $('#unityPlayer embed, #unityPlayer');
             u.width(oldUnityWidth).height(oldUnityHeight);
             oldUnityWidth = null;
             oldUnityHeight = null;
@@ -62,12 +75,12 @@ var unityPlayer = function(){
 
 function hideAll() {
     unityPlayer.hide();
-    $('#codeEditor, #puzzleModeUI, #creativeModeUI, #levelSelector, #titleScreen, #galleryUI').hide();
+    $('.codeEditor, .puzzleModeUI, .creativeModeUI, .levelSelector, .titleScreen, .galleryUI').hide();
 }
 
 function setState_title() {
     hideAll();
-    $('#titleScreen').show();
+    $('.titleScreen').show();
 }
 
 function setState_levelSelect() {
@@ -84,13 +97,13 @@ function setState_levelSelect() {
         console.warn("level selector visited without initialized possible level list!");
     }
 
-    $('#levelSelector').show();
+    $('.levelSelector').show();
 }
 
 function setState_puzzle(puzzleId) {
     console.info('starting puzzle ' + puzzleId);
     hideAll();
-    $('#codeEditor, #puzzleModeUI').show();
+    $('.codeEditor, .puzzleModeUI').show();
     unityPlayer.show();
     set_stage(puzzleId);
 }
@@ -108,7 +121,9 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     unityPlayer.initialize();
-
+    $('.mainLeftSide').css('width', unityPlayer.width() + 'px');
+    $('.mainRightSide').css('margin-left', unityPlayer.width() + 'px');
+    Hackcraft.init();
     HackcraftLogging.initialize();
 
     // set up some of the callbacks for code editing UI
@@ -120,12 +135,6 @@ $(function() {
         is_running = !is_running;
         set_is_running(is_running);
         Blockly.mainWorkspace.traceOn(is_running);
-        var b = $('#btn-run')[0];
-        var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
-        var selfRect = b.getBoundingClientRect();
-        b.style.left = (rect.right - selfRect.width - 2) + 'px'; // 2 to account for padding, etc.
-        b.style.top = (rect.bottom + 2) + 'px'; // 2 to account for padding, etc.
-
         if (questLogger) {
             if (is_running) {
                 questLogger.logProgramExecutionStarted(JSON.stringify(program));
