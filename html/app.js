@@ -102,6 +102,7 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#button_title_to_levelSelect').on('click', setState_levelSelect);
+    $('#button_header_levelSelect').on('click', setState_levelSelect);
     $('#button_levelSelect_to_title').on('click', setState_title);
 
     // initialize subsystems (mainly unity and logging)
