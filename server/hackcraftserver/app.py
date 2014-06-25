@@ -9,6 +9,14 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
+def add_cors_header(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'HEAD, GET, POST, PATCH, PUT, OPTIONS, DELETE'
+    response.headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+
+    return response
+
 class Player(db.Model):
     __tablename__ = 'player'
     id = db.Column(db.Unicode, primary_key=True) # uuid
@@ -32,8 +40,12 @@ def main():
 
     # Create API endpoints, which will be available at /api/<tablename> by
     # default. Allowed HTTP methods can be specified as well.
-    manager.create_api(Player, methods=['GET', 'POST'])
-    manager.create_api(SavedProcedure, methods=['GET', 'POST', 'PUT'])
+    api = manager.create_api_blueprint(Player, methods=['GET', 'POST'])
+    api.after_request(add_cors_header)
+    app.register_blueprint(api)
+    api = manager.create_api_blueprint(SavedProcedure, methods=['GET', 'POST', 'PUT'])
+    api.after_request(add_cors_header)
+    app.register_blueprint(api)
 
     # start the flask loop
     app.run()
