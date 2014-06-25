@@ -26,10 +26,15 @@ header > div {
 header h1 {
     float: left;
     overflow: auto;
+    margin-right: 50px;
 }
 
-header > div > div {
+#navControls {
     float: right;
+    mragin-left: 50px;
+}
+
+.headerCenter {
 }
 
 #someheaderthingy {

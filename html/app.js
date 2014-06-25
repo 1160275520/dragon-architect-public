@@ -70,6 +70,8 @@ function setState_title() {
     $('.titleScreen').show();
 }
 
+var SANDBOX_LEVEL_ID = 'tl_final';
+
 function setState_levelSelect() {
     hideAll();
 
@@ -78,7 +80,12 @@ function setState_levelSelect() {
         var list = $('#levelList');
         _.each(possible_stages, function(item) {
             var button = $('<li><button>' + item + '</button></li>').appendTo(list);
-            button.on('click', function() { setState_puzzle(item); });
+            // HACK look for special sandbox level id
+            if (item === SANDBOX_LEVEL_ID) {
+                button.on('click', function() { setState_sandbox(item); });
+            } else {
+                button.on('click', function() { setState_puzzle(item); });
+            }
         });
     } else if (!possible_stages) {
         console.warn("level selector visited without initialized possible level list!");
@@ -87,12 +94,20 @@ function setState_levelSelect() {
     $('.levelSelector').show();
 }
 
-function setState_puzzle(puzzleId) {
-    console.info('starting puzzle ' + puzzleId);
+function setState_puzzle(stageId) {
+    console.info('starting puzzle ' + stageId);
     hideAll();
     $('.codeEditor, .puzzleModeUI').show();
     unityPlayer.show();
-    set_stage(puzzleId);
+    set_stage(stageId);
+}
+
+function setState_sandbox(stageId) {
+    console.info('starting sandbox ' + stageId);
+    hideAll();
+    $('.codeEditor, .creativeModeUI').show();
+    unityPlayer.show();
+    set_stage(stageId);
 }
 
 // startup
@@ -157,6 +172,13 @@ $(function() {
             send_message("System", "EAPI_SetDelayPerCommand", (1 - ui.value).toString());
         }
     });
+
+    $('#button_loadProcedure').click(function() {
+        console.log('ohai');
+        $.get('http://localhost:5000/api/savedprocedure', function(data) {
+            console.log(data);
+        });
+    });
 });
 
 // SPECIFIC HANDLER FUNCTIONS
@@ -178,7 +200,6 @@ function set_is_running(is_running) {
 handler.onSystemStart = function(json) {
     possible_stages = JSON.parse(json);
     setState_title();
-    //setState_puzzle(possible_stages[5]);
 }
 
 handler.onProgramChange = function(json) {
