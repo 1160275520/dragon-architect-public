@@ -102,12 +102,35 @@ function setState_puzzle(stageId) {
     set_stage(stageId);
 }
 
+// shows the UI for sandbox mode. If stageID is not null, also sets the unity stage.
 function setState_sandbox(stageId) {
     console.info('starting sandbox ' + stageId);
     hideAll();
     $('.codeEditor, .creativeModeUI').show();
     unityPlayer.show();
-    set_stage(stageId);
+    if (stageId) {
+        set_stage(stageId);
+    }
+}
+
+function setState_gallery(galleryObjectArray) {
+    // TODO make sure current program is preserved for when gallery returns to sandbox
+    console.info('starting gallery view');
+    hideAll();
+    $('.galleryUI, .creativeModeUI').show();
+    unityPlayer.show();
+
+    var list = $('#galleryList');
+    list.empty();
+    _.each(galleryObjectArray, function(item, index) {
+        var button = $('<li><button>' + item.name + '</button></li>').appendTo(list);
+        // HACK look for special sandbox level id
+        button.click(function() {
+            add_to_library(item.name, item.contents);
+            // show creative UI again without resetting unity stage
+            setState_sandbox(null);
+        });
+    });
 }
 
 // startup
@@ -174,14 +197,19 @@ $(function() {
     });
 
     $('#button_loadProcedure').click(function() {
-        console.log('ohai');
+        // TODO HACK consider checking for errors and handling potential concurrency problems
         $.get('http://localhost:5000/api/savedprocedure', function(data) {
-            console.log(data);
+            setState_gallery(data.objects);
         });
     });
 });
 
 // SPECIFIC HANDLER FUNCTIONS
+
+function add_to_library(name, program) {
+    // TODO check for reserved names (e.g., main)
+    // TODO actually implement this function
+}
 
 function set_program(prog) {
     var s = JSON.stringify(prog)
