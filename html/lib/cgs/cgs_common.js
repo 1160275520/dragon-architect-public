@@ -6699,13 +6699,13 @@ cgs.server.requests.ServerRequest.prototype = $extend(cgs.http.UrlRequest.protot
 		return variables;
 	}
 	,getUrl: function() {
+		this.updateProxyParams();
 		var requestURL = this.getBaseURL();
 		var hasParam = false;
 		if(this._gameServerData.useProxy()) requestURL = this._gameServerData.getProxyUrl();
 		if(this.proxyParams != null) {
 			var proxyVars = this.getProxyUrlVariables();
 			requestURL += "?" + proxyVars.toString();
-			console.log("Proxy url: " + requestURL);
 		}
 		if(this.isPOST() || this.proxyParams != null) return requestURL;
 		var vars = this.getUrlVariables();
@@ -6741,8 +6741,6 @@ cgs.server.requests.ServerRequest.prototype = $extend(cgs.http.UrlRequest.protot
 		this.proxyParams.set("r_url_s",host);
 		this.proxyParams.set("r_url_p",parser.path);
 		var value;
-        console.info('setting proxy params for ' + parser.path);
-        console.info(this._method);
 		if(this.isGET()) value = "GET"; else value = "POST";
 		this.proxyParams.set("r_url_action_type",value);
 	}
@@ -7613,10 +7611,10 @@ cgs.server.services.CgsServerApi.prototype = {
 		var gameServerData = this.getCurrentGameServerData();
 		var request = new cgs.server.requests.ServerRequest(method,callback,data,params,extraData,dataFormat,null,gameServerData);
 		request.setMessage(message);
-		request.setUrlType(type);
 		request.setResponseStatus(responseStatus);
 		request.setRequestType(requestType);
 		request.setMaxFailures(1);
+		request.setUrlType(type);
 		if(request.hasClientTimestamp()) {
 			request.addReadyHandler($bind(this,this.handleRequestReady));
 			request.addRequestDependency(this._serverTime.getTimeRequestDependency());
@@ -7660,9 +7658,9 @@ cgs.server.services.CgsServerApi.prototype = {
 		var gameServerData = this.getCurrentGameServerData();
 		var request = new cgs.server.requests.ServerRequest(method,callback,data,params,extraData,dataFormat,null,gameServerData);
 		request.setMessage(message);
-		request.setUrlType(type);
 		request.setResponseStatus(responseStatus);
 		request.setRequestType(requestType);
+		request.setUrlType(type);
 		return request;
 	}
 	,createUserRequest: function(method,message,data,params,type,requestType,extraData,callback) {

@@ -17,7 +17,7 @@ self.initialize = function() {
     var gameName = HACKCRAFT_CONFIG.logging.game.name;
     var gameId = HACKCRAFT_CONFIG.logging.game.id;
     var versionId = 1;
-    var categoryId = HACKCRAFT_CONFIG.logging.category;
+    var categoryId = HACKCRAFT_CONFIG.logging.category_id;
 
     var props = new cgs.user.CgsUserProperties(
         skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
