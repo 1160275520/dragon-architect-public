@@ -12,8 +12,9 @@ self.initialize = function() {
     var api = new cgs.CgsApi(handler, new cgs.CgsCache(null));
 
     var skey = HACKCRAFT_CONFIG.logging.game.skey;
-    var skeyHash = cgs.server.logging.GameServerData.NO_SKEY_HASH;
+    var skeyHash = cgs.server.logging.GameServerData.UUID_SKEY_HASH;
     var serverTag = cgs.server.CGSServerProps[HACKCRAFT_CONFIG.logging.server_tag];
+    console.info(serverTag);
     var gameName = HACKCRAFT_CONFIG.logging.game.name;
     var gameId = HACKCRAFT_CONFIG.logging.game.id;
     var versionId = 1;
