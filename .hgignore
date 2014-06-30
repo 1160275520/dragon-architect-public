@@ -31,4 +31,5 @@ server/venv/
 Hackcraft.app/
 *.exe
 *_Data/
+External/packages/
 
