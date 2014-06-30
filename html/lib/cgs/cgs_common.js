@@ -12,6 +12,23 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
+var EReg = function(r,opt) {
+	opt = opt.split("u").join("");
+	this.r = new RegExp(r,opt);
+};
+EReg.__name__ = true;
+EReg.prototype = {
+	match: function(s) {
+		if(this.r.global) this.r.lastIndex = 0;
+		this.r.m = this.r.exec(s);
+		this.r.s = s;
+		return this.r.m != null;
+	}
+	,matched: function(n) {
+		if(this.r.m != null && n >= 0 && n < this.r.m.length) return this.r.m[n]; else throw "EReg::matched";
+	}
+	,__class__: EReg
+};
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
 HxOverrides.cca = function(s,index) {
@@ -1833,7 +1850,7 @@ cgs.http.requests.UrlRequestHandler.prototype = {
 	,handleRequestCanceled: function(request) {
 		var response = this._loader.closeRequest(request);
 		request.handleCancel();
-		response.cancel();
+		if(response != null) response.cancel();
 		this.handleRequestComplete(request,response);
 	}
 	,handleRequestComplete: function(request,response) {
@@ -2168,28 +2185,51 @@ cgs.login.LoginUiProperties.prototype = {
 cgs.server = {};
 cgs.server.CGSServerConstants = function() { };
 cgs.server.CGSServerConstants.__name__ = true;
+cgs.server.CGSServerConstants.GetProxyUrl = function(serverTag,version) {
+	if(version == null) version = 1;
+	if(serverTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.CGSServerConstants.INT_LOCAL_URL + cgs.server.CGSServerConstants.PROXY_URL_PHP;
+	return "http://" + cgs.server.CGSServerConstants.GetProxyUrlDomain(serverTag) + cgs.server.CGSServerConstants.GetProxyUrlPath(serverTag,version);
+};
+cgs.server.CGSServerConstants.GetProxyUrlDomain = function(serverTag) {
+	return cgs.server.CGSServerConstants.GetIntegrationUrlBase(serverTag);
+};
+cgs.server.CGSServerConstants.GetProxyUrlPath = function(serverTag,version) {
+	if(version == null) version = 1;
+	return cgs.server.CGSServerConstants.AppendVersion(cgs.server.CGSServerConstants.PROXY_URL_PATH,version) + cgs.server.CGSServerConstants.PROXY_URL_PHP;
+};
 cgs.server.CGSServerConstants.GetBaseUrl = function(serverTag,version) {
 	if(version == null) version = 1;
+	if(serverTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.CGSServerConstants.LOCAL_URL;
 	var domain = cgs.server.CGSServerConstants.DEV_URL_DOMAIN;
 	if(serverTag == cgs.server.CGSServerProps.PRODUCTION_SERVER) domain = cgs.server.CGSServerConstants.BASE_URL_DOMAIN; else if(serverTag == cgs.server.CGSServerProps.STAGING_SERVER) domain = cgs.server.CGSServerConstants.STAGING_URL_DOMAIN; else if(serverTag == cgs.server.CGSServerProps.STUDY_SERVER) domain = cgs.server.CGSServerConstants.SCHOOLS_BASE_URL; else if(serverTag == cgs.server.CGSServerProps.CUSTOM_SERVER) domain = cgs.server.CGSServerConstants.CUSTOM_BASE_URL;
-	var url = "http://" + domain + cgs.server.CGSServerConstants.BASE_URL_PATH;
-	if(version == 2) url += cgs.server.CGSServerConstants.CURRENT_VERSION; else if(version == cgs.server.CGSServerProps.VERSION1) url += cgs.server.CGSServerConstants.VERSION_1; else if(version == 2) url += cgs.server.CGSServerConstants.VERSION_2; else if(version == cgs.server.CGSServerProps.VERSION_DEV) url += cgs.server.CGSServerConstants.VERSION_0;
+	var url = "http://" + domain + cgs.server.CGSServerConstants.AppendVersion(cgs.server.CGSServerConstants.BASE_URL_PATH,version);
 	return url + cgs.server.CGSServerConstants.BASE_URL_PHP;
 };
 cgs.server.CGSServerConstants.GetIntegrationUrl = function(serverTag,version) {
 	if(version == null) version = 1;
+	if(serverTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.CGSServerConstants.INT_LOCAL_URL;
+	var domain = cgs.server.CGSServerConstants.GetIntegrationUrlBase(serverTag);
+	var path = cgs.server.CGSServerConstants.AppendVersion(cgs.server.CGSServerConstants.INT_BASE_URL_PATH,version);
+	var url = "http://" + domain + path;
+	return url + cgs.server.CGSServerConstants.INT_BASE_URL_PHP;
+};
+cgs.server.CGSServerConstants.AppendVersion = function(path,version) {
+	if(version == 2) path += cgs.server.CGSServerConstants.CURRENT_VERSION; else if(version == cgs.server.CGSServerProps.VERSION1) path += cgs.server.CGSServerConstants.VERSION_1; else if(version == 2) path += cgs.server.CGSServerConstants.VERSION_2; else if(version == cgs.server.CGSServerProps.VERSION_DEV) path += cgs.server.CGSServerConstants.VERSION_0;
+	return path;
+};
+cgs.server.CGSServerConstants.GetIntegrationUrlPath = function(version) {
+	return cgs.server.CGSServerConstants.AppendVersion(cgs.server.CGSServerConstants.INT_BASE_URL_PATH,version) + cgs.server.CGSServerConstants.INT_BASE_URL_PHP;
+};
+cgs.server.CGSServerConstants.GetIntegrationUrlBase = function(serverTag) {
 	var domain = cgs.server.CGSServerConstants.INT_DEV_URL_DOMAIN;
 	if(serverTag == cgs.server.CGSServerProps.PRODUCTION_SERVER) domain = cgs.server.CGSServerConstants.INT_BASE_URL_DOMAIN; else if(serverTag == cgs.server.CGSServerProps.STAGING_SERVER) domain = cgs.server.CGSServerConstants.INT_STAGING_URL_DOMAIN; else if(serverTag == cgs.server.CGSServerProps.CUSTOM_SERVER) domain = cgs.server.CGSServerConstants.CUSTOM_INTEGRATION_BASE_URL; else if(serverTag == cgs.server.CGSServerProps.STUDY_SERVER) domain = cgs.server.CGSServerConstants.INT_BASE_URL_DOMAIN;
-	var url = "http://" + domain + cgs.server.CGSServerConstants.INT_BASE_URL_PATH;
-	if(version == 2) url += cgs.server.CGSServerConstants.CURRENT_VERSION; else if(version == cgs.server.CGSServerProps.VERSION1) url += cgs.server.CGSServerConstants.VERSION_1; else if(version == 2) url += cgs.server.CGSServerConstants.VERSION_2; else if(version == cgs.server.CGSServerProps.VERSION_DEV) url += cgs.server.CGSServerConstants.VERSION_0;
-	return url + cgs.server.CGSServerConstants.INT_BASE_URL_PHP;
+	return domain;
 };
 cgs.server.CGSServerConstants.GetTimeUrl = function(serverTag,version) {
 	if(version == null) version = 1;
 	var domain = cgs.server.CGSServerConstants.DEV_TIME_URL_DOMAIN;
 	if(serverTag == cgs.server.CGSServerProps.PRODUCTION_SERVER || serverTag == cgs.server.CGSServerProps.STUDY_SERVER) domain = cgs.server.CGSServerConstants.TIME_URL_DOMAIN; else if(serverTag == cgs.server.CGSServerProps.STAGING_SERVER) domain = cgs.server.CGSServerConstants.STAGING_TIME_URL_DOMAIN;
-	var url = "http://" + domain + cgs.server.CGSServerConstants.TIME_URL_PATH;
-	if(version == 2) url += cgs.server.CGSServerConstants.CURRENT_VERSION; else if(version == cgs.server.CGSServerProps.VERSION1) url += cgs.server.CGSServerConstants.VERSION_1; else if(version == 2) url += cgs.server.CGSServerConstants.VERSION_2; else if(version == cgs.server.CGSServerProps.VERSION_DEV) url += cgs.server.CGSServerConstants.VERSION_0;
+	var url = "http://" + domain + cgs.server.CGSServerConstants.AppendVersion(cgs.server.CGSServerConstants.TIME_URL_PATH,version);
 	return url + cgs.server.CGSServerConstants.TIME_URL_PHP;
 };
 cgs.server.CGSServerConstants.prototype = {
@@ -2200,6 +2240,8 @@ cgs.server.CGSServerConstants.prototype = {
 };
 cgs.server.CGSServerProps = $hx_exports.cgs.server.CGSServerProps = function(skey,skeyHashType,gameName,gameID,versionID,categoryID,serverTag,serverVersion) {
 	if(serverVersion == null) serverVersion = 2;
+	this._useIntegrationProxy = false;
+	this._proxyCgsRequests = false;
 	this._logPriority = 1;
 	this._dataLevel = 0;
 	this._serverVersion = 0;
@@ -2314,43 +2356,6 @@ cgs.server.CGSServerProps.prototype = {
 	,getSkey: function() {
 		return this._skey;
 	}
-	,setLoggingUrl: function(value) {
-		this._serverURL = value;
-	}
-	,isServerURLValid: function() {
-		return this._serverURL != null;
-	}
-	,getLoggingUrl: function() {
-		if(this.isServerURLValid()) return this._serverURL; else if(this._deployServerTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.CGSServerConstants.LOCAL_URL; else return cgs.server.CGSServerConstants.GetBaseUrl(this._deployServerTag,this._serverVersion);
-		return cgs.server.CGSServerConstants.DEV_URL;
-	}
-	,getTimeUrl: function() {
-		if(this._timeUrl != null) return this._timeUrl; else return cgs.server.CGSServerConstants.GetTimeUrl(this._deployServerTag,this._serverVersion);
-	}
-	,setTimeUrl: function(url) {
-		this._timeUrl = url;
-	}
-	,getServerURL: function() {
-		return this.getLoggingUrl();
-	}
-	,isABTestingURLValid: function() {
-		return this._abTestingURL != null;
-	}
-	,setAbTestingUrl: function(value) {
-		this._abTestingURL = value;
-	}
-	,getAbTestingUrl: function() {
-		if(this.isABTestingURLValid()) return this._abTestingURL; else if(this._deployServerTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.abtesting.ABTesterConstants.AB_TEST_URL_LOCAL; else return cgs.server.abtesting.ABTesterConstants.GetAbTestingUrl(this._deployServerTag,this._serverVersion);
-	}
-	,isIntegrationURLValid: function() {
-		return this._integrationURL != null;
-	}
-	,setIntegrationUrl: function(value) {
-		this._integrationURL = value;
-	}
-	,getIntegrationUrl: function() {
-		if(this.isIntegrationURLValid()) return this._integrationURL; else if(this._deployServerTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.CGSServerConstants.INT_LOCAL_URL; else return cgs.server.CGSServerConstants.GetIntegrationUrl(this._deployServerTag,this._serverVersion);
-	}
 	,getServerTag: function() {
 		return this._deployServerTag;
 	}
@@ -2413,6 +2418,58 @@ cgs.server.CGSServerProps.prototype = {
 	}
 	,getLogPriority: function() {
 		return this._logPriority;
+	}
+	,setLoggingUrl: function(value) {
+		this._serverURL = value;
+	}
+	,isServerURLValid: function() {
+		return this._serverURL != null;
+	}
+	,getLoggingUrl: function() {
+		if(this.isServerURLValid()) return this._serverURL; else return cgs.server.CGSServerConstants.GetBaseUrl(this._deployServerTag,this._serverVersion);
+		return cgs.server.CGSServerConstants.DEV_URL;
+	}
+	,getTimeUrl: function() {
+		if(this._timeUrl != null) return this._timeUrl; else return cgs.server.CGSServerConstants.GetTimeUrl(this._deployServerTag,this._serverVersion);
+	}
+	,setTimeUrl: function(url) {
+		this._timeUrl = url;
+	}
+	,getServerURL: function() {
+		return this.getLoggingUrl();
+	}
+	,isABTestingURLValid: function() {
+		return this._abTestingURL != null;
+	}
+	,setAbTestingUrl: function(value) {
+		this._abTestingURL = value;
+	}
+	,getAbTestingUrl: function() {
+		if(this.isABTestingURLValid()) return this._abTestingURL; else if(this._deployServerTag == cgs.server.CGSServerProps.LOCAL_SERVER) return cgs.server.abtesting.ABTesterConstants.AB_TEST_URL_LOCAL; else return cgs.server.abtesting.ABTesterConstants.GetAbTestingUrl(this._deployServerTag,this._serverVersion);
+	}
+	,isIntegrationUrlValid: function() {
+		return this._integrationURL != null;
+	}
+	,setIntegrationUrl: function(value) {
+		this._integrationURL = value;
+	}
+	,getIntegrationUrl: function() {
+		if(this.isIntegrationUrlValid()) return this._integrationURL; else return cgs.server.CGSServerConstants.GetIntegrationUrl(this._deployServerTag,this._serverVersion);
+	}
+	,setUseProxy: function(value) {
+		this._proxyCgsRequests = value;
+	}
+	,useProxy: function() {
+		return this._proxyCgsRequests;
+	}
+	,setUseIntegrationProxy: function(value) {
+		this._useIntegrationProxy = value;
+	}
+	,setProxyUrl: function(url) {
+		this._externalProxyUrl = url;
+	}
+	,getProxyUrl: function() {
+		if(this._useIntegrationProxy) return cgs.server.CGSServerConstants.GetProxyUrl(this._deployServerTag,this._serverVersion); else return this._externalProxyUrl;
 	}
 	,__class__: cgs.server.CGSServerProps
 };
@@ -4303,6 +4360,18 @@ cgs.server.logging.GameServerData.prototype = {
 	}
 	,setSwfDomain: function(value) {
 		this._swfDomain = value;
+	}
+	,setUseProxy: function(value) {
+		this._useProxy = value;
+	}
+	,useProxy: function() {
+		return this._useProxy;
+	}
+	,getProxyUrl: function() {
+		return this._proxyUrl;
+	}
+	,setProxyUrl: function(value) {
+		this._proxyUrl = value;
 	}
 	,__class__: cgs.server.logging.GameServerData
 };
@@ -6562,9 +6631,10 @@ cgs.server.requests.ServerRequest.prototype = $extend(cgs.http.UrlRequest.protot
 	}
 	,setUrlType: function(value) {
 		this._urlType = value;
+		this.updateProxyParams();
 	}
 	,isPOST: function() {
-		return this._method == cgs.server.requests.ServerRequest.POST;
+		return this._method == cgs.server.requests.ServerRequest.POST || this.proxyParams != null;
 	}
 	,isGET: function() {
 		if(this._method == null) return true; else return this._method == cgs.server.requests.ServerRequest.GET;
@@ -6585,6 +6655,15 @@ cgs.server.requests.ServerRequest.prototype = $extend(cgs.http.UrlRequest.protot
 	}
 	,getBaseUrl: function() {
 		return this.getBaseURL();
+	}
+	,getProxyUrlVariables: function() {
+		var variables = new cgs.http.UrlVariables();
+		var $it0 = this.proxyParams.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			variables.setParameter(key,this.proxyParams.get(key));
+		}
+		return variables;
 	}
 	,getUrlVariables: function() {
 		var variables = new cgs.http.UrlVariables();
@@ -6622,7 +6701,13 @@ cgs.server.requests.ServerRequest.prototype = $extend(cgs.http.UrlRequest.protot
 	,getUrl: function() {
 		var requestURL = this.getBaseURL();
 		var hasParam = false;
-		if(this.isPOST()) return requestURL;
+		if(this._gameServerData.useProxy()) requestURL = this._gameServerData.getProxyUrl();
+		if(this.proxyParams != null) {
+			var proxyVars = this.getProxyUrlVariables();
+			requestURL += "?" + proxyVars.toString();
+			console.log("Proxy url: " + requestURL);
+		}
+		if(this.isPOST() || this.proxyParams != null) return requestURL;
 		var vars = this.getUrlVariables();
 		return requestURL + "?" + vars.toString();
 	}
@@ -6641,6 +6726,25 @@ cgs.server.requests.ServerRequest.prototype = $extend(cgs.http.UrlRequest.protot
 	}
 	,getGameServerData: function() {
 		return this._gameServerData;
+	}
+	,updateProxyParams: function() {
+		if(this._gameServerData == null) return;
+		if(this._gameServerData.useProxy()) {
+			if(this._urlType == 1) this.addProxyParams(this._gameServerData.getServerURL() + this.getApiMethod()); else if(this._urlType == cgs.server.requests.ServerRequest.AB_TESTING_URL) this.addProxyParams(this._gameServerData.getAbTestingURL() + this.getApiMethod()); else if(this._urlType == cgs.server.requests.ServerRequest.INTEGRATION_URL) this.addProxyParams(this._gameServerData.getIntegrationURL() + this.getApiMethod()); else this.addProxyParams(this.getBaseURL());
+		}
+	}
+	,addProxyParams: function(url) {
+		if(this.proxyParams == null) this.proxyParams = new haxe.ds.StringMap();
+		var parser = new cgs.utils.UrlParser(url);
+		var host = parser.host;
+		if(parser.port != null) host += ":" + parser.port;
+		this.proxyParams.set("r_url_s",host);
+		this.proxyParams.set("r_url_p",parser.path);
+		var value;
+        console.info('setting proxy params for ' + parser.path);
+        console.info(this._method);
+		if(this.isGET()) value = "GET"; else value = "POST";
+		this.proxyParams.set("r_url_action_type",value);
 	}
 	,setServerFailureCount: function(count) {
 		this._serverFailureCount = count;
@@ -7389,6 +7493,8 @@ cgs.server.services.CgsServerApi.prototype = {
 		serverData.setAbTestingURL(props.getAbTestingUrl());
 		serverData.setIntegrationURL(props.getIntegrationUrl());
 		serverData.setTimeUrl(props.getTimeUrl());
+		serverData.setProxyUrl(props.getProxyUrl());
+		serverData.setUseProxy(props.useProxy());
 		serverData.setServerVersion(props.getServerVersion());
 		serverData.setUidCallback(props.getUidValidCallback());
 		serverData.setCgsCache(props.getCgsCache());
@@ -9472,6 +9578,34 @@ cgs.utils.Json.decode = function(value) {
 cgs.utils.Json.encode = function(value) {
 	return JSON.stringify(value);
 };
+cgs.utils.UrlParser = function(url) {
+	this.url = url;
+	var r = new EReg("^(?:(?![^:@]+:[^:@/]*@)([^:/?#.]+):)?(?://)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:/?#]*)(?::(\\d*))?)(((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[?#]|$)))*/?)?([^?#/]*))(?:\\?([^#]*))?(?:#(.*))?)","");
+	r.match(url);
+	var _g1 = 0;
+	var _g = cgs.utils.UrlParser._parts.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		Reflect.setField(this,cgs.utils.UrlParser._parts[i],r.matched(i));
+	}
+};
+cgs.utils.UrlParser.__name__ = true;
+cgs.utils.UrlParser.parse = function(url) {
+	return new cgs.utils.UrlParser(url);
+};
+cgs.utils.UrlParser.prototype = {
+	toString: function() {
+		var s = "For Url -> " + this.url + "n";
+		var _g1 = 0;
+		var _g = cgs.utils.UrlParser._parts.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			s += cgs.utils.UrlParser._parts[i] + ": " + Std.string(Reflect.field(this,cgs.utils.UrlParser._parts[i])) + (i == cgs.utils.UrlParser._parts.length - 1?"":"n");
+		}
+		return s;
+	}
+	,__class__: cgs.utils.UrlParser
+};
 haxe.Timer = function(time_ms) {
 	var me = this;
 	this.id = setInterval(function() {
@@ -10085,8 +10219,12 @@ cgs.server.CGSServerConstants.DEV_TIME_URL_DOMAIN = "dev.integration.centerforga
 cgs.server.CGSServerConstants.TIME_URL_STAGING = "http://staging.integration.centerforgamescience.com/cgs/apps/integration/ws/time.php";
 cgs.server.CGSServerConstants.STAGING_TIME_URL_DOMAIN = "staging.integration.centerforgamescience.com";
 cgs.server.CGSServerConstants.TIME_URL_LOCAL = "http://localhost:10051/time.php/";
+cgs.server.CGSServerConstants.PROXY_URL_PATH = "/cgs/apps/integration/";
+cgs.server.CGSServerConstants.PROXY_URL_PHP = "/index.php/proxyinternal/";
+cgs.server.CGSServerConstants.LOCAL_PROXY_URL_PATH = "/index.php/proxyinternal/";
+cgs.server.CGSServerConstants.LOCAL_URL_PATH = "/index.php/";
 cgs.server.CGSServerConstants.LOCAL_URL = "http://localhost:10050/index.php/";
-cgs.server.CGSServerConstants.INT_LOCAL_URL = "http://localhost:10051/index.php/";
+cgs.server.CGSServerConstants.INT_LOCAL_URL = "http://localhost:10051";
 cgs.server.CGSServerConstants.UUID_REQUEST = "muser/get/";
 cgs.server.CGSServerConstants.DQID_REQUEST = "logging/getdynamicquestid/";
 cgs.server.CGSServerConstants.LEGACY_QUEST_START = "loggingassessment/setquest/";
@@ -10322,6 +10460,7 @@ cgs.utils.Base64.BASE_64_ENCODING_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk
 cgs.utils.Base64.BASE_64_ENCODING_BYTES = haxe.io.Bytes.ofString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 cgs.utils.Base64.BASE_64_PADDING = "=";
 cgs.utils.Guid.counter = 0;
+cgs.utils.UrlParser._parts = ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"];
 haxe.ds.ObjectMap.count = 0;
 haxe.io.Output.LN2 = Math.log(2);
 cgs.Common.main();

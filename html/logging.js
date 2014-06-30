@@ -11,13 +11,13 @@ self.initialize = function() {
 
     var api = new cgs.CgsApi(handler, new cgs.CgsCache(null));
 
-    var skey = "";
+    var skey = HACKCRAFT_CONFIG.logging.game.skey;
     var skeyHash = cgs.server.logging.GameServerData.NO_SKEY_HASH;
-    var serverTag = cgs.server.CGSServerProps.DEVELOPMENT_SERVER;
-    var gameName = "dev";
-    var gameId = 10;
+    var serverTag = cgs.server.CGSServerProps[HACKCRAFT_CONFIG.logging.server_tag];
+    var gameName = HACKCRAFT_CONFIG.logging.game.name;
+    var gameId = HACKCRAFT_CONFIG.logging.game.id;
     var versionId = 1;
-    var categoryId = 23;
+    var categoryId = HACKCRAFT_CONFIG.logging.category;
 
     var props = new cgs.user.CgsUserProperties(
         skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
@@ -25,6 +25,11 @@ self.initialize = function() {
     //Enable saving of data to server.
     props.enableCaching();
     //props.setForceUid("test_user");
+
+    if (HACKCRAFT_CONFIG.logging.proxy_url) {
+        props.setUseProxy(true);
+        props.setProxyUrl(HACKCRAFT_CONFIG.game_server.url + HACKCRAFT_CONFIG.logging.proxy_url);
+    }
 
     //Wait to save data until everything has been loaded.
     props.setCompleteCallback(function(response) {
