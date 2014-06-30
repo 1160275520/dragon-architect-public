@@ -20,6 +20,10 @@ self.initialize = function() {
     var versionId = 1;
     var categoryId = HACKCRAFT_CONFIG.logging.category_id;
 
+    if (!serverTag || !gameName || !gameId || !versionId || (!categoryId && categoryId !== 0)) {
+        console.warn('invalid logging configuration!');
+    }
+
     var props = new cgs.user.CgsUserProperties(
         skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
 
