@@ -3,12 +3,15 @@ from __future__ import absolute_import, print_function, unicode_literals
 import flask
 import flask.ext.sqlalchemy
 import flask.ext.restless
+from flask import request
+import requests
 
 app = flask.Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
+@app.after_request
 def add_cors_header(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'HEAD, GET, POST, PATCH, PUT, OPTIONS, DELETE'
@@ -16,6 +19,27 @@ def add_cors_header(response):
     response.headers['Access-Control-Allow-Credentials'] = 'true'
 
     return response
+
+params_to_not_copy = frozenset(['r_url_s', 'r_url_p', 'r_url_action_type'])
+headers_to_not_copy = frozenset(['Host', 'Content-Length'])
+
+@app.route('/api/logging_proxy', methods=['GET', 'POST'])
+def logging_proxy():
+    a = request.args
+    url = 'http://' + a['r_url_s'] + a['r_url_p']
+    method = a['r_url_action_type']
+    headers = {k:v for k,v in request.headers.items() if k not in headers_to_not_copy}
+    params = {k:v for k,v in request.args.items() if k not in params_to_not_copy}
+
+    data = None
+    if method == 'POST':
+        data = request.stream.read()
+
+    print('proxying request to ' + url)
+    resp = requests.request(method=method, url=url, params=params, data=data, headers=headers, stream=True)
+    headers = dict(resp.headers.items())
+
+    return (resp.raw.data, resp.status_code, headers)
 
 class Player(db.Model):
     __tablename__ = 'player'
@@ -41,12 +65,14 @@ def main():
 
     # Create API endpoints, which will be available at /api/<tablename> by
     # default. Allowed HTTP methods can be specified as well.
-    api = manager.create_api_blueprint(Player, methods=['GET', 'POST'])
-    api.after_request(add_cors_header)
-    app.register_blueprint(api)
-    api = manager.create_api_blueprint(SavedProcedure, methods=['GET', 'POST', 'PUT'])
-    api.after_request(add_cors_header)
-    app.register_blueprint(api)
+    manager.create_api(Player, methods=['GET', 'POST'])
+    manager.create_api(SavedProcedure, methods=['GET', 'POST', 'PUT'])
+    #api = manager.create_api_blueprint(Player, methods=['GET', 'POST'])
+    #api.after_request(add_cors_header)
+    #app.register_blueprint(api)
+    #api = manager.create_api_blueprint(SavedProcedure, methods=['GET', 'POST', 'PUT'])
+    #api.after_request(add_cors_header)
+    #app.register_blueprint(api)
 
     # start the flask loop
     app.run()
