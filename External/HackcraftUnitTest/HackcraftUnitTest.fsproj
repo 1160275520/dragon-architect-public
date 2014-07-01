@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="UnitTest.fs" />
     <None Include="App.config" />
-    <None Include="MSTest.runsettings" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">

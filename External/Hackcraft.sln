@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Hackcraft", "Hackcraft\Hackcraft.fsproj", "{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{0EF6C559-0236-4D86-B2D7-E7D8C79797EE}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HackcraftUnitTest", "HackcraftUnitTest\HackcraftUnitTest.fsproj", "{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E3D52C52-4E42-440F-B94C-03C289A411E5}"
@@ -22,10 +20,6 @@ Global
 		{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0EF6C559-0236-4D86-B2D7-E7D8C79797EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EF6C559-0236-4D86-B2D7-E7D8C79797EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EF6C559-0236-4D86-B2D7-E7D8C79797EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EF6C559-0236-4D86-B2D7-E7D8C79797EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Release|Any CPU.ActiveCfg = Release|Any CPU
