@@ -11,7 +11,9 @@ module A = Hackcraft.Ast.Imperative
 
 let runSerializeFromFileTest filename =
     let json = File.ReadAllText filename |> J.Parse
-    S.JsonOfProgram (S.ProgramOfJson json) |> should equal json
+    let prog = S.ProgramOfJson json
+    S.ProgramOfJson json |> should equal prog
+    S.JsonOfProgram prog |> should equal json
 
 let testProgram = """
 {
@@ -43,6 +45,10 @@ let ``Serialization test_parse`` () =
     main.Arity |> should equal 0
     main.Body.Length |> should equal 2
 
+    A.NewCall 21 "Forward" [A.Literal "5"] |> should equal main.Body.[0]
+    main.Body.[0] |> should equal main.Body.[0]
+
+    S.ProgramOfJson json |> should equal prog
     S.JsonOfProgram prog |> should equal json
 
 [<Fact>]

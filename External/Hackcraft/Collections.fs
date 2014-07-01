@@ -3,12 +3,21 @@
 open System.Collections
 open System.Collections.Generic
 
-type ImmArr<'T> private(arr : 'T[]) =
+type ImmArr<[<EqualityConditionalOn>] 'T> private(arr : 'T[]) =
     new(s : seq<'T>) = ImmArr (Array.ofSeq s)
     member x.Item with get idx = arr.[idx]
     member x.Length = arr.Length
 
+    member private x._Array = arr
+
     member x.Map f = ImmArr (Array.map f arr)
+
+    override x.Equals (other:obj) : bool =
+        match other with
+        | :? ImmArr<'T> as y -> Unchecked.equals x._Array y._Array
+        | _ -> false
+
+    override x.GetHashCode () = Unchecked.hash x._Array
 
     interface IEnumerable with
         member x.GetEnumerator() = (arr :> IEnumerable<'T>).GetEnumerator() :> IEnumerator
