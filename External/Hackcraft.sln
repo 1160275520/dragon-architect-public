@@ -3,12 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Hackcraft", "Hackcraft\Hackcraft.fsproj", "{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HackcraftUnitTest", "HackcraftUnitTest\HackcraftUnitTest.fsproj", "{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E3D52C52-4E42-440F-B94C-03C289A411E5}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HackcraftUnitTests", "HackcraftUnitTests\HackcraftUnitTests.fsproj", "{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,10 +15,10 @@ Global
 		{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66F43FD3-7F5F-496C-8C1C-066AE0B7F00C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
