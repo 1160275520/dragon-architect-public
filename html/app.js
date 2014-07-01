@@ -6,6 +6,7 @@ var unityObject;
 var is_running = false;
 var questLogger;
 var handler = {};
+var levelsCompleted = [];
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
@@ -74,24 +75,77 @@ var SANDBOX_LEVEL_ID = 'tl_final';
 
 function setState_levelSelect() {
     hideAll();
-
-    // check if level selector is initialized, and initialize if not
-    if ($('#levelList li').length === 0 && possible_stages) {
-        var list = $('#levelList');
-        _.each(possible_stages, function(item) {
-            var button = $('<li><button>' + item + '</button></li>').appendTo(list);
-            // HACK look for special sandbox level id
-            if (item === SANDBOX_LEVEL_ID) {
-                button.on('click', function() { setState_sandbox(item); });
-            } else {
-                button.on('click', function() { setState_puzzle(item); });
-            }
-        });
-    } else if (!possible_stages) {
-        console.warn("level selector visited without initialized possible level list!");
-    }
-
     $('.levelSelector').show();
+    make_levelSelect()
+}
+
+function make_levelSelect() {
+    // TODO move hard-coded graph spec to config file of some kind
+    var colors = {}
+    colors["teal"] = "#5BA68D"
+    colors["brown"] = "#A6875B"
+    colors["purple"] = "#995BA6"
+    colors["green"] = "#5BA65B"
+    colors["gray"] = "#777777"
+    colors["orange"] = "#FFB361"
+    // var levelColors = {}
+    // levelColors["tl_movement2d"] = colors["teal"];
+    // levelColors["tl_movement3d"] = colors["teal"];
+    // levelColors["tl_placement"] = colors["brown"];
+    // levelColors["tl_movement_args"] = colors["teal"];
+    // levelColors["tl_call"] = colors["purple"];
+    // levelColors["tl_call2"] = colors["purple"];
+    // levelColors["tl_repeat"] = colors["green"];
+    // levelColors["tl_repeat2"] = colors["green"];
+
+    var graph = new dagre.Digraph();
+    graph.addNode("tl_movement2d", {label: "2D Movement", id: "tl_movement2d"});
+    graph.addNode("tl_movement3d", {label: "3D Movement", id: "tl_movement3d"});
+    graph.addNode("tl_placement", {label: "Place Blocks", id: "tl_placement"});
+    graph.addNode("tl_movement_args", {label: "Movement Arguments", id: "tl_movement_args"});
+    graph.addNode("tl_call", {label: "Call", id: "tl_call"});
+    graph.addNode("tl_call2", {label: "Call 2", id: "tl_call2"});
+    graph.addNode("tl_repeat", {label: "Repeat", id: "tl_repeat"});
+    graph.addNode("tl_repeat2", {label: "Repeat 2", id: "tl_repeat2"});
+
+    graph.addEdge(null, "tl_movement2d", "tl_movement3d");
+    graph.addEdge(null, "tl_movement2d", "tl_placement");
+    graph.addEdge(null, "tl_movement2d", "tl_movement_args");
+    graph.addEdge(null, "tl_movement_args", "tl_repeat");
+    graph.addEdge(null, "tl_placement", "tl_repeat");
+    graph.addEdge(null, "tl_repeat", "tl_repeat2");
+    graph.addEdge(null, "tl_placement", "tl_call");
+    graph.addEdge(null, "tl_call", "tl_call2");
+
+    // perform layout
+    var renderer = new dagreD3.Renderer();
+    renderer.zoom(false);
+    var layout = dagreD3.layout()
+                        .rankDir("LR");
+    renderer.layout(layout).run(graph, d3.select(".levelSelector svg g"));
+
+    // color rectangles
+    var nodes = d3.selectAll(".levelSelector .node")[0]
+    nodes.forEach(function (x) {  })
+
+    // setup onclick behavior
+    var SANDBOX_LEVEL_ID = 'tl_final';
+    nodes.forEach(function (x) { 
+        if (graph.predecessors(x.id).every(function (p) { return levelsCompleted.indexOf(p) != -1; })) {
+            if (x.id === SANDBOX_LEVEL_ID) {
+                x.onclick = function() { setState_sandbox(x.id); };
+            } else {
+                x.onclick = function() { setState_puzzle(x.id); };
+            }
+            if (levelsCompleted.indexOf(x.id) != -1) {
+                x.children[0].style.fill = colors["green"];
+            } else {
+                x.children[0].style.fill = colors["orange"];
+            }
+        } else {
+            x.children[0].style.fill = colors["gray"];
+        }
+    });
 }
 
 function setState_puzzle(stageId) {
@@ -135,10 +189,8 @@ function setState_gallery(galleryObjectArray) {
 
 // startup
 $(function() {
-
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
-
     $('#button_title_to_levelSelect').on('click', setState_levelSelect);
     $('#button_header_levelSelect').on('click', setState_levelSelect);
     $('#button_levelSelect_to_title').on('click', setState_title);
@@ -154,6 +206,7 @@ $(function() {
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
+    make_levelSelect()
 
     $('#btn-run').on('click', function() {
         var program = Hackcraft.getProgram();

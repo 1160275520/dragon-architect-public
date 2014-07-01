@@ -297,3 +297,32 @@ header h1 {
     padding: 5px;
 }
 
+.levelSelector svg {
+    overflow: hidden;
+}
+
+.levelSelector .node rect {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: #fff;
+}
+
+.levelSelector .node circle {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: #fff;
+}
+
+.levelSelector .node, .clickable {
+  cursor: pointer;
+}
+
+.levelSelector .edgeLabel rect {
+    fill: #fff;
+}
+
+.levelSelector .edgePath {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: none;
+}
