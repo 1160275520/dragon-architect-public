@@ -66,18 +66,33 @@ type JsonValue with
     member t.TryGetField f = tryGetField t f
     member t.GetField f = getField t f
 
+/// Helper active pattern that checks if an object implements generic IDicationay<'a,'b> for any type and if so returns it as an IEnumerable
+let private (|DictType|_|) (obj:obj) : seq<obj * obj> option =
+    let interfaces = obj.GetType().GetInterfaces()
+    let dictType = typeof<IDictionary<_,_>>.GetGenericTypeDefinition()
+    if interfaces |> Array.exists (fun t -> t.IsGenericType && t.GetGenericTypeDefinition() = dictType)
+    then
+        let arr = obj :?> IEnumerable |> Seq.cast |> Seq.cache
+        if Seq.isEmpty arr
+        then Some Seq.empty
+        else
+            let kvpType = (Seq.head arr).GetType()
+            let keyProp = kvpType.GetProperty("Key")
+            let valProp = kvpType.GetProperty("Value")
+            Some (arr |> Seq.map (fun o -> (keyProp.GetValue (o, null), valProp.GetValue (o, null))))
+    else None
+
 /// Create a JsonValue from any System.Object.
-/// Will intepret any IDictionary<string,obj> as an object, any other IEnumerable as an array, and primitive types appropriately.
+/// Will intepret any IDictionary<_,_> as an object, any other IEnumerable as an array, Enum types as strings, and primitive types appropriately.
 /// Any other objects will cause an error.
-/// Unfortuantely generic IDictionarys have to be string -> obj, I can't figure out how to easily check for other generic ones. :[
-/// It works with non-generic IDictionary, though!
+/// Note: obviously suuuper slow because it needs to use a lot of reflection to work 
 let rec fromObject (obj:obj) =
     match obj with
     | null -> Null
     | :? string as x -> String x
     | :? int as x -> Int x
     | :? bool as x -> Bool x
-    | :? IDictionary<string,obj> as x -> x |> Seq.map (fun kvp -> (kvp.Key, fromObject kvp.Value)) |> objectOf
+    | DictType(seq) -> seq |> Seq.map (fun (k,v) -> (k :?> string, fromObject v)) |> objectOf
     | :? IDictionary as x -> Seq.cast<DictionaryEntry> x |> Seq.map (fun kvp -> (kvp.Key :?> string, fromObject kvp.Value)) |> objectOf
     | :? IEnumerable as x -> Seq.cast x |> Seq.map fromObject |> arrayOf
     | _ when obj.GetType().IsEnum -> String (System.Enum.GetName(obj.GetType(), obj))
@@ -119,12 +134,13 @@ type ParseResult = {
 
 type SyntaxErrorCode =
 | InternalCompilerError = 1
-| ExpectedCharacter = 2
-| InvalidEscapeCharacter = 3
-| MultilineString = 4
-| InvalidKeyword = 5
-| InvalidCharacter = 6
-| UnexpectedEOF = 7
+| UnexpectedEOF = 2
+| ExpectedCharacter = 3
+| InvalidEscapeCharacter = 4
+| MultilineString = 5
+| InvalidKeyword = 6
+| InvalidCharacter = 7
+| TrailingCharacters = 8
 
 type private Parser(program, filename) =
     let cs = CharStream (program, filename, fun loc -> upcast SyntaxError ("json", int SyntaxErrorCode.UnexpectedEOF, loc, "Unexpected EOF.", null))
@@ -197,10 +213,10 @@ type private Parser(program, filename) =
                 cs.Next () |> ignore // skip final ]
                 arrayOf values, upcast values
             | c when System.Char.IsDigit c ->
-                let s = System.String [| yield c; while System.Char.IsDigit cs.Peek do yield cs.Next() |]
+                let s = System.String [| yield c; while (not cs.IsEOF) && System.Char.IsDigit cs.Peek do yield cs.Next() |]
                 Int (System.Int32.Parse s), Seq.empty
             | c when System.Char.IsLetter c ->
-                let s = System.String [| yield c; while System.Char.IsLetter cs.Peek do yield cs.Next() |]
+                let s = System.String [| yield c; while (not cs.IsEOF) && System.Char.IsLetter cs.Peek do yield cs.Next() |]
                 let value =
                     match s with
                     | "true" -> Bool true
@@ -224,6 +240,7 @@ type private Parser(program, filename) =
 
     member x.Parse () =
         let ast = parse ChildType.Root
+        if not cs.IsEOF then syntaxError SyntaxErrorCode.TrailingCharacters (cs.Position, cs.Position) ("Unepxcted trailing characters")
         {Ast=ast; Meta=meta}
 
 let ParseWithMeta string filename =

@@ -3,6 +3,7 @@ namespace Hackcraft
 
 open System
 
+[<AutoOpen>]
 module Base =
     let dprint x = System.Diagnostics.Debug.WriteLine (sprintf "%A" x)
     let dprints x = System.Diagnostics.Debug.WriteLine x

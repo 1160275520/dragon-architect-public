@@ -1,4 +1,4 @@
-﻿module Hackcraft.UnitTest
+﻿module Hackcraft.UnitTest.Test
 
 open Xunit
 open FsUnit.Xunit
