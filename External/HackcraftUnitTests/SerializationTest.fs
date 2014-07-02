@@ -12,23 +12,25 @@ module A = Hackcraft.Ast.Imperative
 let runSerializeFromFileTest filename =
     let json = File.ReadAllText filename |> J.Parse
     let prog = S.ProgramOfJson json
-    S.ProgramOfJson json |> should equal prog
-    S.JsonOfProgram prog |> should equal json
+    S.ProgramOfJson (S.JsonOfProgram prog) |> should equal prog
 
 let testProgram = """
 {
-"F1":{"arity":0,"body":[
-    {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
-    {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
-]},
-"F2":{"arity":0,"body":[]},
-"MAIN":{"arity":0,"body":[
-    {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
-    {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
-        {"meta":{"id":27},"body":[
-            {"args":[],"meta":{"id":22},"proc":"F1","type":"call"},
-            {"args":[],"meta":{"id":23},"proc":"Left","type":"call"}
-        ],"type":"block"},"type":"repeat"}]}
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"procedures":{
+    "F1":{"arity":0,"body":[
+        {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
+        {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
+    ]},
+    "F2":{"arity":0,"body":[]},
+    "MAIN":{"arity":0,"body":[
+        {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
+        {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
+            {"meta":{"id":27},"body":[
+                {"args":[],"meta":{"id":22},"proc":"F1","type":"call"},
+                {"args":[],"meta":{"id":23},"proc":"Left","type":"call"}
+            ],"type":"block"},"type":"repeat"}]}
+}
 }
 """
 

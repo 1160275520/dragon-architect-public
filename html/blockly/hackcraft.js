@@ -206,19 +206,25 @@ Hackcraft.setLevel = function(levelInfo) {
 Hackcraft.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
     Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id)}));
-    var program = {};
+    var procedures = {};
     // iterate over top-level blocks
     for (var i = 0; i < topBlocks.length; i++) {
         var block = topBlocks[i];
         // process each procedure
         if (block.type === "procedures_defnoreturn") {
-            program[block.getFieldValue("NAME")] = {};
-            var fn = program[block.getFieldValue("NAME")];
+            procedures[block.getFieldValue("NAME")] = {};
+            var fn = procedures[block.getFieldValue("NAME")];
             fn['arity'] = 0;
             fn['body'] = Blockly.UnityJSON.processBody(block);
         }
     }
-    return program;
+    return {
+        meta: {
+            language: 'imperative_v01',
+            version: {major: 0, minor: 1}
+        },
+        procedures: procedures,
+    };
 };
 
 /**
