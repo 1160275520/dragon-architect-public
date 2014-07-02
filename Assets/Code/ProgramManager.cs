@@ -188,7 +188,7 @@ public class ProgramManager : MonoBehaviour {
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
 			//Debug.Log(Json.Format(Serialization.JsonOfProgram(Manipulator.Program)));
-            States = Simulator.ExecuteFullProgram(Manipulator.Program, "Main", grid, initialRobotState.Clone);
+            States = Simulator.ExecuteFullProgram(Manipulator.Program, grid, initialRobotState.Clone);
             //Debug.Log(States.Length + " states in program");
             if (isOldIndexAtEnd) {
                 currentStateIndex = States.Length;

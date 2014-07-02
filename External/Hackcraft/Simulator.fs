@@ -18,6 +18,7 @@ let private runtimeError (meta:Ast.Imperative.Meta) (code: RuntimeErrorCode) msg
 
 type CallStackState = {
     Args: ImmArr<obj>;
+    Program: Program;
     mutable ToExecute: Statement list;
 }
 
@@ -26,15 +27,16 @@ type State = {
     mutable LastExecuted: Statement list;
 }
 
-let private getProc (program:Program) (procname:string) =
-    let prog = 
-        match program.Procedures.TryFind (procname.ToUpper ()) with
+let private getProc (program:Program, procname:string) =
+    match program.Procedures.TryFind procname with
+    | None ->
+        match program.Modules.TryFind procname with
         | None ->
             match Builtins.TryFind procname with
             | None -> runtimeError {Id=0} RuntimeErrorCode.UnknownProcedure (sprintf "procedure '%s' does not exist" procname)
-            | Some x -> x
-        | Some x -> x
-    List.ofSeq prog.Body
+            | Some x -> (program, List.ofSeq x.Body)
+        | Some m -> (m, [Ast.Imperative.NewCall0 0 "MAIN"])
+    | Some x -> (program, List.ofSeq x.Body)
 
 let private exprAsInt meta (o:obj) =
     match o with
@@ -45,7 +47,7 @@ let private exprAsInt meta (o:obj) =
     | _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
 let CreateState program mainProcName =
-    {CallStack=[{Args=ImmArr.empty; ToExecute=getProc program mainProcName;}]; LastExecuted=[];}
+    {CallStack=[{Args=ImmArr.empty; Program=program; ToExecute=[Ast.Imperative.NewCall0 0 mainProcName];}]; LastExecuted=[];}
 
 let Evaluate (state:State) meta expression =
     match expression with
@@ -54,7 +56,7 @@ let Evaluate (state:State) meta expression =
         try state.CallStack.Head.Args.[idx]
         with :? System.IndexOutOfRangeException as e -> runtimeError meta RuntimeErrorCode.IncorrectNumberOfArguments (sprintf "Invalid argument index %d, arguments are only length %d" idx state.CallStack.Head.Args.Length)
 
-let private step program (state:State) =
+let private step (state:State) =
     match state.CallStack with
     | [] -> None
     | head :: tail ->
@@ -73,37 +75,38 @@ let private step program (state:State) =
 
             match stmt.Stmt with
             | Block b ->
-                state.CallStack <- {Args=head.Args; ToExecute=List.ofSeq b} :: state.CallStack
+                state.CallStack <- {head with Args=head.Args; ToExecute=List.ofSeq b} :: state.CallStack
                 None
             | Call {Proc=procname; Args=args} ->
                 let args = ImmArr.map (Evaluate state stmt.Meta) args
-                state.CallStack <- {Args=args; ToExecute=getProc program procname} :: state.CallStack
+                let prog, toexec = getProc (head.Program, procname)
+                state.CallStack <- {head with Args=args; Program=prog; ToExecute=toexec} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
                 let ntimes = Evaluate state stmt.Meta ntimesExpr |> exprAsInt stmt.Meta
                 let toAdd = List.init ntimes (fun _ -> stmt)
-                state.CallStack <- {Args=head.Args; ToExecute=toAdd} :: state.CallStack
+                state.CallStack <- {head with ToExecute=toAdd} :: state.CallStack
                 None
             | Command (cmd, args) ->
                 let args = ImmArr.map (Evaluate state stmt.Meta) args
                 Some (Robot.Command (cmd, args))
 
 let private internalError e = 
-    raise (SyntaxError (Serialization.LANGUAGE_NAME, int RuntimeErrorCode.InternalError, Location.Empty, "Internal runtime error.", e))
+    raise (RuntimeError (Serialization.LANGUAGE_NAME, int RuntimeErrorCode.InternalError, Location.Empty, "Internal runtime error.", e))
 
 /// Executes a single line of the program, returning a robot command, if any.
-let ExecuteStep program state =
-    try step program state
+let ExecuteStep state =
+    try step state
     with
     | :? RuntimeError -> reraise ()
     | e -> internalError e
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
-let ExecuteUntilCommand program state =
+let ExecuteUntilCommand state =
     try
         let mutable cmd = None
         while cmd.IsNone && not state.CallStack.IsEmpty do
-            cmd <- ExecuteStep program state
+            cmd <- step state
         match cmd with Some c -> c | None -> null
     with
     | :? RuntimeError -> reraise ()
@@ -118,15 +121,15 @@ type StepState = {
     Grid: ImmArr<KeyValuePair<IntVec3,Block>>;
 }
 
-let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRobot) =
+let ExecuteFullProgram program (grid:GridStateTracker) (robot:Robot.IRobot) =
     try
         let MAX_ITER = 10000
-        let state = CreateState program mainFunc
+        let state = CreateState program "MAIN"
         let mutable steps = [{Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}]
         let mutable isDone = false
         let mutable numSteps = 0
         while not (IsDone state) && numSteps < MAX_ITER do
-            let cmd = ExecuteUntilCommand program state
+            let cmd = ExecuteUntilCommand state
             if cmd <> null then
                 robot.Execute grid cmd
                 steps <- {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState} :: steps
