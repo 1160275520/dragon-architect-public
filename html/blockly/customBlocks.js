@@ -150,12 +150,12 @@ Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
 Blockly.UnityJSON.XMLOfJSON = function(program) {
     var xml = '<xml>';
     var funcCount = 0;
-    for (var func in program) {
-        xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 2)) + '" y="' + (50 + 250*Math.floor(funcCount/2)) + '"><field name="NAME">' + func + '</field><statement name="STACK">';
-        xml += Blockly.UnityJSON.bodyToXML(program[func]['body'], program);
+    _.each(program.procedures, function(func, name) {
+        xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 2)) + '" y="' + (50 + 250*Math.floor(funcCount/2)) + '"><field name="NAME">' + name + '</field><statement name="STACK">';
+        xml += Blockly.UnityJSON.bodyToXML(func.body, program);
         xml += '</statement></block>';
         funcCount++;
-    }
+    });
     return xml + "</xml>";
 }
 
@@ -176,7 +176,7 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
     if (stmt) {
         if (stmt['type'] === "call") {
             if (stmt['args'].length === 0) {
-                if (stmt['proc'] in program) {
+                if (stmt['proc'] in program.procedures) {
                     return '<block type="procedures_callnoreturn"><mutation name="' + stmt['proc'] + '"></mutation>';
                 } else {
                     return '<block type="' + stmt['proc'] + '">';
