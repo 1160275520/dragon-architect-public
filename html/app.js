@@ -6,7 +6,7 @@ var unityObject;
 var is_running = false;
 var questLogger;
 var handler = {};
-var levelsCompleted = [];
+var levelsCompleted = ["tl_movement2d", "tl_call", "tl_placement", "tl_repeat", "tl_movement_args"];
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
