@@ -127,9 +127,11 @@ let ExecuteFullProgram program mainFunc (grid:GridStateTracker) (robot:Robot.IRo
         let mutable numSteps = 0
         while not (IsDone state) && numSteps < MAX_ITER do
             let cmd = ExecuteUntilCommand program state
-            robot.Execute grid cmd
-            steps <- {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState} :: steps
-            numSteps <- numSteps + 1
+            if cmd <> null then
+                robot.Execute grid cmd
+                steps <- {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState} :: steps
+                numSteps <- numSteps + 1
+            else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
 
         ImmArr.ofSeq (List.rev steps)
     with

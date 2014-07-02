@@ -9,6 +9,46 @@ module J = Hackcraft.Json
 module S = Hackcraft.Serialization
 module A = Hackcraft.Ast.Imperative
 
+
+let emptyTestProgram = """
+{
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"procedures":{}
+}
+"""
+
+[<Fact>]
+let ``Serialization empty test`` () =
+    let json = J.Parse emptyTestProgram
+    let prog = S.ProgramOfJson json
+    prog.Procedures.Count |> should equal 0
+
+    S.ProgramOfJson json |> should equal prog
+    S.JsonOfProgram prog |> should equal json
+
+let nopTestProgram = """
+{
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"procedures":{
+    "MAIN":{"arity":0,"body":[]}
+}
+}
+"""
+
+[<Fact>]
+let ``Serialization nop test`` () =
+    let json = J.Parse nopTestProgram
+    let prog = S.ProgramOfJson json
+    prog.Procedures.Count |> should equal 1
+    prog.Procedures.ContainsKey "MAIN" |> should equal true
+
+    let main = prog.Procedures.["MAIN"]
+    main.Arity |> should equal 0
+    main.Body.Length |> should equal 0
+
+    S.ProgramOfJson json |> should equal prog
+    S.JsonOfProgram prog |> should equal json
+
 let simpleTestProgram = """
 {
 "meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
