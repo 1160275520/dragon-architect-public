@@ -48,7 +48,7 @@ module Imperative =
     let NewCall0 id proc = NewCall id proc []
     let NewRepeat id stmt nt = NewStatement id (Repeat({Stmt=stmt; NumTimes=nt;}))
     let NewCommand id cmd args = NewStatement id (Command (cmd, args))
-    let NewCommandZ id cmd = NewStatement id (Command (cmd, ImmArr.empty ()))
+    let NewCommandZ id cmd = NewStatement id (Command (cmd, ImmArr.empty))
 
     type Program = {
         Procedures: Map<string,Procedure>;

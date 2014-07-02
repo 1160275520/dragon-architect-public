@@ -27,7 +27,7 @@ type ImmArr<[<EqualityConditionalOn>] 'T> private(arr : 'T[]) =
 
 module ImmArr =
     let ofSeq (s: #seq<'a>) = ImmArr (s)
-    let empty () = ofSeq []
+    let empty<'a> : ImmArr<'a> = ofSeq []
     let map f (x:ImmArr<'a>) = x.Map f
 
 module MyList =

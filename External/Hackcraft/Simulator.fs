@@ -45,7 +45,7 @@ let private exprAsInt meta (o:obj) =
     | _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
 let CreateState program mainProcName =
-    {CallStack=[{Args=ImmArr.ofSeq []; ToExecute=getProc program mainProcName;}]; LastExecuted=[];}
+    {CallStack=[{Args=ImmArr.empty; ToExecute=getProc program mainProcName;}]; LastExecuted=[];}
 
 let Evaluate (state:State) meta expression =
     match expression with
