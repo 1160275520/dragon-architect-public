@@ -1,0 +1,16 @@
+Error Code Ranges for various parts of the backend
+Each language has its own error code namespace, and here's the common errors:
+
+0000 - 0999: reserved
+1000 - 1999: syntax errors
+2000 - 2999: serialization errors
+3000 - 3999: type errors
+4000 - 4999: runtime errors
+5000 - 8999: reserved (probably overflow once a language runs out of codes)
+9000 - 9999: miscelleny specific to a language
+10000+     : reserved
+
+Error code '1' (for each range) should usually be "internal error".
+So for example, 1001 means the parser crashed and we don't know why,
+and 4001 means the runtime crashed and we don't know why.
+

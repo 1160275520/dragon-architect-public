@@ -55,10 +55,12 @@ let JsonOfProgram (program:Program) =
     J.Object (mainModule.Add ("meta", meta))
 
 type SerializationErrorCode =
-| InvalidVersion = 1002
-| InvalidLiteral = 1011
-| InvalidExpressionType = 1012
-| InvalidStatementType = 1013
+| InternalError = 2001
+| InvalidVersion = 2002
+| JsonFormatError = 2003
+| InvalidLiteral = 2011
+| InvalidExpressionType = 2012
+| InvalidStatementType = 2013
 
 let ProgramOfJson (json: J.JsonValue) =
 
@@ -100,12 +102,16 @@ let ProgramOfJson (json: J.JsonValue) =
         let modules = tryJload j "modules" (fun o -> o.AsObject |> Map.map parseModule)
         {Procedures=Map.map parseProc procs; Modules=defaultArg modules Map.empty}
 
-    let meta = J.getField json "meta"
-    let language = jload meta "language" J.asString
-    let major_version, minor_version = jload meta "version" (fun o -> jload o "major" J.asInt, jload o "minor" J.asInt)
-    if language <> LANGUAGE_NAME || major_version <> CURR_MAJOR_VERSION || minor_version <> CURR_MINOR_VERSION then
-        syntaxError json SerializationErrorCode.InvalidVersion (sprintf "Invalid language/version: %s %d.%d" language major_version minor_version)
+    try
+        let meta = J.getField json "meta"
+        let language = jload meta "language" J.asString
+        let major_version, minor_version = jload meta "version" (fun o -> jload o "major" J.asInt, jload o "minor" J.asInt)
+        if language <> LANGUAGE_NAME || major_version <> CURR_MAJOR_VERSION || minor_version <> CURR_MINOR_VERSION then
+            syntaxError json SerializationErrorCode.InvalidVersion (sprintf "Invalid language/version: %s %d.%d" language major_version minor_version)
 
-    parseModule "" json
+        parseModule "" json
+    with
+    | :? CompilerError -> reraise ()
+    | e -> raise (SyntaxError (LANGUAGE_NAME, int SerializationErrorCode.InternalError, Location.Empty, "Internal serializer error.", e))
 
 let Load text = ProgramOfJson (Json.Parse text)

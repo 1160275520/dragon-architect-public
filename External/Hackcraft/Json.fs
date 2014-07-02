@@ -27,8 +27,8 @@ and JsonValue =
 | Object of JsonObject
 
 type JsonErrorCode =
-| TypeMismatch = 51
-| KeyNotFound = 52
+| TypeMismatch = 9002
+| KeyNotFound = 9003
 
 /// Base class for any errors produced by the helper functions.
 type JsonError(value: JsonValue, code: int, message: string, inner: System.Exception) =
@@ -66,7 +66,7 @@ type JsonValue with
     member t.TryGetField f = tryGetField t f
     member t.GetField f = getField t f
 
-/// Helper active pattern that checks if an object implements generic IDicationay<'a,'b> for any type and if so returns it as an IEnumerable
+/// active pattern that checks if an object implements generic IDicationay<'a,'b> for any type and if so returns it as an IEnumerable of key-value tuples
 let private (|DictType|_|) (obj:obj) : seq<obj * obj> option =
     let interfaces = obj.GetType().GetInterfaces()
     let dictType = typeof<IDictionary<_,_>>.GetGenericTypeDefinition()
@@ -133,20 +133,22 @@ type ParseResult = {
 }
 
 type SyntaxErrorCode =
-| InternalCompilerError = 1
-| UnexpectedEOF = 2
-| ExpectedCharacter = 3
-| InvalidEscapeCharacter = 4
-| MultilineString = 5
-| InvalidKeyword = 6
-| InvalidCharacter = 7
-| TrailingCharacters = 8
+| InternalError = 1001
+| UnexpectedEOF = 1002
+| ExpectedCharacter = 1003
+| InvalidEscapeCharacter = 1004
+| MultilineString = 1005
+| InvalidKeyword = 1006
+| InvalidCharacter = 1007
+| TrailingCharacters = 1008
+
+let private LANGUAGE_NAME = "json"
 
 type private Parser(program, filename) =
-    let cs = CharStream (program, filename, fun loc -> upcast SyntaxError ("json", int SyntaxErrorCode.UnexpectedEOF, loc, "Unexpected EOF.", null))
+    let cs = CharStream (program, filename, fun loc -> upcast SyntaxError (LANGUAGE_NAME, int SyntaxErrorCode.UnexpectedEOF, loc, "Unexpected EOF.", null))
     let meta = Dictionary<JsonValue, Meta>(Collections.HashIdentity.Reference)
 
-    let syntaxError (code:SyntaxErrorCode) (pstart,pend) message = raise (SyntaxError ("json", int code, Location (pstart, pend, cs.Filename), message, null))
+    let syntaxError (code:SyntaxErrorCode) (pstart,pend) message = raise (SyntaxError (LANGUAGE_NAME, int code, Location (pstart, pend, cs.Filename), message, null))
 
     let isSpace c = c = ' ' || c = '\r' || c = '\n' || c = '\t'
 
@@ -247,7 +249,7 @@ let ParseWithMeta string filename =
     try Parser(string, filename).Parse()
     with
     | :? CompilerError -> reraise ()
-    | e -> raise (SyntaxError ("json", int SyntaxErrorCode.InternalCompilerError, Location.Empty, "Internal compiler error.", e))
+    | e -> raise (SyntaxError (LANGUAGE_NAME, int SyntaxErrorCode.InternalError, Location.Empty, "Internal parser error.", e))
 
 let Parse string = (ParseWithMeta string "").Ast
 
