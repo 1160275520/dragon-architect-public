@@ -2,52 +2,52 @@
 
 open Hackcraft.Ast.Imperative
 
-let private jstr s = Json.String s
-let private jint i = Json.Int i
-let private jarr x = Json.Array (Array.ofSeq x)
-let private jbool b = Json.Bool b
-
-let private jarrmap f x = jarr (Seq.map f x)
+module J = Hackcraft.Json
 
 let JsonOfProgram (program:Program) =
+    let jarrmap f x = J.arrayOf (Seq.map f x)
+
     let jsonOfObj (o:obj) =
         match o with
-        | :? int as i -> jint i
-        | :? string as s -> jstr s
+        | :? int as i -> J.Int i
+        | :? string as s -> J.String s
         | _ -> invalidArg "o" (sprintf "cannot json encode object of type '%s'" (o.GetType().Name))
 
-    let jsonOfMeta (meta:Meta) =
-        Json.Object (
-            Map([
-                ("id", jint meta.Id);
-            ])
-        )
+    let jsonOfMeta (meta:Meta) = J.objectOf [("id", J.Int meta.Id)]
 
     let jsonOfExpr (expr:Expression) =
         match expr with
-        | Literal o -> [("type", jstr "literal"); ("value", jsonOfObj o)] |> Map.ofList |> Json.Object
-        | Argument a -> [("type", jstr "argument"); ("index", jint a)] |> Map.ofList |> Json.Object
+        | Literal o -> [("type", J.String "literal"); ("value", jsonOfObj o)] |> J.objectOf
+        | Argument a -> [("type", J.String "argument"); ("index", J.Int a)] |> J.objectOf
 
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
             match stmt.Stmt with
-            | Block b -> [("type", jstr "block"); ("body", jarr (Seq.map jsonOfStmt b))]
-            | Call c -> [("type", jstr "call"); ("proc", jstr c.Proc); ("args", jarrmap jsonOfExpr c.Args)]
-            | Repeat r -> [("type", jstr "repeat"); ("stmt", jsonOfStmt r.Stmt); ("numtimes", jsonOfExpr r.NumTimes)]
-            | Command (c, a) -> [("type", jstr "command"); ("command", jstr c); ("args", jarrmap jsonOfExpr a)]
-        Json.Object (Map.ofList (("meta", jsonOfMeta stmt.Meta) :: fields))
+            | Block b -> [("type", J.String "block"); ("body", jarrmap jsonOfStmt b)]
+            | Call c -> [("type", J.String "call"); ("proc", J.String c.Proc); ("args", jarrmap jsonOfExpr c.Args)]
+            | Repeat r -> [("type", J.String "repeat"); ("stmt", jsonOfStmt r.Stmt); ("numtimes", jsonOfExpr r.NumTimes)]
+            | Command (c, a) -> [("type", J.String "command"); ("command", J.String c); ("args", jarrmap jsonOfExpr a)]
+        J.objectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
     let jsonOfProc name (proc:Procedure) =
-        Json.Object (
-            Map([
-                ("arity", jint proc.Arity);
-                ("body", jarrmap jsonOfStmt proc.Body);
-            ])
-        )
+        J.objectOf [
+            ("arity", J.Int proc.Arity);
+            ("body", jarrmap jsonOfStmt proc.Body);
+        ]
 
     Json.Object (Map.map jsonOfProc program.Procedures)
 
+type SerializationErrorCode =
+| InvalidLiteral = 1002
+| InvalidExpressionType = 1003
+| InvalidStatementType = 1004
+
 let ProgramOfJson (json:Json.JsonValue) =
+
+    let jload obj key fn = fn (Json.getField obj key)
+    let tryJload obj key fn = Json.tryGetField obj key |> Option.map fn
+
+    let syntaxError j (c:SerializationErrorCode) m = raise (J.JsonError (j, int c, m, null))
 
     let argexn (e:System.Exception) jvalue msg = raise (System.ArgumentException(sprintf "Error processing '%s': %s" (Json.Format jvalue) msg, e))
 
@@ -55,56 +55,31 @@ let ProgramOfJson (json:Json.JsonValue) =
         match j with
         | Json.Int i -> upcast i
         | Json.String s -> upcast s
-        | _ -> invalidArg "j" (sprintf "cannot json parse object of type '%s'" (j.GetType().Name))
+        | _ -> syntaxError j SerializationErrorCode.InvalidLiteral (sprintf "cannot json parse object of type '%s'" (j.GetType().Name))
 
-    let parseMeta (j:Json.JsonValue) =
-        try
-            let jmeta = j.AsObject
-            {Id=jmeta.["id"].AsInt}
-        with
-            :? System.ArgumentException -> reraise ()
-            | e -> argexn e j "cannot parse meta"
+    let parseMeta (j:Json.JsonValue) = {Id=(j.GetField "id").AsInt}
 
     let parseExpr (j:Json.JsonValue) =
-        try
-            let jexpr = j.AsObject
-            match jexpr.["type"].AsString with
-            | "literal" -> Literal (parseObject jexpr.["value"])
-            | "argument" -> Argument jexpr.["index"].AsInt
-            | t -> invalidArg "j" ("invalid expression type " + t)
-        with
-            :? System.ArgumentException -> reraise ()
-            | e -> argexn e j "cannot parse expr"
+        match jload j "type" J.asString with
+        | "literal" -> Literal (jload j "value" parseObject)
+        | "argument" -> Argument (jload j "index" J.asInt)
+        | t -> syntaxError j SerializationErrorCode.InvalidExpressionType ("invalid expression type " + t)
 
     let rec parseStmt (j:Json.JsonValue) =
-        try
-            let jstmt = j.AsObject
-            let stmt =
-                match jstmt.["type"].AsString with
-                | "block" -> Block (ImmArr.ofSeq (jstmt.["body"].AsArray |> Seq.map parseStmt))
-                | "call" -> Call {Proc=jstmt.["proc"].AsString; Args=ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseExpr)}
-                | "repeat" -> Repeat {Stmt=parseStmt jstmt.["stmt"]; NumTimes=parseExpr jstmt.["numtimes"]}
-                | "command" -> Command (jstmt.["command"].AsString, ImmArr.ofSeq (jstmt.["args"].AsArray |> Seq.map parseExpr))
-                | t -> invalidArg "j" ("invalid statement type " + t)
-            {Meta=parseMeta jstmt.["meta"]; Stmt=stmt}
-        with
-            :? System.ArgumentException -> reraise ()
-            | e -> argexn e j "cannot parse stmt"
+        let stmt =
+            match jload j "type" J.asString with
+            | "block" -> Block (ImmArr.ofSeq (jload j "body" J.asArray |> Seq.map parseStmt))
+            | "call" -> Call {Proc=jload j "proc" J.asString; Args=ImmArr.ofSeq (jload j "args" J.asArray |> Seq.map parseExpr)}
+            | "repeat" -> Repeat {Stmt=jload j "stmt" parseStmt; NumTimes=jload j "numtimes" parseExpr}
+            | "command" -> Command (jload j "command" J.asString, ImmArr.ofSeq (jload j "args" J.asArray |> Seq.map parseExpr))
+            | t -> syntaxError j SerializationErrorCode.InvalidStatementType ("invalid statement type " + t)
+        {Meta=jload j "meta" parseMeta; Stmt=stmt}
 
+    // need to change function name (to enforce casing) which makes this a bit more complicated
     let parseProc (name:string, j:Json.JsonValue) =
-        try
-            let jproc = j.AsObject
-            let body = Array.map parseStmt jproc.["body"].AsArray
-            (name.ToUpper (), {Arity=jproc.["arity"].AsInt; Body=ImmArr.ofSeq body})
-        with
-            :? System.ArgumentException -> reraise ()
-            | e -> argexn e j "cannot parse proc"
+        let body = Array.map parseStmt (jload j "body" J.asArray)
+        (name.ToUpper (), {Arity=jload j "arity" J.asInt; Body=ImmArr.ofSeq body})
 
-    try
-        let jprocs = Map.toSeq json.AsObject
-        {Procedures=Map(Seq.map parseProc jprocs)}
-    with
-        :? System.ArgumentException -> reraise ()
-        | e -> argexn e json "cannot parse program"
+    {Procedures=Map(json.AsObject |> Map.toSeq |> Seq.map parseProc)}
 
 let Load text = ProgramOfJson (Json.Parse text)
