@@ -33,19 +33,26 @@ let JsonOfProgram (program:Program) =
             | Command (c, a) -> [("type", J.String "command"); ("command", J.String c); ("args", jarrmap jsonOfExpr a)]
         J.objectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
-    let jsonOfProc name (proc:Procedure) =
+    let jsonOfProc (name:string) (proc:Procedure) =
         J.objectOf [
             ("arity", J.Int proc.Arity);
             ("body", jarrmap jsonOfStmt proc.Body);
         ]
 
-    Json.objectOf [
-        "meta", Json.objectOf [
+    let rec jsonOfModule (name:string) (module':Program) =
+        let mutable lst = ["procedures", J.Object (Map.map jsonOfProc module'.Procedures)]
+        if not module'.Modules.IsEmpty then
+            lst <- ("modules", J.Object (Map.map jsonOfModule module'.Modules)) :: lst
+        Json.objectOf lst
+
+    let mainModule = jsonOfModule "" program |> J.asObject
+    let meta = 
+        Json.objectOf [
             "language", J.String LANGUAGE_NAME;
             "version", J.objectOf ["major", J.Int CURR_MAJOR_VERSION; "minor", J.Int CURR_MINOR_VERSION];
         ];
-        "procedures", J.Object (Map.map jsonOfProc program.Procedures);
-    ]
+
+    J.Object (mainModule.Add ("meta", meta))
 
 type SerializationErrorCode =
 | InvalidVersion = 1002
@@ -88,9 +95,10 @@ let ProgramOfJson (json: J.JsonValue) =
         let body = Array.map parseStmt (jload j "body" J.asArray)
         {Arity=jload j "arity" J.asInt; Body=ImmArr.ofSeq body}
 
-    let parseModule j =
+    let rec parseModule n j =
         let procs = jload j "procedures" J.asObject
-        {Procedures=Map.map parseProc procs}
+        let modules = tryJload j "modules" (fun o -> o.AsObject |> Map.map parseModule)
+        {Procedures=Map.map parseProc procs; Modules=defaultArg modules Map.empty}
 
     let meta = J.getField json "meta"
     let language = jload meta "language" J.asString
@@ -98,6 +106,6 @@ let ProgramOfJson (json: J.JsonValue) =
     if language <> LANGUAGE_NAME || major_version <> CURR_MAJOR_VERSION || minor_version <> CURR_MINOR_VERSION then
         syntaxError json SerializationErrorCode.InvalidVersion (sprintf "Invalid language/version: %s %d.%d" language major_version minor_version)
 
-    parseModule json
+    parseModule "" json
 
 let Load text = ProgramOfJson (Json.Parse text)

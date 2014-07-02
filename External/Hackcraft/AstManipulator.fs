@@ -4,7 +4,7 @@ open Ast.Imperative
 open System.Collections.Generic
 
 type ImperativeAstManipulator(maxProcedureLength:int) =
-    let mutable ast: Program = {Procedures=Map.empty}
+    let mutable ast: Program = {Procedures=Map.empty; Modules=Map.empty}
     let mutable isDirty = true
 
     let updateProc procname newbody =
@@ -61,4 +61,4 @@ type ImperativeAstManipulator(maxProcedureLength:int) =
         updateProc procname []
 
     member this.ClearAll () =
-        ast <- {Procedures=ast.Procedures |> Map.map (fun k v -> {v with Body=ImmArr.ofSeq []})}
+        ast <- {ast with Procedures=ast.Procedures |> Map.map (fun k v -> {v with Body=ImmArr.ofSeq []})}

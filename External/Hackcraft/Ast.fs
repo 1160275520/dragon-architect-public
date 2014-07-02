@@ -32,6 +32,10 @@ module Imperative =
     }
     with
         override x.ToString() = sprintf "%O: %O" x.Meta x.Stmt
+    and Procedure = {
+        Arity: int;
+        Body: ImmArr<Statement>;
+    }
 
     type StatementT with
         member x.AsCall = match x with Call c -> c | _ -> invalidOp "not a call"
@@ -46,13 +50,9 @@ module Imperative =
     let NewCommand id cmd args = NewStatement id (Command (cmd, args))
     let NewCommandZ id cmd = NewStatement id (Command (cmd, ImmArr.empty ()))
 
-    type Procedure = {
-        Arity: int;
-        Body: ImmArr<Statement>;
-    }
-
     type Program = {
         Procedures: Map<string,Procedure>;
+        Modules: Map<string,Program>;
     }
     with
         member x.AllIds =
