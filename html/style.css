@@ -71,19 +71,19 @@ header h1 {
 
 #blockly {
   width: auto;
-  height: 500px;
+  height: 800px;
 }
 
 .mainLeftSide {
     position: absolute;
-    width: 50%;
+    width: 40%;
     padding: 0;
     margin: 0;
 }
 
 .mainRightSide {
     position: relative;
-    margin-left: 50%;
+    margin-left: 40%;
     padding: 0;
 }
 
