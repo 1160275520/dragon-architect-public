@@ -12,21 +12,13 @@ public class TLSpeedSlider : MonoBehaviour
 	void Start() {
         var lh = GetComponent<LevelHelper>();
 
-        var msg = "something something time slider";
+        var msg = "The <b>Speed Slider</b> changes the rate at which your program executes. This program takes a long time to run; speed it up by dragging the slider to <b>Fast</b>!";
         GetComponent<AllTheGUI>().CurrentMessage = msg;
 
         var progman = GetComponent<ProgramManager>();
-        //progman.SetIsEditable("F1", false);
-        //progman.LoadProgram("level_repeat_01");
+        progman.SetIsEditable("MAIN", false);
+        progman.LoadProgram("level_speed_slider");
 
-        //var template = new List<IntVec3>();
-        //const int size = 20;
-        //for (int x = 0; x < size; x++) {
-        //    template.Add(new IntVec3(x+1, 0, x+1));
-        //}
-
-        //lh.CreateBlueprint(template);
-        //winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 

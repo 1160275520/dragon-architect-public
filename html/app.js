@@ -242,7 +242,7 @@ $(function() {
     $('#btn-undo').on('click', Hackcraft.undo);
 
     $( "#slider" ).slider({
-        value:0.5,
+        value: 0.5,
         min: 0.0,
         max: 1.0,
         step: 0.05,
@@ -311,6 +311,8 @@ handler.onLevelChange = function(json) {
         var selfRect = b.getBoundingClientRect();
         slider.style.visibility = "visible";
         var selfRect = slider.getBoundingClientRect();
+        var speed_slider_value = $('#slider').slider("option", "value");
+        send_message("System", "EAPI_SetDelayPerCommand", speed_slider_value.toString());
     }
     is_running = false;
 
