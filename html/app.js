@@ -201,10 +201,11 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     unityPlayer.initialize();
-    //$('.mainLeftSide').css('width', unityPlayer.width() + 'px');
-    //$('.mainRightSide').css('margin-left', unityPlayer.width() + 'px');
     Hackcraft.init();
-    HackcraftLogging.initialize();
+
+    // fetch the uid from the GET params and pass that to logging initializer
+    var uid = $.url().param('uid');
+    HackcraftLogging.initialize(uid);
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////

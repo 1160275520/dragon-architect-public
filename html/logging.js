@@ -4,7 +4,7 @@ var HackcraftLogging = (function(){ "use strict";
 var user;
 var self = {};
 
-self.initialize = function() {
+self.initialize = function(uid) {
     //Create the url requester to handle making requests.
     var loader = new cgs.http.UrlLoader(new cgs.js.http.DefaultHttpLoaderFactory());
     var handler = new cgs.http.requests.UrlRequestHandler(loader, new cgs.http.requests.RequestFailureHandler());
@@ -29,7 +29,11 @@ self.initialize = function() {
 
     // DO NOT Enable saving of data to server (it doesn't even work yet anyway)
     // props.enableCaching();
-    // props.setForceUid("test_user");
+
+    // force the uid if it was passed into this function
+    if (uid) {
+        props.setForceUid(uid);
+    }
 
     if (HACKCRAFT_CONFIG.logging.proxy_url) {
         props.setUseProxy(true);
