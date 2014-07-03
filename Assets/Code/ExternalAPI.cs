@@ -89,6 +89,6 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void EAPI_SetDelayPerCommand(string delay) {
-        GetComponent<ProgramManager>().DelayPerCommand = (float)Convert.ToDouble(delay);
+        GetComponent<ProgramManager>().DelayPerCommand = float.Parse(delay);
     }
 }

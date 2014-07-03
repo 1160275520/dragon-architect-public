@@ -5,16 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/prototype_140325.unity
   - enabled: 1
     path: Assets/Scenes/loader.unity
   - enabled: 1
     path: Assets/Scenes/tl_movement2d.unity
   - enabled: 1
     path: Assets/Scenes/tl_placement.unity
-  - enabled: 0
-    path: Assets/Scenes/tl_personify.unity
   - enabled: 1
     path: Assets/Scenes/tl_movement_args.unity
   - enabled: 1
@@ -27,15 +23,7 @@ EditorBuildSettings:
     path: Assets/Scenes/tl_repeat.unity
   - enabled: 1
     path: Assets/Scenes/tl_repeat2.unity
-  - enabled: 0
-    path: Assets/Scenes/tl_line.unity
-  - enabled: 0
-    path: Assets/Scenes/tl_line2.unity
-  - enabled: 0
-    path: Assets/Scenes/tl_debug.unity
-  - enabled: 0
-    path: Assets/Scenes/tl_loop.unity
-  - enabled: 0
-    path: Assets/Scenes/tl_camera.unity
   - enabled: 1
     path: Assets/Scenes/tl_final.unity
+  - enabled: 1
+    path: Assets/Scenes/tl_speed_slider.unity
