@@ -27,9 +27,9 @@ self.initialize = function() {
     var props = new cgs.user.CgsUserProperties(
         skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
 
-    //Enable saving of data to server.
-    props.enableCaching();
-    //props.setForceUid("test_user");
+    // DO NOT Enable saving of data to server (it doesn't even work yet anyway)
+    // props.enableCaching();
+    // props.setForceUid("test_user");
 
     if (HACKCRAFT_CONFIG.logging.proxy_url) {
         props.setUseProxy(true);
