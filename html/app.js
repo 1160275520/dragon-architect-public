@@ -103,6 +103,7 @@ function make_levelSelect() {
     graph.addNode("tl_movement3d", {label: "3D Movement", id: "tl_movement3d"});
     graph.addNode("tl_placement", {label: "Place Blocks", id: "tl_placement"});
     graph.addNode("tl_movement_args", {label: "Movement Arguments", id: "tl_movement_args"});
+    graph.addNode("tl_speed_slider", {label: "Speed Slider", id: "tl_speed_slider"});
     graph.addNode("tl_call", {label: "Call", id: "tl_call"});
     graph.addNode("tl_call2", {label: "Call 2", id: "tl_call2"});
     graph.addNode("tl_repeat", {label: "Repeat", id: "tl_repeat"});
@@ -112,10 +113,11 @@ function make_levelSelect() {
     graph.addEdge(null, "tl_movement2d", "tl_placement");
     graph.addEdge(null, "tl_movement2d", "tl_movement_args");
     graph.addEdge(null, "tl_movement_args", "tl_repeat");
-    graph.addEdge(null, "tl_placement", "tl_repeat");
-    graph.addEdge(null, "tl_repeat", "tl_repeat2");
+    graph.addEdge(null, "tl_placement", "tl_speed_slider");
     graph.addEdge(null, "tl_placement", "tl_call");
     graph.addEdge(null, "tl_call", "tl_call2");
+    graph.addEdge(null, "tl_placement", "tl_repeat");
+    graph.addEdge(null, "tl_repeat", "tl_repeat2");
 
     // perform layout
     var renderer = new dagreD3.Renderer();
