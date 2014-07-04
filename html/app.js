@@ -248,7 +248,7 @@ $(function() {
         max: 1.0,
         step: 0.05,
         slide: function( event, ui ) {
-            send_message("System", "EAPI_SetDelayPerCommand", (1 - ui.value).toString());
+            set_program_execution_speed(ui.value);
         }
     });
 
@@ -265,6 +265,10 @@ $(function() {
 function add_to_library(name, program) {
     // TODO check for reserved names (e.g., main)
     // TODO actually implement this function
+}
+
+function set_program_execution_speed(parameter) {
+    send_message("System", "EAPI_SetProgramExecutionSpeed", parameter.toString());
 }
 
 function set_program(prog) {
@@ -312,8 +316,7 @@ handler.onLevelChange = function(json) {
         var selfRect = b.getBoundingClientRect();
         slider.style.visibility = "visible";
         var selfRect = slider.getBoundingClientRect();
-        var speed_slider_value = $('#slider').slider("option", "value");
-        send_message("System", "EAPI_SetDelayPerCommand", speed_slider_value.toString());
+        set_program_execution_speed($('#slider').slider("option", "value"));
     }
     is_running = false;
 
