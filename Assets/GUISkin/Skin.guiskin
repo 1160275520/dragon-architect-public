@@ -1833,7 +1833,7 @@ MonoBehaviour:
     m_StretchHeight: 0
   - m_Name: SpeechBubble
     m_Normal:
-      m_Background: {fileID: 2800000, guid: 7e1908fc30283414f9150f30672b814d, type: 3}
+      m_Background: {fileID: 2800000, guid: 40cbe5909880a400caa2755190f91fbf, type: 3}
       m_TextColor: {r: 0, g: 0, b: 0, a: 1}
     m_Hover:
       m_Background: {fileID: 0}

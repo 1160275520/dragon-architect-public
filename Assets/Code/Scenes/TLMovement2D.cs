@@ -8,9 +8,9 @@ public class TLMovement2D : MonoBehaviour {
     Func<bool> winPredicate;
 
     string[] messages = new string[] { "My program on the right tells me what to do. Click <font color=\"#37B03F\"><b>RUN</b></font> to have me do it!",
-        "I need to get to the pink box, and my program doesn't move me far enough. Add two <object data=\"media/forward.svg\" style=\"vertical-align:middle\"></object> to complete my program and click <font color=\"#37B03F\"><b>RUN</b></font>.",
+        "I need to get to the pink box, and my program doesn't move me far enough. Add a <object data=\"media/forward.svg\" style=\"vertical-align:middle\"></object> to complete my program and click <font color=\"#37B03F\"><b>RUN</b></font>.",
         "Good Job! Now the pink box is somewhere else. Use one <object data=\"media/right.svg\" style=\"vertical-align:middle\"></object> to fix my program and click <font color=\"#37B03F\"><b>RUN</b></font>." };
-    IntVec3[] targets = new IntVec3[] { new IntVec3(0,0,5), new IntVec3(0,0,5), new IntVec3(3,0,2) };
+    IntVec3[] targets = new IntVec3[] { new IntVec3(0,0,2), new IntVec3(0,0,2), new IntVec3(1,0,1) };
     int phase = 0;
 
     void Start() {

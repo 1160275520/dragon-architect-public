@@ -31,6 +31,7 @@ public class AllTheGUI : MonoBehaviour
     public static readonly int SPACING = 10;
 
     public GUISkin CustomSkin;
+    public GameObject SpeechBubble;
 
     public bool IsActiveMainControls = true;
     public bool IsActiveCodeEditor = true;
@@ -49,7 +50,6 @@ public class AllTheGUI : MonoBehaviour
     private Rect area;
     private float lastUpdateTime = 0.0f;
 
-    private Vector3 salaPos;
     private bool isFirstUpdate = true;
     private Action currentModalWindow = null;
     private string currentlyTypedFilename = "";
@@ -58,6 +58,10 @@ public class AllTheGUI : MonoBehaviour
     private int NextId()
     {
         return ++astIdCounter;
+    }
+
+    void Start() {
+//        Instantiate(SpeechBubble);
     }
 
     void Update() {
@@ -78,10 +82,6 @@ public class AllTheGUI : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.L)) {
             Application.LoadLevel("loader");
         }
-    }
-
-    void LateUpdate() {
-        salaPos = GameObject.Find("Robot").transform.position;
     }
 
     Rect getLastRect()
