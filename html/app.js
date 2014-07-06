@@ -6,7 +6,7 @@ var unityObject;
 var is_running = false;
 var questLogger;
 var handler = {};
-var levelsCompleted = ["tl_movement2d", "tl_call", "tl_placement", "tl_repeat", "tl_movement_args"];
+var levelsCompleted = [];
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
@@ -349,6 +349,14 @@ handler.onSetColors = function(json) {
     var colors = JSON.parse(json);
     Blockly.FieldColour.COLOURS = colors;
     Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
+}
+
+handler.onLevelComplete = function(levelId) {
+    levelsCompleted.push(levelId);
+}
+
+handler.onReturnToSelect = function() {
+    setState_levelSelect();
 }
 
 return onHackcraftEvent;

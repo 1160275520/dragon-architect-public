@@ -66,7 +66,7 @@ public class LevelHelper : MonoBehaviour
 
     public void WinLevel() {
         // TODO maybe do actual things once you win
-        GetComponent<AllTheGUI>().CurrentMessage = "Yay, you win!";
-        GetComponent<AllTheGUI>().IsActiveGotoNextLevel = true;
+        GetComponent<AllTheGUI>().IsActiveReturnToLevelSelect = true;
+        GetComponent<ExternalAPI>().SendLevelCompleted();
     }
 }

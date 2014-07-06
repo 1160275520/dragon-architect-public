@@ -37,7 +37,7 @@ public class AllTheGUI : MonoBehaviour
     public bool IsActiveCodeEditor = true;
     public bool IsActiveTimeSlider = true;
     public bool IsActiveSaveLoad = true;
-    public bool IsActiveGotoNextLevel = false;
+    public bool IsActiveReturnToLevelSelect = false;
     public bool IsActiveBlockly = true;
 
     public string CurrentMessage { get; set; }
@@ -165,13 +165,19 @@ public class AllTheGUI : MonoBehaviour
 //            GUI.Label(new Rect(13, 13, 35, 35), "...", style);
 //            GUI.EndGroup();
         }
-        if (IsActiveGotoNextLevel) {
+        if (IsActiveReturnToLevelSelect) {
+            area = new Rect(Screen.width/2 - 100, Screen.height/2 - 50, 200, 100);
+            GUILayout.BeginArea(area);
+            GUILayout.BeginVertical("ButtonBackground");
+            GUILayout.Label("Yay, you win!");
             var style = new GUIStyle("button");
             style.fontSize = 24;
             style.fontStyle = FontStyle.Bold;
-            if (GUI.Button(new Rect(360, 145, 200, 60), "Go to next level", style)) {
-                Application.LoadLevel(LoaderGUI.LEVELS[++LoaderGUI.CURRENT_LEVEL_INDEX]);
+            if (GUILayout.Button("Return to level select", style)) {
+                GetComponent<ExternalAPI>().SendReturnToSelect();
             }
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
         }
         // save/load dialog
         if (IsActiveSaveLoad) {

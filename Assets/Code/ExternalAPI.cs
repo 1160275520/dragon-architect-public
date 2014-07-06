@@ -71,6 +71,14 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Format(Json.fromObject(CubeTextures.AvailableColors)));
     }
 
+    public void SendLevelCompleted() {
+        Application.ExternalCall(ExternalApiFunc, "onLevelComplete", Application.loadedLevelName);
+    }
+
+    public void SendReturnToSelect() {
+        Application.ExternalCall(ExternalApiFunc, "onReturnToSelect", "");
+    }
+
     // external API
 
     public void EAPI_SetProgramFromJson(string json) {
