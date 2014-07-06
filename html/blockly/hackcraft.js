@@ -272,7 +272,7 @@ Hackcraft.setInstructions = function (instructions) {
             msg.style.visibility = "visible";
             var selfRect = msg.getBoundingClientRect();
             //console.log(selfRect)
-            msg.style.top = (100 - (selfRect.height + 30)) / 2 + 'px'; // center in the 100px of space to work with, 30 for padding
+            // msg.style.top = (100 - (selfRect.height + 30)) / 2 + 'px'; // center in the 100px of space to work with, 30 for padding
             $('#instructions').addClass("speechBubble");
         }, 500);
     } else {

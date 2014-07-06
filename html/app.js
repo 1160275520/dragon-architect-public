@@ -7,6 +7,7 @@ var is_running = false;
 var questLogger;
 var handler = {};
 var levelsCompleted = [];
+var instructions = "";
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
@@ -148,6 +149,34 @@ function make_levelSelect() {
             x.children[0].style.fill = colors["gray"];
         }
     });
+}
+
+function make_smallInstructions() {
+    var instContainer = $("#instructionsContainer")[0];
+    instContainer.style.width = "50px";
+    instContainer.style.height = "50px";
+    instContainer.onclick = make_largeInstructions;
+    var inst = $("#instructions")[0];
+    inst.innerHTML = "+";
+    inst.style.textAlign = "center";
+    inst.style.verticalAlign = "middle";
+    inst.style.fontSize = "32pt";
+    $("#metaInstructions")[0].innerHTML = "";
+}
+
+function make_largeInstructions() {
+    var rect = $("svg g")[0].getBoundingClientRect();
+    var instContainer = $("#instructionsContainer")[0]
+    instContainer.style.top = '0px';
+    instContainer.style.left = rect.width + 'px';
+    instContainer.style.width = "";
+    instContainer.onclick = make_smallInstructions;
+    var inst = $("#instructions")[0];
+    inst.innerHTML = instructions;
+    inst.style.textAlign = "";
+    inst.style.verticalAlign = "";
+    inst.style.fontSize = "24pt";
+    $("#metaInstructions")[0].innerHTML = "(Click to hide)";
 }
 
 function setState_puzzle(stageId) {
@@ -301,6 +330,7 @@ handler.onLevelChange = function(json) {
     var levelInfo = JSON.parse(json);
 
     Hackcraft.setLevel(levelInfo);
+    make_largeInstructions();
     Hackcraft.history = new Array();
     // reset run button
     var b = $('#btn-run')[0];
@@ -312,10 +342,7 @@ handler.onLevelChange = function(json) {
         b.hidden = false;
         b.innerText = "Run!";
         b.style.backgroundColor = "#37B03F";
-        var rect = $('#unityPlayer>embed')[0].getBoundingClientRect();
-        var selfRect = b.getBoundingClientRect();
         slider.style.visibility = "visible";
-        var selfRect = slider.getBoundingClientRect();
         set_program_execution_speed($('#slider').slider("option", "value"));
     }
     is_running = false;
@@ -343,6 +370,7 @@ handler.onStatementHighlight = function(id) {
 
 handler.onInstructionsChange = function(msg) {
     Hackcraft.setInstructions(msg);
+    instructions = msg;
 }
 
 handler.onSetColors = function(json) {

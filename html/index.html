@@ -60,15 +60,19 @@
             <div id="slider"></div>
           </div>
         </div>
-        <!-- UI related to puzzle mode -->
-        <div id="instructionsContainer" class="puzzleModeUI">
-          <p id="instructions">test instructions</p>
-        </div>
       </div>
       <!-- the code editor and related UI -->
       <div>
       <div class="codeEditor mainRightSide">
-        <div id="blockly"></div>
+        <!-- UI related to puzzle mode -->
+        <div id="instructionsContainer" class="puzzleModeUI">
+          <span style="display:block;">
+            <p id="instructions"></p>
+            <p id="metaInstructions"></p>
+          </span>
+        </div>
+        <div id="blockly">
+        </div>
         <button id="btn-undo">Undo</button>
         <p id="statement-counter"></p>
         <img id="trash-arrow" src="media/arrow.png"/>

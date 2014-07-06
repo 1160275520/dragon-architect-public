@@ -10,11 +10,11 @@ public class TLMovement3D : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "Help me get to the pink box! Use two <object data=\"media/up.svg\" style=\"vertical-align:middle\"></object> to complete my program.";
+        GetComponent<AllTheGUI>().CurrentMessage = "Help me get to the pink box! Use two <object data=\"media/blockSvgs/up.svg\" style=\"vertical-align:middle\"></object> to complete my program.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLMovement3D");
         progman.SetHighlighted("Up", true);
-        var target = new IntVec3(3,6,0);
+        var target = new IntVec3(3,5,0);
 
         lh.CreateRobotTarget(target);
         // offset win location since Sala floats one cell above her actual location

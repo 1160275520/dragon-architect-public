@@ -151,7 +151,7 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     var xml = '<xml>';
     var funcCount = 0;
     _.each(program.procedures, function(func, name) {
-        xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 2)) + '" y="' + (50 + 250*Math.floor(funcCount/2)) + '"><field name="NAME">' + name + '</field><statement name="STACK">';
+        xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 2)) + '" y="' + (150 + 250*Math.floor(funcCount/2)) + '"><field name="NAME">' + name + '</field><statement name="STACK">';
         xml += Blockly.UnityJSON.bodyToXML(func.body, program);
         xml += '</statement></block>';
         funcCount++;

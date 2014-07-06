@@ -11,7 +11,7 @@ public class TLCall : MonoBehaviour
 	void Start() {
         var lh = GetComponent<LevelHelper>();
 
-        var f1 = "<object data=\"media/f1.svg\" style=\"vertical-align:middle\"></object>";
+        var f1 = "<object data=\"media/blockSvgs/f1.svg\" style=\"vertical-align:middle\"></object>";
         var msg = String.Format("A procedure (like <b>F1</b>) can be used inside another procedure (like <b>MAIN</b>). {0} does everything inside <b>F1</b>. You can use {0} multiple times to do the same thing multiple times. Fill the blueprint using {0}!", f1);
         GetComponent<AllTheGUI>().CurrentMessage = msg;
 

@@ -10,7 +10,7 @@ public class TLPlacement : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "I need to place some blocks in the blue boxes, but my program skips one! Use one <object data=\"media/placeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program.";
+        GetComponent<AllTheGUI>().CurrentMessage = "I need to place some blocks in the blue boxes, but my program skips one! Use one <object data=\"media/blockSvgs/placeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program.";
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLPlacement");
         progman.SetHighlighted("PlaceBlock", true);

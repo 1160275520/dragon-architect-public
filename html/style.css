@@ -160,24 +160,26 @@ header h1 {
 }
 
 #instructionsContainer {
-    position: relative;
-    height: 100px;
+    position: absolute;
+    left: 500px;
+    top: 100px;
+    z-index: 1;
 }
 
 #instructions {
-    position:absolute;
     top: 0px;
     left: 10px;
     padding:5px;
-    margin:0.5em 0 2em;
+    /*margin:0.5em 0 2em;*/
     color:#fff;
     font-family: monospace;
+    font-size: 24pt;
     background: #333; /* default background for browsers without gradient support */
-    opacity: 0.8;
+    opacity: 0.95;
     border-radius:10px;
 }
 
-#instructions:before {
+#XXXinstructions:before {
     content:"";
     position:absolute;
     bottom:-20px; /* value = - border-top-width - border-bottom-width */
@@ -188,12 +190,12 @@ header h1 {
     border-style:solid;
     border-color:transparent #333;
     /* reduce the damage in FF3.0 */
-    display:block;
+/*    display:block;
     width:0;
-}
+*/}
 
 /* creates the narrower right-angled triangle */
-#instructions:after {
+#XXXinstructions:after {
     content:"";
     position:absolute;
     bottom:-20px; /* value = - border-top-width - border-bottom-width */
@@ -217,7 +219,7 @@ header h1 {
     }
 
     40% {
-        opacity: 0.8;
+        opacity: 0.95;
         -webkit-transform: translateY(0px);
         transform: translateY(0px);
     }
@@ -247,7 +249,7 @@ header h1 {
     }
 
     40% {
-        opacity: 0.8;
+        opacity: 0.95;
         -webkit-transform: translateY(210px);
         -ms-transform: translateY(210px);
         transform: translateY(210px);

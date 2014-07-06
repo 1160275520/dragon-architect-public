@@ -12,9 +12,9 @@ public class TLRepeat : MonoBehaviour
 	void Start() {
         var lh = GetComponent<LevelHelper>();
 
-        var rep = "<object data=\"media/repeat.svg\" style=\"vertical-align:middle\"></object>";
-        var f1 = "<object data=\"media/f1.svg\" style=\"vertical-align:middle\"></object>";
-        var msg = String.Format("{0} lets me do everything inside multiple times. Then can repeat a statement or procedure many times! Help me use {0} in <b>MAIN</b> to fill the blueprint by repeating {1}!.", rep, f1);
+        var rep = "<object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object>";
+        var f1 = "<object data=\"media/blockSvgs/f1.svg\" style=\"vertical-align:middle\"></object>";
+        var msg = String.Format("{0} lets me do everything inside multiple times. It can repeat a statement or procedure many times! Help me use {0} in <b>MAIN</b> to fill the blueprint by repeating {1}!.", rep, f1);
         GetComponent<AllTheGUI>().CurrentMessage = msg;
 
         var progman = GetComponent<ProgramManager>();

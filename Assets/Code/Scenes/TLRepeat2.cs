@@ -11,7 +11,7 @@ public class TLRepeat2 : MonoBehaviour
 
 	void Start () {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me make a 10x10 square. You might want to use one <object data=\"media/repeat.svg\" style=\"vertical-align:middle\"></object> and one <object data=\"media/repeat4.svg\" style=\"vertical-align:middle\"></object>.";
+        GetComponent<AllTheGUI>().CurrentMessage = "In this challenge, help me make a 10x10 square. You might want to use one <object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object> and one <object data=\"media/blockSvgs/repeat4.svg\" style=\"vertical-align:middle\"></object>.";
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
         progman.SetHighlighted("controls_repeat", true);
