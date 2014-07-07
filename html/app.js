@@ -304,7 +304,7 @@ $(function() {
     $('#btn-undo').on('click', Hackcraft.undo);
 
     $( "#slider" ).slider({
-        value: 0.5,
+        value: 0.22,
         min: 0.0,
         max: 1.0,
         step: 0.05,
