@@ -109,7 +109,7 @@ function make_levelSelect() {
     graph.addNode("tl_call2", {label: "Call 2", id: "tl_call2"});
     graph.addNode("tl_repeat", {label: "Repeat", id: "tl_repeat"});
     graph.addNode("tl_repeat2", {label: "Repeat 2", id: "tl_repeat2"});
-    graph.addNode("tl_final", {label: "Open-Ended", id: "tl_final"});
+    graph.addNode("tl_final", {label: "<div style='padding: 60px;'><span style='font-size:44px'>Open-Ended</span></div>", id: "tl_final"});
 
     graph.addEdge(null, "tl_movement2d", "tl_movement3d");
     graph.addEdge(null, "tl_movement2d", "tl_placement");
