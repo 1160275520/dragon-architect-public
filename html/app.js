@@ -273,6 +273,12 @@ $(function() {
         }
     });
 
+    // camera
+    $('#camera-zoom-in').click(function(){control_camera('zoomin');});
+    $('#camera-zoom-out').click(function(){control_camera('zoomout');});
+    $('#camera-rotate-left').click(function(){control_camera('rotateleft');});
+    $('#camera-rotate-right').click(function(){control_camera('rotateright');});
+
     // undo button
     $('#btn-undo').on('click', Hackcraft.undo);
 
@@ -317,6 +323,10 @@ function set_stage(stage_id) {
 
 function set_is_running(is_running) {
     send_message("System", "EAPI_SetIsRunning", is_running ? "true" : "false");
+}
+
+function control_camera(action) {
+    send_message("System", "EAPI_ControlCamera", action);
 }
 
 handler.onSystemStart = function(json) {

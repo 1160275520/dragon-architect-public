@@ -100,4 +100,14 @@ public class ExternalAPI : MonoBehaviour
         var x = float.Parse(parameter);
         GetComponent<ProgramManager>().DelayPerCommand = (float)Math.Pow(0.1f, 2.0f * x);
     }
+
+    public void EAPI_ControlCamera(string action) {
+        var camera = FindObjectOfType<MyCamera>();
+        switch (action) {
+            case "zoomin": camera.Zoom(0.5f); break;
+            case "zoomout": camera.Zoom(2.0f); break;
+            case "rotateleft": camera.Rotate(90); break;
+            case "rotateright": camera.Rotate(-90); break;
+        }
+    }
 }

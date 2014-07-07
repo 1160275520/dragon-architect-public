@@ -261,7 +261,7 @@ public class AllTheGUI : MonoBehaviour
             GUILayout.EndArea();
         }
 
-        if (IsActiveMainControls) {
+        if (IsActiveMainControls && !IsActiveBlockly) {
             area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 30, Screen.height - SPACING * 1.5f);
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground");

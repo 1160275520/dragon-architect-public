@@ -61,11 +61,15 @@ header h1 {
     display: block;
 }
 
+#topButtonBar {
+    overflow: auto;
+}
+
 #btn-run {
-  background-color: #37B03F;
-  font-size: 32pt;
-  font-weight: bold;
-  float: right;
+    float: right;
+    background-color: #37B03F;
+    font-size: 32pt;
+    font-weight: bold;
 }
 
 
@@ -85,6 +89,10 @@ header h1 {
     position: relative;
     margin-left: 40%;
     padding: 0;
+}
+
+#topButtonBar {
+    /*height: 300px;*/
 }
 
 #unityPlayer {
