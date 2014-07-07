@@ -267,7 +267,7 @@ Hackcraft.setInstructions = function (instructions) {
     $('#instructions').removeClass("speechBubble");
     msg.style.visibility = "hidden";
     if (instructions) {
-        msg.innerHTML = "\"" + instructions + "\"";
+        msg.innerHTML = instructions;
         setTimeout(function () { // XXX timeout necessary to hide inexplicable resizing during layout of new html
             msg.style.visibility = "visible";
             var selfRect = msg.getBoundingClientRect();

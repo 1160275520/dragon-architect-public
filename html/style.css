@@ -169,22 +169,24 @@ header h1 {
 
 #instructionsContainer {
     position: absolute;
-    left: 500px;
-    top: 100px;
     z-index: 1;
+    height: 100%;
+    width: 98%; /* less 2 percent to account for blockly being 8 pixels smaller than it's container */
 }
 
-#instructions {
+#instructionsBackground {
     top: 0px;
     left: 10px;
     padding:5px;
-    /*margin:0.5em 0 2em;*/
-    color:#fff;
-    font-family: monospace;
-    font-size: 24pt;
     background: #333; /* default background for browsers without gradient support */
     opacity: 0.95;
     border-radius:10px;
+}
+
+#instructions {
+    color:#fff;
+    font-family: monospace;
+    font-size: 24pt;   
 }
 
 #XXXinstructions:before {
@@ -219,6 +221,92 @@ header h1 {
     width:0;
 }
 
+@-webkit-keyframes instructionsShow {
+    0% {
+        width: 50px;
+        height: 50px;
+    }
+
+    50% {
+        width: 90%;
+        height: 50px;
+    }
+
+    100% {
+        width: 90%;
+        height: 100%;
+    }
+}
+
+@keyframes instructionsShow {
+    0% {
+        width: 50px;
+        height: 50px;
+    }
+
+    50% {
+        width: 90%;
+        height: 50px;
+    }
+
+    100% {
+        width: 90%;
+        height: 100%;
+    }
+}
+
+.instructionsShow {
+    -webkit-animation-name: instructionsShow;
+    animation-name: instructionsShow;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@-webkit-keyframes instructionsHide {
+    0% {
+        width: 90%;
+        height: 100%;
+    }
+
+    50% {
+        width: 90%;
+        height: 50px;
+    }
+
+    100% {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@keyframes instructionsHide {
+    0% {
+        width: 90%;
+        height: 100%;
+    }
+
+    50% {
+        width: 90%;
+        height: 50px;
+    }
+
+    100% {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.instructionsHide {
+    -webkit-animation-name: instructionsHide;
+    animation-name: instructionsHide;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
 @-webkit-keyframes speechBubble {
     0% {
         opacity: 0;
@@ -251,16 +339,16 @@ header h1 {
 @keyframes speechBubble {
     0% {
         opacity: 0;
-        -webkit-transform: translateY(230px);
-        -ms-transform: translateY(230px);
-        transform: translateY(230px);
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
     }
 
     40% {
         opacity: 0.95;
-        -webkit-transform: translateY(210px);
-        -ms-transform: translateY(210px);
-        transform: translateY(210px);
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
     }
 
     70%, 75%, 85%, 95%, 100% {

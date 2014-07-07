@@ -158,15 +158,20 @@ function make_levelSelect() {
 
 function make_smallInstructions() {
     var instContainer = $("#instructionsContainer")[0];
-    instContainer.style.width = "50px";
-    instContainer.style.height = "50px";
-    instContainer.onclick = make_largeInstructions;
+    instContainer.onclick = null;
+    $("#instructionsBackground").removeClass("instructionsShow");
+    $("#instructionsBackground").addClass("instructionsHide");
+    $("#instructions").removeClass("speechBubble");
     var inst = $("#instructions")[0];
     inst.innerHTML = "+";
     inst.style.textAlign = "center";
     inst.style.verticalAlign = "middle";
     inst.style.fontSize = "32pt";
-    $("#metaInstructions")[0].innerHTML = "";
+    setTimeout(function() {
+        instContainer.style.width = "50px";
+        instContainer.style.height = "50px";
+        instContainer.onclick = make_largeInstructions;
+    }, 1000);
 }
 
 function make_largeInstructions() {
@@ -174,14 +179,24 @@ function make_largeInstructions() {
     var instContainer = $("#instructionsContainer")[0]
     instContainer.style.top = '0px';
     instContainer.style.left = rect.width + 'px';
-    instContainer.style.width = "";
-    instContainer.onclick = make_smallInstructions;
+    $("#instructionsBackground").addClass("instructionsShow");
+    $("#instructionsBackground").removeClass("instructionsHide");
+    instContainer.style.height = "100%";
+    instContainer.style.width = "98%";
+    instContainer.onclick = null;
     var inst = $("#instructions")[0];
+    $("#instructions").addClass("speechBubble");
+    inst.style.webkitAnimationPlayState = "paused";
+    inst.style.animationPlayState = "paused";
     inst.innerHTML = instructions;
     inst.style.textAlign = "";
     inst.style.verticalAlign = "";
     inst.style.fontSize = "24pt";
-    $("#metaInstructions")[0].innerHTML = "(Click to hide)";
+    setTimeout(function () { 
+        inst.style.webkitAnimationPlayState = "running";
+        inst.style.animationPlayState = "running";
+        instContainer.onclick = make_smallInstructions;
+    }, 1000);
 }
 
 function setState_puzzle(stageId) {
