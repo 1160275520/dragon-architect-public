@@ -109,6 +109,7 @@ function make_levelSelect() {
     graph.addNode("tl_call2", {label: "Call 2", id: "tl_call2"});
     graph.addNode("tl_repeat", {label: "Repeat", id: "tl_repeat"});
     graph.addNode("tl_repeat2", {label: "Repeat 2", id: "tl_repeat2"});
+    graph.addNode("tl_final", {label: "Open-Ended", id: "tl_final"});
 
     graph.addEdge(null, "tl_movement2d", "tl_movement3d");
     graph.addEdge(null, "tl_movement2d", "tl_placement");
@@ -119,6 +120,10 @@ function make_levelSelect() {
     graph.addEdge(null, "tl_call", "tl_call2");
     graph.addEdge(null, "tl_placement", "tl_repeat");
     graph.addEdge(null, "tl_repeat", "tl_repeat2");
+    graph.addEdge(null, "tl_repeat2", "tl_final");
+    graph.addEdge(null, "tl_call2", "tl_final");
+    graph.addEdge(null, "tl_speed_slider", "tl_final");
+    graph.addEdge(null, "tl_movement3d", "tl_final");
 
     // perform layout
     var renderer = new dagreD3.Renderer();
