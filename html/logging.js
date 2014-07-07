@@ -94,6 +94,10 @@ self.startQuest = function(qid) {
         log(AID.ProgramExecutionReset, {});
     };
 
+    questLogger.logPuzzledCompleted = function() {
+        log(AID.PuzzleSolveda, {});
+    }
+
     questLogger.logQuestEnd = function() {
         var questEndDetail = {test:"test"};
         user.logQuestEnd(questEndDetail, function(response) {

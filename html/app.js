@@ -138,14 +138,20 @@ function make_levelSelect() {
 
     // setup onclick behavior
     var SANDBOX_LEVEL_ID = 'tl_final';
+
+    function is_completed(level) {
+        //return levelsCompleted.indexOf(level) !== -1;
+        return true;
+    }
+
     nodes.forEach(function (x) { 
-        if (graph.predecessors(x.id).every(function (p) { return levelsCompleted.indexOf(p) != -1; })) {
+        if (graph.predecessors(x.id).every(is_completed)) {
             if (x.id === SANDBOX_LEVEL_ID) {
                 x.onclick = function() { setState_sandbox(x.id); };
             } else {
                 x.onclick = function() { setState_puzzle(x.id); };
             }
-            if (levelsCompleted.indexOf(x.id) != -1) {
+            if (is_completed(x.id)) {
                 x.children[0].style.fill = colors["green"];
             } else {
                 x.children[0].style.fill = colors["orange"];
