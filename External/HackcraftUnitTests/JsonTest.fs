@@ -41,15 +41,15 @@ let ``JSON simple parse test`` string (jobj: J.JsonValue) =
 
 [<Fact>]
 let ``JSON illegal string test`` () =
-    (fun () -> J.Parse "\"asdf" |> ignore) |> should throw typeof<Hackcraft.SyntaxError>
+    (fun () -> J.Parse "\"asdf" |> ignore) |> should throw typeof<J.SyntaxException>
 
 [<Fact>]
 let ``JSON trailing text test`` () =
-    (fun () -> J.Parse "2f" |> ignore) |> should throw typeof<Hackcraft.SyntaxError>
+    (fun () -> J.Parse "2f" |> ignore) |> should throw typeof<J.SyntaxException>
 
 [<Fact>]
 let ``JSON illegal object test`` () =
-    (fun () -> J.Parse "{whoops:2}" |> ignore) |> should throw typeof<Hackcraft.SyntaxError>
+    (fun () -> J.Parse "{whoops:2}" |> ignore) |> should throw typeof<J.SyntaxException>
 
 // formatting
 

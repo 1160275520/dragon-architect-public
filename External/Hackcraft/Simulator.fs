@@ -12,9 +12,7 @@ type RuntimeErrorCode =
 | IncorrectNumberOfArguments = 4103
 
 let private runtimeError (meta:Ast.Imperative.Meta) (code: RuntimeErrorCode) msg =
-    // HACK create a phony location based on the id
-    let loc = Location (Position (meta.Id, 0), Position.Empty, "")
-    raise (RuntimeError (Serialization.LANGUAGE_NAME, int code, loc, msg, null))
+    raise (CodeException (RuntimeError (int code, meta.Id, msg, null)))
 
 type CallStackState = {
     Args: ImmArr<obj>;
@@ -92,13 +90,13 @@ let private step (state:State) =
                 Some (Robot.Command (cmd, args))
 
 let private internalError e = 
-    raise (RuntimeError (Serialization.LANGUAGE_NAME, int RuntimeErrorCode.InternalError, Location.Empty, "Internal runtime error.", e))
+    raise (CodeException (RuntimeError (int RuntimeErrorCode.InternalError, -1, "Internal runtime error.", e)))
 
 /// Executes a single line of the program, returning a robot command, if any.
 let ExecuteStep state =
     try step state
     with
-    | :? RuntimeError -> reraise ()
+    | :? CodeException -> reraise ()
     | e -> internalError e
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
@@ -109,7 +107,7 @@ let ExecuteUntilCommand state =
             cmd <- step state
         match cmd with Some c -> c | None -> null
     with
-    | :? RuntimeError -> reraise ()
+    | :? CodeException -> reraise ()
     | e -> internalError e
 
 let IsDone (state:State) = state.CallStack.IsEmpty
@@ -138,5 +136,5 @@ let ExecuteFullProgram program (grid:GridStateTracker) (robot:Robot.IRobot) =
 
         ImmArr.ofSeq (List.rev steps)
     with
-    | :? RuntimeError -> reraise ()
+    | :? CodeException -> reraise ()
     | e -> internalError e

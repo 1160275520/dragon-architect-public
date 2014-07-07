@@ -13,6 +13,7 @@ module Hackcraft.Json
 
 open System.Collections
 open System.Collections.Generic
+open System.Text
 
 /// json arrays are mutable, which I don't like, but I don't want to drag in depedencies to get efficient immutable array types >_>
 type JsonArray = array<JsonValue>
@@ -26,44 +27,105 @@ and JsonValue =
 | Array of JsonArray
 | Object of JsonObject
 
+/// Some of the error codes used by <c>SyntaxException</c>.
+type SyntaxErrorCode =
+| InternalError = 1001
+| UnexpectedEOF = 1002
+| ExpectedCharacter = 1003
+| InvalidEscapeCharacter = 1004
+| MultilineString = 1005
+| InvalidKeyword = 1006
+| InvalidCharacter = 1007
+| TrailingCharacters = 1008
+
+/// Some of the error codes used by <c>JsonException</c>.
 type JsonErrorCode =
 | TypeMismatch = 9002
 | KeyNotFound = 9003
 
+// Thrown when parsing fails.
+[<Sealed>]
+type SyntaxException (code: int, location: TextLocation, errorMessage: string, inner: System.Exception) =
+    inherit System.Exception(sprintf "%O: Error %d: %s" location code errorMessage, inner)
+    /// The error code.
+    member x.Code = code
+    /// The location in the text where the error occurred.
+    member x.Location = location
+    /// The detailed message about the error. For a string message including other fields in one string, use this.Message.
+    member x.ErrorMessage = errorMessage
+
 /// Base class for any errors produced by the helper functions.
-type JsonError(value: JsonValue, code: int, message: string, inner: System.Exception) =
-    inherit ScriptingError(message, inner)
+type JsonException (code: int, value: JsonValue, message: string, inner: System.Exception) =
+    inherit System.Exception (message, inner)
+    /// The json value that this exception references.
     member this.Value = value
 
 /// Thrown when a requested type does not match (e.g., (String "foo").AsBool)
-type TypeMismatchError(value:JsonValue, typ:string, message:string, inner:System.Exception) =
-    inherit JsonError(value, int JsonErrorCode.TypeMismatch, sprintf "Value was not of expected type '%s': %s" typ message, inner)
-    member this.Type = typ
+[<Sealed>]
+type TypeMismatchException (value:JsonValue, typ:string, message:string, inner:System.Exception) =
+    inherit JsonException (int JsonErrorCode.TypeMismatch, value, sprintf "Value was not of expected type '%s': %s" typ message, inner)
+    /// The type that was expected.
+    member this.Expected = typ
 
 /// Thrown when a field is not present in an object
-type KeyNotFoundError(obj:JsonValue, key:string, message:string, inner:System.Exception) =
-    inherit JsonError(obj, int JsonErrorCode.KeyNotFound, sprintf "Object does not contain field '%s': %s" key message, inner)
+[<Sealed>]
+type KeyNotFoundException (obj:JsonValue, key:string, message:string, inner:System.Exception) =
+    inherit JsonException (int JsonErrorCode.KeyNotFound, obj, sprintf "Object does not contain field '%s': %s" key message, inner)
+    /// The field name that was expected.
     member this.Key = key
 
-let private typeError v t = raise (TypeMismatchError (v, t, "", null))
+let private typeError v t = raise (TypeMismatchException (v, t, "", null))
 
-let asInt t = match t with Int(x) -> x | _ -> typeError t "int"
-let asString t = match t with String(x) -> x | Null -> null | _ -> typeError t "string"
-let asBool t = match t with Bool(x) -> x | _ -> typeError t "bool"
-let asArray t = match t with Array(x) -> x | Null -> null | _ -> typeError t "array"
-let asObject t = match t with Object(x) -> x | _ -> typeError t "object"
-let tryGetField t f = (asObject t).TryFind f
-let getField t f = match tryGetField t f with Some v -> v | None -> raise (KeyNotFoundError (t, f, "", null))
+/// <summary>Cast this value to an int.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an int.</exception>
+let asInt j = match j with Int(x) -> x | _ -> typeError j "int"
+/// <summary>Cast this value to an string.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an string.</exception>
+let asString j = match j with String(x) -> x | Null -> null | _ -> typeError j "string"
+/// <summary>Cast this value to an bool.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an bool.</exception>
+let asBool j = match j with Bool(x) -> x | _ -> typeError j "bool"
+/// <summary>Cast this value to an json array.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
+let asArray j = match j with Array(x) -> x | Null -> null | _ -> typeError j "array"
+/// <summary>Cast this value to an json object.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
+let asObject j = match j with Object(x) -> x | _ -> typeError j "object"
+/// <summary>Try to find the given field of the given object.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
+let tryGetField j f = (asObject j).TryFind f
+/// <summary>Return the given field of the given object.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
+/// <exception cref="KeyNotFoundException">If this object does not have the given field.</exception>
+let getField j f = match tryGetField j f with Some v -> v | None -> raise (KeyNotFoundException (j, f, "", null))
+
+/// Construct a json array from a sequence of json values.
 let arrayOf (seq:#seq<JsonValue>) = Array (Array.ofSeq seq)
+/// Construct a json object from a sequence of (field name, json value) tuples.
 let objectOf (seq:#seq<string * JsonValue>) = Object (Map.ofSeq seq)
 
 type JsonValue with
+    /// <summary>Cast this value to an int.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an int.</exception>
     member t.AsInt = asInt t
+    /// <summary>Cast this value to an string.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an string.</exception>
     member t.AsString = asString t
+    /// <summary>Cast this value to an bool.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an bool.</exception>
     member t.AsBool = asBool t
+    /// <summary>Cast this value to an json array.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
     member t.AsArray = asArray t
+    /// <summary>Cast this value to an json object.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
     member t.AsObject = asObject t
+    /// <summary>Try to find the given field of the given object.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
     member t.TryGetField f = tryGetField t f
+    /// <summary>Return the given field of the given object.</summary>
+    /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
+    /// <exception cref="KeyNotFoundException">If this object does not have the given field.</exception>
     member t.GetField f = getField t f
 
 /// active pattern that checks if an object implements generic IDicationay<'a,'b> for any type and if so returns it as an IEnumerable of key-value tuples
@@ -82,16 +144,19 @@ let private (|DictType|_|) (obj:obj) : seq<obj * obj> option =
             Some (arr |> Seq.map (fun o -> (keyProp.GetValue (o, null), valProp.GetValue (o, null))))
     else None
 
-/// Create a JsonValue from any System.Object.
-/// Will intepret any IDictionary<_,_> as an object, any other IEnumerable as an array, Enum types as strings, and primitive types appropriately.
-/// Any other objects will cause an error.
-/// Note: obviously suuuper slow because it needs to use a lot of reflection to work 
+/// <summary>Create a <c>JsonValue</c> from any <c>System.Object</c>.
+/// Will interpret any <c>IDictionary</c> (generic or not) as an object, any other <c>IEnumerable</c> as an array, enum types as strings, and primitive types appropriately.
+/// <c>Guid</c>s are output as strings.
+/// Any other objects will cause an error.</summary>
+/// <remarks>Obviously pretty slow because it needs to use a lot of casting and reflection to work (especially for json objects).
+/// If performance is important, prefer the direct constructors.</remarks>
 let rec fromObject (obj:obj) =
     match obj with
     | null -> Null
     | :? string as x -> String x
     | :? int as x -> Int x
     | :? bool as x -> Bool x
+    | :? System.Guid as g -> String (g.ToString ())
     | DictType(seq) -> seq |> Seq.map (fun (k,v) -> (k :?> string, fromObject v)) |> objectOf
     | :? IDictionary as x -> Seq.cast<DictionaryEntry> x |> Seq.map (fun kvp -> (kvp.Key :?> string, fromObject kvp.Value)) |> objectOf
     | :? IEnumerable as x -> Seq.cast x |> Seq.map fromObject |> arrayOf
@@ -105,7 +170,7 @@ type ChildType =
 | Field of string
 /// Value is an entry of an array with this index.
 | Index of int
-/// Value has no parent; is the root.
+/// Value has no parent; it is the root.
 | Root
 
 /// Meta data associated with a JSON ast node.
@@ -116,7 +181,7 @@ type ChildType =
 /// The map uses reference equality, so, obviously, if an AST node is replaced with an equivalent one, it will no longer work.
 type Meta = {
     /// The location of this value in the concrete text.
-    Location: Location;
+    Location: TextLocation;
     /// How this value is referenced from its immediate ancestor.
     /// Field(str) means it's the "str" field on a JsonObject,
     /// Index(n) means it's the nth entry of a JsonArray,
@@ -132,29 +197,23 @@ type ParseResult = {
     Meta: Dictionary<JsonValue, Meta>;
 }
 
-type SyntaxErrorCode =
-| InternalError = 1001
-| UnexpectedEOF = 1002
-| ExpectedCharacter = 1003
-| InvalidEscapeCharacter = 1004
-| MultilineString = 1005
-| InvalidKeyword = 1006
-| InvalidCharacter = 1007
-| TrailingCharacters = 1008
+type private Parser (program, filename, doParseMeta) =
+    let cs = TextStream (program, filename, fun loc -> upcast SyntaxException (int SyntaxErrorCode.UnexpectedEOF, loc, "Unexpected EOF.", null))
+    let meta = if doParseMeta then Dictionary<JsonValue, Meta> Collections.HashIdentity.Reference else null
 
-let private LANGUAGE_NAME = "json"
-
-type private Parser(program, filename) =
-    let cs = CharStream (program, filename, fun loc -> upcast SyntaxError (LANGUAGE_NAME, int SyntaxErrorCode.UnexpectedEOF, loc, "Unexpected EOF.", null))
-    let meta = Dictionary<JsonValue, Meta>(Collections.HashIdentity.Reference)
-
-    let syntaxError (code:SyntaxErrorCode) (pstart,pend) message = raise (SyntaxError (LANGUAGE_NAME, int code, Location (pstart, pend, cs.Filename), message, null))
+    let syntaxError (code:SyntaxErrorCode) (pstart,pend) message = raise (SyntaxException (int code, TextLocation (pstart, pend, cs.Filename), message, null))
 
     let isSpace c = c = ' ' || c = '\r' || c = '\n' || c = '\t'
 
     let isNewline c = c = '\n'
 
     let skipWhitespace () = while (not cs.IsEOF) && (isSpace cs.Peek) do ignore (cs.Next ())
+
+    let takeWhile (c:char) f =
+        let b = StringBuilder ()
+        b.Append c |> ignore
+        while (not cs.IsEOF) && f cs.Peek do b.Append (cs.Next ()) |> ignore
+        b.ToString ()
 
     let matchCharacter c =
         let p = cs.Position
@@ -165,7 +224,7 @@ type private Parser(program, filename) =
     let parseString doReadOpeningQuote =
         if doReadOpeningQuote then matchCharacter '"' 
         let start = cs.Position // not quite correct pos, but MEH
-        let builder = System.Text.StringBuilder ()
+        let b = StringBuilder ()
         while not (cs.Peek = '"' || isNewline cs.Peek) do
             let c = cs.Next()
             if c = '\\'
@@ -177,9 +236,9 @@ type private Parser(program, filename) =
                     | '"' -> '"'
                     | '\\' -> '\\'
                     | x -> syntaxError SyntaxErrorCode.InvalidEscapeCharacter (cs.Position,cs.Position) (sprintf "invalid escape character '\%c'" x)
-                builder.Append ec |> ignore
-            else builder.Append c |> ignore
-        let s = builder.ToString ()
+                b.Append ec |> ignore
+            else b.Append c |> ignore
+        let s = b.ToString ()
         // if there is a newline, that's an error, otherwise skip the right quote
         let p = cs.Position
         if isNewline (cs.Next()) then syntaxError SyntaxErrorCode.MultilineString (start,p) "String literals may not span multiple lines"
@@ -204,7 +263,7 @@ type private Parser(program, filename) =
                     items.Add ((key, value)) |> ignore
                     if not (cs.Peek = '}') then matchCharacter ','
                 cs.Next () |> ignore // skip final }
-                Object (Map.ofSeq items), Seq.map snd items
+                Object (items.ToArray () |> Map.ofArray), Seq.map snd items
             | '[' ->
                 let values = List()
                 let mutable counter = 0
@@ -213,14 +272,12 @@ type private Parser(program, filename) =
                     counter <- counter + 1
                     if not (cs.Peek = ']') then matchCharacter ','
                 cs.Next () |> ignore // skip final ]
-                arrayOf values, upcast values
+                Array (values.ToArray ()), upcast values
             | c when System.Char.IsDigit c ->
-                let s = System.String [| yield c; while (not cs.IsEOF) && System.Char.IsDigit cs.Peek do yield cs.Next() |]
-                Int (System.Int32.Parse s), Seq.empty
+                Int (System.Int32.Parse (takeWhile c System.Char.IsDigit)), Seq.empty
             | c when System.Char.IsLetter c ->
-                let s = System.String [| yield c; while (not cs.IsEOF) && System.Char.IsLetter cs.Peek do yield cs.Next() |]
                 let value =
-                    match s with
+                    match takeWhile c System.Char.IsLetter with
                     | "true" -> Bool true
                     | "false" -> Bool false
                     | "null" -> Null
@@ -232,40 +289,68 @@ type private Parser(program, filename) =
         skipWhitespace ()
 
         let lend = cs.Position
-        // generate meta (but with no parent; we don't know the parent yet since it hasn't been parsed!)
-        meta.Add (value, {Location=Location(start, lend, cs.Filename); ChildType=childType; Parent=None;})
-        // update all children's meta now that we have the parent object
-        for child in children do
-            meta.[child] <- {meta.[child] with Parent=Some value}
+        if doParseMeta then
+            // generate meta (but with no parent; we don't know the parent yet since it hasn't been parsed!)
+            meta.Add (value, {Location=TextLocation(start, lend, cs.Filename); ChildType=childType; Parent=None;})
+            // update all children's meta now that we have the parent object
+            for child in children do
+                meta.[child] <- {meta.[child] with Parent=Some value}
 
         value
 
     member x.Parse () =
-        let ast = parse ChildType.Root
-        if not cs.IsEOF then syntaxError SyntaxErrorCode.TrailingCharacters (cs.Position, cs.Position) ("Unepxcted trailing characters")
-        {Ast=ast; Meta=meta}
+        try
+            let ast = parse ChildType.Root
+            if not cs.IsEOF then syntaxError SyntaxErrorCode.TrailingCharacters (cs.Position, cs.Position) ("Unepxcted trailing characters")
+            {Ast=ast; Meta=meta}
+        with
+        | :? SyntaxException -> reraise ()
+        | e -> raise (SyntaxException (int SyntaxErrorCode.InternalError, TextLocation.Empty, "Internal parser error.", e))
 
-let ParseWithMeta string filename =
-    try Parser(string, filename).Parse()
-    with
-    | :? CompilerError -> reraise ()
-    | e -> raise (SyntaxError (LANGUAGE_NAME, int SyntaxErrorCode.InternalError, Location.Empty, "Internal parser error.", e))
+/// <summary>Parse a string into a <c>JsonValue</c> returning both the parsed json and meta information about the parse tree.
+/// This information can be used to, for example, map json values back to locations in the original text.</summary>
+/// <exception cref="SyntaxException">If the string is malformed.</exception>
+let ParseWithMeta string filename = Parser(string, filename, true).Parse()
 
-let Parse string = (ParseWithMeta string "").Ast
+/// <summary>Parse a string into a <c>JsonValue</c></summary>
+/// <exception cref="SyntaxException">If the string is malformed.</exception>
+let Parse string = Parser(string, "", false).Parse().Ast
 
-/// Format json with little wasted space. There's still spaces after ':' and ',' though.
-let rec Format json =
-    match json with
-    | Null -> "null"
-    | Int i -> i.ToString()
+let rec EncodeTo (writer:System.IO.TextWriter) value =
+    match value with
+    | Null -> writer.Write "null"
+    | Int i -> writer.Write i
     | String s ->
         let s = s.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\"", "\\\"")
-        sprintf "\"%s\"" s
-    | Bool b -> if b then "true" else "false"
+        writer.Write '\"'
+        writer.Write s
+        writer.Write '\"'
+    | Bool b -> writer.Write (if b then "true" else "false")
     | Array a ->
-        sprintf "[%s]" (System.String.Join(", ", Array.map Format a))
+        writer.Write '['
+        for i = 0 to a.Length - 1 do
+            if i > 0 then writer.Write ", "
+            EncodeTo writer a.[i]
+        writer.Write ']'
     | Object o ->
-        sprintf "{%s}" (System.String.Join(", ", o |> Seq.map (fun kvp -> sprintf "\"%s\":%s" kvp.Key (Format kvp.Value)) |> Array.ofSeq))
+        let a = Map.toArray o
+        writer.Write '{'
+        for i = 0 to a.Length - 1 do
+            if i > 0 then writer.Write ", "
+            let k,v = a.[i]
+            writer.Write '"'
+            writer.Write k
+            writer.Write '"'
+            writer.Write ':'
+            EncodeTo writer v
+        writer.Write '}'
+
+/// Format json with little wasted space. There's still spaces after ',' though.
+let rec Format json =
+    let sb = StringBuilder ()
+    use sw = new System.IO.StringWriter(sb)
+    EncodeTo sw json
+    sb.ToString ()
 
 /// Formats json in the following way:
 /// the top level object has each field on a new line,

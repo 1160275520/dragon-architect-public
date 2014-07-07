@@ -67,7 +67,7 @@ let ProgramOfJson (json: J.JsonValue) =
     let jload obj key fn = fn (Json.getField obj key)
     let tryJload obj key fn = Json.tryGetField obj key |> Option.map fn
 
-    let syntaxError j (c:SerializationErrorCode) m = raise (J.JsonError (j, int c, m, null))
+    let syntaxError j (c:SerializationErrorCode) m = raise (J.JsonException (int c, j, m, null))
 
     let parseObject j : obj =
         match j with
@@ -111,7 +111,7 @@ let ProgramOfJson (json: J.JsonValue) =
 
         parseModule "" json
     with
-    | :? CompilerError -> reraise ()
-    | e -> raise (SyntaxError (LANGUAGE_NAME, int SerializationErrorCode.InternalError, Location.Empty, "Internal serializer error.", e))
+    | :? J.JsonException -> reraise ()
+    | e -> raise (CodeException (SerializationError (int SerializationErrorCode.InternalError, -1, "Internal serializer error.", e)))
 
 let Load text = ProgramOfJson (Json.Parse text)
