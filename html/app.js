@@ -42,7 +42,7 @@ var unityPlayer = function(){
         };
 
         unityObject = new UnityObject2(config);
-        unityObject.initPlugin(div[0], "hackcraft/hackcraft.unity3d");
+        unityObject.initPlugin(div[0], "generated/hackcraft/hackcraft.unity3d");
 
     }
 

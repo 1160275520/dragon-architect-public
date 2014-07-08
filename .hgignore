@@ -1,7 +1,13 @@
 syntax: glob
+.DS_Store
 *.orig
 *.orig.meta
+*.pyc
 *.suo
+*.dll
+*.dll.meta
+*.pdb
+*.pdb.meta
 gamelib/packages/
 bin/
 obj/
@@ -13,12 +19,6 @@ unity/ProjectSettings/Physics2DSettings.asset
 unity/*.sln
 unity/*.unityproj
 unity/*.csproj
-*.dll
-*.dll.meta
-*.pdb
-*.pdb.meta
-*.pyc
-.DS_Store
-html/hackcraft/
+html/generated/
 server/venv/
 
