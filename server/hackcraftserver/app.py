@@ -63,16 +63,9 @@ def main():
     # Create the Flask-Restless API manager.
     manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
 
-    # Create API endpoints, which will be available at /api/<tablename> by
-    # default. Allowed HTTP methods can be specified as well.
+    # Create API endpoints, which will be available at /api/<tablename> by default.
     manager.create_api(Player, methods=['GET', 'POST'])
     manager.create_api(SavedProcedure, methods=['GET', 'POST', 'PUT'])
-    #api = manager.create_api_blueprint(Player, methods=['GET', 'POST'])
-    #api.after_request(add_cors_header)
-    #app.register_blueprint(api)
-    #api = manager.create_api_blueprint(SavedProcedure, methods=['GET', 'POST', 'PUT'])
-    #api.after_request(add_cors_header)
-    #app.register_blueprint(api)
 
     # start the flask loop
     app.run()
