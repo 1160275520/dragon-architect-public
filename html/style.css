@@ -95,6 +95,12 @@ header h1 {
     /*height: 300px;*/
 }
 
+.control-button {
+    width: 40px;
+    height: 40px;
+    border: 2px solid black;
+}
+
 #unityPlayer {
     position: relative;
     width: 100%;

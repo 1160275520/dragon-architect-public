@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="lib/normalize/normalize.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="slider.css">
     <script src="lib/jquery/jquery.js"></script>
@@ -50,10 +51,10 @@
           <button id="btn-run" class="codeEditor">Run!</button>
           <span id="cameraControls" class="codeEditor">
             Camera:
-            <button id="camera-zoom-in">I</button>
-            <button id="camera-zoom-out">O</button>
-            <button id="camera-rotate-right">R</button>
-            <button id="camera-rotate-left">L</button>
+            <button class="control-button" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
+            <button class="control-button" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
+            <button class="control-button" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
+            <button class="control-button" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
           </span>
         </div>
         <div id="unityPlayer"></div>
