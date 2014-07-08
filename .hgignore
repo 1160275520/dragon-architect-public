@@ -3,6 +3,7 @@ syntax: glob
 *.orig
 *.orig.meta
 *.pyc
+*.sln.cache
 *.suo
 *.userprefs
 *.dll
