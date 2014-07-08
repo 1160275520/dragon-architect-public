@@ -95,10 +95,25 @@ header h1 {
     /*height: 300px;*/
 }
 
+.control-element {
+    margin: 0 4px;
+}
+
+#cameraControls {
+    display: inline-block;
+    border: 2px solid black;
+    border-radius: 6px;
+    margin: 6px 0;
+    padding: 4px;
+}
+
 .control-button {
+    style: inline-block;
     width: 40px;
     height: 40px;
     border: 2px solid black;
+    border-radius: 4px;
+    margin: 1px;
 }
 
 #unityPlayer {
