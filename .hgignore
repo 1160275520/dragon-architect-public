@@ -4,6 +4,7 @@ syntax: glob
 *.orig.meta
 *.pyc
 *.suo
+*.userprefs
 *.dll
 *.dll.meta
 *.pdb
