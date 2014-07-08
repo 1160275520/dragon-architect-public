@@ -47,12 +47,12 @@ public class ExternalAPI : MonoBehaviour
 
     public void SendProgram() {
         var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
-        Application.ExternalCall(ExternalApiFunc, OnProgramChange, Json.Format(prog));
+        Application.ExternalCall(ExternalApiFunc, OnProgramChange, Json.Serialize(prog));
     }
 
     public void SendLevel() {
         var level = GetComponent<ProgramManager>().MakeLevelInfo().ToJson();
-        Application.ExternalCall(ExternalApiFunc, OnLevelChange, Json.Format(level));
+        Application.ExternalCall(ExternalApiFunc, OnLevelChange, Json.Serialize(level));
     }
 
     public void SendCurrentStatement() {
@@ -68,7 +68,7 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void SendColors() {
-        Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Format(Json.fromObject(CubeTextures.AvailableColors)));
+        Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Serialize(Json.fromObject(CubeTextures.AvailableColors)));
     }
 
     public void SendLevelCompleted() {

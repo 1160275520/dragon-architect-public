@@ -11,8 +11,8 @@ public class Global : MonoBehaviour {
     void OnEnable() {
         Application.RegisterLogCallbackThreaded(handleLog);
 
-        var levels = Json.JsonValue.NewArray(LoaderGUI.LEVELS.Select(x => Json.JsonValue.NewString(x)).ToArray());
-        Application.ExternalCall(ExternalAPI.ExternalApiFunc, ExternalAPI.OnSystemStart, Json.Format(levels));
+        var levels = Json.JsonValue.ArrayOf(LoaderGUI.LEVELS.Select(x => Json.JsonValue.NewString(x)).ToArray());
+        Application.ExternalCall(ExternalAPI.ExternalApiFunc, ExternalAPI.OnSystemStart, Json.Serialize(levels));
     }
 
     void OnDisable() {
@@ -20,7 +20,7 @@ public class Global : MonoBehaviour {
     }
 
     private void log(string logFn, string logTypeName, string message) {
-        var s = Json.Format(Json.JsonValue.NewString("UNITY " + logTypeName + ": " + message));
+        var s = Json.Serialize(Json.JsonValue.NewString("UNITY " + logTypeName + ": " + message));
         Application.ExternalEval(string.Format("console.{0}({1})", logFn, s));
     }
 

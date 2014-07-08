@@ -8,7 +8,7 @@ type LevelInfo(qid, availCommands, numHelperFuncs, lockedProcs, highlightBlocks)
     member x.HighlightBlocks : Set<string> = Set.ofSeq highlightBlocks
 
     member x.ToJson () =
-        Json.objectOf [
+        Json.JsonValue.ObjectOf [
             "qid", Json.Int x.Qid;
             "commands", Json.fromObject x.AvailCommands;
             "funcs", Json.Int x.NumHelperFuncs;

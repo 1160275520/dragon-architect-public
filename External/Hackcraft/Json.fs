@@ -15,17 +15,58 @@ open System.Collections
 open System.Collections.Generic
 open System.Text
 
-/// json arrays are mutable, which I don't like, but I don't want to drag in depedencies to get efficient immutable array types >_>
-type JsonArray = array<JsonValue>
-and JsonObject = Map<string, JsonValue>
+// TYPE DEFINITIONS, (and awkwardly the serialization code because ToString needs to be overriden right the frick NOW)
+////////////////////////////////////////////////////////////////////////////////
+
 /// the Json AST.
-and JsonValue =
+type JsonValue =
 | Null
 | Int of int
 | String of string
 | Bool of bool
 | Array of JsonArray
 | Object of JsonObject
+with
+    /// Format json with little wasted space to a TextWriter.
+    member t.SerializeTo (writer:System.IO.TextWriter) =
+        match t with
+        | Null -> writer.Write "null"
+        | Int i -> writer.Write i
+        | String s ->
+            let s = s.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\"", "\\\"")
+            writer.Write '\"'
+            writer.Write s
+            writer.Write '\"'
+        | Bool b -> writer.Write (if b then "true" else "false")
+        | Array (ArrayValue a) ->
+            writer.Write '['
+            a |> Array.iteri (fun i x ->
+                if i > 0 then writer.Write ", "
+                x.SerializeTo writer
+            )
+            writer.Write ']'
+        | Object (ObjectValue o) ->
+            writer.Write '{'
+            o |> Array.iteri (fun i (k,v) ->
+                if i > 0 then writer.Write ", "
+                writer.Write '"'
+                writer.Write k
+                writer.Write '"'
+                writer.Write ':'
+                v.SerializeTo writer
+            )
+            writer.Write '}'
+
+    /// Format json with little wasted space. There's still spaces after ',' though.
+    member t.Serialize () =
+        let sb = StringBuilder ()
+        use sw = new System.IO.StringWriter(sb)
+        t.SerializeTo sw
+        sb.ToString ()
+
+    override t.ToString () = t.Serialize ()
+and JsonArray = private ArrayValue of JsonValue[]
+and JsonObject = private ObjectValue of (string * JsonValue)[]
 
 /// Some of the error codes used by <c>SyntaxException</c>.
 type SyntaxErrorCode =
@@ -37,6 +78,7 @@ type SyntaxErrorCode =
 | InvalidKeyword = 1006
 | InvalidCharacter = 1007
 | TrailingCharacters = 1008
+| DuplicateFieldName = 1009
 
 /// Some of the error codes used by <c>JsonException</c>.
 type JsonErrorCode =
@@ -60,14 +102,14 @@ type JsonException (code: int, value: JsonValue, message: string, inner: System.
     /// The json value that this exception references.
     member this.Value = value
 
-/// Thrown when a requested type does not match (e.g., (String "foo").AsBool)
+/// <summary>Thrown when a requested type does not match (e.g., <c>(String "foo").AsBool</c>).</summary>
 [<Sealed>]
 type TypeMismatchException (value:JsonValue, typ:string, message:string, inner:System.Exception) =
     inherit JsonException (int JsonErrorCode.TypeMismatch, value, sprintf "Value was not of expected type '%s': %s" typ message, inner)
     /// The type that was expected.
     member this.Expected = typ
 
-/// Thrown when a field is not present in an object
+/// Thrown when a field is not present in an object.
 [<Sealed>]
 type KeyNotFoundException (obj:JsonValue, key:string, message:string, inner:System.Exception) =
     inherit JsonException (int JsonErrorCode.KeyNotFound, obj, sprintf "Object does not contain field '%s': %s" key message, inner)
@@ -76,57 +118,104 @@ type KeyNotFoundException (obj:JsonValue, key:string, message:string, inner:Syst
 
 let private typeError v t = raise (TypeMismatchException (v, t, "", null))
 
+// CONSTRUCTION/EXTRACTION FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+module JArray =
+    let ofArray x = ArrayValue (Array.copy x)
+    let ofList x = ArrayValue (Array.ofList x)
+    let ofSeq x = ArrayValue (Array.ofSeq x)
+    let toArray (ArrayValue x) = Array.copy x
+    let toList (ArrayValue x) = Array.toList x
+    let toSeq (ArrayValue x) = Array.toSeq x
+
+module JObject =
+    let ofSeq x = Array.ofSeq x |> Array.sortBy fst |> ObjectValue
+    let ofMap x = ObjectValue (Map.toArray x)
+    let toSeq (ObjectValue x) = Array.toSeq x
+    let toMap (ObjectValue x) = Map.ofArray x
+
+/// Construct a json object from a sequence of name, value pairs.
+let objectOfMap seq = Object (JObject.ofMap seq)
+/// Construct a json object from a <c>Map</c>.
+let objectOfSeq seq = Object (JObject.ofSeq seq)
+
+/// Construct a json array from a <c>JsonValue[]</c>.
+let arrayOfArray seq = Array (JArray.ofArray seq)
+/// Construct a json array from a <c>list</c>.
+let arrayOfList seq = Array (JArray.ofList seq)
+/// Construct a json array from a <c>seq</c>.
+let arrayOfSeq seq = Array (JArray.ofSeq seq)
+
 /// <summary>Cast this value to an int.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an int.</exception>
 let asInt j = match j with Int(x) -> x | _ -> typeError j "int"
 /// <summary>Cast this value to an string.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an string.</exception>
-let asString j = match j with String(x) -> x | Null -> null | _ -> typeError j "string"
+let asString j = match j with String(x) -> x | _ -> typeError j "string"
 /// <summary>Cast this value to an bool.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an bool.</exception>
 let asBool j = match j with Bool(x) -> x | _ -> typeError j "bool"
 /// <summary>Cast this value to an json array.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
-let asArray j = match j with Array(x) -> x | Null -> null | _ -> typeError j "array"
+let asArray j = match j with Array(x) -> x | _ -> typeError j "array"
 /// <summary>Cast this value to an json object.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
 let asObject j = match j with Object(x) -> x | _ -> typeError j "object"
 /// <summary>Try to find the given field of the given object.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
-let tryGetField j f = (asObject j).TryFind f
+let tryGetField j f =
+    let (ObjectValue arr) = asObject j
+    arr |> Array.tryPick (fun (k,v) -> if k = f then Some v else None)
 /// <summary>Return the given field of the given object.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
 /// <exception cref="KeyNotFoundException">If this object does not have the given field.</exception>
 let getField j f = match tryGetField j f with Some v -> v | None -> raise (KeyNotFoundException (j, f, "", null))
 
-/// Construct a json array from a sequence of json values.
-let arrayOf (seq:#seq<JsonValue>) = Array (Array.ofSeq seq)
-/// Construct a json object from a sequence of (field name, json value) tuples.
-let objectOf (seq:#seq<string * JsonValue>) = Object (Map.ofSeq seq)
+/// <summary>Cast this value to an json object and convert to a <c>Map</c>.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
+let objectToMap j = asObject j |> JObject.toMap
+/// <summary>Cast this value to an json object and convert to a <c>seq</c>.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
+let objectToSeq j = asObject j |> JObject.toSeq
+
+/// <summary>Cast this value to an json array and convert to a <c>JsonValue[]</c>.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
+let arrayToArray j = asArray j |> JArray.toArray
+/// <summary>Cast this value to an json array and convert to a <c>JsonValue list</c>.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
+let arrayToList j = asArray j |> JArray.toList
+/// <summary>Cast this value to an json array and convert to a <c>JsonValue seq</c>.</summary>
+/// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
+let arrayToSeq j = asArray j |> JArray.toSeq
+
+// ALL THE ABOVE FUNCTIONS, BUT AS CLASS MEMBERS
+////////////////////////////////////////////////////////////////////////////////
 
 type JsonValue with
-    /// <summary>Cast this value to an int.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an int.</exception>
     member t.AsInt = asInt t
-    /// <summary>Cast this value to an string.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an string.</exception>
     member t.AsString = asString t
-    /// <summary>Cast this value to an bool.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an bool.</exception>
     member t.AsBool = asBool t
-    /// <summary>Cast this value to an json array.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an json array.</exception>
     member t.AsArray = asArray t
-    /// <summary>Cast this value to an json object.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
     member t.AsObject = asObject t
-    /// <summary>Try to find the given field of the given object.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
     member t.TryGetField f = tryGetField t f
-    /// <summary>Return the given field of the given object.</summary>
-    /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
-    /// <exception cref="KeyNotFoundException">If this object does not have the given field.</exception>
     member t.GetField f = getField t f
+
+    static member ObjectOf seq = objectOfMap seq
+    static member ObjectOf seq = objectOfSeq seq
+
+    static member ArrayOf seq = arrayOfArray seq
+    static member ArrayOf seq = arrayOfList seq
+    static member ArrayOf seq = arrayOfSeq seq
+
+type JsonArray with
+    member t.ToArray = JArray.toArray t
+    member t.ToList = JArray.toList t
+    member t.ToSeq = JArray.toSeq t
+
+type JsonObject with
+    member t.ToMap = JObject.toMap t
+    member t.ToSeq = JObject.toSeq t
 
 /// active pattern that checks if an object implements generic IDicationay<'a,'b> for any type and if so returns it as an IEnumerable of key-value tuples
 let private (|DictType|_|) (obj:obj) : seq<obj * obj> option =
@@ -149,7 +238,7 @@ let private (|DictType|_|) (obj:obj) : seq<obj * obj> option =
 /// <c>Guid</c>s are output as strings.
 /// Any other objects will cause an error.</summary>
 /// <remarks>Obviously pretty slow because it needs to use a lot of casting and reflection to work (especially for json objects).
-/// If performance is important, prefer the direct constructors.</remarks>
+/// If performance is important, prefer the direct construction functions.</remarks>
 let rec fromObject (obj:obj) =
     match obj with
     | null -> Null
@@ -157,9 +246,9 @@ let rec fromObject (obj:obj) =
     | :? int as x -> Int x
     | :? bool as x -> Bool x
     | :? System.Guid as g -> String (g.ToString ())
-    | DictType(seq) -> seq |> Seq.map (fun (k,v) -> (k :?> string, fromObject v)) |> objectOf
-    | :? IDictionary as x -> Seq.cast<DictionaryEntry> x |> Seq.map (fun kvp -> (kvp.Key :?> string, fromObject kvp.Value)) |> objectOf
-    | :? IEnumerable as x -> Seq.cast x |> Seq.map fromObject |> arrayOf
+    | DictType(seq) -> seq |> Seq.map (fun (k,v) -> (k :?> string, fromObject v)) |> objectOfSeq
+    | :? IDictionary as x -> Seq.cast<DictionaryEntry> x |> Seq.map (fun kvp -> (kvp.Key :?> string, fromObject kvp.Value)) |> objectOfSeq
+    | :? IEnumerable as x -> Seq.cast x |> Seq.map fromObject |> arrayOfSeq
     | _ when obj.GetType().IsEnum -> String (System.Enum.GetName(obj.GetType(), obj))
     | _ -> invalidArg "obj" (sprintf "Cannot convert type '%s' to json!" (obj.GetType().Name))
 
@@ -174,10 +263,10 @@ type ChildType =
 | Root
 
 /// Meta data associated with a JSON ast node.
+/// We wish to have meta data about the JSON parse tree to have machine-identifiable errors with JSON data.
 /// Meta data is represented as a separated object (accessible via hashmap) in order to simplify the AST, desireable for two reasons:
 /// 1) Many consumers simply won't care about the metadata so we don't want it complicating usage.
 /// 2) Program-generated json is very common, and having to fabricate this data (or even fill in empty data) would complicate usage.
-/// The performance penalties from needing a hash map are neglible since JSON the map will typically only be accessed for reporting errors, which is an exceptional event.
 /// The map uses reference equality, so, obviously, if an AST node is replaced with an equivalent one, it will no longer work.
 type Meta = {
     /// The location of this value in the concrete text.
@@ -233,6 +322,7 @@ type private Parser (program, filename, doParseMeta) =
                     match cs.Next() with
                     | 'n' -> '\n'
                     | 't' -> '\t'
+                    | 'r' -> '\r'
                     | '"' -> '"'
                     | '\\' -> '\\'
                     | x -> syntaxError SyntaxErrorCode.InvalidEscapeCharacter (cs.Position,cs.Position) (sprintf "invalid escape character '\%c'" x)
@@ -256,14 +346,20 @@ type private Parser (program, filename, doParseMeta) =
             | '{' ->
                 skipWhitespace ()
                 let items = List()
+                let fields = HashSet()
                 while not (cs.Peek = '}') do
+                    let kstart = cs.Position
                     let key = parseString true
+                    if not (fields.Add key) then syntaxError SyntaxErrorCode.DuplicateFieldName (kstart, cs.Position) (sprintf "Duplicate field '%s' in object" key)
                     matchCharacter ':'
                     let value = parse (ChildType.Field key)
                     items.Add ((key, value)) |> ignore
                     if not (cs.Peek = '}') then matchCharacter ','
                 cs.Next () |> ignore // skip final }
-                Object (items.ToArray () |> Map.ofArray), Seq.map snd items
+                let itemArray = items.ToArray ()
+                // keep fields in sorted order so structural equality behaves nicely
+                Array.sortInPlaceBy fst itemArray
+                Object (ObjectValue itemArray), Seq.map snd items
             | '[' ->
                 let values = List()
                 let mutable counter = 0
@@ -272,7 +368,7 @@ type private Parser (program, filename, doParseMeta) =
                     counter <- counter + 1
                     if not (cs.Peek = ']') then matchCharacter ','
                 cs.Next () |> ignore // skip final ]
-                Array (values.ToArray ()), upcast values
+                Array (ArrayValue (values.ToArray ())), upcast values
             | c when System.Char.IsDigit c ->
                 Int (System.Int32.Parse (takeWhile c System.Char.IsDigit)), Seq.empty
             | c when System.Char.IsLetter c ->
@@ -316,59 +412,25 @@ let ParseWithMeta string filename = Parser(string, filename, true).Parse()
 /// <exception cref="SyntaxException">If the string is malformed.</exception>
 let Parse string = Parser(string, "", false).Parse().Ast
 
-let rec EncodeTo (writer:System.IO.TextWriter) value =
-    match value with
-    | Null -> writer.Write "null"
-    | Int i -> writer.Write i
-    | String s ->
-        let s = s.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\"", "\\\"")
-        writer.Write '\"'
-        writer.Write s
-        writer.Write '\"'
-    | Bool b -> writer.Write (if b then "true" else "false")
-    | Array a ->
-        writer.Write '['
-        for i = 0 to a.Length - 1 do
-            if i > 0 then writer.Write ", "
-            EncodeTo writer a.[i]
-        writer.Write ']'
-    | Object o ->
-        let a = Map.toArray o
-        writer.Write '{'
-        for i = 0 to a.Length - 1 do
-            if i > 0 then writer.Write ", "
-            let k,v = a.[i]
-            writer.Write '"'
-            writer.Write k
-            writer.Write '"'
-            writer.Write ':'
-            EncodeTo writer v
-        writer.Write '}'
-
-/// Format json with little wasted space. There's still spaces after ',' though.
-let rec Format json =
-    let sb = StringBuilder ()
-    use sw = new System.IO.StringWriter(sb)
-    EncodeTo sw json
-    sb.ToString ()
+let SerializeTo (writer:System.IO.TextWriter) (value:JsonValue) = value.SerializeTo writer
+let Serialize (value:JsonValue) = value.Serialize ()
 
 /// Formats json in the following way:
 /// the top level object has each field on a new line,
 /// sub objects up to maxIndent levels deep are pretty-printed with 4-space indent, everything on new line,
 /// past maxIndent levels, everything else is smashed together without newlines.
-let PrettyFormat maxIndent json =
+let PrettyPrint maxIndent json =
     let rec formatVal indent jval =
         let indentStr = new System.String(' ', 4 * indent)
         let indentStr2 = new System.String(' ', 4 * (max 0 (indent - 1)))
         match jval with
-        | Object o when indent < maxIndent && not o.IsEmpty ->
-            let x = Map.toArray o |> Array.map (fun (k,v) -> sprintf "%s\"%s\": %s" indentStr k (formatVal (indent + 1) v))
+        | Object (ObjectValue o) when indent < maxIndent && o.Length > 0 ->
+            let x = o |> Array.map (fun (k,v) -> sprintf "%s\"%s\": %s" indentStr k (formatVal (indent + 1) v))
             sprintf "{\n%s\n%s}" (System.String.Join (",\n", x)) indentStr2
-        | Array a when indent < maxIndent && a.Length > 0 ->
+        | Array (ArrayValue a) when indent < maxIndent && a.Length > 0 ->
             let x = a |> Array.map (fun v -> sprintf "%s%s" indentStr (formatVal (indent + 1) v))
             sprintf "[\n%s\n%s]" (System.String.Join (",\n", x)) indentStr2
         | _ ->
-            Format jval
+            Serialize jval
 
     formatVal 0 json
-

@@ -9,7 +9,7 @@ let CURR_MAJOR_VERSION = 0
 let CURR_MINOR_VERSION = 1
 
 let JsonOfProgram (program:Program) =
-    let jarrmap f x = J.arrayOf (Seq.map f x)
+    let jarrmap f x = ImmArr.toArray x |> Array.map f |> J.arrayOfArray
 
     let jsonOfObj (o:obj) =
         match o with
@@ -17,12 +17,12 @@ let JsonOfProgram (program:Program) =
         | :? string as s -> J.String s
         | _ -> invalidArg "o" (sprintf "cannot json encode object of type '%s'" (o.GetType().Name))
 
-    let jsonOfMeta (meta:Meta) = J.objectOf [("id", J.Int meta.Id)]
+    let jsonOfMeta (meta:Meta) = J.JsonValue.ObjectOf [("id", J.Int meta.Id)]
 
     let jsonOfExpr (expr:Expression) =
         match expr with
-        | Literal o -> [("type", J.String "literal"); ("value", jsonOfObj o)] |> J.objectOf
-        | Argument a -> [("type", J.String "argument"); ("index", J.Int a)] |> J.objectOf
+        | Literal o -> [("type", J.String "literal"); ("value", jsonOfObj o)] |> J.JsonValue.ObjectOf
+        | Argument a -> [("type", J.String "argument"); ("index", J.Int a)] |> J.JsonValue.ObjectOf
 
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
@@ -31,28 +31,28 @@ let JsonOfProgram (program:Program) =
             | Call c -> [("type", J.String "call"); ("proc", J.String c.Proc); ("args", jarrmap jsonOfExpr c.Args)]
             | Repeat r -> [("type", J.String "repeat"); ("stmt", jsonOfStmt r.Stmt); ("numtimes", jsonOfExpr r.NumTimes)]
             | Command (c, a) -> [("type", J.String "command"); ("command", J.String c); ("args", jarrmap jsonOfExpr a)]
-        J.objectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
+        J.JsonValue.ObjectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
     let jsonOfProc (name:string) (proc:Procedure) =
-        J.objectOf [
+        J.JsonValue.ObjectOf [
             ("arity", J.Int proc.Arity);
             ("body", jarrmap jsonOfStmt proc.Body);
         ]
 
     let rec jsonOfModule (name:string) (module':Program) =
-        let mutable lst = ["procedures", J.Object (Map.map jsonOfProc module'.Procedures)]
+        let mutable lst = ["procedures", J.JsonValue.ObjectOf (Map.map jsonOfProc module'.Procedures)]
         if not module'.Modules.IsEmpty then
-            lst <- ("modules", J.Object (Map.map jsonOfModule module'.Modules)) :: lst
-        Json.objectOf lst
+            lst <- ("modules", J.JsonValue.ObjectOf (Map.map jsonOfModule module'.Modules)) :: lst
+        J.JsonValue.ObjectOf lst
 
-    let mainModule = jsonOfModule "" program |> J.asObject
+    let mainModule = jsonOfModule "" program |> J.objectToMap
     let meta = 
-        Json.objectOf [
+        J.JsonValue.ObjectOf [
             "language", J.String LANGUAGE_NAME;
-            "version", J.objectOf ["major", J.Int CURR_MAJOR_VERSION; "minor", J.Int CURR_MINOR_VERSION];
+            "version", J.JsonValue.ObjectOf ["major", J.Int CURR_MAJOR_VERSION; "minor", J.Int CURR_MINOR_VERSION];
         ];
 
-    J.Object (mainModule.Add ("meta", meta))
+    J.JsonValue.ObjectOf (mainModule.Add ("meta", meta))
 
 type SerializationErrorCode =
 | InternalError = 2001
@@ -86,20 +86,20 @@ let ProgramOfJson (json: J.JsonValue) =
     let rec parseStmt j =
         let stmt =
             match jload j "type" J.asString with
-            | "block" -> Block (ImmArr.ofSeq (jload j "body" J.asArray |> Seq.map parseStmt))
-            | "call" -> Call {Proc=jload j "proc" J.asString; Args=ImmArr.ofSeq (jload j "args" J.asArray |> Seq.map parseExpr)}
+            | "block" -> Block (ImmArr.ofSeq (jload j "body" J.arrayToSeq |> Seq.map parseStmt))
+            | "call" -> Call {Proc=jload j "proc" J.asString; Args=ImmArr.ofSeq (jload j "args" J.arrayToSeq |> Seq.map parseExpr)}
             | "repeat" -> Repeat {Stmt=jload j "stmt" parseStmt; NumTimes=jload j "numtimes" parseExpr}
-            | "command" -> Command (jload j "command" J.asString, ImmArr.ofSeq (jload j "args" J.asArray |> Seq.map parseExpr))
+            | "command" -> Command (jload j "command" J.asString, ImmArr.ofSeq (jload j "args" J.arrayToSeq |> Seq.map parseExpr))
             | t -> syntaxError j SerializationErrorCode.InvalidStatementType ("invalid statement type " + t)
         {Meta=jload j "meta" parseMeta; Stmt=stmt}
 
     let parseProc n j =
-        let body = Array.map parseStmt (jload j "body" J.asArray)
+        let body = Array.map parseStmt (jload j "body" J.arrayToArray)
         {Arity=jload j "arity" J.asInt; Body=ImmArr.ofSeq body}
 
     let rec parseModule n j =
-        let procs = jload j "procedures" J.asObject
-        let modules = tryJload j "modules" (fun o -> o.AsObject |> Map.map parseModule)
+        let procs = jload j "procedures" J.objectToMap
+        let modules = tryJload j "modules" (fun o -> J.objectToMap o |> Map.map parseModule)
         {Procedures=Map.map parseProc procs; Modules=defaultArg modules Map.empty}
 
     try

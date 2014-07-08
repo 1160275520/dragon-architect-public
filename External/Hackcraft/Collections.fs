@@ -12,6 +12,8 @@ type ImmArr<[<EqualityConditionalOn>] 'T> private(arr : 'T[]) =
 
     member x.Map f = ImmArr (Array.map f arr)
 
+    member x.ToArray () = Array.copy x._Array
+
     override x.Equals (other:obj) : bool =
         match other with
         | :? ImmArr<'T> as y -> Unchecked.equals x._Array y._Array
@@ -29,6 +31,7 @@ module ImmArr =
     let ofSeq (s: #seq<'a>) = ImmArr (s)
     let empty<'a> : ImmArr<'a> = ofSeq []
     let map f (x:ImmArr<'a>) = x.Map f
+    let toArray (x:ImmArr<'a>) = x.ToArray ()
 
 module MyList =
     let rec skip n (list:'a list) =
