@@ -40,7 +40,7 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(SolutionDir)../Assets/Code/" />
+      <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(SolutionDir)../unity/Assets/Code/" />
   </Target>
   <ProjectExtensions>
     <MonoDevelop>
