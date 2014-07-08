@@ -37,6 +37,8 @@
 
 import errno, glob, httplib, json, os, re, subprocess, sys, threading, urllib
 
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__),'../../html/generated/')
+
 def import_path(fullpath):
   """Import a file with full path specification.
   Allows one to import from any directory, something __import__ does not do.
@@ -154,7 +156,7 @@ class Gen_compressed(threading.Thread):
     # self.gen_generator('dart')
 
   def gen_core(self):
-    target_filename = 'blockly_compressed.js'
+    target_filename = os.path.join(OUTPUT_DIR, 'blockly_compressed.js')
     # Define the parameters for the POST request.
     params = [
         ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
@@ -180,7 +182,7 @@ class Gen_compressed(threading.Thread):
     self.do_compile(params, target_filename, filenames, '')
 
   def gen_blocks(self):
-    target_filename = 'blocks_compressed.js'
+    target_filename = os.path.join(OUTPUT_DIR, 'blocks_compressed.js')
     # Define the parameters for the POST request.
     params = [
         ('compilation_level', 'SIMPLE_OPTIMIZATIONS'),
@@ -421,4 +423,4 @@ http://code.google.com/p/blockly/wiki/Closure""")
   Gen_compressed(search_paths).start()
 
   # This is run locally in a separate thread.
-  Gen_langfiles().start()
+  #Gen_langfiles().start()
