@@ -14,6 +14,7 @@ public class LevelHelper : MonoBehaviour
     private static float winDelay = 0.5f;
     private float winTime;
     private bool hasBeenWon = false;
+    private bool hasSentWinAnnouncement = false;
 
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {
@@ -77,10 +78,11 @@ public class LevelHelper : MonoBehaviour
     }
 
     void Update() {
-        if (hasBeenWon && Time.fixedTime - winTime > winDelay) {
+        if (hasBeenWon && Time.fixedTime - winTime > winDelay && !hasSentWinAnnouncement) {
             Debug.Log("actual win");
             GetComponent<AllTheGUI>().IsActiveReturnToLevelSelect = true;
             GetComponent<ExternalAPI>().SendLevelCompleted();
+            hasSentWinAnnouncement = true;
         }
     }
 }

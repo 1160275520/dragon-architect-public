@@ -21,7 +21,6 @@ function onHackcraftEvent(func, arg) {
     handler[func](arg);
 }
 
-
 var unityPlayer = function(){
     var self = {};
 
@@ -373,17 +372,20 @@ function control_camera(action) {
 }
 
 handler.onSystemStart = function(json) {
+    console.info('on system start!');
     possible_stages = JSON.parse(json);
     setState_title();
 }
 
 handler.onProgramChange = function(json) {
+    console.info('on program change!');
     //console.log(json);
     program = JSON.parse(json);
     Hackcraft.setProgram(program);
 }
 
 handler.onLevelChange = function(json) {
+    console.info('on level change!');
     console.log(json);
     var levelInfo = JSON.parse(json);
 
@@ -425,21 +427,28 @@ handler.onStatementHighlight = function(id) {
 }
 
 handler.onInstructionsChange = function(msg) {
+    console.info('on instructions change!');
     Hackcraft.setInstructions(msg);
     instructions = msg;
 }
 
 handler.onSetColors = function(json) {
+    console.info('on set colors!');
     var colors = JSON.parse(json);
     Blockly.FieldColour.COLOURS = colors;
     Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
 }
 
 handler.onLevelComplete = function(levelId) {
+    console.info('on level complete!');
     levelsCompleted.push(levelId);
+    if (questLogger) {
+        questLogger.logPuzzledCompleted();
+    }
 }
 
 handler.onReturnToSelect = function() {
+    console.info('on return to level select!');
     setState_levelSelect();
 }
 

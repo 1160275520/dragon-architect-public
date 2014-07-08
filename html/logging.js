@@ -95,7 +95,7 @@ self.startQuest = function(qid) {
     };
 
     questLogger.logPuzzledCompleted = function() {
-        log(AID.PuzzleSolveda, {});
+        log(AID.PuzzleSolved, {});
     }
 
     questLogger.logQuestEnd = function() {
