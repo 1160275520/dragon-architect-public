@@ -139,7 +139,8 @@ public class ProgramManager : MonoBehaviour {
 
         var idx = currentStateIndex < States.Length ? currentStateIndex : States.Length - 1;
         var state = States[idx];
-        robot.Robot = state.Robot;
+        robot.SetRobot(state.Robot, state.Command, DelayPerCommand);
+        
         grid.SetGrid(state.Grid);
     }
 

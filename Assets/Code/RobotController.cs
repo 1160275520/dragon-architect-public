@@ -13,7 +13,7 @@ public class RobotController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         Reset();
-	}
+    }
 
     public void Reset() {
         Robot = new BasicImperativeRobot(IntVec3.Zero, IntVec3.UnitZ);
@@ -25,6 +25,19 @@ public class RobotController : MonoBehaviour {
         transform.position = grid.CenterOfCell(Robot.Position);
         transform.rotation = getRotation();
 	}
+
+    public void SetRobot(IRobot robot, Command com, float? time) {
+        Robot = robot;
+        if (time.HasValue && com != null) {
+            var anim = transform.FindChild("micro_dragon").gameObject.animation;
+            if (com.Type == "block") {
+                anim["bite"].speed = anim["bite"].length / time.Value;
+                Debug.Log("Playing bite at " + anim["bite"].speed);
+                anim.Play("bite");
+                anim.PlayQueued("idle", QueueMode.CompleteOthers);
+            }
+        }
+    }
 
     private Quaternion getRotation() {
         var dir = Robot.Direction;
