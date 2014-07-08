@@ -186,12 +186,22 @@ header h1 {
 #instructions {
     color:#fff;
     font-family: monospace;
+    top: -3px;
+    position: relative;
 }
 
 .instructionsShown {
-    background: #666; /* default background for browsers without gradient support */
+    border-style: solid;
+    border-width: 4px;
+    border-color: #B24E3A;
     border-radius:10px;
     padding: 25px;  
+}
+
+#dragonIcon {
+    top: 8px;
+    left: 5px;
+    position: relative;
 }
 
 #XXXinstructions:before {

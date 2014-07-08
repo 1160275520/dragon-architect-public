@@ -173,6 +173,7 @@ function make_smallInstructions() {
     $("#instructions").removeClass("instructionsShown");
     
     $("#dragonIcon")[0].style.visibility = "hidden";
+    $("#dragonIcon")[0].style.height = "0px";
     $("#dragonIcon").removeClass("speechBubble");
     
     var inst = $("#instructions")[0];
@@ -204,6 +205,7 @@ function make_largeInstructions() {
     $("#dragonIcon").addClass("speechBubble");
     dragon.style.webkitAnimationPlayState = "paused";
     dragon.style.animationPlayState = "paused";
+    dragon.style.height = "100px";
     
     var inst = $("#instructions")[0];
     $("#instructions").addClass("speechBubble");
