@@ -314,7 +314,7 @@ class Gen_compressed(threading.Thread):
       if original_b > 0 and compressed_b > 0:
         f = open(target_filename, 'w')
         f.write(code)
-        if target_filename == "blockly_compressed.js":
+        if target_filename.endswith("blockly_compressed.js"):
           f.write(open("msg/messages-only.txt").read())
         f.close()
 
