@@ -194,11 +194,11 @@ function make_largeInstructions() {
     var instContainer = $("#instructionsContainer")[0]
     instContainer.style.top = '0px';
     instContainer.style.left = rect.width + 'px';
+    instContainer.style.width = ($("#blockly")[0].getBoundingClientRect().width - rect.width) + 'px';
     $("#instructionsBackground").addClass("instructionsShow");
     $("#instructionsBackground").removeClass("instructionsHide");
     $("#instructions").addClass("instructionsShown");
     instContainer.style.height = "100%";
-    instContainer.style.width = "98%";
     instContainer.onclick = null;
 
     var dragon = $("#dragonIcon")[0];
@@ -417,12 +417,10 @@ handler.onLevelChange = function(json) {
 }
 
 handler.onStatementHighlight = function(id) {
-    //console.log("highlighting " + id)
-    // XXX edbutler are these conditional bodies supposed to be different...?
     if (id) {
         Blockly.mainWorkspace.highlightBlock(id.toString());
-    } else {
-        Blockly.mainWorkspace.highlightBlock(id.toString());
+    } else if (Blockly.selected) {
+        Blockly.selected.unselect();
     }
 }
 

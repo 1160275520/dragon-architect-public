@@ -192,7 +192,6 @@ header h1 {
     position: absolute;
     z-index: 1;
     height: 100%;
-    width: 98%; /* less 2 percent to account for blockly being 8 pixels smaller than it's container */
 }
 
 #instructionsBackground {
