@@ -139,8 +139,8 @@ function make_levelSelect() {
     var SANDBOX_LEVEL_ID = 'tl_final';
 
     function is_completed(level) {
-        //return levelsCompleted.indexOf(level) !== -1;
-        return true;
+        return levelsCompleted.indexOf(level) !== -1;
+        // return true;
     }
 
     nodes.forEach(function (x) { 
@@ -282,6 +282,11 @@ $(function() {
     // fetch the uid from the GET params and pass that to logging initializer
     var uid = $.url().param('uid');
     HackcraftLogging.initialize(uid);
+
+    // load the level progress from this session (if any)
+    if (sessionStorage.getItem("levelsCompleted")) {
+        levelsCompleted = sessionStorage.getItem("levelsCompleted").split(',');
+    }
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
@@ -442,6 +447,8 @@ handler.onSetColors = function(json) {
 handler.onLevelComplete = function(levelId) {
     console.info('on level complete!');
     levelsCompleted.push(levelId);
+    sessionStorage.setItem("levelsCompleted", levelsCompleted);
+
     if (questLogger) {
         questLogger.logPuzzledCompleted();
     }
