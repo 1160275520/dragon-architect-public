@@ -264,20 +264,10 @@ Hackcraft.setInstructions = function (instructions) {
     //console.log("setting instructions");
     //console.log(instructions);
     var msg = $('#instructions')[0];
-    $('#instructions').removeClass("speechBubble");
-    msg.style.visibility = "hidden";
+    // $('#instructions').removeClass("speechBubble");
     if (instructions) {
         msg.innerHTML = instructions;
-        setTimeout(function () { // XXX timeout necessary to hide inexplicable resizing during layout of new html
-            msg.style.visibility = "visible";
-            var selfRect = msg.getBoundingClientRect();
-            //console.log(selfRect)
-            // msg.style.top = (100 - (selfRect.height + 30)) / 2 + 'px'; // center in the 100px of space to work with, 30 for padding
-            $('#instructions').addClass("speechBubble");
-        }, 500);
-    } else {
-        msg.style.visibility = "hidden";
-        msg.innerHTML = "";
+
     }
 }
 

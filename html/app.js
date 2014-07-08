@@ -165,14 +165,22 @@ function make_levelSelect() {
 function make_smallInstructions() {
     var instContainer = $("#instructionsContainer")[0];
     instContainer.onclick = null;
+    
     $("#instructionsBackground").removeClass("instructionsShow");
     $("#instructionsBackground").addClass("instructionsHide");
+    
     $("#instructions").removeClass("speechBubble");
+    $("#instructions").removeClass("instructionsShown");
+    
+    $("#dragonIcon")[0].style.visibility = "hidden";
+    $("#dragonIcon").removeClass("speechBubble");
+    
     var inst = $("#instructions")[0];
     inst.innerHTML = "+";
     inst.style.textAlign = "center";
     inst.style.verticalAlign = "middle";
     inst.style.fontSize = "32pt";
+    
     setTimeout(function() {
         instContainer.style.width = "50px";
         instContainer.style.height = "50px";
@@ -187,9 +195,16 @@ function make_largeInstructions() {
     instContainer.style.left = rect.width + 'px';
     $("#instructionsBackground").addClass("instructionsShow");
     $("#instructionsBackground").removeClass("instructionsHide");
+    $("#instructions").addClass("instructionsShown");
     instContainer.style.height = "100%";
     instContainer.style.width = "98%";
     instContainer.onclick = null;
+
+    var dragon = $("#dragonIcon")[0];
+    $("#dragonIcon").addClass("speechBubble");
+    dragon.style.webkitAnimationPlayState = "paused";
+    dragon.style.animationPlayState = "paused";
+    
     var inst = $("#instructions")[0];
     $("#instructions").addClass("speechBubble");
     inst.style.webkitAnimationPlayState = "paused";
@@ -197,8 +212,13 @@ function make_largeInstructions() {
     inst.innerHTML = instructions;
     inst.style.textAlign = "";
     inst.style.verticalAlign = "";
-    inst.style.fontSize = "24pt";
+    inst.style.fontSize = "16pt";
+    
     setTimeout(function () { 
+        dragon.style.visibility = "visible";
+        inst.style.visibility = "visible";
+        dragon.style.webkitAnimationPlayState = "running";
+        dragon.style.animationPlayState = "running";
         inst.style.webkitAnimationPlayState = "running";
         inst.style.animationPlayState = "running";
         instContainer.onclick = make_smallInstructions;

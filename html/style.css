@@ -186,7 +186,12 @@ header h1 {
 #instructions {
     color:#fff;
     font-family: monospace;
-    font-size: 24pt;   
+}
+
+.instructionsShown {
+    background: #666; /* default background for browsers without gradient support */
+    border-radius:10px;
+    padding: 25px;  
 }
 
 #XXXinstructions:before {
@@ -198,11 +203,8 @@ header h1 {
     border-right-width:30px; /* vary this value to change the angle of the vertex */
     border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :after */
     border-style:solid;
-    border-color:transparent #333;
-    /* reduce the damage in FF3.0 */
-/*    display:block;
-    width:0;
-*/}
+    border-color:transparent #999;
+}
 
 /* creates the narrower right-angled triangle */
 #XXXinstructions:after {
@@ -214,11 +216,7 @@ header h1 {
     border-right-width:10px; /* vary this value to change the angle of the vertex */
     border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :before */
     border-style:solid;
-    border-color:transparent #333;
-    opacity: 0.8;
-    /* reduce the damage in FF3.0 */
-    display:block;
-    width:0;
+    border-color:transparent #999;
 }
 
 @-webkit-keyframes instructionsShow {
@@ -311,27 +309,32 @@ header h1 {
     0% {
         opacity: 0;
         -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
         transform: translateY(0px);
     }
 
-    40% {
-        opacity: 0.95;
+    25% {
+        opacity: 1;
         -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
         transform: translateY(0px);
     }
 
-    70%, 75%, 85%, 95%, 100% {
+    35%, 50%, 65%, 80%, 95% {
         -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
         transform: translateY(0px);
     }
 
-    80% {
+    72% {
         -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
         transform: translateY(-30px);
     }
 
-    90% {
+    88% {
         -webkit-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
         transform: translateY(-15px);
     }
 }
@@ -344,26 +347,26 @@ header h1 {
         transform: translateY(0px);
     }
 
-    40% {
-        opacity: 0.95;
+    25% {
+        opacity: 1;
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
         transform: translateY(0px);
     }
 
-    70%, 75%, 85%, 95%, 100% {
+    35%, 50%, 65%, 80%, 95% {
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
         transform: translateY(0px);
     }
 
-    80% {
+    72% {
         -webkit-transform: translateY(-30px);
         -ms-transform: translateY(-30px);
         transform: translateY(-30px);
     }
 
-    90% {
+    88% {
         -webkit-transform: translateY(-15px);
         -ms-transform: translateY(-15px);
         transform: translateY(-15px);
@@ -373,8 +376,8 @@ header h1 {
 .speechBubble {
     -webkit-animation-name: speechBubble;
     animation-name: speechBubble;
-    -webkit-animation-duration: 2s;
-    animation-duration: 2s;
+    -webkit-animation-duration: 1.2s;
+    animation-duration: 1.2s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }

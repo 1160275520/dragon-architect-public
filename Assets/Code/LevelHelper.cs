@@ -11,6 +11,9 @@ public class LevelHelper : MonoBehaviour
     public GameObject RobotTargetPrefab;
 
     private List<UnityEngine.Object> targets = new List<UnityEngine.Object>();
+    private static float winDelay = 0.5f;
+    private float winTime;
+    private bool hasBeenWon = false;
 
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {
@@ -66,7 +69,18 @@ public class LevelHelper : MonoBehaviour
 
     public void WinLevel() {
         // TODO maybe do actual things once you win
-        GetComponent<AllTheGUI>().IsActiveReturnToLevelSelect = true;
-        GetComponent<ExternalAPI>().SendLevelCompleted();
+        if (!hasBeenWon) {
+            Debug.Log("win declared, waiting " + winDelay);
+            winTime = Time.fixedTime;
+            hasBeenWon = true;
+        }
+    }
+
+    void Update() {
+        if (hasBeenWon && Time.fixedTime - winTime > winDelay) {
+            Debug.Log("actual win");
+            GetComponent<AllTheGUI>().IsActiveReturnToLevelSelect = true;
+            GetComponent<ExternalAPI>().SendLevelCompleted();
+        }
     }
 }
