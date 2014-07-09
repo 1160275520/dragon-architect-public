@@ -1,6 +1,6 @@
-cgs = {}
-cgs.js = {}
-cgs.js.http = {}
+cgs = {};
+cgs.js = {};
+cgs.js.http = {};
 cgs.js.http.DefaultHttpLoaderFactory = function() { };
 cgs.js.http.DefaultHttpLoaderFactory.__name__ = true;
 //cgs.js.http.DefaultHttpLoaderFactory.__interfaces__ = [cgs.http.IHttpLoaderFactory];
@@ -79,4 +79,5 @@ cgs.js.http.HttpLoader.prototype =
         return this.request;
     }
     ,__class__: cgs.js.http.HttpLoader
-}
+};
+
