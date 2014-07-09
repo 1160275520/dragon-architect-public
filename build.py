@@ -7,9 +7,9 @@ import subprocess
 # build gamelib/ (the F# library)
 
 MSBUILD="C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe"
-GAMELIB_SLN = "gamelib/Hackcraft.sln"
+GAMELIB_SLN = "gamelib/HackcraftNoUnitTest.sln"
 
-subprocess.call([MSBUILD, GAMELIB_SLN])
+subprocess.call([MSBUILD, GAMELIB_SLN, '/p:Configuration=Release'])
 
 # build unity/ (the Unity project)
 
