@@ -6,12 +6,13 @@ var uglify = require('gulp-uglify');
 var minifyHtml = require('gulp-minify-html');
 var minifyCss = require('gulp-minify-css');
 var rev = require('gulp-rev');
-var del = require('del');
+var rimraf = require('gulp-rimraf');
 
 var BUILD_DIR = __dirname + '/../build/';
 
 gulp.task('clean', function() {
-    del([BUILD_DIR], {force:true});
+    gulp.src(BUILD_DIR, {read:false})
+        .pipe(rimraf({force:true}));
 });
 
 gulp.task('usemin', function() {
@@ -19,13 +20,13 @@ gulp.task('usemin', function() {
         .pipe(usemin({
             css: [minifyCss(), 'concat'],
             html: [minifyHtml({empty: true})],
-            js: [uglify(), rev()]
+            js: [uglify()]
         }))
         .pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task('copy_static', function() {
-    gulp.src('generated/**')
+    gulp.src(['generated/**', '!generated/README*'])
         .pipe(gulp.dest(BUILD_DIR + 'generated/'));
 
     gulp.src('media/**')
@@ -35,5 +36,5 @@ gulp.task('copy_static', function() {
         .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 });
 
-gulp.task('default', ['clean', 'usemin', 'copy_static']);
+gulp.task('default', ['usemin', 'copy_static']);
 
