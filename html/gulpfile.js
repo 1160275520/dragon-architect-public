@@ -8,7 +8,7 @@ var minifyCss = require('gulp-minify-css');
 var rev = require('gulp-rev');
 var del = require('del');
 
-var BUILD_DIR = __dirname + '../build/';
+var BUILD_DIR = __dirname + '/../build/';
 
 gulp.task('clean', function() {
     del([BUILD_DIR], {force:true});
