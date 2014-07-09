@@ -11,6 +11,8 @@ outdir = os.path.abspath(os.path.join(localdir, '../html/generated'))
 system = platform.system()
 if system == 'Windows':
     unityExecutable = "C:\\Program Files (x86)\\Unity\\Editor\\Unity.exe"
+elif system == 'Darwin':
+    unityExecutable = "/Applications/Unity/Unity.app/Contents/MacOS/Unity"
 else:
     print('platform unsupported!')
     sys.exit(1)
