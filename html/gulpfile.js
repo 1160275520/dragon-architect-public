@@ -14,7 +14,7 @@ gulp.task('clean', function(cb) {
     rimraf(BUILD_DIR, cb);
 });
 
-gulp.task('usemin', function() {
+gulp.task('usemin', ['clean'], function() {
     return gulp.src('index.html')
         .pipe(usemin({
             css: [minifyCss(), 'concat'],
@@ -24,17 +24,17 @@ gulp.task('usemin', function() {
         .pipe(gulp.dest(BUILD_DIR));
 });
 
-gulp.task('copy_generated', function() {
+gulp.task('copy_generated', ['clean'], function() {
     return gulp.src(['generated/**', '!generated/README*'])
         .pipe(gulp.dest(BUILD_DIR + 'generated/'));
 });
 
-gulp.task('copy_media', function() {
+gulp.task('copy_media', ['clean'], function() {
     return gulp.src(['media/**'])
         .pipe(gulp.dest(BUILD_DIR + 'media/'));
 });
 
-gulp.task('copy_fonts', function() {
+gulp.task('copy_fonts', ['clean'], function() {
     return gulp.src('lib/font-awesome/fonts/**')
         .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 });
