@@ -5,6 +5,7 @@ import os
 import subprocess
 import argparse
 import traceback
+import platform
 
 def check(code):
     if code != 0:
@@ -24,8 +25,10 @@ def build_blockly():
 
 # the actual webpage
 def build_html():
-    check(subprocess.call(['npm', 'install'], cwd='html/', shell=True))
-    check(subprocess.call(['gulp', 'default'], cwd='html/', shell=True))
+    # for some reason shell=True is required on windows but breaks on Mac?
+    shell = platform.system() == 'Windows'
+    check(subprocess.call(['npm', 'install'], cwd='html/', shell=shell))
+    check(subprocess.call(['gulp'], cwd='html/', shell=shell))
 
 build_steps = {
     'gamelib': build_gamelib,
