@@ -6,7 +6,7 @@ import platform
 import subprocess
 
 localdir = os.path.abspath(os.path.dirname(__file__))
-outdir = os.path.abspath(os.path.join(localdir, '../../html/generated/hackcraft'))
+outdir = os.path.abspath(os.path.join(localdir, '../html/generated/hackcraft'))
 
 system = platform.system()
 if system == 'Windows':
