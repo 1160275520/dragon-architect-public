@@ -1,0 +1,19 @@
+{
+  "name": "hackcraft",
+  "version": "0.0.0",
+  "description": "software plaything teaching tool",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "devDependencies": {
+    "del": "^0.1.1",
+    "gulp": "^3.8.5",
+    "gulp-concat": "^2.3.0",
+    "gulp-minify-css": "^0.3.6",
+    "gulp-minify-html": "^0.1.4",
+    "gulp-rev": "^0.4.2",
+    "gulp-uglify": "^0.3.1",
+    "gulp-usemin": "^0.3.5"
+  }
+}
