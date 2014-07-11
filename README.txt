@@ -1,5 +1,4 @@
 
-
 Contents:
 ============================================================================
 - How to Build
@@ -33,8 +32,7 @@ All buildable components (labled "buildable" below) can be build with
 `python build.py <folder name>`.
 
 - blockly (buildable):
-    Our fork of blockly, with some minor tweaks and code changes.
-    Also include closure to make the build self-contained.
+    Build script and dependency info to clone/build our fork of blockly.
 - build:
     The final output directory. Static html will be in here after a build.
 - doc:

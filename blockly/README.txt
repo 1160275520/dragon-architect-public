@@ -1,4 +1,5 @@
 
-Fork of revision 1718 of Blockly.
-Build by cd'ing into blockly/ and running `python build.py`.
+Our blockly fork is in a different repository.
+This folder tracks which versions of blockly/closure we built with (in dependencies.json).
+build.py will grab the correct dependencies and pull them into sister directories of this repo.
 

@@ -21,7 +21,7 @@ def build_unity():
 
 # blockly
 def build_blockly():
-    check(subprocess.call(['python', 'build.py'], cwd='blockly/blockly/'))
+    check(subprocess.call(['python', 'build.py'], cwd='blockly'))
 
 # the actual webpage
 def build_html():
