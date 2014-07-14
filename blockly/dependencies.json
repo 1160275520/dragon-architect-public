@@ -3,7 +3,7 @@
 	"local":"blockly-hackcraft",
 	"engine":"hg",
 	"remote":"ssh://bicycle.cs.washington.edu//homes/gws/edbutler/repos/blockly-hackcraft",
-	"revision":"082c953f31da"
+	"revision":"70b34fcb3975"
 },
 {
 	"local":"closure-library-read-only",
