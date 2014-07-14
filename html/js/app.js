@@ -167,23 +167,30 @@ function make_smallInstructions() {
     
     $("#instructionsBackground").removeClass("instructionsShow");
     $("#instructionsBackground").addClass("instructionsHide");
+    $("#instructions-detail").removeClass("detailShow");
+    $("#instructions-detail").addClass("detailHide");
     
-    $("#instructions").removeClass("speechBubble");
-    $("#instructions").removeClass("instructionsShown");
+    // $("#instructions").removeClass("speechBubble");
+    // $("#instructions-detail").removeClass("instructionsShown");
     
-    $("#dragonIcon")[0].style.visibility = "hidden";
-    $("#dragonIcon")[0].style.height = "0px";
-    $("#dragonIcon").removeClass("speechBubble");
+    // $("#dragonIcon").removeClass("speechBubble");
+    var dragon = $("#dragonIcon")[0];
+    // $("#dragonIcon")[0].style.visibility = "hidden";
+    // $("#dragonIcon")[0].style.height = "0px";
+    // dragon.style.height = $("#instructions")[0].getBoundingClientRect().height + "px";
+
+    // var inst = $("#instructions")[0];
+    // inst.innerHTML = "+";
+    // inst.style.textAlign = "center";
+    // inst.style.verticalAlign = "middle";
+    // inst.style.fontSize = "32pt";
     
-    var inst = $("#instructions")[0];
-    inst.innerHTML = "+";
-    inst.style.textAlign = "center";
-    inst.style.verticalAlign = "middle";
-    inst.style.fontSize = "32pt";
-    
+    var detail = $("#instructions-detail")[0];
+    detail.style.height = '0px';
+
     setTimeout(function() {
-        instContainer.style.width = "50px";
-        instContainer.style.height = "50px";
+        // instContainer.style.width = "50px";
+        instContainer.style.height = "auto";
         instContainer.onclick = make_largeInstructions;
     }, 1000);
 }
@@ -194,30 +201,35 @@ function make_largeInstructions() {
     instContainer.style.top = '0px';
     instContainer.style.left = rect.width + 'px';
     instContainer.style.width = ($("#blockly")[0].getBoundingClientRect().width - rect.width) + 'px';
-    $("#instructionsBackground").addClass("instructionsShow");
-    $("#instructionsBackground").removeClass("instructionsHide");
-    $("#instructions").addClass("instructionsShown");
     instContainer.style.height = "100%";
     instContainer.onclick = null;
+
+    $("#instructionsBackground").removeClass("instructionsHide");
+    $("#instructionsBackground").addClass("instructionsShow");
+    $("#instructions-detail").removeClass("detailHide");
+    $("#instructions-detail").addClass("detailShow");
+
+    $("#instructions").addClass("speechBubble");
+    var inst = $("#instructions")[0];
+    inst.style.webkitAnimationPlayState = "paused";
+    inst.style.animationPlayState = "paused";
 
     var dragon = $("#dragonIcon")[0];
     $("#dragonIcon").addClass("speechBubble");
     dragon.style.webkitAnimationPlayState = "paused";
     dragon.style.animationPlayState = "paused";
-    dragon.style.height = "100px";
     
-    var inst = $("#instructions")[0];
-    $("#instructions").addClass("speechBubble");
-    inst.style.webkitAnimationPlayState = "paused";
-    inst.style.animationPlayState = "paused";
-    inst.innerHTML = instructions;
-    inst.style.textAlign = "";
-    inst.style.verticalAlign = "";
-    inst.style.fontSize = "16pt";
+    var goal = $("#instructions-goal")[0];
     
+    var detail = $("#instructions-detail")[0];
+    detail.style.height = "auto";
+
+    Hackcraft.setInstructions(instructions);
+
     setTimeout(function () { 
         dragon.style.visibility = "visible";
-        inst.style.visibility = "visible";
+        goal.style.visibility = "visible";
+        detail.style.visibility = "visible";
         dragon.style.webkitAnimationPlayState = "running";
         dragon.style.animationPlayState = "running";
         inst.style.webkitAnimationPlayState = "running";
@@ -306,7 +318,7 @@ $(function() {
             }
         }
     });
-    $('#instructions')[0].style.visibility = "hidden";
+    $('#instructions-goal')[0].style.visibility = "hidden";
 
     // run button
     $('#btn-run').on('click', function () {

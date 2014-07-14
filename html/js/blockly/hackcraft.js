@@ -144,6 +144,7 @@ Hackcraft.loadBlocks = function (blocksXML) {
         blocks[i].setEditable(false);
         blocks[i].setDeletable(false);
         blocks[i].contextMenu = false;
+        blocks[i].setMovable(false);
     };
 }
 
@@ -263,11 +264,14 @@ Hackcraft.getXML = function() {
 Hackcraft.setInstructions = function (instructions) {
     //console.log("setting instructions");
     //console.log(instructions);
-    var msg = $('#instructions')[0];
+    var goal = $('#instructions-goal')[0];
+    var detail = $('#instructions-detail')[0];
     // $('#instructions').removeClass("speechBubble");
     if (instructions) {
-        msg.innerHTML = instructions;
-
+        // get the first sentence
+        goal.innerHTML = instructions.substring(0, instructions.search("[.!?]")+1); 
+        // get the rest of the instructions, skipping the space that presumably follows the end of the first senetence
+        detail.innerHTML = instructions.substring(instructions.search("[.!?]")+2); 
     }
 }
 

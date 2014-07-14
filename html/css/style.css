@@ -197,17 +197,26 @@ header h1 {
 #instructionsBackground {
     top: 0px;
     left: 10px;
-    padding:5px;
+    padding:10px;
     background: #333; /* default background for browsers without gradient support */
     opacity: 0.95;
     border-radius:10px;
+    width: 90%;
 }
 
 #instructions {
     color:#fff;
     font-family: monospace;
-    top: -3px;
-    position: relative;
+    padding: 15px;
+}
+
+#instructions-goal {
+    font-size: 16pt;
+    padding-bottom: 20px;
+}
+
+#instructions-detail {
+    font-size: 12pt;
 }
 
 .instructionsShown {
@@ -215,71 +224,33 @@ header h1 {
     border-width: 4px;
     border-color: #B24E3A;
     border-radius:10px;
-    padding: 25px;  
+    padding: 25px;
+    padding-bottom: 10px;  
 }
 
 #dragonIcon {
-    top: 8px;
-    left: 5px;
+    top: -10px;
+    padding: 10px;
     position: relative;
-}
-
-#XXXinstructions:before {
-    content:"";
-    position:absolute;
-    bottom:-20px; /* value = - border-top-width - border-bottom-width */
-    left:60px; /* controls horizontal position */
-    border:0;
-    border-right-width:30px; /* vary this value to change the angle of the vertex */
-    border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :after */
-    border-style:solid;
-    border-color:transparent #999;
-}
-
-/* creates the narrower right-angled triangle */
-#XXXinstructions:after {
-    content:"";
-    position:absolute;
-    bottom:-20px; /* value = - border-top-width - border-bottom-width */
-    left:80px; /* value = (:before's left) + (:before's border-right/left-width)  - (:after's border-right/left-width) */
-    border:0;
-    border-right-width:10px; /* vary this value to change the angle of the vertex */
-    border-bottom-width:20px; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :before */
-    border-style:solid;
-    border-color:transparent #999;
 }
 
 @-webkit-keyframes instructionsShow {
     0% {
-        width: 50px;
-        height: 50px;
-    }
-
-    50% {
-        width: 90%;
-        height: 50px;
+        min-height: 0%;
     }
 
     100% {
-        width: 90%;
-        height: 100%;
+        min-height: 100%;
     }
 }
 
 @keyframes instructionsShow {
     0% {
-        width: 50px;
-        height: 50px;
-    }
-
-    50% {
-        width: 90%;
-        height: 50px;
+        min-height: 0%;
     }
 
     100% {
-        width: 90%;
-        height: 100%;
+        min-height: 100%;
     }
 }
 
@@ -288,41 +259,27 @@ header h1 {
     animation-name: instructionsShow;
     -webkit-animation-duration: 0.75s;
     animation-duration: 0.75s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
 }
 
 @-webkit-keyframes instructionsHide {
     0% {
-        width: 90%;
-        height: 100%;
-    }
-
-    50% {
-        width: 90%;
-        height: 50px;
+        min-height: 100%;
     }
 
     100% {
-        width: 50px;
-        height: 50px;
+        min-height: 0%;
     }
 }
 
 @keyframes instructionsHide {
     0% {
-        width: 90%;
-        height: 100%;
-    }
-
-    50% {
-        width: 90%;
-        height: 50px;
+        min-height: 100%;
     }
 
     100% {
-        width: 50px;
-        height: 50px;
+        min-height: 0%;
     }
 }
 
@@ -331,12 +288,70 @@ header h1 {
     animation-name: instructionsHide;
     -webkit-animation-duration: 0.75s;
     animation-duration: 0.75s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes detailShow {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes detailShow {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.detailShow {
+    -webkit-animation-name: detailShow;
+    animation-name: detailShow;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes detailHide {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes detailHide {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.detailHide {
+    -webkit-animation-name: detailHide;
+    animation-name: detailHide;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
 }
 
 @-webkit-keyframes speechBubble {
-    0% {
+/*    0% {
         opacity: 0;
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
@@ -348,7 +363,7 @@ header h1 {
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
         transform: translateY(0px);
-    }
+    }*/
 
     35%, 50%, 65%, 80%, 95% {
         -webkit-transform: translateY(0px);
@@ -370,7 +385,7 @@ header h1 {
 }
 
 @keyframes speechBubble {
-    0% {
+/*    0% {
         opacity: 0;
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
@@ -382,7 +397,7 @@ header h1 {
         -webkit-transform: translateY(0px);
         -ms-transform: translateY(0px);
         transform: translateY(0px);
-    }
+    }*/
 
     35%, 50%, 65%, 80%, 95% {
         -webkit-transform: translateY(0px);
