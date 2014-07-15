@@ -1,6 +1,5 @@
 var onHackcraftEvent = (function(){ "use strict";
 
-var possible_stages;
 var program;
 var unityObject;
 var is_running = false;
@@ -76,53 +75,27 @@ var SANDBOX_LEVEL_ID = 'tl_final';
 function setState_levelSelect() {
     hideAll();
     $('.levelSelector').show();
-    make_levelSelect()
 }
 
-function make_levelSelect() {
+function make_levelSelect(module, scenes) {
     // TODO move hard-coded graph spec to config file of some kind
     var colors = {}
-    colors["teal"] = "#5BA68D"
-    colors["brown"] = "#A6875B"
-    colors["purple"] = "#995BA6"
-    colors["green"] = "#5BA65B"
-    colors["gray"] = "#777777"
-    colors["orange"] = "#FFB361"
-    // var levelColors = {}
-    // levelColors["tl_movement2d"] = colors["teal"];
-    // levelColors["tl_movement3d"] = colors["teal"];
-    // levelColors["tl_placement"] = colors["brown"];
-    // levelColors["tl_movement_args"] = colors["teal"];
-    // levelColors["tl_call"] = colors["purple"];
-    // levelColors["tl_call2"] = colors["purple"];
-    // levelColors["tl_repeat"] = colors["green"];
-    // levelColors["tl_repeat2"] = colors["green"];
+    colors["teal"] = "#5BA68D";
+    colors["brown"] = "#A6875B";
+    colors["purple"] = "#995BA6";
+    colors["green"] = "#5BA65B";
+    colors["gray"] = "#777777";
+    colors["orange"] = "#FFB361";
 
     var graph = new dagre.Digraph();
-    graph.addNode("tl_movement2d", {label: "2D Movement", id: "tl_movement2d"});
-    graph.addNode("tl_movement3d", {label: "3D Movement", id: "tl_movement3d"});
-    graph.addNode("tl_placement", {label: "Place Blocks", id: "tl_placement"});
-    graph.addNode("tl_movement_args", {label: "Movement Arguments", id: "tl_movement_args"});
-    graph.addNode("tl_speed_slider", {label: "Speed Slider", id: "tl_speed_slider"});
-    graph.addNode("tl_call", {label: "Call", id: "tl_call"});
-    graph.addNode("tl_call2", {label: "Call 2", id: "tl_call2"});
-    graph.addNode("tl_repeat", {label: "Repeat", id: "tl_repeat"});
-    graph.addNode("tl_repeat2", {label: "Repeat 2", id: "tl_repeat2"});
-    graph.addNode("tl_final", {label: "<div style='padding: 60px;'><span style='font-size:44px'>Open-Ended</span></div>", id: "tl_final"});
 
-    graph.addEdge(null, "tl_movement2d", "tl_movement3d");
-    graph.addEdge(null, "tl_movement2d", "tl_placement");
-    graph.addEdge(null, "tl_movement2d", "tl_movement_args");
-    graph.addEdge(null, "tl_movement_args", "tl_repeat");
-    graph.addEdge(null, "tl_placement", "tl_speed_slider");
-    graph.addEdge(null, "tl_placement", "tl_call");
-    graph.addEdge(null, "tl_call", "tl_call2");
-    graph.addEdge(null, "tl_placement", "tl_repeat");
-    graph.addEdge(null, "tl_repeat", "tl_repeat2");
-    graph.addEdge(null, "tl_repeat2", "tl_final");
-    graph.addEdge(null, "tl_call2", "tl_final");
-    graph.addEdge(null, "tl_speed_slider", "tl_final");
-    graph.addEdge(null, "tl_movement3d", "tl_final");
+    _.each(module.nodes, function(id) {
+        graph.addNode(id, {label: id, id: id});
+    });
+
+    _.each(module.edges, function(edge) {
+        graph.addEdge(null, edge[0], edge[1]);
+    });
 
     // perform layout
     var renderer = new dagreD3.Renderer();
@@ -132,23 +105,22 @@ function make_levelSelect() {
     renderer.layout(layout).run(graph, d3.select(".levelSelector svg g"));
 
     // color rectangles
-    var nodes = d3.selectAll(".levelSelector .node")[0]
-    nodes.forEach(function (x) {  })
+    var nodes = d3.selectAll(".levelSelector .node")[0];
 
     // setup onclick behavior
     var SANDBOX_LEVEL_ID = 'tl_final';
 
     function is_completed(level) {
-        return levelsCompleted.indexOf(level) !== -1;
-        // return true;
+        //return levelsCompleted.indexOf(level) !== -1;
+        return true;
     }
 
     nodes.forEach(function (x) { 
         if (graph.predecessors(x.id).every(is_completed)) {
-            if (x.id === SANDBOX_LEVEL_ID) {
-                x.onclick = function() { setState_sandbox(x.id); };
+            if (scenes[x.id].scene_name === SANDBOX_LEVEL_ID) {
+                x.onclick = function() { setState_sandbox(scenes[x.id].scene_name); };
             } else {
-                x.onclick = function() { setState_puzzle(x.id); };
+                x.onclick = function() { setState_puzzle(scenes[x.id].scene_name); };
             }
             if (is_completed(x.id)) {
                 x.children[0].style.fill = colors["green"];
@@ -302,7 +274,6 @@ $(function() {
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
-    make_levelSelect()
 
     $('#btn-run').on('click', function() {
         var program = Hackcraft.getProgram();
@@ -372,7 +343,6 @@ function set_program_execution_speed(parameter) {
 
 function set_program(prog) {
     var s = JSON.stringify(prog)
-    console.info(s);
     send_message("System", "EAPI_SetProgramFromJson", s);
 }
 
@@ -390,7 +360,8 @@ function control_camera(action) {
 
 handler.onSystemStart = function(json) {
     console.info('on system start!');
-    possible_stages = JSON.parse(json);
+    var info = JSON.parse(json);
+    make_levelSelect(info.modules[0], info.scenes);
     setState_title();
 }
 

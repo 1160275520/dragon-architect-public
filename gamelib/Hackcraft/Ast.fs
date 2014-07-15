@@ -7,6 +7,7 @@ module Imperative =
 
     type Meta = {
         Id: int;
+        Attributes: Json.JsonValue;
     }
     with
         override x.ToString() = sprintf "id = %d" x.Id
@@ -41,7 +42,10 @@ module Imperative =
         member x.AsCall = match x with Call c -> c | _ -> invalidOp "not a call"
         member x.AsRepeat = match x with Repeat r -> r | _ -> invalidOp "not a repeat"
 
-    let NewStatement id stmt = {Stmt=stmt; Meta={Id=id}}
+    let private emptyJsonObject = Json.objectOfMap Map.empty
+
+    let NewMeta id = {Id=id; Attributes=emptyJsonObject}
+    let NewStatement id stmt = {Stmt=stmt; Meta=NewMeta id}
     let NewBlock id list = NewStatement id (Block list)
     let NewCall id proc args = NewStatement id (Call({Proc=proc; Args=ImmArr.ofSeq args;}))
     let NewCallL1 id proc literalArg = NewCall id proc [Literal literalArg]

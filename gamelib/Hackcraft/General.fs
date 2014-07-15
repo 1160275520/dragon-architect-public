@@ -23,3 +23,10 @@ type RuntimeError(c,p,m,i) = inherit CodeError("runtime",c,p,m,i)
 type CodeException (e: CodeError) =
     inherit System.Exception(e.FullMessage, e.Exception)
     member x.Error = e
+
+module Util =
+    let binaryToHex (bytes:byte[]) =
+        let sb = System.Text.StringBuilder ()
+        for b in bytes do
+            sb.Append (b.ToString "x2") |> ignore
+        sb.ToString ()

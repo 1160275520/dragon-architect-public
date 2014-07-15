@@ -58,6 +58,7 @@ with
             writer.Write '}'
 
     /// Format json with little wasted space. There's still spaces after ',' though.
+    /// Keys will be in alphabetical order, meaning equivalent JSON values are guaranteed to serialize to equal strings.
     member t.Serialize () =
         let sb = StringBuilder ()
         use sw = new System.IO.StringWriter(sb)
@@ -132,6 +133,7 @@ module JArray =
 module JObject =
     let ofSeq x = Array.ofSeq x |> Array.sortBy fst |> ObjectValue
     let ofMap x = ObjectValue (Map.toArray x)
+    let ofDict (x:KeyValuePair<string, JsonValue> seq) = x |> Seq.map (fun kvp -> (kvp.Key, kvp.Value)) |> ofSeq
     let toSeq (ObjectValue x) = Array.toSeq x
     let toMap (ObjectValue x) = Map.ofArray x
 
@@ -139,6 +141,8 @@ module JObject =
 let objectOfMap seq = Object (JObject.ofMap seq)
 /// Construct a json object from a <c>Map</c>.
 let objectOfSeq seq = Object (JObject.ofSeq seq)
+
+let objectOfDict seq = Object (JObject.ofDict seq)
 
 /// Construct a json array from a <c>JsonValue[]</c>.
 let arrayOfArray seq = Array (JArray.ofArray seq)
@@ -203,6 +207,7 @@ type JsonValue with
 
     static member ObjectOf seq = objectOfMap seq
     static member ObjectOf seq = objectOfSeq seq
+    static member ObjectOf seq = objectOfDict seq
 
     static member ArrayOf seq = arrayOfArray seq
     static member ArrayOf seq = arrayOfList seq
