@@ -164,4 +164,4 @@ let stageSerializationTestsSeq = stageSerializationTests |> Seq.map (fun s -> [|
 [<Theory>]
 [<PropertyData("stageSerializationTestsSeq")>]
 let ``Serialization stage test`` (filename:string) =
-    runSerializeFromFileTest ("../../../../Assets/Resources/" + filename)
+    runSerializeFromFileTest ("../../../../unity/Assets/Resources/" + filename)
