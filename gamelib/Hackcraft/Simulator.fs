@@ -31,7 +31,7 @@ let private getProc (program:Program, procname:string) =
         match program.Modules.TryFind procname with
         | None ->
             match Builtins.TryFind procname with
-            | None -> runtimeError {Id=0} RuntimeErrorCode.UnknownProcedure (sprintf "procedure '%s' does not exist" procname)
+            | None -> runtimeError (Ast.Imperative.NewMeta 0) RuntimeErrorCode.UnknownProcedure (sprintf "procedure '%s' does not exist" procname)
             | Some x -> (program, List.ofSeq x.Body)
         | Some m -> (m, [Ast.Imperative.NewCall0 0 "MAIN"])
     | Some x -> (program, List.ofSeq x.Body)

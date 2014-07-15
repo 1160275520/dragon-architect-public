@@ -1,0 +1,29 @@
+{
+    "nodes": [   "tutorial.movement2d",
+        "tutorial.movement3d",
+        "tutorial.place_blocks",
+        "tutorial.arguments",
+        "tutorial.speed_slider",
+        "tutorial.call_1",
+        "tutorial.call_2",
+        "tutorial.repeat_1",
+        "tutorial.repeat_2",
+        "tutorial.sandbox"
+    ],
+    "edges": [
+        ["tutorial.movement2d", "tutorial.movement3d"],
+        ["tutorial.movement2d", "tutorial.place_blocks"],
+        ["tutorial.movement2d", "tutorial.arguments"],
+        ["tutorial.movement3d", "tutorial.sandbox"],
+        ["tutorial.place_blocks", "tutorial.speed_slider"],
+        ["tutorial.speed_slider", "tutorial.sandbox"],
+        ["tutorial.place_blocks", "tutorial.call_1"],
+        ["tutorial.call_1", "tutorial.call_2"],
+        ["tutorial.call_2", "tutorial.sandbox"],
+        ["tutorial.place_blocks", "tutorial.repeat_1"],
+        ["tutorial.arguments", "tutorial.repeat_1"],
+        ["tutorial.repeat_1", "tutorial.repeat_2"],
+        ["tutorial.repeat_2", "tutorial.sandbox"]
+    ]
+}
+

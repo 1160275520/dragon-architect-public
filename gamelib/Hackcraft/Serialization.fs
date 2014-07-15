@@ -75,7 +75,7 @@ let ProgramOfJson (json: J.JsonValue) =
         | Json.String s -> upcast s
         | _ -> syntaxError j SerializationErrorCode.InvalidLiteral (sprintf "cannot json parse object of type '%s'" (j.GetType().Name))
 
-    let parseMeta j = {Id=jload j "id" J.asInt}
+    let parseMeta j = Ast.Imperative.NewMeta (jload j "id" J.asInt)
 
     let parseExpr j =
         match jload j "type" J.asString with

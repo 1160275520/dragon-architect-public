@@ -27,7 +27,7 @@ public class ProgramManager : MonoBehaviour {
 
     private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
 
-    public LevelInfo MakeLevelInfo() {
+    public Scene.LevelInfo MakeLevelInfo() {
         var map = new List<Tuple<string, bool>>();
         map.Add(new Tuple<string, bool>("move2", IsAvail2DMovement));
         map.Add(new Tuple<string, bool>("move3", IsAvail3DMovement));
@@ -35,7 +35,7 @@ public class ProgramManager : MonoBehaviour {
         map.Add(new Tuple<string, bool>("line", IsAvailLine));
         map.Add(new Tuple<string, bool>("call", IsAvailCall));
         map.Add(new Tuple<string, bool>("repeat", IsAvailRepeat));
-        var li = new LevelInfo(
+        var li = new Scene.LevelInfo(
             Application.loadedLevel,
             map.Where(kvp => kvp.Item2).Select(kvp => kvp.Item1),
             NumHelperFuncs, 
