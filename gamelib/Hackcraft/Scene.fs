@@ -1,4 +1,4 @@
-﻿module Hackcraft.Scene
+module Hackcraft.Scene
 
 module J = Json
 

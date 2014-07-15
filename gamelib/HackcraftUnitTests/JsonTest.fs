@@ -1,4 +1,4 @@
-﻿module JsonTest
+module JsonTest
 
 open Xunit
 open Xunit.Extensions

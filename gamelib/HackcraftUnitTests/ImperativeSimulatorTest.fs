@@ -1,4 +1,4 @@
-﻿module Hackcraft.UnitTest.ImperativeSimulatorTest
+module Hackcraft.UnitTest.ImperativeSimulatorTest
 
 open Xunit
 open Xunit.Extensions

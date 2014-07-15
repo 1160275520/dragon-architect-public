@@ -1,4 +1,4 @@
-﻿namespace Hackcraft
+namespace Hackcraft
 
 [<StructuralEquality;NoComparison>]
 type IntVec2 = struct

@@ -1,4 +1,4 @@
-﻿namespace Hackcraft
+namespace Hackcraft
 
 open System.Collections
 open System.Collections.Generic

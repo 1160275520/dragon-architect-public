@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2014 Eric Butler (zantifon@gmail.com)
+// Copyright (C) 2014 Eric Butler (zantifon@gmail.com)
 
 /// <summary>
 /// A lightweight JSON parser/formatter and related tools for processing JSON data.

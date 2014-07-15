@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2014 Eric Butler (zantifon@gmail.com)
+// Copyright (C) 2014 Eric Butler (zantifon@gmail.com)
 
 /// <summary>
 /// Basic types used for parsing and serialization.

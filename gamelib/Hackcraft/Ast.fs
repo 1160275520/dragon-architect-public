@@ -1,4 +1,4 @@
-﻿namespace Hackcraft.Ast
+namespace Hackcraft.Ast
 
 open System
 open Hackcraft

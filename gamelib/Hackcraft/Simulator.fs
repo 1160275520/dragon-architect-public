@@ -1,4 +1,4 @@
-﻿module Hackcraft.Simulator
+module Hackcraft.Simulator
 
 open Hackcraft
 open Hackcraft.Ast.Imperative

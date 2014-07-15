@@ -1,4 +1,4 @@
-﻿namespace Hackcraft.Robot
+namespace Hackcraft.Robot
 
 open Hackcraft
 

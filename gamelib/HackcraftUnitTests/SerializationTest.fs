@@ -1,4 +1,4 @@
-﻿module Hackcraft.UnitTest.SerializationTest
+module Hackcraft.UnitTest.SerializationTest
 
 open Xunit
 open Xunit.Extensions

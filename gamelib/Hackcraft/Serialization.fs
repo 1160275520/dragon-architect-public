@@ -1,4 +1,4 @@
-﻿module Hackcraft.Serialization
+module Hackcraft.Serialization
 
 open Hackcraft.Ast.Imperative
 
