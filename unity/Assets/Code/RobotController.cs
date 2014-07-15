@@ -29,7 +29,7 @@ public class RobotController : MonoBehaviour {
     public void SetRobot(IRobot robot, Command com, float? time) {
         Robot = robot;
         if (time.HasValue && com != null) {
-            var anim = transform.FindChild("micro_dragon").gameObject.animation;
+            var anim = transform.FindChild("dragon_improved").gameObject.animation;
             if (com.Type == "block") {
                 anim["bite"].speed = anim["bite"].length / time.Value;
                 anim.Play("bite");
