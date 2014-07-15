@@ -28,6 +28,10 @@ subprocess.call([
     outdir,
     "-quit",
 ], cwd=localdir)
+
 # remove the useless html file generated along with the webapp
-os.remove(os.path.join(outdir, 'generated.html'))
+# if this fails is doesn't matter
+try:
+    os.remove(os.path.join(outdir, 'generated.html'))
+except: pass
 
