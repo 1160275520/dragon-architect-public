@@ -8,6 +8,10 @@ var handler = {};
 var levelsCompleted = [];
 var instructions = "";
 
+// HACKAPALOOZA
+var next_level_id = null;
+var scenes = null;
+
 // GENERIC UNITY API SETUP AND MARSHALLING
 
 // send a message to unity
@@ -90,7 +94,7 @@ function make_levelSelect(module, scenes) {
     var graph = new dagre.Digraph();
 
     _.each(module.nodes, function(id) {
-        graph.addNode(id, {label: id, id: id});
+        graph.addNode(id, {label: scenes[id].name, id: id});
     });
 
     _.each(module.edges, function(edge) {
@@ -117,11 +121,14 @@ function make_levelSelect(module, scenes) {
 
     nodes.forEach(function (x) { 
         if (graph.predecessors(x.id).every(is_completed)) {
-            if (scenes[x.id].scene_name === SANDBOX_LEVEL_ID) {
-                x.onclick = function() { setState_sandbox(scenes[x.id].scene_name); };
-            } else {
-                x.onclick = function() { setState_puzzle(scenes[x.id].scene_name); };
-            }
+            x.onclick = function() {
+                next_level_id = x.id;
+                if (scenes[x.id].scene_name === SANDBOX_LEVEL_ID) {
+                    setState_sandbox(scenes[x.id].scene_name);
+                } else {
+                    setState_puzzle(scenes[x.id].scene_name);
+                }
+            };
             if (is_completed(x.id)) {
                 x.children[0].style.fill = colors["green"];
             } else {
@@ -361,6 +368,7 @@ function control_camera(action) {
 handler.onSystemStart = function(json) {
     console.info('on system start!');
     var info = JSON.parse(json);
+    scenes = info.scenes;
     make_levelSelect(info.modules[0], info.scenes);
     setState_title();
 }
@@ -377,7 +385,7 @@ handler.onLevelChange = function(json) {
     console.log(json);
     var levelInfo = JSON.parse(json);
 
-    Hackcraft.setLevel(levelInfo);
+    Hackcraft.setLevel(levelInfo, scenes[next_level_id]);
     make_largeInstructions();
     Hackcraft.history = new Array();
     // reset run button

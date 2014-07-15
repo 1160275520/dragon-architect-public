@@ -1,43 +1,93 @@
 {
     "tutorial.movement2d": {
         "logging_id": 21,
-        "scene_name": "tl_movement2d"
+        "name": "2D Movement",
+        "scene_name": "tl_movement2d",
+        "library": {
+            "required": [],
+            "granted": ["move2"]
+        }
     },
     "tutorial.movement3d": {
         "logging_id": 21,
-        "scene_name": "tl_movement3d"
+        "name": "3D Movement",
+        "scene_name": "tl_movement3d",
+        "library": {
+            "required": ["move2"],
+            "granted": ["move3"]
+        }
     },
     "tutorial.place_blocks": {
         "logging_id": 21,
-        "scene_name": "tl_placement"
+        "name": "Placing Blocks",
+        "scene_name": "tl_placement",
+        "library": {
+            "required": ["move2"],
+            "granted": ["place"]
+        }
     },
     "tutorial.arguments":{
         "logging_id": 21,
-        "scene_name": "tl_movement_args"
+        "name": "Using Arguments",
+        "scene_name": "tl_movement_args",
+        "library": {
+            "required": [],
+            "granted": []
+        }
     },
     "tutorial.speed_slider": {
         "logging_id": 21,
-        "scene_name": "tl_speed_slider"
+        "name": "Speed Slider",
+        "scene_name": "tl_speed_slider",
+        "library": {
+            "required": ["move2", "place", "repeat"],
+            "granted": []
+        }
     },
     "tutorial.call_1": {
         "logging_id": 21,
-        "scene_name": "tl_call"
+        "name": "Calling Procedures",
+        "scene_name": "tl_call",
+        "library": {
+            "required": ["move2", "place"],
+            "granted": ["call"]
+        }
     },
     "tutorial.call_2": {
         "logging_id": 21,
-        "scene_name": "tl_call_2"
+        "name": "Calling More Procedures",
+        "scene_name": "tl_call2",
+        "library": {
+            "required": ["move2", "place", "call"],
+            "granted": []
+        }
     },
     "tutorial.repeat_1": {
         "logging_id": 21,
-        "scene_name": "tl_repeat"
+        "name": "Loops",
+        "scene_name": "tl_repeat",
+        "library": {
+            "required": ["move2", "place", "call"],
+            "granted": ["repeat"]
+        }
     },
     "tutorial.repeat_2": {
         "logging_id": 21,
-        "scene_name": "tl_repeat_2"
+        "name": "More Loops",
+        "scene_name": "tl_repeat2",
+        "library": {
+            "required": ["move2", "place", "call", "repeat"],
+            "granted": []
+        }
     },
     "tutorial.sandbox": {
         "logging_id": 21,
-        "scene_name": "tl_final"
+        "name": "~ Free Play Mode ~",
+        "scene_name": "tl_final",
+        "library": {
+            "required": ["move2", "place", "call", "repeat"],
+            "granted": []
+        }
     }
 }
 

@@ -171,13 +171,16 @@ Hackcraft.freezeBody = function(block) {
 /**
  * set which blocks are available
  */
-Hackcraft.setLevel = function(levelInfo) {
+Hackcraft.setLevel = function(levelInfo, scene_info) {
     //console.log("updating toolbox");
     var toolXML = '<xml id="toolbox" style="display: none">';
     if (levelInfo.funcs) {
         Hackcraft.makeFuncs(levelInfo.funcs);
     }
-    _.each(levelInfo.commands, function(command) {
+
+    var lib = scene_info.library;
+
+    _.each(lib.required.concat(lib.granted), function(command) {
         if (Hackcraft.Commands[command]) {
             toolXML += Hackcraft.Commands[command];
         }
