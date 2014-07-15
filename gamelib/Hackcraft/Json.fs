@@ -126,23 +126,31 @@ module JArray =
     let ofArray x = ArrayValue (Array.copy x)
     let ofList x = ArrayValue (Array.ofList x)
     let ofSeq x = ArrayValue (Array.ofSeq x)
+
     let toArray (ArrayValue x) = Array.copy x
     let toList (ArrayValue x) = Array.toList x
     let toSeq (ArrayValue x) = Array.toSeq x
 
 module JObject =
-    let ofSeq x = Array.ofSeq x |> Array.sortBy fst |> ObjectValue
+    let ofArray x = Array.sortBy fst x |> ObjectValue
+    let ofList x = Array.ofList x |> Array.sortBy fst |> ObjectValue
     let ofMap x = ObjectValue (Map.toArray x)
+    let ofSeq x = Array.ofSeq x |> Array.sortBy fst |> ObjectValue
     let ofDict (x:KeyValuePair<string, JsonValue> seq) = x |> Seq.map (fun kvp -> (kvp.Key, kvp.Value)) |> ofSeq
+
     let toSeq (ObjectValue x) = Array.toSeq x
     let toMap (ObjectValue x) = Map.ofArray x
 
-/// Construct a json object from a sequence of name, value pairs.
-let objectOfMap seq = Object (JObject.ofMap seq)
-/// Construct a json object from a <c>Map</c>.
-let objectOfSeq seq = Object (JObject.ofSeq seq)
-
+/// Construct a json object from an array of name, value pairs.
+let objectOfArray seq = Object (JObject.ofArray seq)
+/// Construct a json object from a generic <c>IDictionary</c>.
 let objectOfDict seq = Object (JObject.ofDict seq)
+/// Construct a json object from a list of name, value pairs.
+let objectOfList seq = Object (JObject.ofList seq)
+/// Construct a json object from a <c>Map</c>.
+let objectOfMap seq = Object (JObject.ofMap seq)
+/// Construct a json object from a sequence of name, value pairs.
+let objectOfSeq seq = Object (JObject.ofSeq seq)
 
 /// Construct a json array from a <c>JsonValue[]</c>.
 let arrayOfArray seq = Array (JArray.ofArray seq)
@@ -205,9 +213,11 @@ type JsonValue with
     member t.TryGetField f = tryGetField t f
     member t.GetField f = getField t f
 
+    static member ObjectOf seq = objectOfArray seq
+    static member ObjectOf seq = objectOfList seq
+    static member ObjectOf seq = objectOfDict seq
     static member ObjectOf seq = objectOfMap seq
     static member ObjectOf seq = objectOfSeq seq
-    static member ObjectOf seq = objectOfDict seq
 
     static member ArrayOf seq = arrayOfArray seq
     static member ArrayOf seq = arrayOfList seq
