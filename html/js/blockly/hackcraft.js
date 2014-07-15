@@ -189,9 +189,9 @@ Hackcraft.setLevel = function(levelInfo, scene_info) {
     //console.log(toolXML);
     Blockly.updateToolbox(toolXML);
 
-    if (levelInfo.highlights) {
+    if (scene_info.tutorial && scene_info.tutorial.highlighted_blocks) {
         Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
-            if ($.inArray(b.type, levelInfo.highlights) > -1) {
+            if (_.contains(scene_info.tutorial.highlighted_blocks, b.type)) {
                 b.svg_.addNewGlow();
             }
         });
