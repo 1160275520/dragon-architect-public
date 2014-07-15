@@ -9,8 +9,12 @@ public class TLPlacement : MonoBehaviour
     Func<bool> winPredicate;
 
     void Start() {
+        Debug.Log("initializing TLPlacement!");
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "I need to place some blocks in the blue boxes, but my program skips one! Use one <object data=\"media/blockSvgs/placeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program.";
+        lh.SetInstructions(
+            "I need to place some blocks in the blue boxes, but my program skips one!",
+            "Use one <object data=\"media/blockSvgs/placeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program."
+        );
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLPlacement");
         progman.SetHighlighted("PlaceBlock", true);

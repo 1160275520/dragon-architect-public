@@ -14,39 +14,11 @@ public class ProgramManager : MonoBehaviour {
     public ImperativeAstManipulator Manipulator { get; private set; }
     public ImmArr<Simulator.StepState> States { get; private set; }
 
-//    public IEnumerable<IntVec3> InitGrid = new List<IntVec3>();
-
-    public bool IsAvail2DMovement = true;
-    public bool IsAvail3DMovement = true;
-    public bool IsAvailPlaceBlock = true;
-    public bool IsAvailLine = true;
-    public bool IsAvailCall = true;
-    public bool IsAvailRepeat = true;
-
-    public int NumHelperFuncs = 5;
-
     private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
 
-    public Scene.LevelInfo MakeLevelInfo() {
-        var map = new List<Tuple<string, bool>>();
-        map.Add(new Tuple<string, bool>("move2", IsAvail2DMovement));
-        map.Add(new Tuple<string, bool>("move3", IsAvail3DMovement));
-        map.Add(new Tuple<string, bool>("place", IsAvailPlaceBlock));
-        map.Add(new Tuple<string, bool>("line", IsAvailLine));
-        map.Add(new Tuple<string, bool>("call", IsAvailCall));
-        map.Add(new Tuple<string, bool>("repeat", IsAvailRepeat));
-        var li = new Scene.LevelInfo(
-            Application.loadedLevel,
-            map.Where(kvp => kvp.Item2).Select(kvp => kvp.Item1),
-            NumHelperFuncs, 
-            lockedProcedures,
-            highlightBlocks
-        );
-        return li;
-    }
-
+    #warning "fix AvailableProcedures to do something vaguely correct"
     public string[] AvailableProcedures { get {
-        return PROCS.Take(NumHelperFuncs + 1).ToArray();
+        return PROCS.ToArray();
     } }
 
     // which procedures cannot be edited

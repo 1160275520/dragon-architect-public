@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hackcraft;
 using Hackcraft.Ast;
+using Microsoft.FSharp.Core;
 
 public class LevelHelper : MonoBehaviour
 {
@@ -15,6 +16,25 @@ public class LevelHelper : MonoBehaviour
     private float winTime;
     private bool hasBeenWon = false;
     private bool hasSentWinAnnouncement = false;
+    private bool isFirstUpdate;
+
+    void Awake() {
+        var global = FindObjectOfType<Global>();
+        var com = global.CurrentPuzzle.Component;
+        if (OptionModule.IsSome(com)) {
+            gameObject.AddComponent(com.Value);
+        }
+    }
+
+    public void SetInstructions(string summary, string detail) {
+        var global = FindObjectOfType<Global>();
+        global.CurrentPuzzle = global.CurrentPuzzle.UpdateInstructions(new Scene.Instructions(summary, detail));
+    }
+
+    public void NotifyOfUpdates() {
+        var global = FindObjectOfType<Global>();
+        GetComponent<ExternalAPI>().NotifyOfPuzzle(global.CurrentSceneId, global.CurrentPuzzle, false);
+    }
 
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {

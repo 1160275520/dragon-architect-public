@@ -10,7 +10,10 @@ public class TLMovementArgs : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<LevelHelper>();
-        GetComponent<AllTheGUI>().CurrentMessage = "Help me put blocks on the blue boxes! The number in each <object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object> tells me how many spaces to move. Change the numbers to complete my program.";
+        lh.SetInstructions(
+            "Help me put blocks on the blue boxes!",
+            "The number in each <object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object> tells me how many spaces to move. Change the numbers to complete my program."
+        );
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("TLMovementArgs");
         progman.SetIsEditable("MAIN", false);

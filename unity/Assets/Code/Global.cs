@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class Global : MonoBehaviour {
 
+    public string CurrentSceneId { get; private set; }
+    public Scene.PuzzleInfo CurrentPuzzle { get; set; }
+
     void Awake() {
         DontDestroyOnLoad(this);
     }
@@ -51,8 +54,12 @@ public class Global : MonoBehaviour {
 
     // External API function
     // apparently needs to be here, putting it in LoaderGUI didn't work >_>
-    public void EAPI_SetStage(string id) {
-        Debug.Log("setting stage to " + id);
-        Application.LoadLevel(id);
+    public void EAPI_RequestStartPuzzle(string json) {
+        var data = Json.Parse(json);
+        CurrentSceneId = data.GetField("id").AsString;
+        CurrentPuzzle = Scene.PuzzleInfo.Parse(data.GetField("puzzle"));
+
+        Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
+        Application.LoadLevel("puzzle");
     }
 }

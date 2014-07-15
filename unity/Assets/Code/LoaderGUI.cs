@@ -13,12 +13,10 @@ public class LoaderGUI : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        FindObjectOfType<ExternalAPI>().ClearLevel();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
 	}
 
     void OnGUI() {

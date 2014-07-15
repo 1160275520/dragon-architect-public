@@ -14,8 +14,10 @@ public class TLRepeat : MonoBehaviour
 
         var rep = "<object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object>";
         var f1 = "<object data=\"media/blockSvgs/f1.svg\" style=\"vertical-align:middle\"></object>";
-        var msg = String.Format("{0} lets me do everything inside multiple times. It can repeat a statement or procedure many times! Help me use {0} in <b>MAIN</b> to fill the blueprint by repeating {1}!.", rep, f1);
-        GetComponent<AllTheGUI>().CurrentMessage = msg;
+        lh.SetInstructions(
+            String.Format("{0} lets me do everything inside multiple times.", rep),
+            String.Format("It can repeat a statement or procedure many times! Help me use {0} in <b>MAIN</b> to fill the blueprint by repeating {1}!.", rep, f1)
+        );
 
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);

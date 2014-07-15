@@ -38,7 +38,7 @@ public class TLMovement2D : MonoBehaviour {
                     GetComponent<AllTheGUI>().CurrentMessage = messages[phase];
                     var progman = GetComponent<ProgramManager>();
                     var api = GetComponent<ExternalAPI>();
-                    api.SendInstructions();
+                    //api.SendInstructions();
                     var lh = GetComponent<LevelHelper>();
                     lh.ClearRobotTargets();
                     lh.CreateRobotTarget(targets[phase]);
@@ -53,7 +53,7 @@ public class TLMovement2D : MonoBehaviour {
                             progman.SetHighlighted("Forward", false);
                             break;
                     }
-                    api.SendLevel();
+                    //api.SendLevel();
                     progman.StopRunning();
                 } else {
                     GetComponent<LevelHelper>().WinLevel();

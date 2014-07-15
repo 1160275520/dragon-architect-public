@@ -32,6 +32,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -56,11 +57,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CustomSkin: {fileID: 11400000, guid: f5502fcb19048454dbd3d0211441f894, type: 2}
+  SpeechBubble: {fileID: 0}
   IsActiveMainControls: 1
   IsActiveCodeEditor: 1
-  IsActiveTimeSlider: 1
-  IsActiveSaveLoad: 1
-  IsActiveGotoNextLevel: 0
+  IsActiveTimeSlider: 0
+  IsActiveSaveLoad: 0
+  IsActiveReturnToLevelSelect: 0
   IsActiveBlockly: 1
 --- !u!114 &11400004
 MonoBehaviour:
@@ -74,13 +76,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DelayPerCommand: .100000001
-  IsAvail2DMovement: 1
-  IsAvail3DMovement: 1
-  IsAvailPlaceBlock: 1
-  IsAvailLine: 1
-  IsAvailCall: 1
-  IsAvailRepeat: 1
-  NumHelperFuncs: 5
 --- !u!114 &11400006
 MonoBehaviour:
   m_ObjectHideFlags: 1

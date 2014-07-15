@@ -1,6 +1,6 @@
 using UnityEngine;
-using System.Collections;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Hackcraft;
 using Microsoft.FSharp.Collections;
@@ -9,10 +9,8 @@ public class ExternalAPI : MonoBehaviour
 {
     public const string ExternalApiFunc = "onHackcraftEvent";
     public const string OnSystemStart = "onSystemStart";
-    public const string OnProgramChange = "onProgramChange";
-    public const string OnLevelChange = "onLevelChange";
+    public const string OnPuzzleChange = "onPuzzleChange";
     public const string OnStatementHighlight = "onStatementHighlight";
-    public const string OnInstructionsChange = "onInstructionsChange";
 
     private bool isFirstUpdate;
 
@@ -24,35 +22,27 @@ public class ExternalAPI : MonoBehaviour
         if (isFirstUpdate) {
             try {
                 SendColors();
-                SendProgram();
-                SendLevel();
-                SendInstructions();
-            } catch (NullReferenceException) {
-                Debug.Log("null reference on first update, expected on level loader");
+                var global = FindObjectOfType<Global>();
+                var puzzle = global.CurrentPuzzle;
+                var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
+                puzzle = puzzle.UpdateStartingProgram(Json.Serialize(prog));
+                NotifyOfPuzzle(global.CurrentSceneId, puzzle, true);
+            } catch (Exception e) {
+                Debug.LogException(e);
             }
+
             isFirstUpdate = false;
         }
-
-        // check if current statement changed, if so send update
-
-
-        // check if program changed, if so send update
-        // TODO jk, ignore this for now because it never changes during puzzles!
     }
 
-    public void ClearLevel() {
-        Application.ExternalCall(ExternalApiFunc, OnProgramChange, "{}");
-        Application.ExternalCall(ExternalApiFunc, OnLevelChange, "{}");
-    }
+    public void NotifyOfPuzzle(string id, Scene.PuzzleInfo info, bool isStarting) {
+        var dict = new Dictionary<string, Json.JsonValue>();
+        dict.Add("id", Json.JsonValue.NewString(id));
+        dict.Add("puzzle", info.ToJson());
+        dict.Add("checksum", Json.JsonValue.NewString(info.Checksum()));
+        dict.Add("is_starting", Json.JsonValue.NewBool(isStarting));
 
-    public void SendProgram() {
-        var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
-        Application.ExternalCall(ExternalApiFunc, OnProgramChange, Json.Serialize(prog));
-    }
-
-    public void SendLevel() {
-        var level = GetComponent<ProgramManager>().MakeLevelInfo().ToJson();
-        Application.ExternalCall(ExternalApiFunc, OnLevelChange, Json.Serialize(level));
+        Application.ExternalCall(ExternalApiFunc, OnPuzzleChange, Json.Serialize(Json.JsonValue.ObjectOf(dict)));
     }
 
     public void SendCurrentStatement() {
@@ -61,10 +51,6 @@ public class ExternalAPI : MonoBehaviour
         } catch (InvalidOperationException) {
             Application.ExternalCall(ExternalApiFunc, OnStatementHighlight, ""); // clear final highlight when done executing
         }
-    }
-
-    public void SendInstructions() {
-        Application.ExternalCall(ExternalApiFunc, OnInstructionsChange, GetComponent<AllTheGUI>().CurrentMessage);
     }
 
     public void SendColors() {

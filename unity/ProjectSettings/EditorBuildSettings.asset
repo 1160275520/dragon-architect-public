@@ -8,22 +8,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/loader.unity
   - enabled: 1
-    path: Assets/Scenes/tl_movement2d.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_placement.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_movement_args.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_movement3d.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_call.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_call2.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_repeat.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_repeat2.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_final.unity
-  - enabled: 1
-    path: Assets/Scenes/tl_speed_slider.unity
+    path: Assets/Scenes/puzzle.unity

@@ -51,7 +51,7 @@ self.initialize = function(uid) {
     user = api.initializeUser(props);
 }
 
-self.startQuest = function(qid) {
+self.startQuest = function(qid, checksum) {
     var localDqid = 1; //Optional parameter that is needed if more than one quest is being logged at a time.
     var msStartTime = Date.now();
 
@@ -59,9 +59,8 @@ self.startQuest = function(qid) {
         //Load a quest start action and the quest end.
         var questId = qid;
         var details = {exampleData1:"data1", exampleData2:"data2"};
-        var levelDataString = "test";
         //CrytoJS is required to call this. See html file for script.
-        var questHash = CryptoJS.MD5(levelDataString);
+        var questHash = checksum;
         user.logQuestStart(questId, questHash, details, function(response) {
             //Callback is optional and usually is only used for testing.
         }, localDqid);

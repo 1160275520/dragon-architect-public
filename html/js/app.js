@@ -1,15 +1,10 @@
 var onHackcraftEvent = (function(){ "use strict";
 
-var program;
 var unityObject;
 var is_running = false;
 var questLogger;
 var handler = {};
 var levelsCompleted = [];
-var instructions = "";
-
-// HACKAPALOOZA
-var next_level_id = null;
 var scenes = null;
 
 // GENERIC UNITY API SETUP AND MARSHALLING
@@ -21,6 +16,7 @@ function send_message(object, method, arg) {
 
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
+    console.info('received Unity event ' + func);
     handler[func](arg);
 }
 
@@ -122,12 +118,7 @@ function make_levelSelect(module, scenes) {
     nodes.forEach(function (x) { 
         if (graph.predecessors(x.id).every(is_completed)) {
             x.onclick = function() {
-                next_level_id = x.id;
-                if (scenes[x.id].scene_name === SANDBOX_LEVEL_ID) {
-                    setState_sandbox(scenes[x.id].scene_name);
-                } else {
-                    setState_puzzle(scenes[x.id].scene_name);
-                }
+                setState_puzzle({id:x.id, puzzle:scenes[x.id]});
             };
             if (is_completed(x.id)) {
                 x.children[0].style.fill = colors["green"];
@@ -143,15 +134,15 @@ function make_levelSelect(module, scenes) {
 function make_smallInstructions() {
     var instContainer = $("#instructionsContainer")[0];
     instContainer.onclick = null;
-    
+
     $("#instructionsBackground").removeClass("instructionsShow");
     $("#instructionsBackground").addClass("instructionsHide");
     $("#instructions-detail").removeClass("detailShow");
     $("#instructions-detail").addClass("detailHide");
-    
+
     // $("#instructions").removeClass("speechBubble");
     // $("#instructions-detail").removeClass("instructionsShown");
-    
+
     // $("#dragonIcon").removeClass("speechBubble");
     var dragon = $("#dragonIcon")[0];
     // $("#dragonIcon")[0].style.visibility = "hidden";
@@ -163,7 +154,7 @@ function make_smallInstructions() {
     // inst.style.textAlign = "center";
     // inst.style.verticalAlign = "middle";
     // inst.style.fontSize = "32pt";
-    
+
     var detail = $("#instructions-detail")[0];
     detail.style.height = '0px';
 
@@ -197,13 +188,13 @@ function make_largeInstructions() {
     $("#dragonIcon").addClass("speechBubble");
     dragon.style.webkitAnimationPlayState = "paused";
     dragon.style.animationPlayState = "paused";
-    
+
     var goal = $("#instructions-goal")[0];
-    
+
     var detail = $("#instructions-detail")[0];
     detail.style.height = "auto";
 
-    Hackcraft.setInstructions(instructions);
+    //Hackcraft.setInstructions(instructions);
 
     setTimeout(function () { 
         dragon.style.visibility = "visible";
@@ -217,14 +208,14 @@ function make_largeInstructions() {
     }, 1000);
 }
 
-function setState_puzzle(stageId) {
-    console.info('starting puzzle ' + stageId);
+function setState_puzzle(puzzle_info) {
     hideAll();
     $('.codeEditor, .puzzleModeUI').show();
     unityPlayer.show();
-    set_stage(stageId);
+    request_start_puzzle(puzzle_info);
 }
 
+/*
 // shows the UI for sandbox mode. If stageID is not null, also sets the unity stage.
 function setState_sandbox(stageId) {
     console.info('starting sandbox ' + stageId);
@@ -235,6 +226,7 @@ function setState_sandbox(stageId) {
         set_stage(stageId);
     }
 }
+*/
 
 function setState_gallery(galleryObjectArray) {
     // TODO make sure current program is preserved for when gallery returns to sandbox
@@ -353,8 +345,8 @@ function set_program(prog) {
     send_message("System", "EAPI_SetProgramFromJson", s);
 }
 
-function set_stage(stage_id) {
-    send_message("Global", "EAPI_SetStage", stage_id);
+function request_start_puzzle(puzzle_info) {
+    send_message("Global", "EAPI_RequestStartPuzzle", JSON.stringify(puzzle_info));
 }
 
 function set_is_running(is_running) {
@@ -366,52 +358,56 @@ function control_camera(action) {
 }
 
 handler.onSystemStart = function(json) {
-    console.info('on system start!');
     var info = JSON.parse(json);
     scenes = info.scenes;
     make_levelSelect(info.modules[0], info.scenes);
     setState_title();
 }
 
-handler.onProgramChange = function(json) {
-    console.info('on program change!');
-    //console.log(json);
-    program = JSON.parse(json);
-    Hackcraft.setProgram(program);
-}
-
-handler.onLevelChange = function(json) {
-    console.info('on level change!');
+handler.onPuzzleChange = function(json) {
     console.log(json);
-    var levelInfo = JSON.parse(json);
+    var info = JSON.parse(json);
 
-    Hackcraft.setLevel(levelInfo, scenes[next_level_id]);
-    make_largeInstructions();
-    Hackcraft.history = new Array();
-    // reset run button
-    var b = $('#btn-run')[0];
-    var slider = $('#sliderContainer')[0];
-    if (jQuery.isEmptyObject(levelInfo)) {
-        b.hidden = true;
-        slider.style.visibility = "hidden";
-    } else {
-        b.hidden = false;
-        b.innerText = "Run!";
-        b.style.backgroundColor = "#37B03F";
-        slider.style.visibility = "visible";
-        set_program_execution_speed($('#slider').slider("option", "value"));
+    var VERSION = 1;
+    if (info.puzzle.version !== VERSION) {
+        console.error("Invalid puzzle info version '" + info.puzzle.version + "'!");
+        return;
     }
-    is_running = false;
 
-    // clear old quest logger if it exists
-    if (questLogger) {
-        questLogger.logQuestEnd();
-        questLogger = null;
+    if (info.is_starting) {
+        Hackcraft.setLevel(info.puzzle);
+
+        Hackcraft.history = new Array();
+        // reset run button
+        var b = $('#btn-run')[0];
+        var slider = $('#sliderContainer')[0];
+        if (false){//jQuery.isEmptyObject(levelInfo)) {
+            b.hidden = true;
+            slider.style.visibility = "hidden";
+        } else {
+            b.hidden = false;
+            b.innerText = "Run!";
+            b.style.backgroundColor = "#37B03F";
+            slider.style.visibility = "visible";
+            set_program_execution_speed($('#slider').slider("option", "value"));
+        }
+        is_running = false;
+
+        // clear old quest logger if it exists
+        if (questLogger) {
+            questLogger.logQuestEnd();
+            questLogger = null;
+        }
+        // then start new quest logger if this is not an empty level
+        questLogger = HackcraftLogging.startQuest(info.puzzle.logging_id, info.checksum);
+
+        make_largeInstructions();
+
+        var program = JSON.parse(info.puzzle.program);
+        Hackcraft.setProgram(program);
     }
-    // then start new quest logger if this is not an empty level
-    if (levelInfo.hasOwnProperty('qid')) {
-        questLogger = HackcraftLogging.startQuest(levelInfo.qid);
-    }
+
+    Hackcraft.setInstructions(info.puzzle.instructions);
 }
 
 handler.onStatementHighlight = function(id) {
@@ -420,12 +416,6 @@ handler.onStatementHighlight = function(id) {
     } else if (Blockly.selected) {
         Blockly.selected.unselect();
     }
-}
-
-handler.onInstructionsChange = function(msg) {
-    console.info('on instructions change!');
-    Hackcraft.setInstructions(msg);
-    instructions = msg;
 }
 
 handler.onSetColors = function(json) {

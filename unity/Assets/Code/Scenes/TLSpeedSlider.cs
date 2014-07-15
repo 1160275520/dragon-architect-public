@@ -12,8 +12,10 @@ public class TLSpeedSlider : MonoBehaviour
 	void Start() {
         var lh = GetComponent<LevelHelper>();
 
-        var msg = "The <b>Speed Slider</b> changes the rate at which your program executes. This program takes a long time to run; speed it up by dragging the slider to <b>Fast</b>!";
-        GetComponent<AllTheGUI>().CurrentMessage = msg;
+        lh.SetInstructions(
+            "The <b>Speed Slider</b> changes the rate at which your program executes.",
+            "This program takes a long time to run; speed it up by dragging the slider to <b>Fast</b>!"
+        );
 
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("MAIN", false);

@@ -40,7 +40,7 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-      <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(SolutionDir)../unity/Assets/Code/" />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(SolutionDir)../unity/Assets/Code/" />
   </Target>
   <ProjectExtensions>
     <MonoDevelop>
@@ -63,7 +63,7 @@
     <Compile Include="Json.fs" />
     <Compile Include="Math.fs" />
     <Compile Include="Collections.fs" />
-    <Compile Include="LevelInfo.fs" />
+    <Compile Include="Scene.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="AstManipulator.fs" />
     <Compile Include="Serialization.fs" />

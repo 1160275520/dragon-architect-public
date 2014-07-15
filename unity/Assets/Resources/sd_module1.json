@@ -1,7 +1,7 @@
 {
     "tutorial.movement2d": {
         "name": "2D Movement",
-        "scene_name": "tl_movement2d",
+        "component": "TLMovement2D",
         "library": {
             "required": [],
             "granted": ["move2"]
@@ -10,31 +10,31 @@
     },
     "tutorial.movement3d": {
         "name": "3D Movement",
-        "scene_name": "tl_movement3d",
+        "component": "TLMovement3D",
         "library": {
             "required": ["move2"],
             "granted": ["move3"]
         },
         "tutorial": {
-            "highlighted_blocks": ["Up"]
+            "highlighted": ["Up"]
         },
         "logging_id": 22
     },
     "tutorial.place_blocks": {
         "name": "Placing Blocks",
-        "scene_name": "tl_placement",
+        "component": "TLPlacement",
         "library": {
             "required": ["move2"],
             "granted": ["place"]
         },
         "tutorial": {
-            "highlighted_blocks": ["PlaceBlock"]
+            "highlighted": ["PlaceBlock"]
         },
         "logging_id": 23
     },
     "tutorial.arguments":{
         "name": "Using Arguments",
-        "scene_name": "tl_movement_args",
+        "component": "TLMovementArgs",
         "library": {
             "required": [],
             "granted": []
@@ -43,7 +43,7 @@
     },
     "tutorial.speed_slider": {
         "name": "Speed Slider",
-        "scene_name": "tl_speed_slider",
+        "component": "TLSpeedSlider",
         "library": {
             "required": ["move2", "place", "repeat"],
             "granted": []
@@ -52,19 +52,19 @@
     },
     "tutorial.call_1": {
         "name": "Calling Procedures",
-        "scene_name": "tl_call",
+        "component": "TLCall",
         "library": {
             "required": ["move2", "place"],
             "granted": ["call"]
         },
         "tutorial": {
-            "highlighted_blocks": ["procedures_callnoreturn"]
+            "highlighted": ["procedures_callnoreturn"]
         },
         "logging_id": 26
     },
     "tutorial.call_2": {
         "name": "Calling More Procedures",
-        "scene_name": "tl_call2",
+        "component": "TLCall2",
         "library": {
             "required": ["move2", "place", "call"],
             "granted": []
@@ -73,19 +73,19 @@
     },
     "tutorial.repeat_1": {
         "name": "Loops",
-        "scene_name": "tl_repeat",
+        "component": "TLRepeat",
         "library": {
             "required": ["move2", "place", "call"],
             "granted": ["repeat"]
         },
         "tutorial": {
-            "highlighted_blocks": ["controls_repeat"]
+            "highlighted": ["controls_repeat"]
         },
         "logging_id": 28
     },
     "tutorial.repeat_2": {
         "name": "More Loops",
-        "scene_name": "tl_repeat2",
+        "component": "TLRepeat2",
         "library": {
             "required": ["move2", "place", "call", "repeat"],
             "granted": []
@@ -94,7 +94,7 @@
     },
     "tutorial.sandbox": {
         "name": "~ Free Play Mode ~",
-        "scene_name": "tl_final",
+        "component": "TLFinal",
         "library": {
             "required": ["move2", "place", "call", "repeat"],
             "granted": []

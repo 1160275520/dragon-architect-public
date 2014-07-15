@@ -171,12 +171,11 @@ Hackcraft.freezeBody = function(block) {
 /**
  * set which blocks are available
  */
-Hackcraft.setLevel = function(levelInfo, scene_info) {
-    //console.log("updating toolbox");
+Hackcraft.setLevel = function(scene_info) {
     var toolXML = '<xml id="toolbox" style="display: none">';
-    if (levelInfo.funcs) {
-        Hackcraft.makeFuncs(levelInfo.funcs);
-    }
+
+    // HACK
+    Hackcraft.makeFuncs(4);
 
     var lib = scene_info.library;
 
@@ -197,11 +196,13 @@ Hackcraft.setLevel = function(levelInfo, scene_info) {
         });
     }
 
+    /* HACK rewrite this!
     if (levelInfo.locks) {
         levelInfo.locks.forEach(function (l) {
             Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === l; })[0]);
         });
     }
+    */
 };
 
 /**
@@ -272,9 +273,9 @@ Hackcraft.setInstructions = function (instructions) {
     // $('#instructions').removeClass("speechBubble");
     if (instructions) {
         // get the first sentence
-        goal.innerHTML = instructions.substring(0, instructions.search("[.!?]")+1); 
+        goal.innerHTML = instructions.summary; 
         // get the rest of the instructions, skipping the space that presumably follows the end of the first senetence
-        detail.innerHTML = instructions.substring(instructions.search("[.!?]")+2); 
+        detail.innerHTML = instructions.detail; 
     }
 }
 
