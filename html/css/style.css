@@ -206,7 +206,7 @@ header h1 {
 
 #instructions {
     color:#fff;
-    font-family: monospace;
+    font-family: "Ubuntu Mono";
     padding: 15px;
 }
 
@@ -430,7 +430,7 @@ header h1 {
 .tick { 
     position: relative;
     text-align:center;
-    font-family: monospace;
+    font-family: "Ubuntu Mono";
     font-weight: bold;
 }
 
