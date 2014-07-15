@@ -32,7 +32,6 @@ public class RobotController : MonoBehaviour {
             var anim = transform.FindChild("micro_dragon").gameObject.animation;
             if (com.Type == "block") {
                 anim["bite"].speed = anim["bite"].length / time.Value;
-                Debug.Log("Playing bite at " + anim["bite"].speed);
                 anim.Play("bite");
                 anim.PlayQueued("idle", QueueMode.CompleteOthers);
             }
