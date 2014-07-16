@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hackcraft;
 using Microsoft.FSharp.Collections;
+using Microsoft.FSharp.Core;
 
 public class ExternalAPI : MonoBehaviour
 {
@@ -24,8 +25,11 @@ public class ExternalAPI : MonoBehaviour
                 SendColors();
                 var global = FindObjectOfType<Global>();
                 var puzzle = global.CurrentPuzzle;
-                var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
-                puzzle = puzzle.UpdateStartingProgram(Json.Serialize(prog));
+                // only update program from ProgramManager if the json file didn't specify anything
+                if (OptionModule.IsNone(puzzle.StartingProgram)) {
+                    var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
+                    puzzle = puzzle.UpdateStartingProgram(Json.Serialize(prog));
+                }
                 NotifyOfPuzzle(global.CurrentSceneId, puzzle, true);
             } catch (Exception e) {
                 Debug.LogException(e);

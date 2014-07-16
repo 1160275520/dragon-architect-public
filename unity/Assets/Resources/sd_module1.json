@@ -1,7 +1,7 @@
 {
     "tutorial.movement2d_part1": {
         "name": "2D Movement part 1",
-        "component": "PuzMovement2D",
+        "component": "PuzMovement2D_1",
         "library": {
             "required": [],
             "granted": ["move2"]
@@ -14,7 +14,7 @@
     },
     "tutorial.movement2d_part2": {
         "name": "2D Movement part 2",
-        "component": "TLMovement2D_2",
+        "component": "PuzMovement2D_2",
         "library": {
             "required": ["move2"],
             "granted": []
@@ -27,7 +27,7 @@
     },
     "tutorial.movement2d_part3": {
         "name": "2D Movement part 3",
-        "component": "TLMovement2D_3",
+        "component": "PuzMovement2D_3",
         "library": {
             "required": ["move2"],
             "granted": []

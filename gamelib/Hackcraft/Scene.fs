@@ -86,7 +86,7 @@ type PuzzleInfo = {
     Library: Library;
     Tutorial: Tutorial option;
     Instructions: Instructions option;
-    StartingProgram: Program;
+    StartingProgram: Program option;
 } with
     // need to produce the json with and without the checksum so the checksum can actually be computed
     member x.ToJson () =
@@ -98,7 +98,7 @@ type PuzzleInfo = {
             "library", x.Library.ToJson ();
             "tutorial", nullOrToJson x.Tutorial;
             "instructions", nullOrToJson x.Instructions;
-            "program", x.StartingProgram.ToJson ();
+            "program", nullOrToJson x.StartingProgram;
         ]
 
     static member Parse j =
@@ -109,11 +109,12 @@ type PuzzleInfo = {
             Library = jload j "library" Library.Parse;
             Tutorial = tryJload j "tutorial" Tutorial.Parse;
             Instructions = tryJload j "instructions" Instructions.Parse;
-            StartingProgram = defaultArg (tryJload j "program" Program.Parse) (Text "");
+            StartingProgram = tryJload j "program" Program.Parse;
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}
-    member x.UpdateStartingProgram program = {x with StartingProgram=Text program;}
+    member x.UpdateStartingProgram program = {x with StartingProgram=Some (Text program);}
+    member x.UpdateStartingProgramToPreserve = {x with StartingProgram=Some Preserve;}
 
     /// Compute a checksum of this level info (for logging).
     member x.Checksum () =
