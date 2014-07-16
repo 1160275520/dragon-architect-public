@@ -116,6 +116,8 @@ Hackcraft.clearProgram= function () {
  * set blocks making up current program
  */
 Hackcraft.setProgram = function(program) {
+    console.info(program);
+
     Hackcraft.ignoreNextHistory = true;
     Hackcraft.clearProgram();
 
@@ -123,6 +125,14 @@ Hackcraft.setProgram = function(program) {
     //console.log(Blockly.UnityJSON.XMLOfJSON(program));
     Hackcraft.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
     Hackcraft.curProgramStr = Hackcraft.getXML();
+
+    _.each(program.procedures, function(proc, name) {
+        var attr = proc.meta.attributes;
+        if (attr && attr['frozen_blocks']) {
+            console.log('freezing blocks of ' + name);
+            Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0]);
+        }
+    });
 };
 
 /**
@@ -132,7 +142,7 @@ Hackcraft.loadBlocks = function (blocksXML) {
     BlocklyApps.loadBlocks(blocksXML);
     var blocks = Blockly.mainWorkspace.getTopBlocks();
     // set maximum blocks to 15 per function
-    Blockly.mainWorkspace.maxBlocks = blocks.length * 15;    
+    Blockly.mainWorkspace.maxBlocks = blocks.length * 15;
 
     // recolor functions to differentiate MAIN from helpers
     if (blocks.length > 0) {
@@ -195,14 +205,6 @@ Hackcraft.setLevel = function(scene_info) {
             }
         });
     }
-
-    /* HACK rewrite this!
-    if (levelInfo.locks) {
-        levelInfo.locks.forEach(function (l) {
-            Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === l; })[0]);
-        });
-    }
-    */
 };
 
 /**

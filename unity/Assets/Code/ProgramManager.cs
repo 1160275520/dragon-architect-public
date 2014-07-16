@@ -21,19 +21,24 @@ public class ProgramManager : MonoBehaviour {
         return PROCS.ToArray();
     } }
 
-    // which procedures cannot be edited
-    private HashSet<string> lockedProcedures = new HashSet<string>();
-
-    public bool IsEditable(string proc) {
-        return !lockedProcedures.Contains(proc);
+    public bool IsFrozenBlocks(string procName) {
+        var proc = Manipulator.Program.Procedures[procName];
+        return proc.Meta.Attributes.TryLoadOrElse("frozen_blocks", Json.asBool, false);
     }
 
-    public void SetIsEditable(string proc, bool b) {
-        if (b) {
-            lockedProcedures.Remove(proc);
-        } else {
-            lockedProcedures.Add(proc);
-        }
+    public bool IsFrozenArguments(string procName) {
+        var proc = Manipulator.Program.Procedures[procName];
+        return proc.Meta.Attributes.TryLoadOrElse("frozen_args", Json.asBool, false);
+    }
+
+    public void SetIsFrozenBlocks(string procName, bool isFrozen) {
+        var proc = Manipulator.Program.Procedures[procName];
+        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_blocks", Json.JsonValue.NewBool(isFrozen)));
+    }
+
+    public void SetIsFrozenArguments(string procName, bool isFrozen) {
+        var proc = Manipulator.Program.Procedures[procName];
+        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_args", Json.JsonValue.NewBool(isFrozen)));
     }
 
     private HashSet<string> highlightBlocks = new HashSet<string>();

@@ -19,8 +19,9 @@ public class PuzCall : MonoBehaviour
         );
 
         var progman = GetComponent<ProgramManager>();
-        progman.SetIsEditable("F1", false);
         progman.LoadProgram("puzzle.tutorial.call_1");
+        progman.SetIsFrozenBlocks("F1", true);
+        progman.SetIsFrozenArguments("F1", true);
         progman.SetHighlighted("procedures_callnoreturn", true);
 
         var template = new List<IntVec3>();

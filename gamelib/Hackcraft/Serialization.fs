@@ -17,7 +17,11 @@ let JsonOfProgram (program:Program) =
         | :? string as s -> J.String s
         | _ -> invalidArg "o" (sprintf "cannot json encode object of type '%s'" (o.GetType().Name))
 
-    let jsonOfMeta (meta:Meta) = J.JsonValue.ObjectOf [("id", J.Int meta.Id)]
+    let jsonOfMeta (meta:Meta) =
+        [
+            (if meta.Attributes = J.emptyObject then None else Some ("attributes", meta.Attributes));
+            (if meta.Id = 0 then None else Some ("id", J.Int meta.Id));
+        ] |> List.choose (fun x -> x) |> J.JsonValue.ObjectOf
 
     let jsonOfExpr (expr:Expression) =
         match expr with
@@ -37,6 +41,7 @@ let JsonOfProgram (program:Program) =
         J.JsonValue.ObjectOf [
             ("arity", J.Int proc.Arity);
             ("body", jarrmap jsonOfStmt proc.Body);
+            ("meta", jsonOfMeta proc.Meta);
         ]
 
     let rec jsonOfModule (name:string) (module':Program) =
@@ -75,7 +80,11 @@ let ProgramOfJson (json: J.JsonValue) =
         | Json.String s -> upcast s
         | _ -> syntaxError j SerializationErrorCode.InvalidLiteral (sprintf "cannot json parse object of type '%s'" (j.GetType().Name))
 
-    let parseMeta j = Ast.Imperative.NewMeta (jload j "id" J.asInt)
+    let parseMeta j =
+        {
+            Id = jload j "id" J.asInt;
+            Attributes = defaultArg (J.tryGetField j "attributes") J.emptyObject;
+        }
 
     let parseExpr j =
         match jload j "type" J.asString with
@@ -95,7 +104,8 @@ let ProgramOfJson (json: J.JsonValue) =
 
     let parseProc n j =
         let body = Array.map parseStmt (jload j "body" J.arrayToArray)
-        {Arity=jload j "arity" J.asInt; Body=ImmArr.ofSeq body}
+        let meta = tryJload j "meta" parseMeta
+        {Meta=defaultArg meta (NewMeta 0); Arity=jload j "arity" J.asInt; Body=ImmArr.ofSeq body}
 
     let rec parseModule n j =
         let procs = jload j "procedures" J.objectToMap

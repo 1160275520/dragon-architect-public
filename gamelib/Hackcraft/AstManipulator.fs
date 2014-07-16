@@ -24,7 +24,7 @@ type ImperativeAstManipulator(maxProcedureLength:int) =
             isDirty <- true
         
     member this.CreateProcedure name =
-        ast <- {ast with Procedures=ast.Procedures.Add (name, {Arity=0; Body=ImmArr.ofSeq []})}
+        ast <- {ast with Procedures=ast.Procedures.Add (name, {Meta=NewMeta 0; Arity=0; Body=ImmArr.ofSeq []})}
         isDirty <- true
 
     member this.InsertStatement procname index statement =
@@ -56,6 +56,12 @@ type ImperativeAstManipulator(maxProcedureLength:int) =
         let body = bodyAsList procname
         body.[index] <- statement
         updateProc procname body
+
+    member this.UpdateProcedureAttributes procname attributes =
+        let proc = ast.Procedures.[procname]
+        let newproc = {proc with Meta={proc.Meta with Attributes=attributes}}
+        ast <- {ast with Procedures=ast.Procedures.Add (procname, newproc)}
+        isDirty <- true
 
     member this.ClearProcedure procname =
         updateProc procname []

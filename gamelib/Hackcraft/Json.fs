@@ -152,12 +152,16 @@ let objectOfMap seq = Object (JObject.ofMap seq)
 /// Construct a json object from a sequence of name, value pairs.
 let objectOfSeq seq = Object (JObject.ofSeq seq)
 
+let emptyObject = Object (ObjectValue [||])
+
 /// Construct a json array from a <c>JsonValue[]</c>.
 let arrayOfArray seq = Array (JArray.ofArray seq)
 /// Construct a json array from a <c>list</c>.
 let arrayOfList seq = Array (JArray.ofList seq)
 /// Construct a json array from a <c>seq</c>.
 let arrayOfSeq seq = Array (JArray.ofSeq seq)
+
+let emptyArray = Array (ArrayValue [||])
 
 /// <summary>Cast this value to an int.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an int.</exception>
@@ -183,6 +187,18 @@ let tryGetField j f =
 /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
 /// <exception cref="KeyNotFoundException">If this object does not have the given field.</exception>
 let getField j f = match tryGetField j f with Some v -> v | None -> raise (KeyNotFoundException (j, f, "", null))
+
+let setField j (key, value) =
+    match asObject j with
+        ObjectValue o ->
+            let newO =
+                match Array.tryFindIndex (fun (k,_) -> k = key) o with
+                | None -> Array.append o [| key, value |]
+                | Some i ->
+                    let a = Array.copy o
+                    a.[i] <- (key, value)
+                    a
+            Object (ObjectValue newO)
 
 /// <summary>Cast this value to an json object and convert to a <c>Map</c>.</summary>
 /// <exception cref="TypeMismatchException">If this value is not an json object.</exception>
@@ -210,15 +226,23 @@ type JsonValue with
     member t.AsBool = asBool t
     member t.AsArray = asArray t
     member t.AsObject = asObject t
-    member t.TryGetField f = tryGetField t f
-    member t.GetField f = getField t f
+    member t.TryGetField key = tryGetField t key
+    member t.GetField key = getField t key
 
+    member t.Load key (fn:System.Func<JsonValue,'a>) = fn.Invoke (getField t key)
+    member t.TryLoadOrElse key (fn:System.Func<JsonValue,'a>) default_:'a =
+        match tryGetField t key with None -> default_ | Some x -> fn.Invoke(x)
+
+    member t.SetField (key, value) = setField t (key, value)
+
+    static member EmptyObject = emptyObject
     static member ObjectOf seq = objectOfArray seq
     static member ObjectOf seq = objectOfList seq
     static member ObjectOf seq = objectOfDict seq
     static member ObjectOf seq = objectOfMap seq
     static member ObjectOf seq = objectOfSeq seq
 
+    static member EmptyArray = emptyArray
     static member ArrayOf seq = arrayOfArray seq
     static member ArrayOf seq = arrayOfList seq
     static member ArrayOf seq = arrayOfSeq seq

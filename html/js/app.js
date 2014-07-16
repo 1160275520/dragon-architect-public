@@ -409,6 +409,7 @@ handler.onPuzzleChange = function(json) {
                 Hackcraft.setProgram(program);
                 break;
             case "preserve":
+                // want to leave the old program, so do nothing!
                 break;
             default:
                 console.error("Unknown program type '" + info.puzzle.program.type + "'!");

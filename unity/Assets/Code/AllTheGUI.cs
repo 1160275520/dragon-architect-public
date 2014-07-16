@@ -40,8 +40,6 @@ public class AllTheGUI : MonoBehaviour
     public bool IsActiveReturnToLevelSelect = false;
     public bool IsActiveBlockly = true;
 
-    public string CurrentMessage { get; set; }
-
     private int curProc = 0;
     private Dictionary<string, List<Rect>> statementRects;
     private Dictionary<string, Rect> procRects;
@@ -150,21 +148,6 @@ public class AllTheGUI : MonoBehaviour
 
         GUILayoutOption[] options;
 
-        if (CurrentMessage != null) {
-//            GUI.Box(new Rect(160, SPACING, Math.Min(600, Screen.width - 160 - SPACING), 125), CurrentMessage, "ButtonBackground");
-//            var offsetX = 25;
-//            if (Camera.main.transform.position.x < salaPos.x) {
-//                offsetX *= -1;
-//            }
-//            Debug.Log(offsetX);
-//            var screenPos = Camera.main.WorldToScreenPoint(salaPos);
-//            GUI.BeginGroup(new Rect(screenPos.x, Screen.height - screenPos.y - 75, 50, 50));
-//            GUI.Label(new Rect(0, 0, 50, 50), "", "SpeechBubble");
-//            var style = new GUIStyle("Label");
-//            style.normal.textColor = Color.black;
-//            GUI.Label(new Rect(13, 13, 35, 35), "...", style);
-//            GUI.EndGroup();
-        }
         if (IsActiveReturnToLevelSelect) {
             area = new Rect(Screen.width/2 - 100, Screen.height/2 - 50, 200, 100);
             GUILayout.BeginArea(area);
@@ -230,21 +213,19 @@ public class AllTheGUI : MonoBehaviour
                 GUILayout.Width(BUTTON_COLUMN_WIDTH),
                 GUILayout.Height(BUTTON_HEIGHT)
             };
-            if (progman.IsEditable(procedures[curProc])) {
-                GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
-                makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
-                makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
-                makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
-                makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
-                makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
-                makeButton("PlaceBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("placeblock")), true);
-                makeButton("RemoveBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("removeblock")), true);
-                makeButton("Line", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("line")), true);
-                makeButton("Call", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("call")), true);
-                makeButton("Repeat", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("repeat")), true);
-            } else {
-                GUILayout.Label(procedures[curProc] + " is not\neditable.\nSelect a\ndifferent\nprocedure.", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 4.5f));
-            }
+
+            GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
+            makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
+            makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
+            makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
+            makeButton("Up", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("up")), true);
+            makeButton("Down", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("down")), true);
+            makeButton("PlaceBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("placeblock")), true);
+            makeButton("RemoveBlock", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("removeblock")), true);
+            makeButton("Line", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("line")), true);
+            makeButton("Call", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("call")), true);
+            makeButton("Repeat", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("repeat")), true);
+
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }
@@ -527,7 +508,6 @@ public class AllTheGUI : MonoBehaviour
         // detect drag in existing tiles or buttons, ignoring dragges in text fields
         else if (Input.GetMouseButtonDown(0) && currentlyDragged == null && GUI.GetNameOfFocusedControl() == "") {
             foreach (var procName in procedures) { // check existing tiles
-                if (!progman.IsEditable(procName)) continue;
 
                 var proc = progman.Manipulator.Program.Procedures [procName];
                 for (int i = 0; i < statementRects[procName].Count; i++) {
@@ -569,7 +549,7 @@ public class AllTheGUI : MonoBehaviour
                 currentlyDragged.StatementIndex = null;
             }
             // compute overlapping areas with procedure rectangles
-            var areas = procedures.Select((procName, index) => new { Name=procName, Value = rectIntersectArea(currentlyDragged.DragRect, procRects[procName]), Index = index }).Where(x => progman.IsEditable(x.Name));
+            var areas = procedures.Select((procName, index) => new { Name=procName, Value = rectIntersectArea(currentlyDragged.DragRect, procRects[procName]), Index = index });
             if (areas.Any((x) => x.Value > 0)) { // if any overlap exists
                 // find procedure with greatest overlap, and insert statement there
                 var procName = procedures[areas.Aggregate((a, b) => a.Value > b.Value ? a : b).Index];
