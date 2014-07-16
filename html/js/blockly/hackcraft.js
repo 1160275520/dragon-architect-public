@@ -212,6 +212,10 @@ Hackcraft.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
     Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id);}));
     var procedures = {};
+    procedures["MAIN"] = {};
+    var main = procedures["MAIN"];
+    main['arity'] = 0;
+    main['body'] = [];
     // iterate over top-level blocks
     for (var i = 0; i < topBlocks.length; i++) {
         var block = topBlocks[i];
@@ -221,6 +225,8 @@ Hackcraft.getProgram = function() {
             var fn = procedures[block.getFieldValue("NAME")];
             fn['arity'] = 0;
             fn['body'] = Blockly.UnityJSON.processBody(block);
+        } else { // everything else is part of MAIN
+            // TODO
         }
     }
     return {
@@ -241,25 +247,52 @@ Hackcraft.getXML = function() {
 };
 
 /**
- * iterates over the blocks in a body, invoking callback on each one
- * callback needs to handle recursively processing nested bodies, if applicable
+* iterates over the blocks in a body, invoking callback on each one
+* callback needs to handle recursively processing nested bodies, if applicable
+*/
+Hackcraft.processBody = function(block, callback) {
+   var bodyBlock = block.inputList[1];
+   var body = [];
+   if (bodyBlock.connection && bodyBlock.connection.targetBlock()) {
+       var stmt = bodyBlock.connection.targetBlock();
+       // process stmt
+       body.push(callback(stmt));
+       // iterate over top-level blocks inside body
+       while(stmt.nextConnection && stmt.nextConnection.targetBlock()) {
+           // dispatch appropriately for each type of block
+           stmt = stmt.nextConnection.targetBlock();
+           body.push(callback(stmt));
+       }
+   }
+   return body;
+};
+
+/**
+ * Returns a list the block and its siblings (blocks attached below it).
+ * Each element of the list is an object of the form {block: <block>} or {block: <block>, children: <children>}
+ * if the block contains child blocks (e.g. procedure, repeat).
  */
- Hackcraft.processBody = function(block, callback) {
-    var bodyBlock = block.inputList[1];
-    var body = [];
-    if (bodyBlock.connection && bodyBlock.connection.targetBlock()) {
-        var stmt = bodyBlock.connection.targetBlock();
-        // process stmt
-        body.push(callback(stmt));
-        // iterate over top-level blocks inside body
-        while(stmt.nextConnection && stmt.nextConnection.targetBlock()) {
-            // dispatch appropriately for each type of block
-            stmt = stmt.nextConnection.targetBlock();
-            body.push(callback(stmt));
-        }
-    }
-    return body;
- };
+Blockly.Block.prototype.getStructure = function() {
+
+ function rec(block, acc) {
+   var il = block.inputList;
+   if (il.length > 1 && il[1] && il[1].connection && il[1].connection.targetBlock()) {
+     var children = rec(il[1].connection.targetBlock(), []);
+     acc.push({block: block, children: children});
+   } else {
+     acc.push({block: block});
+   }
+
+   if (block.nextConnection && block.nextConnection.targetBlock()) {
+     rec(block.nextConnection.targetBlock(), acc);
+   }
+
+   return acc;
+ }
+
+ return rec(this, []);
+};
+
 
 /**
  * set the html for the instructions, sizing the speech buble appropriately
