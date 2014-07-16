@@ -135,68 +135,6 @@ function make_levelSelect(module, scenes) {
     });
 }
 
-function make_smallInstructions() {
-    var instContainer = $("#instructionsContainer")[0];
-    instContainer.onclick = null;
-
-    $("#instructionsBackground").removeClass("instructionsShow");
-    $("#instructionsBackground").addClass("instructionsHide");
-    $("#instructions-detail").removeClass("detailShow");
-    $("#instructions-detail").addClass("detailHide");
-
-    var detail = $("#instructions-detail")[0];
-    detail.style.height = '0px';
-
-    setTimeout(function() {
-        // instContainer.style.width = "50px";
-        instContainer.style.height = "auto";
-        instContainer.onclick = make_largeInstructions;
-    }, 1000);
-}
-
-function make_largeInstructions() {
-    var rect = $("svg g")[0].getBoundingClientRect();
-    var instContainer = $("#instructionsContainer")[0];
-    instContainer.style.top = '0px';
-    instContainer.style.left = rect.width + 'px';
-    instContainer.style.width = ($("#blockly")[0].getBoundingClientRect().width - rect.width) + 'px';
-    instContainer.style.height = "100%";
-    instContainer.onclick = null;
-
-    $("#instructionsBackground").removeClass("instructionsHide");
-    $("#instructionsBackground").addClass("instructionsShow");
-    $("#instructions-detail").removeClass("detailHide");
-    $("#instructions-detail").addClass("detailShow");
-
-    $("#instructions").addClass("speechBubble");
-    var inst = $("#instructions")[0];
-    inst.style.webkitAnimationPlayState = "paused";
-    inst.style.animationPlayState = "paused";
-
-    var dragon = $("#dragonIcon")[0];
-    $("#dragonIcon").addClass("speechBubble");
-    dragon.style.webkitAnimationPlayState = "paused";
-    dragon.style.animationPlayState = "paused";
-
-    var goal = $("#instructions-goal")[0];
-
-    var detail = $("#instructions-detail")[0];
-    detail.style.height = "auto";
-
-    //Hackcraft.setInstructions(instructions);
-
-    setTimeout(function () { 
-        dragon.style.visibility = "visible";
-        goal.style.visibility = "visible";
-        detail.style.visibility = "visible";
-        dragon.style.webkitAnimationPlayState = "running";
-        dragon.style.animationPlayState = "running";
-        inst.style.webkitAnimationPlayState = "running";
-        inst.style.animationPlayState = "running";
-        instContainer.onclick = make_smallInstructions;
-    }, 1000);
-}
-
 function setState_puzzle(puzzle_info) {
     hideAll();
     $('.codeEditor, .puzzleModeUI').show();
@@ -277,7 +215,7 @@ $(function() {
             }
         }
     });
-    $('#instructions-goal')[0].style.visibility = "hidden";
+    HackcraftUI.instructions.hide();
 
     // run button
     $('#btn-run').on('click', function () {
@@ -389,8 +327,6 @@ handler.onPuzzleChange = function(json) {
         // then start new quest logger if this is not an empty level
         questLogger = HackcraftLogging.startQuest(info.puzzle.logging_id, info.checksum);
 
-        make_largeInstructions();
-
         switch (info.puzzle.program.type) {
             case "text":
                 var program = JSON.parse(info.puzzle.program.value);
@@ -405,7 +341,7 @@ handler.onPuzzleChange = function(json) {
         }
     }
 
-    Hackcraft.setInstructions(info.puzzle.instructions);
+    HackcraftUI.instructions.show(info.puzzle.instructions);
 };
 
 handler.onStatementHighlight = function(id) {

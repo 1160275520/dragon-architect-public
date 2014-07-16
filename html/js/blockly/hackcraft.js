@@ -294,24 +294,6 @@ Blockly.Block.prototype.getStructure = function() {
 };
 
 
-/**
- * set the html for the instructions, sizing the speech buble appropriately
- * if instructions is the empty string, speech bubble is hidden instead
- */
-Hackcraft.setInstructions = function (instructions) {
-    //console.log("setting instructions");
-    //console.log(instructions);
-    var goal = $('#instructions-goal')[0];
-    var detail = $('#instructions-detail')[0];
-    // $('#instructions').removeClass("speechBubble");
-    if (instructions) {
-        // get the first sentence
-        goal.innerHTML = instructions.summary; 
-        // get the rest of the instructions, skipping the space that presumably follows the end of the first senetence
-        detail.innerHTML = instructions.detail; 
-    }
-};
-
 return Hackcraft;
 }());
 
