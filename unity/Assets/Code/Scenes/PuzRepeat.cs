@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Hackcraft;
 using Hackcraft.Ast;
 
-public class TLRepeat : MonoBehaviour
+public class PuzRepeat : MonoBehaviour
 {
     Func<bool> winPredicate;
 
@@ -21,7 +21,7 @@ public class TLRepeat : MonoBehaviour
 
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
-        progman.LoadProgram("level_repeat_01");
+        progman.LoadProgram("puzzle.tutorial.repeat_1");
         progman.SetHighlighted("controls_repeat", true);
 
         var template = new List<IntVec3>();

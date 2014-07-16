@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Hackcraft;
 using Hackcraft.Ast;
 
-public class TLCall : MonoBehaviour
+public class PuzCall : MonoBehaviour
 {
     Func<bool> winPredicate;
 
@@ -20,7 +20,7 @@ public class TLCall : MonoBehaviour
 
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("F1", false);
-        progman.LoadProgram("level_call_01");
+        progman.LoadProgram("puzzle.tutorial.call_1");
         progman.SetHighlighted("procedures_callnoreturn", true);
 
         var template = new List<IntVec3>();

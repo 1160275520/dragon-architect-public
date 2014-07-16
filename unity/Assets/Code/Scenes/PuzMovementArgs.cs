@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using Hackcraft;
 
-public class TLMovementArgs : MonoBehaviour
+public class PuzMovementArgs : MonoBehaviour
 {
 
     Func<bool> winPredicate;
@@ -15,7 +15,7 @@ public class TLMovementArgs : MonoBehaviour
             "The number in each <object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object> tells me how many spaces to move. Change the numbers to complete my program."
         );
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("TLMovementArgs");
+        progman.LoadProgram("puzzle.tutorial.arguments");
         progman.SetIsEditable("MAIN", false);
 
         var template = new IntVec3[] {

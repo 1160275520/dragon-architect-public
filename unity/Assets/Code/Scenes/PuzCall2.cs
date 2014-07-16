@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Hackcraft.Ast;
 
-public class TLCall2 : MonoBehaviour
+public class PuzCall2 : MonoBehaviour
 {
     Func<bool> winPredicate;
 

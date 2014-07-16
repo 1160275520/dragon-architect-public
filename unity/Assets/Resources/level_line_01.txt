@@ -1,4 +1,0 @@
-{"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
-"procedures":
-{"F1":{"arity":0,"body":[{"args":[{"type":"literal", "value":"1"}],"meta":{"id":83},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":87},"proc":"PlaceBlock","type":"call"}]},"MAIN":{"arity":0,"body":[{"meta":{"id":93},"numtimes":{"type":"literal","value":"5"},"stmt":{"args":[],"meta":{"id":0},"proc":"F1","type":"call"},"type":"repeat"}]}}
-}

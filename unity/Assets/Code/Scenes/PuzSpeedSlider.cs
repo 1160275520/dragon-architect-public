@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Hackcraft;
 using Hackcraft.Ast;
 
-public class TLSpeedSlider : MonoBehaviour
+public class PuzSpeedSlider : MonoBehaviour
 {
     Func<bool> winPredicate;
 
@@ -19,7 +19,7 @@ public class TLSpeedSlider : MonoBehaviour
 
         var progman = GetComponent<ProgramManager>();
         progman.SetIsEditable("MAIN", false);
-        progman.LoadProgram("level_speed_slider");
+        progman.LoadProgram("puzzle.tutorial.speed_slider");
 
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}

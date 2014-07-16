@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using Hackcraft;
 
-public class TLMovement3D : MonoBehaviour
+public class PuzMovement3D : MonoBehaviour
 {
 
     Func<bool> winPredicate;
@@ -15,7 +15,7 @@ public class TLMovement3D : MonoBehaviour
             "Use two <object data=\"media/blockSvgs/up.svg\" style=\"vertical-align:middle\"></object> to complete my program."
         );
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("TLMovement3D");
+        progman.LoadProgram("puzzle.tutorial.movement3d");
         progman.SetHighlighted("Up", true);
         var target = new IntVec3(3,5,0);
 

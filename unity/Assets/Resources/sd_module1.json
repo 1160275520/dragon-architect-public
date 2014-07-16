@@ -1,7 +1,7 @@
 {
     "tutorial.movement2d_part1": {
         "name": "2D Movement part 1",
-        "component": "TLMovement2D_1",
+        "component": "PuzMovement2D",
         "library": {
             "required": [],
             "granted": ["move2"]
@@ -40,7 +40,7 @@
     },
     "tutorial.movement3d": {
         "name": "3D Movement",
-        "component": "TLMovement3D",
+        "component": "PuzMovement3D",
         "library": {
             "required": ["move2"],
             "granted": ["move3"]
@@ -52,7 +52,7 @@
     },
     "tutorial.place_blocks": {
         "name": "Placing Blocks",
-        "component": "TLPlacement",
+        "component": "PuzPlacement",
         "library": {
             "required": ["move2"],
             "granted": ["place"]
@@ -64,7 +64,7 @@
     },
     "tutorial.arguments":{
         "name": "Using Arguments",
-        "component": "TLMovementArgs",
+        "component": "PuzMovementArgs",
         "library": {
             "required": [],
             "granted": []
@@ -73,7 +73,7 @@
     },
     "tutorial.speed_slider": {
         "name": "Speed Slider",
-        "component": "TLSpeedSlider",
+        "component": "PuzSpeedSlider",
         "library": {
             "required": ["move2", "place", "repeat"],
             "granted": []
@@ -82,7 +82,7 @@
     },
     "tutorial.call_1": {
         "name": "Calling Procedures",
-        "component": "TLCall",
+        "component": "PuzCall",
         "library": {
             "required": ["move2", "place"],
             "granted": ["call"]
@@ -94,7 +94,7 @@
     },
     "tutorial.call_2": {
         "name": "Calling More Procedures",
-        "component": "TLCall2",
+        "component": "PuzCall2",
         "library": {
             "required": ["move2", "place", "call"],
             "granted": []
@@ -103,7 +103,7 @@
     },
     "tutorial.repeat_1": {
         "name": "Loops",
-        "component": "TLRepeat",
+        "component": "PuzRepeat",
         "library": {
             "required": ["move2", "place", "call"],
             "granted": ["repeat"]
@@ -115,7 +115,7 @@
     },
     "tutorial.repeat_2": {
         "name": "More Loops",
-        "component": "TLRepeat2",
+        "component": "PuzRepeat2",
         "library": {
             "required": ["move2", "place", "call", "repeat"],
             "granted": []
@@ -124,7 +124,7 @@
     },
     "tutorial.sandbox": {
         "name": "~ Free Play Mode ~",
-        "component": "TLFinal",
+        "component": "PuzFinal",
         "library": {
             "required": ["move2", "place", "call", "repeat"],
             "granted": []

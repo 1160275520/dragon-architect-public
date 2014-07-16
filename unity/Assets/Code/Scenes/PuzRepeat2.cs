@@ -5,7 +5,7 @@ using Hackcraft;
 using Hackcraft.Ast;
 using System.Collections.Generic;
 
-public class TLRepeat2 : MonoBehaviour
+public class PuzRepeat2 : MonoBehaviour
 {
     Func<bool> winPredicate;
 
