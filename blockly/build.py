@@ -104,7 +104,7 @@ def build(deps):
 
 def save_deps(deps):
     print('Saving dependency file...')
-    with open(os.path.join(THIS_DIR,'dependencies.json'), 'w') as f:
+    with open(os.path.join(THIS_DIR,'dependencies.json'), 'wb') as f:
         f.write("[")
         for i, dep in enumerate(deps):
             if i != 0:
