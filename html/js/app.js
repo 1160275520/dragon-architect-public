@@ -5,7 +5,6 @@ var is_running = false;
 var questLogger;
 var handler = {};
 var levelsCompleted = [];
-var scenes = null;
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
@@ -27,11 +26,11 @@ var unityPlayer = function(){
 
     self.width = function() {
         return $('#unityPlayer embed').width();
-    }
+    };
 
     self.height = function() {
         return $('#unityPlayer embed').height();
-    }
+    };
 
     self.initialize = function() {
         var div = $("#unityPlayer");
@@ -43,19 +42,19 @@ var unityPlayer = function(){
         unityObject = new UnityObject2(config);
         unityObject.initPlugin(div[0], "generated/generated.unity3d");
 
-    }
+    };
 
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
 
     self.hide = function() {
         var u = $('#unityPlayer embed, #unityPlayer');
         u.css('width', '1px').css('height', '1px');
-    }
+    };
 
     self.show = function() {
         var u = $('#unityPlayer embed, #unityPlayer');
         u.css('width', '100%').css('height', '100%');
-    }
+    };
 
     return self;
 }();
@@ -70,8 +69,6 @@ function setState_title() {
     $('.titleScreen').show();
 }
 
-var SANDBOX_LEVEL_ID = 'tl_final';
-
 function setState_levelSelect() {
     hideAll();
     $('.levelSelector').show();
@@ -79,13 +76,14 @@ function setState_levelSelect() {
 
 function make_levelSelect(module, scenes) {
     // TODO move hard-coded graph spec to config file of some kind
-    var colors = {}
-    colors["teal"] = "#5BA68D";
-    colors["brown"] = "#A6875B";
-    colors["purple"] = "#995BA6";
-    colors["green"] = "#5BA65B";
-    colors["gray"] = "#777777";
-    colors["orange"] = "#FFB361";
+    var colors = {
+        teal: "#5BA68D",
+        brown: "#A6875B",
+        purple: "#995BA6",
+        green: "#5BA65B",
+        gray: "#777777",
+        orange: "#FFB361"
+    };
 
     var graph = new dagre.Digraph();
 
@@ -115,18 +113,24 @@ function make_levelSelect(module, scenes) {
         return true;
     }
 
+    var COLOR_MAP = {
+        completed: "green",
+        available: "orange",
+        unavailable: "gray"
+    };
+
     nodes.forEach(function (x) { 
         if (graph.predecessors(x.id).every(is_completed)) {
             x.onclick = function() {
                 setState_puzzle({id:x.id, puzzle:scenes[x.id]});
             };
             if (is_completed(x.id)) {
-                x.children[0].style.fill = colors["green"];
+                x.children[0].style.fill = colors[COLOR_MAP.completed];
             } else {
-                x.children[0].style.fill = colors["orange"];
+                x.children[0].style.fill = colors[COLOR_MAP.available];
             }
         } else {
-            x.children[0].style.fill = colors["gray"];
+            x.children[0].style.fill = colors[COLOR_MAP.unavailable];
         }
     });
 }
@@ -140,21 +144,6 @@ function make_smallInstructions() {
     $("#instructions-detail").removeClass("detailShow");
     $("#instructions-detail").addClass("detailHide");
 
-    // $("#instructions").removeClass("speechBubble");
-    // $("#instructions-detail").removeClass("instructionsShown");
-
-    // $("#dragonIcon").removeClass("speechBubble");
-    var dragon = $("#dragonIcon")[0];
-    // $("#dragonIcon")[0].style.visibility = "hidden";
-    // $("#dragonIcon")[0].style.height = "0px";
-    // dragon.style.height = $("#instructions")[0].getBoundingClientRect().height + "px";
-
-    // var inst = $("#instructions")[0];
-    // inst.innerHTML = "+";
-    // inst.style.textAlign = "center";
-    // inst.style.verticalAlign = "middle";
-    // inst.style.fontSize = "32pt";
-
     var detail = $("#instructions-detail")[0];
     detail.style.height = '0px';
 
@@ -167,7 +156,7 @@ function make_smallInstructions() {
 
 function make_largeInstructions() {
     var rect = $("svg g")[0].getBoundingClientRect();
-    var instContainer = $("#instructionsContainer")[0]
+    var instContainer = $("#instructionsContainer")[0];
     instContainer.style.top = '0px';
     instContainer.style.left = rect.width + 'px';
     instContainer.style.width = ($("#blockly")[0].getBoundingClientRect().width - rect.width) + 'px';
@@ -237,7 +226,7 @@ function setState_gallery(galleryObjectArray) {
 
     var list = $('#galleryList');
     list.empty();
-    _.each(galleryObjectArray, function(item, index) {
+    _.each(galleryObjectArray, function(item) {
         var button = $('<li><button>' + item.name + '</button></li>').appendTo(list);
         // HACK look for special sandbox level id
         button.click(function() {
@@ -341,7 +330,7 @@ function set_program_execution_speed(parameter) {
 }
 
 function set_program(prog) {
-    var s = JSON.stringify(prog)
+    var s = JSON.stringify(prog);
     send_message("System", "EAPI_SetProgramFromJson", s);
 }
 
@@ -359,10 +348,9 @@ function control_camera(action) {
 
 handler.onSystemStart = function(json) {
     var info = JSON.parse(json);
-    scenes = info.scenes;
     make_levelSelect(info.modules[0], info.scenes);
     setState_title();
-}
+};
 
 handler.onPuzzleChange = function(json) {
     console.log(json);
@@ -377,7 +365,7 @@ handler.onPuzzleChange = function(json) {
     if (info.is_starting) {
         Hackcraft.setLevel(info.puzzle);
 
-        Hackcraft.history = new Array();
+        Hackcraft.history = [];
         // reset run button
         var b = $('#btn-run')[0];
         var slider = $('#sliderContainer')[0];
@@ -418,7 +406,7 @@ handler.onPuzzleChange = function(json) {
     }
 
     Hackcraft.setInstructions(info.puzzle.instructions);
-}
+};
 
 handler.onStatementHighlight = function(id) {
     if (id) {
@@ -426,14 +414,14 @@ handler.onStatementHighlight = function(id) {
     } else if (Blockly.selected) {
         Blockly.selected.unselect();
     }
-}
+};
 
 handler.onSetColors = function(json) {
     console.info('on set colors!');
     var colors = JSON.parse(json);
     Blockly.FieldColour.COLOURS = colors;
     Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
-}
+};
 
 handler.onLevelComplete = function(levelId) {
     console.info('on level complete!');
@@ -443,12 +431,12 @@ handler.onLevelComplete = function(levelId) {
     if (questLogger) {
         questLogger.logPuzzledCompleted();
     }
-}
+};
 
 handler.onReturnToSelect = function() {
     console.info('on return to level select!');
     setState_levelSelect();
-}
+};
 
 return onHackcraftEvent;
 }());

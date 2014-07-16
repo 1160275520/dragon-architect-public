@@ -49,7 +49,7 @@ self.initialize = function(uid) {
     //Initialize an anonymous user. TODO - Local cache still needs
     //to be written for js.
     user = api.initializeUser(props);
-}
+};
 
 self.startQuest = function(qid, checksum) {
     var localDqid = 1; //Optional parameter that is needed if more than one quest is being logged at a time.
@@ -83,7 +83,7 @@ self.startQuest = function(qid, checksum) {
         var questAction = new cgs.QuestAction(actionId, startTs, endTs);
         questAction.setDetail(actionDetail);
         user.logQuestAction(questAction);
-    };
+    }
 
     questLogger.logProgramExecutionStarted = function(program) {
         log(AID.ProgramExecutionStarted, {program:program});
@@ -95,7 +95,7 @@ self.startQuest = function(qid, checksum) {
 
     questLogger.logPuzzledCompleted = function() {
         log(AID.PuzzleSolved, {});
-    }
+    };
 
     questLogger.logQuestEnd = function() {
         var questEndDetail = {test:"test"};
@@ -107,7 +107,7 @@ self.startQuest = function(qid, checksum) {
 
     start();
     return questLogger;
-}
+};
 
 self.logRandomAction = function() {
     //Action unrelated to a quest.
@@ -115,7 +115,7 @@ self.logRandomAction = function() {
     var actionDetail = {test:"test"};
     var action = new cgs.UserAction(actionId, actionDetail);
     user.logAction(action);
-}
+};
 
 return self;
 
