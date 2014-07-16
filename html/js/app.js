@@ -403,8 +403,17 @@ handler.onPuzzleChange = function(json) {
 
         make_largeInstructions();
 
-        var program = JSON.parse(info.puzzle.program);
-        Hackcraft.setProgram(program);
+        switch (info.puzzle.program.type) {
+            case "text":
+                var program = JSON.parse(info.puzzle.program.value);
+                Hackcraft.setProgram(program);
+                break;
+            case "preserve":
+                break;
+            default:
+                console.error("Unknown program type '" + info.puzzle.program.type + "'!");
+                break;
+        }
     }
 
     Hackcraft.setInstructions(info.puzzle.instructions);

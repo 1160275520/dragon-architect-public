@@ -59,6 +59,23 @@ type Program =
 | Resource of string
 /// inline program text
 | Text of string
+/// leave the old program around
+| Preserve
+with
+    member x.ToJson () =
+        let fields =
+            match x with
+            | Resource r -> ["type", J.String "resource"; "value", J.String r]
+            | Text t -> ["type", J.String "text"; "value", J.String t]
+            | Preserve -> ["type", J.String "preserve"]
+        J.JsonValue.ObjectOf fields
+
+    static member Parse j =
+        match jload j "type" J.asString with
+        | "resource" -> Resource (jload j "value" J.asString)
+        | "text" -> Text (jload j "value" J.asString)
+        | "preserve" -> Preserve
+        | s -> raise (J.TypeMismatchException (j, "Program", sprintf "illegal program type %s" s, null))
 
 let FORMAT_VERSION = 1
 
@@ -81,7 +98,7 @@ type PuzzleInfo = {
             "library", x.Library.ToJson ();
             "tutorial", nullOrToJson x.Tutorial;
             "instructions", nullOrToJson x.Instructions;
-            "program", match x.StartingProgram with Text s -> J.String s | Resource r -> raise (System.NotImplementedException("can't load program from resources"));
+            "program", x.StartingProgram.ToJson ();
         ]
 
     static member Parse j =
@@ -92,7 +109,7 @@ type PuzzleInfo = {
             Library = jload j "library" Library.Parse;
             Tutorial = tryJload j "tutorial" Tutorial.Parse;
             Instructions = tryJload j "instructions" Instructions.Parse;
-            StartingProgram = Text "";
+            StartingProgram = defaultArg (tryJload j "program" Program.Parse) (Text "");
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}
