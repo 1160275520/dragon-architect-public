@@ -193,8 +193,5 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
     return '';
 }
 
-Blockly.Connection.prototype.freeze = function () {
-    this.frozen = true;
-};
 }());
 
