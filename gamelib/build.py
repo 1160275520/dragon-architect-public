@@ -2,7 +2,6 @@
 import sys
 import os
 import subprocess
-import argparse
 import traceback
 import platform
 
@@ -13,7 +12,18 @@ def check(code):
 system = platform.system()
 
 slnfile = "gamelib/HackcraftNoUnitTest.sln"
-configarg = 'Release'
+
+if len(sys.argv) > 1:
+    modearg = sys.argv[1]
+    if modearg == 'debug':
+        configarg = 'Debug'
+    elif modearg == 'release':
+        configarg = 'Release'
+    else:
+        sys.stderr.write("Invalid configuration '%s', aborting.\n" % modearg)
+        sys.exit(1)
+else:
+    configarg = 'Debug'
 
 if system == 'Windows':
     command = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe"
