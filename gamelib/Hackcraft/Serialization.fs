@@ -38,11 +38,12 @@ let JsonOfProgram (program:Program) =
         J.JsonValue.ObjectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
     let jsonOfProc (name:string) (proc:Procedure) =
-        J.JsonValue.ObjectOf [
-            ("arity", J.Int proc.Arity);
-            ("body", jarrmap jsonOfStmt proc.Body);
-            ("meta", jsonOfMeta proc.Meta);
-        ]
+        let meta = jsonOfMeta proc.Meta
+        [
+            Some ("arity", J.Int proc.Arity);
+            Some ("body", jarrmap jsonOfStmt proc.Body);
+            (if meta = J.emptyObject then None else Some ("meta", meta));
+        ] |> List.choose (fun x -> x) |> J.JsonValue.ObjectOf
 
     let rec jsonOfModule (name:string) (module':Program) =
         let mutable lst = ["procedures", J.JsonValue.ObjectOf (Map.map jsonOfProc module'.Procedures)]
@@ -82,7 +83,7 @@ let ProgramOfJson (json: J.JsonValue) =
 
     let parseMeta j =
         {
-            Id = jload j "id" J.asInt;
+            Id = defaultArg (tryJload j "id" J.asInt) 0;
             Attributes = defaultArg (J.tryGetField j "attributes") J.emptyObject;
         }
 

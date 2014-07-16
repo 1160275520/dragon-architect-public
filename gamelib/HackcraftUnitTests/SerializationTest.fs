@@ -152,12 +152,12 @@ let runSerializeFromFileTest filename =
     S.ProgramOfJson (S.JsonOfProgram prog) |> should equal prog
 
 let stageSerializationTests = [
-    "level_call_01.txt";
-    "level_repeat_01.txt";
-    "TLMovement2D.txt";
-    "TLMovement3D.txt";
-    "TLMovementArgs.txt";
-    "TLPlacement.txt";
+    "puzzle.tutorial.call_1.txt";
+    "puzzle.tutorial.repeat_1.txt";
+    "puzzle.tutorial.movement2d.txt";
+    "puzzle.tutorial.movement3d.txt";
+    "puzzle.tutorial.arguments.txt";
+    "puzzle.tutorial.placement.txt";
 ]
 let stageSerializationTestsSeq = stageSerializationTests |> Seq.map (fun s -> [|s :> obj|])
 
