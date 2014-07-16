@@ -129,8 +129,8 @@ Hackcraft.setProgram = function(program) {
     _.each(program.procedures, function(proc, name) {
         var attr = proc.meta.attributes;
         if (attr && attr['frozen_blocks']) {
-            console.log('freezing blocks of ' + name);
-            Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0]);
+            var doFreezeArgs = Boolean(attr['frozen_args']);
+            Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
         }
     });
 };
@@ -161,7 +161,7 @@ Hackcraft.loadBlocks = function (blocksXML) {
 /**
  * prevent procedure from being modifed in any way
  */
-Hackcraft.freezeBody = function(block) {
+Hackcraft.freezeBody = function(block, doFreezeArgs) {
     //console.log("freezing " + block);
     block.inputList[1].connection.freeze();
     function freezeBlock(b) {
@@ -169,6 +169,9 @@ Hackcraft.freezeBody = function(block) {
         b.nextConnection.freeze();
         b.setDeletable(false);
         b.contextMenu = false;
+        if (doFreezeArgs) {
+            b.setEditable(false);
+        }
     }
     Hackcraft.processBody(block, function tmp(x) {
         freezeBlock(x);
