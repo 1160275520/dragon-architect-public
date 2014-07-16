@@ -1,3 +1,4 @@
+/// Types and parsing/serialization functions for the JSON data structures that represent puzzles and modules.
 module Hackcraft.Scene
 
 module J = Json

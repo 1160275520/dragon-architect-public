@@ -1,3 +1,4 @@
+/// Some basic linear algebra types needed for the block simulation.
 namespace Hackcraft
 
 [<StructuralEquality;NoComparison>]

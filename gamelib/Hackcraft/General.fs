@@ -1,3 +1,4 @@
+/// Menagerie of common types and utility functions that do not have a better home.
 namespace Hackcraft
 
 [<AutoOpen>]
@@ -7,7 +8,7 @@ module Global =
     /// Debug print a string (using System.Diagnostics.Debug.WriteLine).
     let inline dprints x = System.Diagnostics.Debug.WriteLine x
 
-/// An error from the compilation/execution of a scripting language. Also used for JSON syntax errors.
+/// An error from the compilation/execution of the in-game language.
 type CodeError (subtype: string, code: int, location: int, errorMessage: string, exn: System.Exception) =
     member x.Type = subtype
     member x.Code = code

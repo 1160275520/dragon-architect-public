@@ -1,3 +1,5 @@
+/// Code to parse/serialize the AST from/to JSON.
+/// See Ast.fs
 module Hackcraft.Serialization
 
 open Hackcraft.Ast.Imperative

@@ -1,8 +1,10 @@
+/// Miscellaneous collection types and utility functions.
 namespace Hackcraft
 
 open System.Collections
 open System.Collections.Generic
 
+/// Wrapper for an array that prevents modification, i.e., an immutable array.
 type ImmArr<[<EqualityConditionalOn>] 'T> private(arr : 'T[]) =
     new(s : seq<'T>) = ImmArr (Array.ofSeq s)
     member x.Item with get idx = arr.[idx]

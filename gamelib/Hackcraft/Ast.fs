@@ -1,3 +1,5 @@
+/// The abstract syntax tree for the imperative programming language.
+/// Also currently contains the standard library as hard-coded ASTs.
 namespace Hackcraft.Ast
 
 open System

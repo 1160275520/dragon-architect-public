@@ -1,3 +1,5 @@
+/// Simulator for the in-game programs.
+/// See Ast.fs, Grid.fs, Robot.fs
 module Hackcraft.Simulator
 
 open Hackcraft
