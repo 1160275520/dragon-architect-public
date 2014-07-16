@@ -1,12 +1,42 @@
 {
-    "tutorial.movement2d": {
-        "name": "2D Movement",
-        "component": "TLMovement2D",
+    "tutorial.movement2d_part1": {
+        "name": "2D Movement part 1",
+        "component": "TLMovement2D_1",
         "library": {
             "required": [],
             "granted": ["move2"]
         },
-        "logging_id": 21
+        "logging_id": 21,
+        "instructions": {
+            "summary": "Click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object> to have me run my program!",
+            "detail": "My program tells me what to do. You can see it below."
+        }
+    },
+    "tutorial.movement2d_part2": {
+        "name": "2D Movement part 2",
+        "component": "TLMovement2D_2",
+        "library": {
+            "required": ["move2"],
+            "granted": []
+        },
+        "logging_id": 31,
+        "instructions": {
+            "summary": "I need to get to the pink box, and my program doesn't move me far enough.",
+            "detail": "Add a <object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object> to complete my program and click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object>."
+        }
+    },
+    "tutorial.movement2d_part3": {
+        "name": "2D Movement part 3",
+        "component": "TLMovement2D_3",
+        "library": {
+            "required": ["move2"],
+            "granted": []
+        },
+        "logging_id": 32,
+        "instructions": {
+            "summary": "The pink box has moved. Change my program to help me get there!",
+            "detail": "Add a <object data=\"media/blockSvgs/right.svg\" style=\"vertical-align:middle\"></object> to my program and click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object>."
+        }
     },
     "tutorial.movement3d": {
         "name": "3D Movement",
