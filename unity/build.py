@@ -29,9 +29,6 @@ subprocess.call([
     "-quit",
 ], cwd=localdir)
 
-# remove the useless html file generated along with the webapp
-# if this fails is doesn't matter
-try:
-    os.remove(os.path.join(outdir, 'generated.html'))
-except: pass
+# this intentionally is left to fail in case the unity build fails, since it totally doesn't return a reasonable return code
+os.remove(os.path.join(outdir, 'generated.html'))
 
