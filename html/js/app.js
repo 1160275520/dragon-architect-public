@@ -74,67 +74,6 @@ function setState_levelSelect() {
     $('.levelSelector').show();
 }
 
-function make_levelSelect(module, scenes) {
-    // TODO move hard-coded graph spec to config file of some kind
-    var colors = {
-        teal: "#5BA68D",
-        brown: "#A6875B",
-        purple: "#995BA6",
-        green: "#5BA65B",
-        gray: "#777777",
-        orange: "#FFB361"
-    };
-
-    var graph = new dagre.Digraph();
-
-    _.each(module.nodes, function(id) {
-        graph.addNode(id, {label: scenes[id].name, id: id});
-    });
-
-    _.each(module.edges, function(edge) {
-        graph.addEdge(null, edge[0], edge[1]);
-    });
-
-    // perform layout
-    var renderer = new dagreD3.Renderer();
-    renderer.zoom(false);
-    var layout = dagreD3.layout()
-                        .rankDir("LR");
-    renderer.layout(layout).run(graph, d3.select(".levelSelector svg g"));
-
-    // color rectangles
-    var nodes = d3.selectAll(".levelSelector .node")[0];
-
-    // setup onclick behavior
-    var SANDBOX_LEVEL_ID = 'tl_final';
-
-    function is_completed(level) {
-        //return levelsCompleted.indexOf(level) !== -1;
-        return true;
-    }
-
-    var COLOR_MAP = {
-        completed: "green",
-        available: "orange",
-        unavailable: "gray"
-    };
-
-    nodes.forEach(function (x) { 
-        if (graph.predecessors(x.id).every(is_completed)) {
-            x.onclick = function() {
-                setState_puzzle({id:x.id, puzzle:scenes[x.id]});
-            };
-            if (is_completed(x.id)) {
-                x.children[0].style.fill = colors[COLOR_MAP.completed];
-            } else {
-                x.children[0].style.fill = colors[COLOR_MAP.available];
-            }
-        } else {
-            x.children[0].style.fill = colors[COLOR_MAP.unavailable];
-        }
-    });
-}
-
 function setState_puzzle(puzzle_info) {
     hideAll();
     $('.codeEditor, .puzzleModeUI').show();
@@ -215,7 +154,7 @@ $(function() {
             }
         }
     });
-    HackcraftUI.instructions.hide();
+    HackcraftUI.Instructions.hide();
 
     // run button
     $('#btn-run').on('click', function () {
@@ -286,7 +225,7 @@ function control_camera(action) {
 
 handler.onSystemStart = function(json) {
     var info = JSON.parse(json);
-    make_levelSelect(info.modules[0], info.scenes);
+    HackcraftUI.LevelSelect.create(info.modules[0], info.scenes, setState_puzzle);
     setState_title();
 };
 
@@ -341,7 +280,7 @@ handler.onPuzzleChange = function(json) {
         }
     }
 
-    HackcraftUI.instructions.show(info.puzzle.instructions);
+    HackcraftUI.Instructions.show(info.puzzle.instructions);
 };
 
 handler.onStatementHighlight = function(id) {
