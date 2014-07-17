@@ -4,21 +4,30 @@
 // Extensions to Blockly's language and JavaScript generator.
 
 Blockly.UnityJSON = {};
-Blockly.UnityCode = {};
 
 Blockly.UnityJSON.idCounter_ = 0;
 
 Blockly.UnityJSON.nextId = function () {
     Blockly.UnityJSON.idCounter_ += 1;
     return Blockly.UnityJSON.idCounter_;
-}
+};
+
+Blockly.UnityJSON.convertCallback = function (obj) {
+    return Blockly.UnityJSON[obj.block.type](obj.block, obj.children); 
+};
 
 /**
  * processes the body of block and returns an array of json-ready objects
  */
-Blockly.UnityJSON.processBody = function (block) {
-    return Hackcraft.processBody(block, function (x) { return Blockly.UnityJSON[x.type](x); });
-}
+Blockly.UnityJSON.processStructure = function (block) {
+    var structure = block.getStructure();
+    // if procedure, we only process its children
+    if (block.type === "procedures_defnoreturn") {
+        // procedures have no connection, so no siblings exist and we can assume the object we want is the first and only element
+        return structure[0].children.map(Blockly.UnityJSON.convertCallback);
+    }
+    return structure.map(Blockly.UnityJSON.convertCallback);
+};
 
 // LEFT
 Blockly.Blocks['Left'] = {
@@ -137,9 +146,9 @@ Blockly.UnityJSON['Line'] = function(block) {
 };
 
 // REPEAT
-Blockly.UnityJSON['controls_repeat'] = function(block) {
+Blockly.UnityJSON['controls_repeat'] = function(block, children) {
     return {"numtimes":{"type":"literal", "value":block.getFieldValue("TIMES")},"meta":{"id":Number(block.id)},
-            "stmt":{"meta":{"id":Blockly.UnityJSON.nextId()}, "body":Blockly.UnityJSON.processBody(block), "type":"block"},"type":"repeat"};
+            "stmt":{"meta":{"id":Blockly.UnityJSON.nextId()}, "body":children.forEach(Blockly.UnityJSON.convertCallback), "type":"block"},"type":"repeat"};
 }
 
 // CALL
@@ -151,9 +160,17 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     var xml = '<xml>';
     var funcCount = 0;
     _.each(program.procedures, function(func, name) {
-        xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 2)) + '" y="' + (150 + 250*Math.floor(funcCount/2)) + '"><field name="NAME">' + name + '</field><statement name="STACK">';
-        xml += Blockly.UnityJSON.bodyToXML(func.body, program);
-        xml += '</statement></block>';
+        if (name === "MAIN") {
+            var main = Blockly.UnityJSON.bodyToXML(func.body, program);
+            var pos = ' x="' + (50 + 200*(funcCount % 2)) + '" y="' + (150 + 250*Math.floor(funcCount/2)) + '"';
+            var insertIndex = main.indexOf(">", main.indexOf("block"));
+            main = main.substring(0, insertIndex) + pos + main.substring(insertIndex);
+            xml += main;
+        } else {
+            xml += '<block type="procedures_defnoreturn" x="' + (50 + 200*(funcCount % 2)) + '" y="' + (150 + 250*Math.floor(funcCount/2)) + '"><field name="NAME">' + name + '</field><statement name="STACK">';
+            xml += Blockly.UnityJSON.bodyToXML(func.body, program);
+            xml += '</statement></block>';
+        }
         funcCount++;
     });
     return xml + "</xml>";

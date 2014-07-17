@@ -147,7 +147,7 @@ Hackcraft.loadBlocks = function (blocksXML) {
 
     // recolor functions to differentiate MAIN from helpers
     if (blocks.length > 0) {
-        blocks.filter(function (x) { return x.getFieldValue("NAME") === "MAIN"; })[0].setColour(260);
+        // blocks.filter(function (x) { return x.getFieldValue("NAME") === "MAIN"; })[0].setColour(260);
         blocks.filter(function (x) { return x.type === "procedures_defnoreturn" && x.getFieldValue("NAME") !== "MAIN"; }).map(function (x) { x.setColour(315); });
     }
     // prevent renaming and deleting existing procedures 
@@ -224,9 +224,9 @@ Hackcraft.getProgram = function() {
             procedures[block.getFieldValue("NAME")] = {};
             var fn = procedures[block.getFieldValue("NAME")];
             fn['arity'] = 0;
-            fn['body'] = Blockly.UnityJSON.processBody(block);
+            fn['body'] = Blockly.UnityJSON.processStructure(block);
         } else { // everything else is part of MAIN
-            // TODO
+            main['body'] = main['body'].concat(Blockly.UnityJSON.processStructure(block));
         }
     }
     return {
@@ -244,27 +244,6 @@ Hackcraft.getProgram = function() {
  */
 Hackcraft.getXML = function() {
     return (new XMLSerializer()).serializeToString(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
-};
-
-/**
-* iterates over the blocks in a body, invoking callback on each one
-* callback needs to handle recursively processing nested bodies, if applicable
-*/
-Hackcraft.processBody = function(block, callback) {
-   var bodyBlock = block.inputList[1];
-   var body = [];
-   if (bodyBlock.connection && bodyBlock.connection.targetBlock()) {
-       var stmt = bodyBlock.connection.targetBlock();
-       // process stmt
-       body.push(callback(stmt));
-       // iterate over top-level blocks inside body
-       while(stmt.nextConnection && stmt.nextConnection.targetBlock()) {
-           // dispatch appropriately for each type of block
-           stmt = stmt.nextConnection.targetBlock();
-           body.push(callback(stmt));
-       }
-   }
-   return body;
 };
 
 /**
