@@ -175,16 +175,17 @@ HackcraftBlockly.freezeBody = function(block, doFreezeArgs) {
 
 /**
  * set which blocks are available
+ * @param scene_info The PuzzleInfo object sent from unity.
+ * @param library The tools that should be active.
  */
-HackcraftBlockly.setLevel = function(scene_info) {
+HackcraftBlockly.setLevel = function(scene_info, library) {
     var toolXML = '<xml id="toolbox" style="display: none">';
 
     // HACK
     HackcraftBlockly.makeFuncs(4);
 
-    var lib = scene_info.library;
-
-    _.each(lib.required.concat(lib.granted), function(command) {
+    // ignore scene_info.library, trust only the library parameter
+    _.each(library, function(command) {
         if (HackcraftBlockly.Commands[command]) {
             toolXML += HackcraftBlockly.Commands[command];
         }

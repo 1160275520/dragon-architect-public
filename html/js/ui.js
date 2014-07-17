@@ -155,6 +155,36 @@ module.Instructions = (function() {
     return self;
 }());
 
+module.SpeedSlider = (function() {
+    var self = {};
+
+    self.initialize = function(onChangeCallback) {
+        $( "#slider" ).slider({
+            value: 0.22,
+            min: 0.0,
+            max: 1.0,
+            step: 0.05,
+            slide: function( event, ui ) {
+                onChangeCallback(ui.value);
+            }
+        });
+        // start invisible
+        self.setVisible(false);
+    };
+
+    self.setVisible = function(isVisible) {
+        console.info(isVisible);
+        $('#sliderContainer').css('visibility', isVisible ? 'visible' : 'hidden');
+        console.log($('#sliderContainer')[0]);
+    }
+
+    self.value = function() {
+        return $('#slider').slider("option", "value");
+    };
+
+    return self;
+}());
+
 return module;
 }());
 

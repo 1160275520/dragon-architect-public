@@ -16,7 +16,12 @@ public class ExternalAPI : MonoBehaviour
     private bool isFirstUpdate;
 
     void Start() {
-        isFirstUpdate = true;
+        var global = FindObjectOfType<Global>();
+        var puzzle = global.CurrentPuzzle;
+        #warning "shouldn't need this hack, just stop this from getting added at the loader"
+        if (puzzle != null) {
+            isFirstUpdate = true;
+        }
     }
 
     void Update() {
@@ -72,8 +77,14 @@ public class ExternalAPI : MonoBehaviour
     // external API
 
     public void EAPI_SetProgramFromJson(string json) {
-        var prog = Serialization.ProgramOfJson(Json.Parse(json));
-        GetComponent<ProgramManager>().Manipulator.Program = prog;
+        try {
+            var prog = Serialization.ProgramOfJson(Json.Parse(json));
+            GetComponent<ProgramManager>().Manipulator.Program = prog;
+        } catch (Exception) {
+            Debug.LogError("failed to parse program sent from webpage:");
+            Debug.LogError(json);
+            throw;
+        }
     }
 
     public void EAPI_SetIsRunning(string aIsRunning) {

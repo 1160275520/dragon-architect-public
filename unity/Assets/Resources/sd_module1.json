@@ -76,7 +76,7 @@
         "component": "PuzSpeedSlider",
         "library": {
             "required": ["move2", "place", "repeat"],
-            "granted": []
+            "granted": ["speed_slider"]
         },
         "logging_id": 25
     },

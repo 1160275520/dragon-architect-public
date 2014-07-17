@@ -133,17 +133,10 @@ $(function() {
     $('#camera-rotate-right').click(function(){HackcraftUnity.Call.control_camera('rotateright');});
 
     // undo button
+    // TODO shouldn't this be in blockly/hackcraft.js?
     $('#btn-undo').on('click', HackcraftBlockly.undo);
 
-    $( "#slider" ).slider({
-        value: 0.22,
-        min: 0.0,
-        max: 1.0,
-        step: 0.05,
-        slide: function( event, ui ) {
-            HackcraftUnity.Call.set_program_execution_speed(ui.value);
-        }
-    });
+    HackcraftUI.SpeedSlider.initialize(HackcraftUnity.Call.set_program_execution_speed);
 
     $('#button_loadProcedure').click(function() {
         // TODO HACK consider checking for errors and handling potential concurrency problems
@@ -166,6 +159,11 @@ handler.onSystemStart = function(json) {
     setState_title();
 };
 
+function calculate_library(puzzle_info) {
+    var lib = puzzle_info.library;
+    return lib.required.concat(lib.granted);
+}
+
 handler.onPuzzleChange = function(json) {
     console.log(json);
     var info = JSON.parse(json);
@@ -177,7 +175,11 @@ handler.onPuzzleChange = function(json) {
     }
 
     if (info.is_starting) {
-        HackcraftBlockly.setLevel(info.puzzle);
+        var current_library = calculate_library(info.puzzle);
+
+        HackcraftBlockly.setLevel(info.puzzle, current_library);
+
+        HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
 
         HackcraftBlockly.history = [];
         // reset run button
@@ -190,10 +192,11 @@ handler.onPuzzleChange = function(json) {
             b.hidden = false;
             b.innerText = "Run!";
             b.style.backgroundColor = "#37B03F";
-            slider.style.visibility = "visible";
-            HackcraftUnity.Call.set_program_execution_speed($('#slider').slider("option", "value"));
         }
         is_running = false;
+
+        // reset program execution speed, because the scene reload will have made Unity forget
+        HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
 
         // clear old quest logger if it exists
         if (questLogger) {
