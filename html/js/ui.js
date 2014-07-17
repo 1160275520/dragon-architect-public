@@ -6,11 +6,13 @@ module.LevelSelect = (function() {
     var self = {};
 
     /**
+     * @param isSceneCompleted A function : scene id (string) -> bool that
+     * indicates whether the scene with the given id has been completed.
      * @param onSelectCallback Invoked when a level is selected.
      * Will pass in one argument, an object with the following structure:
      * { id: <id of level>, puzzle: <PuzzleInfo object> }
      */
-    self.create = function(module, scenes, onSelectCallback) {
+    self.create = function(module, scenes, isSceneCompleted, onSelectCallback) {
         // TODO move hard-coded graph spec to config file of some kind
         var colors = {
             teal: "#5BA68D",
@@ -44,11 +46,6 @@ module.LevelSelect = (function() {
         // setup onclick behavior
         var SANDBOX_LEVEL_ID = 'tl_final';
 
-        function is_completed(level) {
-            //return levelsCompleted.indexOf(level) !== -1;
-            return true;
-        }
-
         var COLOR_MAP = {
             completed: "green",
             available: "orange",
@@ -56,11 +53,11 @@ module.LevelSelect = (function() {
         };
 
         nodes.forEach(function (x) { 
-            if (graph.predecessors(x.id).every(is_completed)) {
+            if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback({id:x.id, puzzle:scenes[x.id]});
                 };
-                if (is_completed(x.id)) {
+                if (isSceneCompleted(x.id)) {
                     x.children[0].style.fill = colors[COLOR_MAP.completed];
                 } else {
                     x.children[0].style.fill = colors[COLOR_MAP.available];

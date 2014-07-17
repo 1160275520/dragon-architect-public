@@ -4,6 +4,9 @@ var is_running = false;
 var questLogger;
 var handler = {};
 var levelsCompleted = [];
+var isDevMode = false;
+// the modules/puzzles sent up on game start
+var game_info;
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
@@ -13,6 +16,9 @@ function onHackcraftEvent(func, arg) {
     handler[func](arg);
 }
 
+function is_scene_completed(level) {
+    return isDevMode || levelsCompleted.indexOf(level) !== -1;
+}
 
 function hideAll() {
     HackcraftUnity.Player.hide();
@@ -153,15 +159,24 @@ function add_to_library(name, program) {
     // TODO actually implement this function
 }
 
+function create_level_select() {
+    HackcraftUI.LevelSelect.create(game_info.modules[0], game_info.scenes, is_scene_completed, setState_puzzle);
+}
+
 handler.onSystemStart = function(json) {
-    var info = JSON.parse(json);
-    HackcraftUI.LevelSelect.create(info.modules[0], info.scenes, setState_puzzle);
+    game_info = JSON.parse(json);
+    create_level_select();
     setState_title();
 };
 
 function calculate_library(puzzle_info) {
     var lib = puzzle_info.library;
-    return lib.required.concat(lib.granted);
+    var tools = lib.required.concat(lib.granted);
+    if (isDevMode) {
+        tools.push('speed_slider');
+        tools.push('camera_controls');
+    }
+    return tools;
 }
 
 handler.onPuzzleChange = function(json) {
@@ -252,5 +267,16 @@ handler.onReturnToSelect = function() {
     setState_levelSelect();
 };
 
+handler.onUnlockDevMode = function() {
+    isDevMode = true;
+    // recreate the level select
+    create_level_select();
+};
+
 return onHackcraftEvent;
 }());
+
+function devmode() {
+    onHackcraftEvent('onUnlockDevMode');
+}
+
