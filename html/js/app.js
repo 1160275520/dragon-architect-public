@@ -1,6 +1,5 @@
 var onHackcraftEvent = (function(){ "use strict";
 
-var unityObject;
 var is_running = false;
 var questLogger;
 var handler = {};
@@ -8,59 +7,15 @@ var levelsCompleted = [];
 
 // GENERIC UNITY API SETUP AND MARSHALLING
 
-// send a message to unity
-function send_message(object, method, arg) {
-    unityObject.getUnity().SendMessage(object, method, arg);
-}
-
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
     console.info('received Unity event ' + func);
     handler[func](arg);
 }
 
-var unityPlayer = function(){
-    var self = {};
-
-    // TODO have these return correct values even when the thing isn't visible
-
-    self.width = function() {
-        return $('#unityPlayer embed').width();
-    };
-
-    self.height = function() {
-        return $('#unityPlayer embed').height();
-    };
-
-    self.initialize = function() {
-        var div = $("#unityPlayer");
-
-        var config = {
-            params: { enableDebugging:"0" }
-        };
-
-        unityObject = new UnityObject2(config);
-        unityObject.initPlugin(div[0], "generated/generated.unity3d");
-
-    };
-
-    // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
-
-    self.hide = function() {
-        var u = $('#unityPlayer embed, #unityPlayer');
-        u.css('width', '1px').css('height', '1px');
-    };
-
-    self.show = function() {
-        var u = $('#unityPlayer embed, #unityPlayer');
-        u.css('width', '100%').css('height', '100%');
-    };
-
-    return self;
-}();
 
 function hideAll() {
-    unityPlayer.hide();
+    HackcraftUnity.Player.hide();
     $('.codeEditor, .puzzleModeUI, .creativeModeUI, .levelSelector, .titleScreen, .galleryUI').hide();
 }
 
@@ -77,8 +32,8 @@ function setState_levelSelect() {
 function setState_puzzle(puzzle_info) {
     hideAll();
     $('.codeEditor, .puzzleModeUI').show();
-    unityPlayer.show();
-    request_start_puzzle(puzzle_info);
+    HackcraftUnity.Player.show();
+    HackcraftUnity.Call.request_start_puzzle(puzzle_info);
 }
 
 /*
@@ -87,7 +42,7 @@ function setState_sandbox(stageId) {
     console.info('starting sandbox ' + stageId);
     hideAll();
     $('.codeEditor, .creativeModeUI').show();
-    unityPlayer.show();
+    HackcraftUnity.Player.show();
     if (stageId) {
         set_stage(stageId);
     }
@@ -99,7 +54,7 @@ function setState_gallery(galleryObjectArray) {
     console.info('starting gallery view');
     hideAll();
     $('.galleryUI, .creativeModeUI').show();
-    unityPlayer.show();
+    HackcraftUnity.Player.show();
 
     var list = $('#galleryList');
     list.empty();
@@ -125,8 +80,8 @@ $(function() {
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
-    unityPlayer.initialize();
-    Hackcraft.init();
+    HackcraftUnity.Player.initialize();
+    HackcraftBlockly.init();
 
     // fetch the uid from the GET params and pass that to logging initializer
     var uid = $.url().param('uid');
@@ -141,10 +96,10 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
-        var program = Hackcraft.getProgram();
-        set_program(program);
+        var program = HackcraftBlockly.getProgram();
+        HackcraftUnity.Call.set_program(program);
         is_running = !is_running;
-        set_is_running(is_running);
+        HackcraftUnity.Call.set_is_running(is_running);
         // if (Blockly.selected) {
         //     Blockly.selected.unselect();
         // }
@@ -172,13 +127,13 @@ $(function() {
     });
 
     // camera
-    $('#camera-zoom-in').click(function(){control_camera('zoomin');});
-    $('#camera-zoom-out').click(function(){control_camera('zoomout');});
-    $('#camera-rotate-left').click(function(){control_camera('rotateleft');});
-    $('#camera-rotate-right').click(function(){control_camera('rotateright');});
+    $('#camera-zoom-in').click(function(){HackcraftUnity.Call.control_camera('zoomin');});
+    $('#camera-zoom-out').click(function(){HackcraftUnity.Call.control_camera('zoomout');});
+    $('#camera-rotate-left').click(function(){HackcraftUnity.Call.control_camera('rotateleft');});
+    $('#camera-rotate-right').click(function(){HackcraftUnity.Call.control_camera('rotateright');});
 
     // undo button
-    $('#btn-undo').on('click', Hackcraft.undo);
+    $('#btn-undo').on('click', HackcraftBlockly.undo);
 
     $( "#slider" ).slider({
         value: 0.22,
@@ -186,7 +141,7 @@ $(function() {
         max: 1.0,
         step: 0.05,
         slide: function( event, ui ) {
-            set_program_execution_speed(ui.value);
+            HackcraftUnity.Call.set_program_execution_speed(ui.value);
         }
     });
 
@@ -203,27 +158,6 @@ $(function() {
 function add_to_library(name, program) {
     // TODO check for reserved names (e.g., main)
     // TODO actually implement this function
-}
-
-function set_program_execution_speed(parameter) {
-    send_message("System", "EAPI_SetProgramExecutionSpeed", parameter.toString());
-}
-
-function set_program(prog) {
-    var s = JSON.stringify(prog);
-    send_message("System", "EAPI_SetProgramFromJson", s);
-}
-
-function request_start_puzzle(puzzle_info) {
-    send_message("Global", "EAPI_RequestStartPuzzle", JSON.stringify(puzzle_info));
-}
-
-function set_is_running(is_running) {
-    send_message("System", "EAPI_SetIsRunning", is_running ? "true" : "false");
-}
-
-function control_camera(action) {
-    send_message("System", "EAPI_ControlCamera", action);
 }
 
 handler.onSystemStart = function(json) {
@@ -243,9 +177,9 @@ handler.onPuzzleChange = function(json) {
     }
 
     if (info.is_starting) {
-        Hackcraft.setLevel(info.puzzle);
+        HackcraftBlockly.setLevel(info.puzzle);
 
-        Hackcraft.history = [];
+        HackcraftBlockly.history = [];
         // reset run button
         var b = $('#btn-run')[0];
         var slider = $('#sliderContainer')[0];
@@ -257,7 +191,7 @@ handler.onPuzzleChange = function(json) {
             b.innerText = "Run!";
             b.style.backgroundColor = "#37B03F";
             slider.style.visibility = "visible";
-            set_program_execution_speed($('#slider').slider("option", "value"));
+            HackcraftUnity.Call.set_program_execution_speed($('#slider').slider("option", "value"));
         }
         is_running = false;
 
@@ -272,7 +206,7 @@ handler.onPuzzleChange = function(json) {
         switch (info.puzzle.program.type) {
             case "text":
                 var program = JSON.parse(info.puzzle.program.value);
-                Hackcraft.setProgram(program);
+                HackcraftBlockly.setProgram(program);
                 break;
             case "preserve":
                 // want to leave the old program, so do nothing!

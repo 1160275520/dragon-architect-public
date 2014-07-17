@@ -1,14 +1,14 @@
 
-var Hackcraft = (function(){
+var HackcraftBlockly = (function(){
 'use strict';
 
 /**
  * Create a namespace for the application.
  */
-var Hackcraft = {};
-Hackcraft.history = [];
-Hackcraft.curProgramStr = "";
-Hackcraft.ignoreNextHistory = false;
+var HackcraftBlockly = {};
+HackcraftBlockly.history = [];
+HackcraftBlockly.curProgramStr = "";
+HackcraftBlockly.ignoreNextHistory = false;
 
 // Supported languages.
 BlocklyApps.LANGUAGES = ['en'];
@@ -20,7 +20,7 @@ document.write('<script type="text/javascript" src="generated/' +
  */
 
 // dictionary of custom block xml
-Hackcraft.Commands = {"move2" :  '<block type="Forward"></block> \
+HackcraftBlockly.Commands = {"move2" :  '<block type="Forward"></block> \
                                   <block type="Left"></block> \
                                   <block type="Right"></block>',
                       "move3" :  '<block type="Up"></block> \
@@ -34,16 +34,16 @@ Hackcraft.Commands = {"move2" :  '<block type="Forward"></block> \
 /**
  * Create call blocks for the helper functions present
  */
-Hackcraft.makeFuncs = function (num) {
-    Hackcraft.Commands['call'] = '';
+HackcraftBlockly.makeFuncs = function (num) {
+    HackcraftBlockly.Commands['call'] = '';
     for (var i = 0; i < num; i++) {
-        Hackcraft.Commands['call'] += '<block type="procedures_callnoreturn"> \
+        HackcraftBlockly.Commands['call'] += '<block type="procedures_callnoreturn"> \
                                          <mutation name="F'+ (i+1) + '"></mutation> \
                                        </block>';
     }
 };
 
-Hackcraft.makeCounter = function() {
+HackcraftBlockly.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.maxBlocks - Blockly.mainWorkspace.getAllBlocks().length;
     var counter = $("#statement-counter")[0];
     if (blocksLeft < 5) {
@@ -63,32 +63,32 @@ Hackcraft.makeCounter = function() {
     }
 };
 
-Hackcraft.addToHistory = function () {
-    //console.log("adding to history, locked = "+Hackcraft.ignoreNextHistory);
-    if (Hackcraft.ignoreNextHistory) {
-        Hackcraft.ignoreNextHistory = false;
+HackcraftBlockly.addToHistory = function () {
+    //console.log("adding to history, locked = "+HackcraftBlockly.ignoreNextHistory);
+    if (HackcraftBlockly.ignoreNextHistory) {
+        HackcraftBlockly.ignoreNextHistory = false;
         return;
     }
-    var prog = Hackcraft.getXML();
-    if (Blockly.Block.dragMode_ === 0 && prog !== Hackcraft.curProgramStr) {
-        Hackcraft.history.push(Hackcraft.curProgramStr);
-        Hackcraft.curProgramStr = prog;
+    var prog = HackcraftBlockly.getXML();
+    if (Blockly.Block.dragMode_ === 0 && prog !== HackcraftBlockly.curProgramStr) {
+        HackcraftBlockly.history.push(HackcraftBlockly.curProgramStr);
+        HackcraftBlockly.curProgramStr = prog;
     }
 };
 
-Hackcraft.undo = function () {
-    if (Hackcraft.history.length > 0) {
-        Hackcraft.ignoreNextHistory = true;
-        Hackcraft.curProgramStr = Hackcraft.history.pop();
-        Hackcraft.clearProgram();
-        Hackcraft.loadBlocks(Hackcraft.curProgramStr);
+HackcraftBlockly.undo = function () {
+    if (HackcraftBlockly.history.length > 0) {
+        HackcraftBlockly.ignoreNextHistory = true;
+        HackcraftBlockly.curProgramStr = HackcraftBlockly.history.pop();
+        HackcraftBlockly.clearProgram();
+        HackcraftBlockly.loadBlocks(HackcraftBlockly.curProgramStr);
     }
 };
 
 /**
  * Initialize Blockly.  Called by app.js
  */
-Hackcraft.init = function() {
+HackcraftBlockly.init = function() {
     BlocklyApps.init();
     var toolbox = document.getElementById('toolbox');
     Blockly.inject(document.getElementById('blockly'),
@@ -103,11 +103,11 @@ Hackcraft.init = function() {
 
     Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
 
-    Blockly.addChangeListener(Hackcraft.makeCounter);
-    Blockly.addChangeListener(Hackcraft.addToHistory);
+    Blockly.addChangeListener(HackcraftBlockly.makeCounter);
+    Blockly.addChangeListener(HackcraftBlockly.addToHistory);
 };
 
-Hackcraft.clearProgram = function () {
+HackcraftBlockly.clearProgram = function () {
     // clear existing blocks
     Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(); });
 };
@@ -115,16 +115,16 @@ Hackcraft.clearProgram = function () {
 /**
  * set blocks making up current program
  */
-Hackcraft.setProgram = function(program) {
+HackcraftBlockly.setProgram = function(program) {
     console.info(program);
 
-    Hackcraft.ignoreNextHistory = true;
-    Hackcraft.clearProgram();
+    HackcraftBlockly.ignoreNextHistory = true;
+    HackcraftBlockly.clearProgram();
 
     //console.log("setting program");
     //console.log(Blockly.UnityJSON.XMLOfJSON(program));
-    Hackcraft.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
-    Hackcraft.curProgramStr = Hackcraft.getXML();
+    HackcraftBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
+    HackcraftBlockly.curProgramStr = HackcraftBlockly.getXML();
 
     _.each(program.procedures, function(proc, name) {
         var attr;
@@ -133,9 +133,9 @@ Hackcraft.setProgram = function(program) {
             var doFreezeArgs = Boolean(attr['frozen_args']);
             if (name === 'MAIN') {
                 var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
-                _.each(blocks, function(b) { Hackcraft.freezeBody(b, doFreezeArgs); });
+                _.each(blocks, function(b) { HackcraftBlockly.freezeBody(b, doFreezeArgs); });
             } else {
-                Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
+                HackcraftBlockly.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
             }
         }
     });
@@ -144,7 +144,7 @@ Hackcraft.setProgram = function(program) {
 /**
  * loads new program and takes care of related adjustments
  */
-Hackcraft.loadBlocks = function (blocksXML) {
+HackcraftBlockly.loadBlocks = function (blocksXML) {
     BlocklyApps.loadBlocks(blocksXML);
     var blocks = Blockly.mainWorkspace.getTopBlocks();
     // set maximum blocks to 15 per function
@@ -167,7 +167,7 @@ Hackcraft.loadBlocks = function (blocksXML) {
 /**
  * prevent procedure from being modifed in any way
  */
-Hackcraft.freezeBody = function(block, doFreezeArgs) {
+HackcraftBlockly.freezeBody = function(block, doFreezeArgs) {
     block.forEach(function(b) {
         b.freeze({doFreezeArgs:doFreezeArgs});
     })
@@ -176,17 +176,17 @@ Hackcraft.freezeBody = function(block, doFreezeArgs) {
 /**
  * set which blocks are available
  */
-Hackcraft.setLevel = function(scene_info) {
+HackcraftBlockly.setLevel = function(scene_info) {
     var toolXML = '<xml id="toolbox" style="display: none">';
 
     // HACK
-    Hackcraft.makeFuncs(4);
+    HackcraftBlockly.makeFuncs(4);
 
     var lib = scene_info.library;
 
     _.each(lib.required.concat(lib.granted), function(command) {
-        if (Hackcraft.Commands[command]) {
-            toolXML += Hackcraft.Commands[command];
+        if (HackcraftBlockly.Commands[command]) {
+            toolXML += HackcraftBlockly.Commands[command];
         }
     });
     toolXML += '</xml>';
@@ -205,7 +205,7 @@ Hackcraft.setLevel = function(scene_info) {
 /**
  * get json-ready version of current program
  */
-Hackcraft.getProgram = function() {
+HackcraftBlockly.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
     Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id);}));
     var procedures = {};
@@ -239,10 +239,10 @@ Hackcraft.getProgram = function() {
  * returns xml serialization of current blocks, including current positions
  * used for undo history
  */
-Hackcraft.getXML = function() {
+HackcraftBlockly.getXML = function() {
     return (new XMLSerializer()).serializeToString(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
 };
 
-return Hackcraft;
+return HackcraftBlockly;
 }());
 
