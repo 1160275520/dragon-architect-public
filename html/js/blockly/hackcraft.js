@@ -131,7 +131,12 @@ Hackcraft.setProgram = function(program) {
         if (proc.meta) { attr = proc.meta.attributes; }
         if (attr && attr['frozen_blocks']) {
             var doFreezeArgs = Boolean(attr['frozen_args']);
-            Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
+            if (name === 'MAIN') {
+                var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
+                _.each(blocks, function(b) { Hackcraft.freezeBody(b, doFreezeArgs); });
+            } else {
+                Hackcraft.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
+            }
         }
     });
 };
@@ -163,17 +168,9 @@ Hackcraft.loadBlocks = function (blocksXML) {
  * prevent procedure from being modifed in any way
  */
 Hackcraft.freezeBody = function(block, doFreezeArgs) {
-    //console.log("freezing " + block);
-    block.inputList[1].connection.freeze();
-    function freezeBlock(b) {
+    block.forEach(function(b) {
         b.freeze({doFreezeArgs:doFreezeArgs});
-    }
-    Hackcraft.processBody(block, function tmp(x) {
-        freezeBlock(x);
-        if (x.inputList.some(function (i) { return i.connection !== null; })) {
-            Hackcraft.processBody(x, tmp);
-        }
-    });
+    })
 };
 
 /**
@@ -245,33 +242,6 @@ Hackcraft.getProgram = function() {
 Hackcraft.getXML = function() {
     return (new XMLSerializer()).serializeToString(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
 };
-
-/**
- * Returns a list the block and its siblings (blocks attached below it).
- * Each element of the list is an object of the form {block: <block>} or {block: <block>, children: <children>}
- * if the block contains child blocks (e.g. procedure, repeat).
- */
-Blockly.Block.prototype.getStructure = function() {
-
- function rec(block, acc) {
-   var il = block.inputList;
-   if (il.length > 1 && il[1] && il[1].connection && il[1].connection.targetBlock()) {
-     var children = rec(il[1].connection.targetBlock(), []);
-     acc.push({block: block, children: children});
-   } else {
-     acc.push({block: block});
-   }
-
-   if (block.nextConnection && block.nextConnection.targetBlock()) {
-     rec(block.nextConnection.targetBlock(), acc);
-   }
-
-   return acc;
- }
-
- return rec(this, []);
-};
-
 
 return Hackcraft;
 }());
