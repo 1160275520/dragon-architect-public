@@ -148,7 +148,7 @@ Blockly.UnityJSON['Line'] = function(block) {
 // REPEAT
 Blockly.UnityJSON['controls_repeat'] = function(block, children) {
     return {"numtimes":{"type":"literal", "value":block.getFieldValue("TIMES")},"meta":{"id":Number(block.id)},
-            "stmt":{"meta":{"id":Blockly.UnityJSON.nextId()}, "body":children.forEach(Blockly.UnityJSON.convertCallback), "type":"block"},"type":"repeat"};
+            "stmt":{"meta":{"id":Blockly.UnityJSON.nextId()}, "body":children.map(Blockly.UnityJSON.convertCallback), "type":"block"},"type":"repeat"};
 }
 
 // CALL
