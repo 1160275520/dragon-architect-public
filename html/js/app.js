@@ -145,10 +145,10 @@ $(function() {
         set_program(program);
         is_running = !is_running;
         set_is_running(is_running);
-        Blockly.mainWorkspace.traceOn(is_running);
-        if (Blockly.selected) {
-            Blockly.selected.unselect();
-        }
+        // if (Blockly.selected) {
+        //     Blockly.selected.unselect();
+        // }
+        // Blockly.mainWorkspace.traceOn(is_running);
         if (questLogger) {
             if (is_running) {
                 questLogger.logProgramExecutionStarted(JSON.stringify(program));
@@ -288,6 +288,7 @@ handler.onPuzzleChange = function(json) {
 
 handler.onStatementHighlight = function(id) {
     if (id) {
+        Blockly.mainWorkspace.traceOn(true);
         Blockly.mainWorkspace.highlightBlock(id.toString());
     } 
 };
