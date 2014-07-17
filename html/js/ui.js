@@ -152,6 +152,23 @@ module.Instructions = (function() {
     return self;
 }());
 
+module.RunButton = (function() {
+    var self = {};
+
+    self.update = function(isRunning) {
+        var b = $('#btn-run')[0];
+        if (isRunning) {
+            b.innerText = "Reset";
+            b.style.backgroundColor = "#B03737";
+        } else {
+            b.innerText = "Run!";
+            b.style.backgroundColor = "#37B03F";
+        }
+    };
+
+    return self;
+}());
+
 module.SpeedSlider = (function() {
     var self = {};
 

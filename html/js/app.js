@@ -105,6 +105,7 @@ $(function() {
         var program = HackcraftBlockly.getProgram();
         HackcraftUnity.Call.set_program(program);
         is_running = !is_running;
+        HackcraftUI.RunButton.update(is_running);
         HackcraftUnity.Call.set_is_running(is_running);
         // if (Blockly.selected) {
         //     Blockly.selected.unselect();
@@ -119,18 +120,6 @@ $(function() {
         }
     });
     HackcraftUI.Instructions.hide();
-
-    // run button
-    $('#btn-run').on('click', function () {
-        var b = $('#btn-run')[0];
-        if (b.innerText === "Run!") {
-            b.innerText = "Reset";
-            b.style.backgroundColor = "#B03737";
-        } else {
-            b.innerText = "Run!";
-            b.style.backgroundColor = "#37B03F";
-        }
-    });
 
     // camera
     $('#camera-zoom-in').click(function(){HackcraftUnity.Call.control_camera('zoomin');});
@@ -198,17 +187,8 @@ handler.onPuzzleChange = function(json) {
 
         HackcraftBlockly.history = [];
         // reset run button
-        var b = $('#btn-run')[0];
-        var slider = $('#sliderContainer')[0];
-        if (false){//jQuery.isEmptyObject(levelInfo)) {
-            b.hidden = true;
-            slider.style.visibility = "hidden";
-        } else {
-            b.hidden = false;
-            b.innerText = "Run!";
-            b.style.backgroundColor = "#37B03F";
-        }
         is_running = false;
+        HackcraftUI.RunButton.update(is_running);
 
         // reset program execution speed, because the scene reload will have made Unity forget
         HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
