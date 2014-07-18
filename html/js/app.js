@@ -26,11 +26,15 @@ function setState_title() {
 }
 
 function setState_intro() {
+    var d = '<p>where the 0.5% of you reading this will be informed that you will be PROGRAMMING WOO and you should click somewhere to get started!</p>' +
+        '<button id="button_startTutorial">Get Started!</button>';
+
     HackcraftUI.State.goToIntro(function(){
         HackcraftUI.Instructions.show({
             summary: 'This is intro text!',
-            detail: 'where the 0.5% of you reading this will be informed that you will be PROGRAMMING WOO and you should click somewhere to get started!'
+            detail: d
         });
+        $('#button_startTutorial').click(setState_levelSelect);
     });
 }
 
