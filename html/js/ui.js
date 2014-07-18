@@ -95,11 +95,12 @@ module.Instructions = (function() {
     }
 
     function makeLarge() {
-        var rect = $("svg g")[0].getBoundingClientRect();
+        var blockly = document.getElementById('blockly').contentWindow.document.body;
+        var rect = $("svg g", blockly)[0].getBoundingClientRect();
         var instContainer = $("#instructionsContainer")[0];
         instContainer.style.top = '0px';
         instContainer.style.left = rect.width + 'px';
-        instContainer.style.width = ($("#blockly")[0].getBoundingClientRect().width - rect.width) + 'px';
+        instContainer.style.width = (blockly.getBoundingClientRect().width - rect.width) + 'px';
         instContainer.style.height = "100%";
         instContainer.onclick = null;
 

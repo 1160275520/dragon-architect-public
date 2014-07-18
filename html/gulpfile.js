@@ -24,6 +24,11 @@ gulp.task('usemin', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR));
 });
 
+gulp.task('copy_frame', ['clean'], function() {
+    return gulp.src(['frame.html'])
+        .pipe(gulp.dest(BUILD_DIR));
+});
+
 gulp.task('copy_generated', ['clean'], function() {
     return gulp.src(['generated/**', '!generated/README*'])
         .pipe(gulp.dest(BUILD_DIR + 'generated/'));
@@ -39,7 +44,7 @@ gulp.task('copy_fonts', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 });
 
-gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_fonts']);
+gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_fonts', 'copy_frame']);
 
 gulp.task('default', ['usemin', 'copy_static']);
 

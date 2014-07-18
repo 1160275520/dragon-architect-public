@@ -1,4 +1,7 @@
 
+var blocklyIframeLoaded;
+var Blockly;
+
 var HackcraftBlockly = (function(){
 'use strict';
 
@@ -9,6 +12,26 @@ var HackcraftBlockly = {};
 HackcraftBlockly.history = [];
 HackcraftBlockly.curProgramStr = "";
 HackcraftBlockly.ignoreNextHistory = false;
+
+var q_defer = Q.defer();
+
+blocklyIframeLoaded = function() {
+    Blockly = document.getElementById('blockly').contentWindow.create();
+
+    HackcraftBlocklyCustomInit();
+
+    var toolbox = document.getElementById('toolbox');
+    window.addEventListener('scroll', function() {
+        Blockly.fireUiEvent(window, 'resize');
+    });
+
+    Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
+
+    Blockly.addChangeListener(HackcraftBlockly.makeCounter);
+    Blockly.addChangeListener(HackcraftBlockly.addToHistory);
+
+    q_defer.resolve();
+};
 
 // Supported languages.
 BlocklyApps.LANGUAGES = ['en'];
@@ -89,22 +112,8 @@ HackcraftBlockly.undo = function () {
  * Initialize Blockly.  Called by app.js
  */
 HackcraftBlockly.init = function() {
-    BlocklyApps.init();
-    var toolbox = document.getElementById('toolbox');
-    Blockly.inject(document.getElementById('blockly'),
-        {path: '',
-         rtl: false,
-         toolbox: toolbox,
-         trashcan: true});
-
-    window.addEventListener('scroll', function() {
-        Blockly.fireUiEvent(window, 'resize');
-    });
-
-    Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
-
-    Blockly.addChangeListener(HackcraftBlockly.makeCounter);
-    Blockly.addChangeListener(HackcraftBlockly.addToHistory);
+    // actually, initialization happened automatically, this just returns the promise we already created
+    return q_defer.promise;
 };
 
 HackcraftBlockly.clearProgram = function () {

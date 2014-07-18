@@ -1,4 +1,4 @@
-(function(){
+function HackcraftBlocklyCustomInit() {
 'use strict';
 
 // Extensions to Blockly's language and JavaScript generator.
@@ -210,5 +210,5 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
     return '';
 }
 
-}());
+}
 

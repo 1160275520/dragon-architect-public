@@ -77,6 +77,17 @@ function setState_gallery(galleryObjectArray) {
 
 // startup
 $(function() {
+    function initialize_unity() {
+        var d = Q.defer();
+        // this doesn't return a promise, unity will get back to us via hander.onSystemStart
+        handler.onSystemStart = function(json) {
+            game_info = JSON.parse(json);
+            d.resolve();
+        };
+        HackcraftUnity.Player.initialize();
+        return d.promise;
+    }
+
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
     $('#button_title_to_levelSelect').on('click', setState_levelSelect);
@@ -86,8 +97,8 @@ $(function() {
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
-    HackcraftUnity.Player.initialize();
-    HackcraftBlockly.init();
+    var promise_unity = initialize_unity();
+    var promise_blockly = HackcraftBlockly.init();
 
     // fetch the uid from the GET params and pass that to logging initializer
     var uid = $.url().param('uid');
@@ -139,6 +150,13 @@ $(function() {
             setState_gallery(data.objects);
         });
     });
+
+    // wait for all systems to start up, then go!
+    Q.all([promise_unity, promise_blockly]).done(function() {
+        console.info('EVERYTHING IS READY!');
+        create_level_select();
+        setState_title();
+    });
 });
 
 // SPECIFIC HANDLER FUNCTIONS
@@ -151,12 +169,6 @@ function add_to_library(name, program) {
 function create_level_select() {
     HackcraftUI.LevelSelect.create(game_info.modules[0], game_info.scenes, is_scene_completed, setState_puzzle);
 }
-
-handler.onSystemStart = function(json) {
-    game_info = JSON.parse(json);
-    create_level_select();
-    setState_title();
-};
 
 function calculate_library(puzzle_info) {
     var lib = puzzle_info.library;
