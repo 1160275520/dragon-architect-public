@@ -44,7 +44,7 @@ module.LevelSelect = (function() {
         var nodes = d3.selectAll(".levelSelector .node")[0];
 
         // setup onclick behavior
-        var SANDBOX_LEVEL_ID = 'tl_final';
+        var SANDBOX_LEVEL_ID = 'tutorial.sandbox';
 
         var COLOR_MAP = {
             completed: "green",

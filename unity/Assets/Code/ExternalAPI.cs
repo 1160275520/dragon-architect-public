@@ -67,7 +67,7 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void SendLevelCompleted() {
-        Application.ExternalCall(ExternalApiFunc, "onLevelComplete", Application.loadedLevelName);
+        Application.ExternalCall(ExternalApiFunc, "onLevelComplete", FindObjectOfType<Global>().CurrentSceneId);
     }
 
     public void SendReturnToSelect() {

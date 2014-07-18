@@ -17,6 +17,7 @@ function onHackcraftEvent(func, arg) {
 }
 
 function is_scene_completed(level) {
+    console.log("checking " + level);
     return isDevMode || levelsCompleted.indexOf(level) !== -1;
 }
 
@@ -33,6 +34,8 @@ function setState_title() {
 function setState_levelSelect() {
     hideAll();
     $('.levelSelector').show();
+    create_level_select();
+    console.log("levels completed: " + levelsCompleted);
 }
 
 function setState_puzzle(puzzle_info) {
@@ -154,7 +157,6 @@ $(function() {
     // wait for all systems to start up, then go!
     Q.all([promise_unity, promise_blockly]).done(function() {
         console.info('EVERYTHING IS READY!');
-        create_level_select();
         setState_title();
     });
 });
