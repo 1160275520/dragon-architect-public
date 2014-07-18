@@ -35,7 +35,7 @@ header h1 {
 
 #navControls {
     float: right;
-    mragin-left: 50px;
+    margin-left: 50px;
 }
 
 .headerCenter {
@@ -43,7 +43,7 @@ header h1 {
 
 #someheaderthingy {
     display: flex;
-    height: 100px;
+    height: 70px;
     background: #ffeedd;
 }
 
@@ -76,17 +76,33 @@ header h1 {
     font-weight: bold;
 }
 
-.mainLeftSide {
+#mainLeftSide {
     position: absolute;
-    width: 40%;
     padding: 0;
     margin: 0;
+    width: 40%;
 }
 
-.mainRightSide {
+#mainRightSide {
     position: relative;
-    margin-left: 40%;
     padding: 0;
+    margin-left: 40%;
+}
+
+#mainLeftSide.transition {
+    transition: width 1.0s ease-in-out;
+}
+
+#mainRightSide.transition {
+    transition: margin-left 1.0s ease-in-out;
+}
+
+#mainLeftSide.title {
+    width: 75%;
+}
+
+#mainRightSide.title {
+    margin-left: 75%;
 }
 
 #topButtonBar {

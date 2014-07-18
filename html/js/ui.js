@@ -2,6 +2,66 @@
 var HackcraftUI = (function(){ "use strict";
 var module = {};
 
+/**
+ * UI state changes for the different application states (e.g., title, puzzle).
+ * Does not handle any of the model, simply shows the correct basic elements.
+ */
+module.State = (function(){ "use strict";
+    var self = {};
+    var current_state;
+
+    function hideAll() {
+        HackcraftUnity.Player.hide();
+        $('.codeEditor, .puzzleModeUI, .creativeModeUI, .levelSelector, .galleryUI').hide();
+    }
+
+    var main_selector = '#mainLeftSide, #mainRightSide';
+
+    self.goToTitle = function(cb) {
+        current_state = 'title';
+
+        hideAll();
+        //$('.titleScreen').show();
+        $('.codeEditor').show();
+        HackcraftUnity.Player.show();
+        $(main_selector).addClass('title');
+
+        cb();
+    };
+
+    self.goToIntro = function(cb) {
+        if (current_state !== 'title') {
+            throw new Error('can only transition to intro from title!');
+        }
+        current_state = 'intro';
+
+        $(main_selector).addClass('transition');
+        $(main_selector).removeClass('title');
+
+        setTimeout(function() {
+            $(main_selector).removeClass('transition');
+            cb();
+        }, 1100);
+    };
+
+    self.goToSceneSelect = function(cb) {
+        hideAll();
+        $('.levelSelector').show();
+        $(main_selector).removeClass('title');
+        cb();
+    };
+
+    self.goToPuzzle = function(cb) {
+        hideAll();
+        $('.codeEditor, .puzzleModeUI').show();
+        HackcraftUnity.Player.show();
+        $(main_selector).removeClass('title');
+        cb();
+    };
+
+    return self;
+}());
+
 module.LevelSelect = (function() {
     var self = {};
 
@@ -55,7 +115,7 @@ module.LevelSelect = (function() {
         nodes.forEach(function (x) { 
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
-                    onSelectCallback({id:x.id, puzzle:scenes[x.id]});
+                    onSelectCallback(x.id);
                 };
                 if (isSceneCompleted(x.id)) {
                     x.children[0].style.fill = colors[COLOR_MAP.completed];
@@ -139,7 +199,7 @@ module.Instructions = (function() {
     }
 
     self.hide = function() {
-        $('#instructions-goal').css('visibility', 'hidden');
+        $('#instructionsContainer').css('visibility', 'hidden');
     }
 
     self.show = function(instructions) {
@@ -147,6 +207,7 @@ module.Instructions = (function() {
             $('#instructions-goal').html(instructions.summary);
             $('#instructions-detail').html(instructions.detail);
         }
+        $('#instructionsContainer').css('visibility', 'visible');
         makeLarge();
     }
 

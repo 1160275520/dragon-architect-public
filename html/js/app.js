@@ -21,28 +21,30 @@ function is_scene_completed(level) {
     return isDevMode || levelsCompleted.indexOf(level) !== -1;
 }
 
-function hideAll() {
-    HackcraftUnity.Player.hide();
-    $('.codeEditor, .puzzleModeUI, .creativeModeUI, .levelSelector, .titleScreen, .galleryUI').hide();
+function setState_title() {
+    HackcraftUI.State.goToTitle(function(){});
 }
 
-function setState_title() {
-    hideAll();
-    $('.titleScreen').show();
+function setState_intro() {
+    HackcraftUI.State.goToIntro(function(){
+        HackcraftUI.Instructions.show({
+            summary: 'This is intro text!',
+            detail: 'where the 0.5% of you reading this will be informed that you will be PROGRAMMING WOO and you should click somewhere to get started!'
+        });
+    });
 }
 
 function setState_levelSelect() {
-    hideAll();
-    $('.levelSelector').show();
-    create_level_select();
-    console.log("levels completed: " + levelsCompleted);
+    HackcraftUI.State.goToSceneSelect(function() {
+        create_level_select();
+    });
 }
 
-function setState_puzzle(puzzle_info) {
-    hideAll();
-    $('.codeEditor, .puzzleModeUI').show();
-    HackcraftUnity.Player.show();
-    HackcraftUnity.Call.request_start_puzzle(puzzle_info);
+function setState_puzzle(id) {
+    var info = {id:id, puzzle:game_info.scenes[id]};
+    HackcraftUI.State.goToPuzzle(function() {
+        HackcraftUnity.Call.request_start_puzzle(info);
+    });
 }
 
 /*
@@ -180,6 +182,17 @@ function calculate_library(puzzle_info) {
         tools.push('camera_controls');
     }
     return tools;
+}
+
+handler.onTitleButtonClicked = function(button) {
+    switch (button) {
+        case 'tutorial':
+            setState_intro();
+            break;
+        default:
+            throw new Error('uknown title button ' + button);
+            break;
+    }
 }
 
 handler.onPuzzleChange = function(json) {

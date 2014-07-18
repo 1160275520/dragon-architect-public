@@ -74,6 +74,10 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onReturnToSelect", "");
     }
 
+    public void SendTitleButtonClicked(string button) {
+        Application.ExternalCall(ExternalApiFunc, "onTitleButtonClicked", button);
+    }
+
     // external API
 
     public void EAPI_SetProgramFromJson(string json) {

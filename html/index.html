@@ -41,7 +41,6 @@
       <div>
         <h1>Hackcraft!</h1>
         <div id="navControls">
-          <p>I am controls!</p>
           <button id="button_header_levelSelect">Go to level select</button>
         </div>
         <div class="creativeModeUI headerCenter">
@@ -52,8 +51,8 @@
       </div>
     </header>
     <div id="main">
-      <div class="mainLeftSide">
-        <div id="topButtonBar">
+      <div id="mainLeftSide">
+        <div id="topButtonBar" class="puzzleModeUI">
           <button id="btn-run" class="codeEditor">Run!</button>
           <span id="cameraControls" class="codeEditor">
             <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>
@@ -75,8 +74,8 @@
           </div>
         </div>
       </div>
-      <div class="codeEditor mainRightSide">
-        <div id="instructionsContainer" class="puzzleModeUI">
+      <div id="mainRightSide" class="codeEditor">
+        <div id="instructionsContainer" style="visibility: hidden;">
           <span id="instructionsBackground" style="display:block;">
             <img id="dragonIcon" src="media/dragon_icon.png" height="100px" style="visibility:hidden;float:left;"/>
             <div id="instructions">
@@ -86,7 +85,7 @@
           </span>
         </div>
         <iframe id="blockly" src="frame.html"></iframe>
-        <button id="btn-undo">Undo</button>
+        <button id="btn-undo" style="display: none;">Undo</button>
         <p id="statement-counter"></p>
         <img id="trash-arrow" src="media/arrow.png"/>
       </div>
@@ -100,10 +99,6 @@
         <svg width=1200 height=350>
           <g transform="translate(20,20)"/>
         </svg>
-      </div>
-      <div class="titleScreen">
-        <h2>I am the title screen!</h2>
-        <button id="button_title_to_levelSelect">Go to level select</button>
       </div>
     </div>
     <button onclick="devmode()">Activate Devloper Mode</button>
