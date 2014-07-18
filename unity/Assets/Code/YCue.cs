@@ -18,7 +18,7 @@ public class YCue : MonoBehaviour
     void Update() {
         var grid = FindObjectOfType<Grid>();
         var robot = FindObjectOfType<RobotController>();
-        var robotPos = grid.CenterOfCell(robot.Robot.Position);
+        var robotPos = robot.transform.position;
         var yPos = 0.1f;
         for (int i = 0; i <= robot.Robot.Position.Y; i++) {
             if (grid[new IntVec3(robot.Robot.Position.X, i, robot.Robot.Position.Z)] != null) {
