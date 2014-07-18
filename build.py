@@ -6,6 +6,7 @@ import subprocess
 import argparse
 import traceback
 import platform
+import time
 
 def check(code):
     if code != 0:
@@ -43,6 +44,9 @@ def build(target, mode):
     print("Done building '%s'." % target)
 
 def main(args):
+
+    start_time = time.clock()
+
     build_order = {}
     build_order['allunity'] = ['gamelib', 'unity']
     build_order['all'] = ['gamelib', 'unity', 'blockly', 'html']
@@ -58,6 +62,9 @@ def main(args):
         traceback.print_exc()
         sys.stderr.write("BUILD FAILED :(\n")
         sys.exit(1)
+
+    end_time = time.clock()
+    print('Finished in %f seconds' % (end_time - start_time))
 
 if __name__ == '__main__':
     _desc = '''
