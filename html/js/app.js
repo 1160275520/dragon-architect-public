@@ -3,22 +3,42 @@ var onHackcraftEvent = (function(){ "use strict";
 var is_running = false;
 var questLogger;
 var handler = {};
-var levelsCompleted = [];
 var isDevMode = false;
 // the modules/puzzles sent up on game start
 var game_info;
 
+// object that contains the callbacks for when a puzzle is completed, quit, etc.
+// will send the ui to the correct location.
+// different runners are used for e.g., tutorial mode vs modules with scene selection
+var puzzle_runner;
+
 // GENERIC UNITY API SETUP AND MARSHALLING
+
+var progress = (function(){
+    var self = {};
+
+    var levelsCompleted = [];
+    // load the level progress from this session (if any)
+    if (sessionStorage.getItem("levelsCompleted")) {
+        levelsCompleted = sessionStorage.getItem("levelsCompleted").split(',');
+    }
+
+    self.is_completed = function(puzzle_id) {
+        return isDevMode || _.contains(levelsCompleted, puzzle_id);
+    }
+
+    self.mark_completed = function(puzzle_id) {
+        levelsCompleted.push(puzzle_id);
+        sessionStorage.setItem("levelsCompleted", levelsCompleted);
+    }
+
+    return self;
+}());
 
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
     console.info('received Unity event ' + func);
     handler[func](arg);
-}
-
-function is_scene_completed(level) {
-    console.log("checking " + level);
-    return isDevMode || levelsCompleted.indexOf(level) !== -1;
 }
 
 function setState_title() {
@@ -113,11 +133,6 @@ $(function() {
     var uid = $.url().param('uid');
     HackcraftLogging.initialize(uid);
 
-    // load the level progress from this session (if any)
-    if (sessionStorage.getItem("levelsCompleted")) {
-        levelsCompleted = sessionStorage.getItem("levelsCompleted").split(',');
-    }
-
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -175,7 +190,7 @@ function add_to_library(name, program) {
 }
 
 function create_level_select() {
-    HackcraftUI.LevelSelect.create(game_info.modules[0], game_info.scenes, is_scene_completed, setState_puzzle);
+    HackcraftUI.LevelSelect.create(game_info.modules['module1'], game_info.scenes, progress.is_completed, setState_puzzle);
 }
 
 function calculate_library(puzzle_info) {
@@ -265,8 +280,7 @@ handler.onSetColors = function(json) {
 
 handler.onLevelComplete = function(levelId) {
     console.info('on level complete!');
-    levelsCompleted.push(levelId);
-    sessionStorage.setItem("levelsCompleted", levelsCompleted);
+    progress.mark_completed(levelId);
 
     if (questLogger) {
         questLogger.logPuzzledCompleted();

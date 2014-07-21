@@ -15,10 +15,10 @@ public class Global : MonoBehaviour {
     void OnEnable() {
         Application.RegisterLogCallbackThreaded(handleLog);
 
-        var module = Json.Parse(Resources.Load<TextAsset>("md_module1").text);
+        var modules = Json.Parse(Resources.Load<TextAsset>("md_module1").text);
         var scenes = Json.Parse(Resources.Load<TextAsset>("sd_module1").text);
         var dict = new Dictionary<string, Json.JsonValue>();
-        dict.Add("modules", Json.JsonValue.ArrayOf(new Json.JsonValue[] { module }));
+        dict.Add("modules", modules);
         dict.Add("scenes", scenes);
         var json = Json.JsonValue.ObjectOf(dict);
 
