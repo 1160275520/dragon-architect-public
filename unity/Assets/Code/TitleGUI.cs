@@ -30,7 +30,7 @@ public class TitleGUI : MonoBehaviour
         var hbw = 90;
         var hbh = 50;
 
-        if (!hasRunBeenClicked && GUI.Button(new Rect(hw - hbw, 100 + hh - hbw, 2 * hbw, 2 * hbh), "RUN!", "RunButton")) {
+        if (!hasRunBeenClicked && GUI.Button(new Rect(hw - hbw, 100 + hh - hbw, 2 * hbw, 2 * hbh), "Go!", "RunButton")) {
             hasRunBeenClicked = true;
             GetComponent<ExternalAPI>().SendTitleButtonClicked("tutorial");
         }

@@ -223,7 +223,7 @@ module.RunButton = (function() {
             b.innerText = "Reset";
             b.style.backgroundColor = "#B03737";
         } else {
-            b.innerText = "Run!";
+            b.innerText = "Go!";
             b.style.backgroundColor = "#37B03F";
         }
     };
