@@ -10,7 +10,7 @@ public class PuzRepeat : MonoBehaviour
     Func<bool> winPredicate;
 
 	void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
 
         var rep = "<object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object>";
         var f1 = "<object data=\"media/blockSvgs/f1.svg\" style=\"vertical-align:middle\"></object>";
@@ -32,12 +32,12 @@ public class PuzRepeat : MonoBehaviour
         }
 
         lh.CreateBlueprint(template);
-        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
 	}
 
     void Update() {
         if (winPredicate()) {
-            GetComponent<LevelHelper>().WinLevel();
+            GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 }

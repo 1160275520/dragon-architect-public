@@ -18,7 +18,7 @@ public class ExternalAPI : MonoBehaviour
     void Start() {
         var global = FindObjectOfType<Global>();
         var puzzle = global.CurrentPuzzle;
-        #warning "shouldn't need this hack, just stop this from getting added at the loader"
+        // if we're not in a puzzle, don't send any of the stuff on the first update
         if (puzzle != null) {
             isFirstUpdate = true;
         }

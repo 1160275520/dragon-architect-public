@@ -8,7 +8,7 @@ public class PuzMovement2D_1 : MonoBehaviour {
     private Func<bool> winPredicate;
 
     void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.movement2d");
         winPredicate = lh.GameIsRunningButDoneExecuting;
@@ -16,7 +16,7 @@ public class PuzMovement2D_1 : MonoBehaviour {
 
     void Update() {
         if (winPredicate()) {
-			GetComponent<LevelHelper>().WinLevel();
+			GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 }

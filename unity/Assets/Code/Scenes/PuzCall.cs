@@ -9,7 +9,7 @@ public class PuzCall : MonoBehaviour
     Func<bool> winPredicate;
 
 	void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
 
         var f1 = "<object data=\"media/blockSvgs/f1.svg\" style=\"vertical-align:middle\"></object>";
         String.Format("A procedure (like <b>F1</b>) can be used inside another procedure (like <b>MAIN</b>). {0} does everything inside <b>F1</b>. You can use {0} multiple times to do the same thing multiple times. Fill the blueprint using {0}!", f1);
@@ -31,12 +31,12 @@ public class PuzCall : MonoBehaviour
         }
 
         lh.CreateBlueprint(template);
-        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
 	}
 
     void Update() {
         if (winPredicate()) {
-            GetComponent<LevelHelper>().WinLevel();
+            GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 }

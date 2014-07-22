@@ -10,7 +10,7 @@ public class PuzSpeedSlider : MonoBehaviour
     Func<bool> winPredicate;
 
 	void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
 
         lh.SetInstructions(
             "The <b>Speed Slider</b> changes the rate at which your program executes.",
@@ -22,12 +22,12 @@ public class PuzSpeedSlider : MonoBehaviour
         progman.SetIsFrozenBlocks("MAIN", true);
         progman.SetIsFrozenArguments("MAIN", true);
 
-        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 
     void Update() {
         if (winPredicate()) {
-            GetComponent<LevelHelper>().WinLevel();
+            GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 

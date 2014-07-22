@@ -9,7 +9,7 @@ public class PuzMovement3D : MonoBehaviour
     Func<bool> winPredicate;
 
     void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
         lh.SetInstructions(
             "Help me get to the pink box!",
             "Use two <object data=\"media/blockSvgs/up.svg\" style=\"vertical-align:middle\"></object> to complete my program."
@@ -21,12 +21,12 @@ public class PuzMovement3D : MonoBehaviour
 
         lh.CreateRobotTarget(target);
         // offset win location since Sala floats one cell above her actual location
-        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateTargetPredicate(target) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateTargetPredicate(target) });
     }
 
     void Update() {
         if (winPredicate()) {
-            GetComponent<LevelHelper>().WinLevel();
+            GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 }

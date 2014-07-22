@@ -9,7 +9,7 @@ public class PuzMovementArgs : MonoBehaviour
     Func<bool> winPredicate;
 
     void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
         lh.SetInstructions(
             "Help me put blocks on the blue boxes!",
             "The number in each <object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object> tells me how many spaces to move. Change the numbers to complete my program."
@@ -26,12 +26,12 @@ public class PuzMovementArgs : MonoBehaviour
 
         lh.CreateBlueprint(template);
 
-        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
 
     void Update() {
         if (winPredicate()) {
-            GetComponent<LevelHelper>().WinLevel();
+            GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 }

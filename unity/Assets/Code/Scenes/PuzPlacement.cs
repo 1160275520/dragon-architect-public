@@ -9,7 +9,7 @@ public class PuzPlacement : MonoBehaviour
     Func<bool> winPredicate;
 
     void Start() {
-        var lh = GetComponent<LevelHelper>();
+        var lh = GetComponent<PuzzleHelper>();
         lh.SetInstructions(
             "I need to place some blocks in the blue boxes, but my program skips one!",
             "Use one <object data=\"media/blockSvgs/placeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program."
@@ -26,12 +26,12 @@ public class PuzPlacement : MonoBehaviour
         FindObjectOfType<MyCamera>().Rotate(-90);
 
         lh.CreateBlueprint(template);
-        winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
 
     void Update() {
         if (winPredicate()) {
-            GetComponent<LevelHelper>().WinLevel();
+            GetComponent<PuzzleHelper>().WinLevel();
         }
     }
 }

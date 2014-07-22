@@ -6,7 +6,7 @@ using Hackcraft;
 using Hackcraft.Ast;
 using Microsoft.FSharp.Core;
 
-public class LevelHelper : MonoBehaviour
+public class PuzzleHelper : MonoBehaviour
 {
     public GameObject BlueprintPrefab;
     public GameObject RobotTargetPrefab;
