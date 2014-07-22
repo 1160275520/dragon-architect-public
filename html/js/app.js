@@ -1,6 +1,7 @@
 var onHackcraftEvent = (function(){ "use strict";
 
 var is_running = false;
+var is_expr_mode = false;
 var questLogger;
 var handler = {};
 var isDevMode = false;
@@ -188,6 +189,11 @@ $(function() {
         }
     });
     HackcraftUI.Instructions.hide();
+
+    $('#btn-expr').on('click', function() {
+        is_expr_mode = !is_expr_mode;
+        HackcraftUnity.Call.set_expr_mode(is_expr_mode);
+    });
 
     // camera
     $('#camera-zoom-in').click(function(){HackcraftUnity.Call.control_camera('zoomin');});

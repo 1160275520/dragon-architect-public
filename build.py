@@ -6,7 +6,7 @@ import subprocess
 import argparse
 import traceback
 import platform
-import time
+import timeit
 
 def check(code):
     if code != 0:
@@ -45,7 +45,7 @@ def build(target, mode):
 
 def main(args):
 
-    start_time = time.clock()
+    start_time = timeit.default_timer()
 
     build_order = {}
     build_order['allunity'] = ['gamelib', 'unity']
@@ -63,7 +63,7 @@ def main(args):
         sys.stderr.write("BUILD FAILED :(\n")
         sys.exit(1)
 
-    end_time = time.clock()
+    end_time = timeit.default_timer()
     print('Finished in %f seconds' % (end_time - start_time))
 
 if __name__ == '__main__':

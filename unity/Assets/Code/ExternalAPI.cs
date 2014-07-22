@@ -115,4 +115,17 @@ public class ExternalAPI : MonoBehaviour
             case "rotateright": camera.Rotate(-90); break;
         }
     }
+
+    public void EAPI_SetExperimentMode(string aIsExprMode) {
+        bool isExprMode = aIsExprMode == "true";
+        var plane = GameObject.Find("Plane");
+        if (isExprMode) {
+            var grass = (Material)Resources.Load("Grass", typeof(Material));
+            var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));
+            plane.renderer.materials = new Material[] {grass, grassGrid};
+        } else {
+            var ground = (Material)Resources.Load("Ground", typeof(Material));
+            plane.renderer.materials = new Material[] {ground};
+        }
+    }
 }

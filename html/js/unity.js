@@ -71,6 +71,10 @@ module.Call = (function() {
         send_message("System", "EAPI_ControlCamera", action);
     }
 
+    self.set_expr_mode = function(is_expr_mode) {
+        send_message("System", "EAPI_SetExperimentMode", is_expr_mode ? "true" : "false");
+    }
+
     return self;
 }());
 
