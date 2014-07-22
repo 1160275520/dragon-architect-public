@@ -121,6 +121,18 @@ type StepState = {
     Grid: ImmArr<KeyValuePair<IntVec3,Block>>;
 }
 
+let ExecuteProgramLazily program (grid:GridStateTracker) (robot:Robot.IRobot) =
+    let state = CreateState program "MAIN"
+    seq {
+        yield {Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}
+        while not (IsDone state) do
+            let cmd = ExecuteUntilCommand state
+            if cmd <> null then
+                robot.Execute grid cmd
+                yield {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState}
+            else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
+    }
+
 let ExecuteFullProgram program (grid:GridStateTracker) (robot:Robot.IRobot) =
     try
         let MAX_ITER = 10000
