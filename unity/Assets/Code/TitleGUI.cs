@@ -17,7 +17,8 @@ public class TitleGUI : MonoBehaviour
     private bool hasRunBeenClicked = false;
 
     void Start() {
-
+        // add a dummy program to the program manager to make it shut up
+        GetComponent<ProgramManager>().Manipulator.CreateProcedure("MAIN");
     }
 
     void OnGUI()

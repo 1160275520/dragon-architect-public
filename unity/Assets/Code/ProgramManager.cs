@@ -14,13 +14,6 @@ public class ProgramManager : MonoBehaviour {
     public ImperativeAstManipulator Manipulator { get; private set; }
     public ImmArr<Simulator.StepState> States { get; private set; }
 
-    private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
-
-    #warning "fix AvailableProcedures to do something vaguely correct"
-    public string[] AvailableProcedures { get {
-        return PROCS.ToArray();
-    } }
-
     public bool IsFrozenBlocks(string procName) {
         var proc = Manipulator.Program.Procedures[procName];
         return proc.Meta.Attributes.TryLoadOrElse("frozen_blocks", Json.asBool, false);
@@ -95,11 +88,7 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
-    public void Undo() {
-    }
-
     public void Clear() {
-        //Debug.Log("proc count in progman.clear = " + GetComponent<ProgramManager>().Manipulator.Program.Procedures.Count);
         var procs = from kvp in Manipulator.Program.Procedures select kvp.Key;
         foreach (var p in procs) {
             Manipulator.ClearProcedure(p);
@@ -109,7 +98,6 @@ public class ProgramManager : MonoBehaviour {
     }
 
     private void setGameState(int index) {
-        //Debug.Log("setting to " + index);
         var robot = FindObjectOfType<RobotController>();
         var grid = GetComponent<Grid>();
         currentStateIndex = index;
@@ -142,22 +130,16 @@ public class ProgramManager : MonoBehaviour {
 
     void Awake() {
         Manipulator = new ImperativeAstManipulator(MAX_PROCEDURE_LENGTH);
-        foreach (var proc in AvailableProcedures) {
-            Manipulator.CreateProcedure(proc);
-        }
-        //Debug.Log("proc count in progman.awake = " + Manipulator.Program.Procedures.Count);
     }
     
     void Start () {
         IsExecuting = false;
         IsCheckingForProgramChanges = true;
-        //Debug.Log("proc count in progman.start = " + Manipulator.Program.Procedures.Count);
     }
     
     void EvalProgram() {
         if (IsCheckingForProgramChanges && !IsRunning && Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
-            //Debug.Log("program is dirty!");
 
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
@@ -165,9 +147,8 @@ public class ProgramManager : MonoBehaviour {
             var grid = GridStateTracker.Empty();
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
-			//Debug.Log(Json.Format(Serialization.JsonOfProgram(Manipulator.Program)));
             States = Simulator.ExecuteFullProgram(Manipulator.Program, grid, initialRobotState.Clone);
-            //Debug.Log(States.Length + " states in program");
+
             if (isOldIndexAtEnd) {
                 currentStateIndex = States.Length;
             }

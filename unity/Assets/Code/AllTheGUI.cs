@@ -47,6 +47,8 @@ public class AllTheGUI : MonoBehaviour
     private Rect area;
     private float lastUpdateTime = 0.0f;
 
+    private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
+
     private bool isFirstUpdate = true;
     private Action currentModalWindow = null;
     private int astIdCounter = 0;
@@ -57,7 +59,12 @@ public class AllTheGUI : MonoBehaviour
     }
 
     void Start() {
-//        Instantiate(SpeechBubble);
+        #warning "If you want non-blockly mode to work, you need to make this work, but not here because that will break puzzles"
+        /*
+        foreach (var proc in PROCS) {
+            Manipulator.CreateProcedure(proc);
+        }
+        */
     }
 
     void Update() {
@@ -100,7 +107,7 @@ public class AllTheGUI : MonoBehaviour
 
     Imperative.Statement makeStatement(string name)
     {
-        var lastProc = GetComponent<ProgramManager>().AvailableProcedures.Last();
+        var lastProc = PROCS.Last();
 
         switch (name.ToLower()) {
             case "forward":
@@ -131,7 +138,7 @@ public class AllTheGUI : MonoBehaviour
     void OnGUI()
     {
         var progman = GetComponent<ProgramManager>();
-        var procedures = progman.AvailableProcedures;
+        var procedures = PROCS;
         var manipulator = progman.Manipulator;
         GUI.skin = CustomSkin;
 
