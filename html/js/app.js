@@ -294,6 +294,7 @@ handler.onReturnToSelect = function() {
 
 handler.onUnlockDevMode = function() {
     isDevMode = true;
+    Blockly.mainWorkspace.maxBlocks = 5000;
     // recreate the level select
     create_level_select();
 };
