@@ -17,9 +17,8 @@ public class ExternalAPI : MonoBehaviour
 
     void Start() {
         var global = FindObjectOfType<Global>();
-        var puzzle = global.CurrentPuzzle;
         // if we're not in a puzzle, don't send any of the stuff on the first update
-        if (puzzle != null) {
+        if (global != null && global.CurrentPuzzle != null) {
             isFirstUpdate = true;
         }
     }
