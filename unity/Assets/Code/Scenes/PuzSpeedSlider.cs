@@ -20,6 +20,7 @@ public class PuzSpeedSlider : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.speed_slider");
         progman.SetIsFrozenBlocks("MAIN", true);
+        progman.SetIsFrozenArguments("MAIN", true);
 
         winPredicate = LevelHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
