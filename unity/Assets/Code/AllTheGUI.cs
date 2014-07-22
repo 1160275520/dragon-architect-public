@@ -36,8 +36,7 @@ public class AllTheGUI : MonoBehaviour
     public bool IsActiveMainControls = true;
     public bool IsActiveCodeEditor = true;
     public bool IsActiveTimeSlider = true;
-    public bool IsActiveSaveLoad = true;
-    public bool IsActiveReturnToLevelSelect = false;
+    public bool IsActivePuzzleFinishButton = false;
     public bool IsActiveBlockly = true;
 
     private int curProc = 0;
@@ -50,7 +49,6 @@ public class AllTheGUI : MonoBehaviour
 
     private bool isFirstUpdate = true;
     private Action currentModalWindow = null;
-    private string currentlyTypedFilename = "";
     private int astIdCounter = 0;
     // important that this is prefix, 1 should be the first id
     private int NextId()
@@ -148,7 +146,7 @@ public class AllTheGUI : MonoBehaviour
 
         GUILayoutOption[] options;
 
-        if (IsActiveReturnToLevelSelect) {
+        if (IsActivePuzzleFinishButton) {
             area = new Rect(Screen.width/2 - 100, Screen.height/2 - 50, 200, 100);
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground");
@@ -156,53 +154,18 @@ public class AllTheGUI : MonoBehaviour
             var style = new GUIStyle("button");
             style.fontSize = 24;
             style.fontStyle = FontStyle.Bold;
-            if (GUILayout.Button("Return to level select", style)) {
-                GetComponent<ExternalAPI>().SendReturnToSelect();
+
+            var text = FindObjectOfType<Global>().PuzzleFinish == Global.PuzzleFinishType.to_next_puzzle
+                ? "Go to next puzzle"
+                : "Return to level select";
+
+            if (GUILayout.Button(text, style)) {
+                GetComponent<ExternalAPI>().SendPuzzleFinish();
             }
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }
-        // save/load dialog
-        if (IsActiveSaveLoad) {
-            area = new Rect(Screen.width - 4 * 105, Screen.height - 2 * BUTTON_HEIGHT, 4 * 105, BUTTON_HEIGHT + SPACING);
-            GUILayout.BeginArea(area);
-            GUILayout.BeginVertical("ButtonBackground");
-            GUILayout.BeginHorizontal();
-            options = new GUILayoutOption[] {
-                GUILayout.Width(100),
-                GUILayout.Height(BUTTON_HEIGHT)
-            };
-            makeButton("Clear", options, () => currentModalWindow = displayConfirmClear);
-            makeButton("Save File", options, () => {
-                string filename = null;
-                if (currentlyTypedFilename.Length > 0) {
-                    filename = "TestData/" + currentlyTypedFilename;
-                }
-                /*
-                if (filename != null) {
-                    Hackcraft.Serialization.SaveFile(filename, GetComponent<ProgramManager>().Manipulator.Program);
-                }
-                */
-            });
-            makeButton("Load File", options, () => {
-                string filename = null;
-                if (currentlyTypedFilename.Length > 0) {
-                    filename = currentlyTypedFilename;
-                }
-                if (filename != null) {
-                    progman.LoadProgram(filename);
-                    // reset the id counter to not overload with existing statements
-                    astIdCounter = manipulator.Program.AllIds.Max();
-                }
-            });
-            var textStyle = new GUIStyle(GUI.skin.textField);
-            textStyle.margin = new RectOffset(0, 0, 4, 0);
-            currentlyTypedFilename = GUILayout.TextField(currentlyTypedFilename, textStyle, options);
-            GUILayout.EndHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.EndVertical();
-            GUILayout.EndArea();
-        }
+
 
         // instructions and other controls
         if (IsActiveCodeEditor && !IsActiveBlockly) {

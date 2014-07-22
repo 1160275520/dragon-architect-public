@@ -66,12 +66,12 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Serialize(Json.fromObject(CubeTextures.AvailableColors)));
     }
 
-    public void SendLevelCompleted() {
-        Application.ExternalCall(ExternalApiFunc, "onLevelComplete", FindObjectOfType<Global>().CurrentSceneId);
+    public void SendPuzzleComplete() {
+        Application.ExternalCall(ExternalApiFunc, "onPuzzleComplete", FindObjectOfType<Global>().CurrentSceneId);
     }
 
-    public void SendReturnToSelect() {
-        Application.ExternalCall(ExternalApiFunc, "onReturnToSelect", "");
+    public void SendPuzzleFinish() {
+        Application.ExternalCall(ExternalApiFunc, "onPuzzleFinish", "");
     }
 
     public void SendTitleButtonClicked(string button) {

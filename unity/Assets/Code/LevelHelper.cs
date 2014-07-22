@@ -100,8 +100,8 @@ public class LevelHelper : MonoBehaviour
     void Update() {
         if (hasBeenWon && Time.fixedTime - winTime > winDelay && !hasSentWinAnnouncement) {
             Debug.Log("actual win");
-            GetComponent<AllTheGUI>().IsActiveReturnToLevelSelect = true;
-            GetComponent<ExternalAPI>().SendLevelCompleted();
+            GetComponent<AllTheGUI>().IsActivePuzzleFinishButton = true;
+            GetComponent<ExternalAPI>().SendPuzzleComplete();
             hasSentWinAnnouncement = true;
         }
     }

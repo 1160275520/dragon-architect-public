@@ -7,12 +7,7 @@ var isDevMode = false;
 // the modules/puzzles sent up on game start
 var game_info;
 
-// object that contains the callbacks for when a puzzle is completed, quit, etc.
-// will send the ui to the correct location.
-// different runners are used for e.g., tutorial mode vs modules with scene selection
-var puzzle_runner;
-
-// GENERIC UNITY API SETUP AND MARSHALLING
+var current_puzzle_runner;
 
 var progress = (function(){
     var self = {};
@@ -35,6 +30,65 @@ var progress = (function(){
     return self;
 }());
 
+/**
+    * Starts a module.
+    * Returns an object with the function 'onPuzzleFinish' that should be called when puzzleCompleted is sent from unity.
+    * @param module A module object (from game_info.modules).
+    * @param sceneSelectType one of {"tutorial", "module"}.
+    * Controls whether you are shuttled through levels automatically or get the graph scene selctor.
+    */
+function create_puzzle_runner(module, sceneSelectType) {
+    var self = {};
+
+    function onModuleComplete() {
+        console.error("TODO make this do something!");
+    }
+
+    function setState_puzzle(id, finish_type) {
+        var info = {id:id, puzzle:game_info.scenes[id], finish:finish_type};
+        HackcraftUI.State.goToPuzzle(function() {
+            HackcraftUnity.Call.request_start_puzzle(info);
+        });
+    }
+
+    self.onPuzzleFinish = function() {
+        switch (sceneSelectType) {
+            case "module":
+                // bring up the level select
+                HackcraftUI.State.goToSceneSelect(function() {
+                    HackcraftUI.LevelSelect.create(module, game_info.scenes, progress.is_completed, function(pid) {
+                        setState_puzzle(pid, "to_puzzle_select");
+                    });
+                });
+                break;
+
+            case "tutorial":
+                // just start the next available puzzle immediately
+                // HACK for now just assume the nodes are in the correct order!
+                var did_start_level = false;
+                _.each(module.nodes, function(n) {
+                    if (!progress.is_completed(n)) {
+                        setState_puzzle(n, "to_next_puzzle");
+                        did_start_level = true;
+                        return false;
+                    }
+                });
+                if (!did_start_level) {
+                    onModuleComplete();
+                }
+                break;
+
+            default:
+                throw new Error("invalid scene select type " + sceneSelectType);
+        }
+    }
+
+    // call onPuzzleComplete to trigger the first puzzle
+    self.onPuzzleFinish();
+
+    return self;
+};
+
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
     console.info('received Unity event ' + func);
@@ -54,35 +108,13 @@ function setState_intro() {
             summary: 'This is intro text!',
             detail: d
         });
-        $('#button_startTutorial').click(setState_levelSelect);
+        $('#button_startTutorial').click(function() {
+            // start the 'tutorial' module in tutorial mode
+            current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
+        });
     });
 }
 
-function setState_levelSelect() {
-    HackcraftUI.State.goToSceneSelect(function() {
-        create_level_select();
-    });
-}
-
-function setState_puzzle(id) {
-    var info = {id:id, puzzle:game_info.scenes[id]};
-    HackcraftUI.State.goToPuzzle(function() {
-        HackcraftUnity.Call.request_start_puzzle(info);
-    });
-}
-
-/*
-// shows the UI for sandbox mode. If stageID is not null, also sets the unity stage.
-function setState_sandbox(stageId) {
-    console.info('starting sandbox ' + stageId);
-    hideAll();
-    $('.codeEditor, .creativeModeUI').show();
-    HackcraftUnity.Player.show();
-    if (stageId) {
-        set_stage(stageId);
-    }
-}
-*/
 
 function setState_gallery(galleryObjectArray) {
     // TODO make sure current program is preserved for when gallery returns to sandbox
@@ -119,9 +151,10 @@ $(function() {
 
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
-    $('#button_title_to_levelSelect').on('click', setState_levelSelect);
-    $('#button_header_levelSelect').on('click', setState_levelSelect);
-    $('#button_levelSelect_to_title').on('click', setState_title);
+    $('#button_header_levelSelect').on('click', function() {
+        // HACK
+        current_puzzle_runner = create_puzzle_runner(game_info.modules["module1"], "module");
+    });
 
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
@@ -187,10 +220,6 @@ $(function() {
 function add_to_library(name, program) {
     // TODO check for reserved names (e.g., main)
     // TODO actually implement this function
-}
-
-function create_level_select() {
-    HackcraftUI.LevelSelect.create(game_info.modules['module1'], game_info.scenes, progress.is_completed, setState_puzzle);
 }
 
 function calculate_library(puzzle_info) {
@@ -278,25 +307,29 @@ handler.onSetColors = function(json) {
     Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
 };
 
-handler.onLevelComplete = function(levelId) {
-    console.info('on level complete!');
-    progress.mark_completed(levelId);
+// sent the moment they "win" a puzzle
+handler.onPuzzleComplete = function(puzzle_id) {
+    progress.mark_completed(puzzle_id);
 
     if (questLogger) {
         questLogger.logPuzzledCompleted();
     }
 };
 
-handler.onReturnToSelect = function() {
-    console.info('on return to level select!');
-    setState_levelSelect();
+// sent when they exit a puzzle
+handler.onPuzzleFinish = function(puzzle_id) {
+    progress.mark_completed(puzzle_id);
+    current_puzzle_runner.onPuzzleFinish();
+
+    if (questLogger) {
+        questLogger.logQuestEnd();
+        questLogger = null;
+    }
 };
 
 handler.onUnlockDevMode = function() {
     isDevMode = true;
     Blockly.mainWorkspace.maxBlocks = 5000;
-    // recreate the level select
-    create_level_select();
 };
 
 return onHackcraftEvent;

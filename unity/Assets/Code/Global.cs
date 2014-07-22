@@ -5,8 +5,15 @@ using System.Collections.Generic;
 
 public class Global : MonoBehaviour {
 
+    public enum PuzzleFinishType
+    {
+        to_puzzle_select,
+        to_next_puzzle,
+    }
+
     public string CurrentSceneId { get; private set; }
     public Scene.PuzzleInfo CurrentPuzzle { get; set; }
+    public PuzzleFinishType PuzzleFinish { get; private set; }
 
     void Awake() {
         DontDestroyOnLoad(this);
@@ -58,6 +65,7 @@ public class Global : MonoBehaviour {
         var data = Json.Parse(json);
         CurrentSceneId = data.GetField("id").AsString;
         CurrentPuzzle = Scene.PuzzleInfo.Parse(data.GetField("puzzle"));
+        PuzzleFinish = (PuzzleFinishType)System.Enum.Parse(typeof(PuzzleFinishType), data.GetField("finish").AsString);
 
         Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
         Application.LoadLevel("puzzle");
