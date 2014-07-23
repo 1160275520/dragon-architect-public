@@ -35,7 +35,7 @@ var progress = (function(){
     var levelsCompleted = [];
     // load the level progress from this session (if any)
     if (sessionStorage.getItem("levelsCompleted")) {
-        levelsCompleted = sessionStorage.load("levelsCompleted").split(',');
+        levelsCompleted = storage.load("levelsCompleted").split(',');
     }
 
     self.is_completed = function(puzzle_id) {
