@@ -3,12 +3,12 @@ module Hackcraft.Scene
 
 module J = Json
 
-let jload obj key fn = fn (Json.getField obj key)
-let tryJload obj key fn = Json.tryGetField obj key |> Option.map fn
-let jsonOfSet (s:Set<string>) = J.arrayOfSeq (Seq.map J.String s)
-let setOfJson j = J.arrayToArray j |> Array.map J.asString |> Set.ofArray
-let inline toJson obj =  (^a : (member ToJson : unit -> J.JsonValue) obj)
-let inline nullOrToJson o = match o with Some x -> toJson x | None -> J.Null
+let private jload obj key fn = fn (Json.getField obj key)
+let private tryJload obj key fn = Json.tryGetField obj key |> Option.map fn
+let private jsonOfSet (s:Set<string>) = J.arrayOfSeq (Seq.map J.String s)
+let private setOfJson j = J.arrayToArray j |> Array.map J.asString |> Set.ofArray
+let inline private toJson obj =  (^a : (member ToJson : unit -> J.JsonValue) obj)
+let inline private nullOrToJson o = match o with Some x -> toJson x | None -> J.Null
 
 type Library = {
     RequiredTools: Set<string>;
