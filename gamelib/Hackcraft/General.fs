@@ -31,3 +31,17 @@ module Util =
         for b in bytes do
             sb.Append (b.ToString "x2") |> ignore
         sb.ToString ()
+
+    /// Block copy an array of 'a to an array of bytes. Ignores endianess concerns.
+    let arrayToBytes<'a when 'a : struct> (arr: 'a[]) =
+        let bytes : byte[] = Array.zeroCreate (arr.Length * sizeof<'a>)
+        System.Buffer.BlockCopy (arr, 0, bytes, 0, bytes.Length)
+        bytes
+
+    let bytesToArray<'a when 'a : struct> (bytes: byte[]) =
+        if bytes.Length % sizeof<'a> <> 0 then
+            invalidArg "bytes" (sprintf "bytes.Length is not a multiple of the size of %s" typeof<'a>.Name)
+        let arr : 'a[] = Array.zeroCreate (bytes.Length / sizeof<'a>)
+        System.Buffer.BlockCopy (bytes, 0, arr, 0, bytes.Length)
+        arr
+
