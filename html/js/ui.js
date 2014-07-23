@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         HackcraftUnity.Player.hide();
-        $('.codeEditor, .puzzleModeUI, .creativeModeUI, .levelSelector, .galleryUI').hide();
+        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .levelSelector').hide();
     }
 
     var main_selector = '#mainLeftSide, #mainRightSide';
@@ -21,7 +21,6 @@ module.State = (function(){ "use strict";
         current_state = 'title';
 
         hideAll();
-        //$('.titleScreen').show();
         $('.codeEditor').show();
         HackcraftUnity.Player.show();
         $(main_selector).addClass('title');
@@ -54,6 +53,14 @@ module.State = (function(){ "use strict";
     self.goToPuzzle = function(cb) {
         hideAll();
         $('.codeEditor, .puzzleModeUI').show();
+        HackcraftUnity.Player.show();
+        $(main_selector).removeClass('title');
+        cb();
+    };
+
+    self.goToSandbox = function(cb) {
+        hideAll();
+        $('.codeEditor, .sandboxModeUI').show();
         HackcraftUnity.Player.show();
         $(main_selector).removeClass('title');
         cb();

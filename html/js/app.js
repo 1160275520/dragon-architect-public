@@ -135,24 +135,9 @@ function setState_intro() {
     });
 }
 
-
-function setState_gallery(galleryObjectArray) {
-    // TODO make sure current program is preserved for when gallery returns to sandbox
-    console.info('starting gallery view');
-    hideAll();
-    $('.galleryUI, .creativeModeUI').show();
-    HackcraftUnity.Player.show();
-
-    var list = $('#galleryList');
-    list.empty();
-    _.each(galleryObjectArray, function(item) {
-        var button = $('<li><button>' + item.name + '</button></li>').appendTo(list);
-        // HACK look for special sandbox level id
-        button.click(function() {
-            add_to_library(item.name, item.contents);
-            // show creative UI again without resetting unity stage
-            setState_sandbox(null);
-        });
+function setState_sandbox() {
+    HackcraftUI.State.goToSandbox(function() {
+        HackcraftUnity.Call.request_start_sandbox();
     });
 }
 
@@ -194,6 +179,8 @@ $(function() {
     $('#button_header_save').on('click', function() {
         HackcraftUnity.Call.request_world_state();
     });
+
+    $('#button_header_sandbox').on('click', setState_sandbox);
 
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
@@ -246,13 +233,6 @@ $(function() {
 
     HackcraftUI.SpeedSlider.initialize(HackcraftUnity.Call.set_program_execution_speed);
 
-    $('#button_loadProcedure').click(function() {
-        // TODO HACK consider checking for errors and handling potential concurrency problems
-        $.get('http://localhost:5000/api/savedprocedure', function(data) {
-            setState_gallery(data.objects);
-        });
-    });
-
     // wait for all systems to start up, then go!
     Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
         console.info('EVERYTHING IS READY!');
@@ -286,6 +266,32 @@ handler.onTitleButtonClicked = function(button) {
             throw new Error('uknown title button ' + button);
             break;
     }
+}
+
+// TODO remove duplicate code from this an onPuzzleChange
+handler.onSandboxStart = function() {
+    // HACKHACKAHCKAHCCKCK
+    var current_library = ['move2', 'move3', 'place', 'repeat', 'speed_slider'];
+
+    HackcraftBlockly.setLevel(null, current_library);
+
+    HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
+
+    HackcraftBlockly.history = [];
+    // reset run button
+    is_running = false;
+    HackcraftUI.RunButton.update(is_running);
+
+    // reset program execution speed, because the scene reload will have made Unity forget
+    HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
+
+    // clear old quest logger if it exists
+    if (questLogger) {
+        questLogger.logQuestEnd();
+        questLogger = null;
+    }
+
+    // TODO log this
 }
 
 handler.onPuzzleChange = function(json) {

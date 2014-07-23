@@ -44,6 +44,10 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    public void NotifyOfSandbox() {
+        Application.ExternalCall(ExternalApiFunc, "onSandboxStart", "");
+    }
+
     public void NotifyOfPuzzle(string id, Scene.PuzzleInfo info, bool isStarting) {
         var dict = new Dictionary<string, Json.JsonValue>();
         dict.Add("id", Json.JsonValue.NewString(id));
@@ -125,19 +129,6 @@ public class ExternalAPI : MonoBehaviour
             case "zoomout": camera.Zoom(2.0f); break;
             case "rotateleft": camera.Rotate(90); break;
             case "rotateright": camera.Rotate(-90); break;
-        }
-    }
-
-    public void EAPI_SetExperimentMode(string aIsExprMode) {
-        bool isExprMode = aIsExprMode == "true";
-        var plane = GameObject.Find("Plane");
-        if (isExprMode) {
-            var grass = (Material)Resources.Load("Grass", typeof(Material));
-            var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));
-            plane.renderer.materials = new Material[] {grass, grassGrid};
-        } else {
-            var ground = (Material)Resources.Load("Ground", typeof(Material));
-            plane.renderer.materials = new Material[] {ground};
         }
     }
 

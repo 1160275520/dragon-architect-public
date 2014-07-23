@@ -63,6 +63,10 @@ module.Call = (function() {
         send_message("Global", "EAPI_RequestStartPuzzle", JSON.stringify(puzzle_info));
     }
 
+    self.request_start_sandbox = function() {
+        send_message("Global", "EAPI_RequestStartSandbox", "");
+    }
+
     self.set_is_running = function(is_running) {
         send_message("System", "EAPI_SetIsRunning", is_running ? "true" : "false");
     }

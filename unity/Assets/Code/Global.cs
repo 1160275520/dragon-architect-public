@@ -65,4 +65,10 @@ public class Global : MonoBehaviour {
         Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
         Application.LoadLevel("puzzle");
     }
+
+    public void EAPI_RequestStartSandbox(string unused) {
+        CurrentSceneId = null;
+        CurrentPuzzle = null;
+        Application.LoadLevel("sandbox");
+    }
 }
