@@ -21,9 +21,8 @@ public class PuzRepeat : MonoBehaviour
 
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.repeat_1");
-        progman.SetIsFrozenBlocks("F1", true);
-        progman.SetIsFrozenArguments("F1", true);
-        progman.SetHighlighted("controls_repeat", true);
+        lh.SetIsFrozenBlocks("F1", true);
+        lh.SetIsFrozenArguments("F1", true);
 
         var template = new List<IntVec3>();
         const int size = 20;

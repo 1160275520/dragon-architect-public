@@ -15,7 +15,6 @@ public class PuzCall2 : MonoBehaviour
         );
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
-        progman.SetHighlighted("procedures_callnoreturn", true);
         winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(15) });
 	}
 

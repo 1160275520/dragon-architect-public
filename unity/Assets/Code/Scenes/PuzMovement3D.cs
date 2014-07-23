@@ -16,7 +16,6 @@ public class PuzMovement3D : MonoBehaviour
         );
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.movement3d");
-        progman.SetHighlighted("Up", true);
         var target = new IntVec3(3,5,0);
 
         lh.CreateRobotTarget(target);

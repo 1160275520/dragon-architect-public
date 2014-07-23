@@ -11,6 +11,8 @@ public class PuzzleHelper : MonoBehaviour
     public GameObject BlueprintPrefab;
     public GameObject RobotTargetPrefab;
 
+    private ImperativeAstManipulator Manipulator { get { return GetComponent<ProgramManager>().Manipulator; } }
+
     private List<UnityEngine.Object> targets = new List<UnityEngine.Object>();
     private static float winDelay = 0.5f;
     private float winTime;
@@ -95,6 +97,26 @@ public class PuzzleHelper : MonoBehaviour
             winTime = Time.fixedTime;
             hasBeenWon = true;
         }
+    }
+
+    public bool IsFrozenBlocks(string procName) {
+        var proc = Manipulator.Program.Procedures[procName];
+        return proc.Meta.Attributes.TryLoadOrElse("frozen_blocks", Json.asBool, false);
+    }
+
+    public bool IsFrozenArguments(string procName) {
+        var proc = Manipulator.Program.Procedures[procName];
+        return proc.Meta.Attributes.TryLoadOrElse("frozen_args", Json.asBool, false);
+    }
+
+    public void SetIsFrozenBlocks(string procName, bool isFrozen) {
+        var proc = Manipulator.Program.Procedures[procName];
+        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_blocks", Json.JsonValue.NewBool(isFrozen)));
+    }
+
+    public void SetIsFrozenArguments(string procName, bool isFrozen) {
+        var proc = Manipulator.Program.Procedures[procName];
+        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_args", Json.JsonValue.NewBool(isFrozen)));
     }
 
     void Update() {

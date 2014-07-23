@@ -9,44 +9,11 @@ using Hackcraft.Ast;
 public class ProgramManager : MonoBehaviour {
 
     public float DelayPerCommand;
+    // TODO obsolete, remove
     public const int MAX_PROCEDURE_LENGTH = 15;
 
     public ImperativeAstManipulator Manipulator { get; private set; }
     public ImmArr<Simulator.StepState> States { get; private set; }
-
-    public bool IsFrozenBlocks(string procName) {
-        var proc = Manipulator.Program.Procedures[procName];
-        return proc.Meta.Attributes.TryLoadOrElse("frozen_blocks", Json.asBool, false);
-    }
-
-    public bool IsFrozenArguments(string procName) {
-        var proc = Manipulator.Program.Procedures[procName];
-        return proc.Meta.Attributes.TryLoadOrElse("frozen_args", Json.asBool, false);
-    }
-
-    public void SetIsFrozenBlocks(string procName, bool isFrozen) {
-        var proc = Manipulator.Program.Procedures[procName];
-        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_blocks", Json.JsonValue.NewBool(isFrozen)));
-    }
-
-    public void SetIsFrozenArguments(string procName, bool isFrozen) {
-        var proc = Manipulator.Program.Procedures[procName];
-        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_args", Json.JsonValue.NewBool(isFrozen)));
-    }
-
-    private HashSet<string> highlightBlocks = new HashSet<string>();
-
-    public bool IsHighlighted(string block) {
-        return highlightBlocks.Contains(block);
-    }
-
-    public void SetHighlighted(string block, bool b) {
-        if (b) { 
-            highlightBlocks.Add(block);
-        } else {
-            highlightBlocks.Remove(block);
-        }
-    }
 
     /// true iff the program manager is currently showing real-time execution of a program
     public bool IsExecuting { get; private set; }

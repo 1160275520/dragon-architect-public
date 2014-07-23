@@ -16,7 +16,6 @@ public class PuzPlacement : MonoBehaviour
         );
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.placement");
-        progman.SetHighlighted("PlaceBlock", true);
         var template = new IntVec3[] {
             new IntVec3(0,0,3),
             new IntVec3(0,0,4),

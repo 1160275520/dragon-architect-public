@@ -17,7 +17,6 @@ public class PuzRepeat2 : MonoBehaviour
         );
         var progman = GetComponent<ProgramManager>();
         progman.Manipulator.ClearAll();
-        progman.SetHighlighted("controls_repeat", true);
 
         var template = new List<IntVec3>();
         const int size = 10;
