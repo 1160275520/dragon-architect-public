@@ -19,6 +19,9 @@
             "required": ["move2"],
             "granted": []
         },
+        "tutorial": {
+            "highlighted": ["Forward"]
+        },
         "logging_id": 31,
         "instructions": {
             "summary": "I need to get to the pink box, and my program doesn't move me far enough.",
@@ -31,6 +34,9 @@
         "library": {
             "required": ["move2"],
             "granted": []
+        },
+        "tutorial": {
+            "highlighted": ["Right"]
         },
         "logging_id": 32,
         "instructions": {

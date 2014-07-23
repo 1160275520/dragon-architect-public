@@ -202,10 +202,10 @@ HackcraftBlockly.setLevel = function(scene_info, library) {
     toolXML += '</xml>';
     //console.log(toolXML);
     Blockly.updateToolbox(toolXML);
-
-    if (scene_info.tutorial && scene_info.tutorial.highlighted_blocks) {
+    
+    if (scene_info.tutorial && scene_info.tutorial.highlighted) {
         Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
-            if (_.contains(scene_info.tutorial.highlighted_blocks, b.type)) {
+            if (_.contains(scene_info.tutorial.highlighted, b.type)) {
                 b.svg_.addNewGlow();
             }
         });
