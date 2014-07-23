@@ -130,8 +130,6 @@ HackcraftBlockly.setProgram = function(program) {
     HackcraftBlockly.ignoreNextHistory = true;
     HackcraftBlockly.clearProgram();
 
-    //console.log("setting program");
-    //console.log(Blockly.UnityJSON.XMLOfJSON(program));
     HackcraftBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
     HackcraftBlockly.curProgramStr = HackcraftBlockly.getXML();
 
@@ -148,6 +146,9 @@ HackcraftBlockly.setProgram = function(program) {
             }
         }
     });
+
+    // set maximum blocks to 15 per function
+    Blockly.mainWorkspace.maxBlocks = program.procedures.length * 15;
 };
 
 /**
@@ -156,21 +157,6 @@ HackcraftBlockly.setProgram = function(program) {
 HackcraftBlockly.loadBlocks = function (blocksXML) {
     BlocklyApps.loadBlocks(blocksXML);
     var blocks = Blockly.mainWorkspace.getTopBlocks();
-    // set maximum blocks to 15 per function
-    Blockly.mainWorkspace.maxBlocks = blocks.length * 15;
-
-    // recolor functions to differentiate MAIN from helpers
-    if (blocks.length > 0) {
-        // blocks.filter(function (x) { return x.getFieldValue("NAME") === "MAIN"; })[0].setColour(260);
-        blocks.filter(function (x) { return x.type === "procedures_defnoreturn" && x.getFieldValue("NAME") !== "MAIN"; }).map(function (x) { x.setColour(315); });
-    }
-    // prevent renaming and deleting existing procedures 
-    for (var i = 0; i < blocks.length; i++) {
-        blocks[i].setEditable(false);
-        blocks[i].setDeletable(false);
-        blocks[i].contextMenu = false;
-        blocks[i].setMovable(false);
-    }
 };
 
 /**

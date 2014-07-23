@@ -9,7 +9,7 @@
         "logging_id": 21,
         "instructions": {
             "summary": "Click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object> to have me run my program!",
-            "detail": "My program tells me what to do. You can see it below."
+            "detail": "My program asdg me what to do. You can see it below."
         }
     },
     "tutorial.movement2d_part2": {
