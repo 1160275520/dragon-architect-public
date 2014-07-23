@@ -27,7 +27,7 @@ var storage = (function() {
     }
 
     return self;
-});
+}());
 
 var progress = (function(){
     var self = {};
@@ -44,7 +44,7 @@ var progress = (function(){
 
     self.mark_completed = function(puzzle_id) {
         levelsCompleted.push(puzzle_id);
-        storage.save("levelsCompleted", levelsCompleted);
+        storage.save("levelsCompleted", levelsCompleted.toString());
     }
 
     return self;
