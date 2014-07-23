@@ -75,6 +75,10 @@ module.Call = (function() {
         send_message("System", "EAPI_SetExperimentMode", is_expr_mode ? "true" : "false");
     }
 
+    self.request_world_state = function() {
+        send_message("System", "EAPI_RequestWorldState", "");
+    }
+
     return self;
 }());
 

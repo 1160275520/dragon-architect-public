@@ -20,6 +20,8 @@ public class Global : MonoBehaviour {
     }
 
     void OnEnable() {
+        Hackcraft.Logger.logAction = Debug.Log;
+
         Application.RegisterLogCallbackThreaded(handleLog);
 
         var modules = Json.Parse(Resources.Load<TextAsset>("md_module1").text);

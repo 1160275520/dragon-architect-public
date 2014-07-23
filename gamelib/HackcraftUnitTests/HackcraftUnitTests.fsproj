@@ -41,6 +41,7 @@
     <Compile Include="JsonTest.fs" />
     <Compile Include="SerializationTest.fs" />
     <Compile Include="ImperativeSimulatorTest.fs" />
+    <Compile Include="GridTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsUnit.CustomMatchers">

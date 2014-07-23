@@ -10,13 +10,32 @@ var game_info;
 
 var current_puzzle_runner;
 
+var world_data;
+
+var storage = (function() {
+    var self = {};
+
+    self.save = function(key, value) {
+        if (typeof key !== "string") throw new TypeError("keys must be strings!");
+        if (value !== null && typeof value !== "string") throw new TypeError("can only save string values!");
+
+        sessionStorage.setItem(key, value);
+    }
+
+    self.load = function(key) {
+        return sessionStorage.getItem(key);
+    }
+
+    return self;
+});
+
 var progress = (function(){
     var self = {};
 
     var levelsCompleted = [];
     // load the level progress from this session (if any)
     if (sessionStorage.getItem("levelsCompleted")) {
-        levelsCompleted = sessionStorage.getItem("levelsCompleted").split(',');
+        levelsCompleted = sessionStorage.load("levelsCompleted").split(',');
     }
 
     self.is_completed = function(puzzle_id) {
@@ -25,7 +44,7 @@ var progress = (function(){
 
     self.mark_completed = function(puzzle_id) {
         levelsCompleted.push(puzzle_id);
-        sessionStorage.setItem("levelsCompleted", levelsCompleted);
+        storage.save("levelsCompleted", levelsCompleted);
     }
 
     return self;
@@ -155,6 +174,10 @@ $(function() {
     $('#button_header_levelSelect').on('click', function() {
         // HACK
         current_puzzle_runner = create_puzzle_runner(game_info.modules["module1"], "module");
+    });
+
+    $('#button_header_save').on('click', function() {
+        HackcraftUnity.Call.request_world_state();
     });
 
     // initialize subsystems (mainly unity and logging)
@@ -332,6 +355,19 @@ handler.onPuzzleFinish = function(puzzle_id) {
         questLogger = null;
     }
 };
+
+handler.onWorldDataStart = function() {
+    world_data = "";
+}
+
+handler.onWorldDataChunkSend = function(chunk) {
+    world_data += chunk;
+}
+
+handler.onWorldDataEnd = function() {
+    console.info(world_data);
+    storage.save('world_data', world_data);
+}
 
 handler.onUnlockDevMode = function() {
     isDevMode = true;

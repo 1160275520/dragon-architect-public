@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Hackcraft;
 using Microsoft.FSharp.Collections;
@@ -77,6 +78,18 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onTitleButtonClicked", button);
     }
 
+    public void SendWorldState(string data) {
+        const int chunkSize = 8192;
+        var numChunks = (data.Length + chunkSize - 1) / chunkSize;
+        Application.ExternalCall(ExternalApiFunc, "onWorldDataStart", "");
+        for (var i = 0; i < numChunks; i++) {
+            var offset = chunkSize * i;
+            var s = data.Substring(offset, Math.Min(chunkSize, data.Length - offset));
+            Application.ExternalCall(ExternalApiFunc, "onWorldDataChunkSend", s);
+        }
+        Application.ExternalCall(ExternalApiFunc, "onWorldDataEnd", "");
+    }
+
     // external API
 
     public void EAPI_SetProgramFromJson(string json) {
@@ -126,5 +139,9 @@ public class ExternalAPI : MonoBehaviour
             var ground = (Material)Resources.Load("Ground", typeof(Material));
             plane.renderer.materials = new Material[] {ground};
         }
+    }
+
+    public void EAPI_RequestWorldState(string ignored) {
+        SendWorldState(Hackcraft.Grid.encodeToString(GetComponent<Grid>().AllCells));
     }
 }

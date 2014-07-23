@@ -34,22 +34,22 @@ module Grid =
     type GridData = KeyValuePair<IntVec3, Block> []
     
     let private ENCODE_VERSION = 1
-    let private ENDIAN_SENTINEL = 0xfffes
+    let private ENDIAN_SENTINEL = 0xfffffffe
     let private encoding = System.Text.Encoding.UTF8
 
     let private jload obj key fn = fn (Json.getField obj key)
 
     /// Encode a grid to a stream.
     let encodeToString (grid: GridData) =
-        // create a big binary array of the data
-        let data : int[] = Array.zeroCreate (4 * grid.Length)
+        // create a big binary array of the blocks
+        let blocks : int[] = Array.zeroCreate (4 * grid.Length)
         for i = 0 to grid.Length - 1 do
             let offset = 4 * i
             let item = grid.[i]
-            data.[offset + 0] <- item.Key.X
-            data.[offset + 1] <- item.Key.Y
-            data.[offset + 2] <- item.Key.Z
-            data.[offset + 3] <- item.Value
+            blocks.[offset + 0] <- item.Key.X
+            blocks.[offset + 1] <- item.Key.Y
+            blocks.[offset + 2] <- item.Key.Z
+            blocks.[offset + 3] <- item.Value
 
         // TODO gzip it
 
@@ -57,13 +57,17 @@ module Grid =
         // well okay binary encode a test int so we can at least detect it later
         let sentinel = [| ENDIAN_SENTINEL |]
 
-        let toHexStr x = (Util.arrayToBytes >> Convert.ToBase64String >> Json.String) x
+        let toHexStr x = x |> Util.arrayToBytes |> Convert.ToBase64String |> Json.String
 
         // then base64 encode that
         Json.JsonValue.ObjectOf [
-            "version", Json.Int ENCODE_VERSION;
-            "blocks", toHexStr data;
-            "sentinel", toHexStr sentinel;
+            "meta", Json.JsonValue.ObjectOf
+                [
+                    "version", Json.Int ENCODE_VERSION;
+                    "sentinel", toHexStr sentinel;
+                    "gzip", Json.Bool false;
+                ];
+            "blocks", toHexStr blocks;
         ] |> Json.Serialize
 
     let encodeToStream (grid: GridData) =
@@ -74,21 +78,22 @@ module Grid =
     let decodeFromString str : GridData =
         let json = Json.Parse str
 
-        let fromHexStr x = (Json.asString >> Convert.FromBase64String >> Util.bytesToArray) x
+        let fromHexStr x = x |> Json.asString |> Convert.FromBase64String |> Util.bytesToArray
 
-        let version = jload json "version" Json.asInt
-        let data: int[] = jload json "blocks" fromHexStr
-        let sentinel: int16[] = jload json "sentinel" fromHexStr
+        let meta = json.GetField "meta"
+        let version = jload meta "version" Json.asInt
+        let sentinel: int[] = jload meta "sentinel" fromHexStr
+        let blocks: int[] = jload json "blocks" fromHexStr
 
         if version <> ENCODE_VERSION then invalidArg "stream" "invalid version!"
         if sentinel.[0] <> ENDIAN_SENTINEL then invalidArg "stream" "endianess of stream is different!"
         // this is really more like an assert but ah well
-        if data.Length % 4 <> 0 then invalidArg "stream" "data does not have correct number of elements"
+        if blocks.Length % 4 <> 0 then invalidArg "stream" "blocks does not have correct number of elements"
 
-        Array.init (data.Length / 4) (fun i ->
+        Array.init (blocks.Length / 4) (fun i ->
             let offset = 4 * i
-            let cell = IntVec3 (data.[offset + 0], data.[offset + 1], data.[offset + 2])
-            let block = data.[offset + 3]
+            let cell = IntVec3 (blocks.[offset + 0], blocks.[offset + 1], blocks.[offset + 2])
+            let block = blocks.[offset + 3]
             KeyValuePair (cell, block)
         )
 

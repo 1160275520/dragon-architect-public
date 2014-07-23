@@ -1,12 +1,15 @@
 /// Menagerie of common types and utility functions that do not have a better home.
 namespace Hackcraft
 
+open System
+open System.Diagnostics
+
 [<AutoOpen>]
 module Global =
     /// Debug print an object (using System.Diagnostics.Debug.WriteLine).
-    let inline dprint x = System.Diagnostics.Debug.WriteLine (sprintf "%A" x)
+    let inline dprint x = Debug.WriteLine (sprintf "%A" x)
     /// Debug print a string (using System.Diagnostics.Debug.WriteLine).
-    let inline dprints x = System.Diagnostics.Debug.WriteLine x
+    let inline dprints x = Debug.WriteLine x
 
 /// An error from the compilation/execution of the in-game language.
 type CodeError (subtype: string, code: int, location: int, errorMessage: string, exn: System.Exception) =
@@ -25,6 +28,17 @@ type CodeException (e: CodeError) =
     inherit System.Exception(e.FullMessage, e.Exception)
     member x.Error = e
 
+module Logger =
+
+    let mutable logAction : Action<string> = new Action<string>(fun (s:string) -> ())
+
+    let inline log (msg:string) =
+    #if DEBUG
+        logAction.Invoke msg
+    #else
+        ()
+    #endif
+
 module Util =
     let binaryToHex (bytes:byte[]) =
         let sb = System.Text.StringBuilder ()
@@ -33,6 +47,7 @@ module Util =
         sb.ToString ()
 
     /// Block copy an array of 'a to an array of bytes. Ignores endianess concerns.
+    /// NOTE: this just up and fails with int16 on mono because sizeof<int16> = 4 (???). So watch out for that
     let arrayToBytes<'a when 'a : struct> (arr: 'a[]) =
         let bytes : byte[] = Array.zeroCreate (arr.Length * sizeof<'a>)
         System.Buffer.BlockCopy (arr, 0, bytes, 0, bytes.Length)

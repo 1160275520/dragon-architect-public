@@ -66,7 +66,7 @@ public class PuzzleHelper : MonoBehaviour
     public Func<bool> CreateBlueprintPredicate(IEnumerable<IntVec3> cells) {
         var cellSet = new HashSet<IntVec3>(cells);
         return () => {
-            var grid = GetComponent<Grid>().AllCells;
+            var grid = GetComponent<Grid>().AllCellLocations;
             return grid.Count() == cellSet.Count && grid.All(x => cellSet.Contains(x));
         };
     }

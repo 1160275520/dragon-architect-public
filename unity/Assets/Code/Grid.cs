@@ -16,6 +16,10 @@ public class Grid : MonoBehaviour {
     private IntVec3 offset;
     private List<IntVec3> additions = new List<IntVec3>();
 
+    // HACK the state that was handed to us by SetGrid.
+    // just kept around to make AllCells and serialization work for now
+    private ImmArr<KeyValuePair<IntVec3, int>> state;
+
     public Vector3 CenterOfCell(IntVec3 idx) {
         var marker = Component.FindObjectOfType<GridMarker>();
         var origin = marker.transform.position;
@@ -38,7 +42,13 @@ public class Grid : MonoBehaviour {
         }
     }
 
-    public IEnumerable<IntVec3> AllCells {
+    public KeyValuePair<IntVec3,int>[] AllCells {
+        get {
+            return state.ToArray();
+        }
+    }
+
+    public IEnumerable<IntVec3> AllCellLocations {
         get {
             var offsetKeys = new List<IntVec3>();
             foreach (var key in grid.Keys) {
@@ -66,6 +76,7 @@ public class Grid : MonoBehaviour {
     }
 
     public void SetGrid(ImmArr<KeyValuePair<IntVec3,int>> state) {
+        this.state = state;
         var set = new HashSet<IntVec3>(state.Select(x => x.Key));
         var toRemove = new List<IntVec3>();
         var prefab = FindObjectOfType<RobotController>().HeldPrefab;
