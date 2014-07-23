@@ -11,7 +11,6 @@ GameObject:
   - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
   - 114: {fileID: 11400004}
-  - 114: {fileID: 11400006}
   - 114: {fileID: 11400008}
   - 114: {fileID: 11400010}
   m_Layer: 0
@@ -61,8 +60,7 @@ MonoBehaviour:
   IsActiveMainControls: 1
   IsActiveCodeEditor: 1
   IsActiveTimeSlider: 0
-  IsActiveSaveLoad: 0
-  IsActiveReturnToLevelSelect: 0
+  IsActivePuzzleFinishButton: 0
   IsActiveBlockly: 1
 --- !u!114 &11400004
 MonoBehaviour:
@@ -76,19 +74,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DelayPerCommand: .100000001
---- !u!114 &11400006
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0bf858a97adee849ba1d82df401d4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BlueprintPrefab: {fileID: 100000, guid: 107c608d711044347a5cab670c4d5c10, type: 2}
-  RobotTargetPrefab: {fileID: 100000, guid: 4968a696f9eef214582f1ae0a2635236, type: 2}
 --- !u!114 &11400008
 MonoBehaviour:
   m_ObjectHideFlags: 1

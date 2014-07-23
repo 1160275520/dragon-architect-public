@@ -433,7 +433,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3aba1f2a0bfc49d45885938b1493dbc9, type: 2}
       propertyPath: m_RootOrder
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3aba1f2a0bfc49d45885938b1493dbc9, type: 2}
@@ -646,9 +646,9 @@ GameObject:
   - 114: {fileID: 1088182274}
   - 114: {fileID: 1088182276}
   - 114: {fileID: 1088182277}
-  - 114: {fileID: 1088182280}
   - 114: {fileID: 1088182279}
   - 114: {fileID: 1088182281}
+  - 114: {fileID: 1088182278}
   m_Layer: 0
   m_Name: System
   m_TagString: System
@@ -713,6 +713,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DelayPerCommand: .100000001
+--- !u!114 &1088182278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1088182273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0bf858a97adee849ba1d82df401d4f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BlueprintPrefab: {fileID: 100000, guid: 107c608d711044347a5cab670c4d5c10, type: 2}
+  RobotTargetPrefab: {fileID: 100000, guid: 4968a696f9eef214582f1ae0a2635236, type: 2}
 --- !u!114 &1088182279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,20 +738,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3627d882e4851a4ea647141ebbc6890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1088182280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400006, guid: 3aba1f2a0bfc49d45885938b1493dbc9,
-    type: 2}
-  m_PrefabInternal: {fileID: 503375450}
-  m_GameObject: {fileID: 1088182273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0bf858a97adee849ba1d82df401d4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BlueprintPrefab: {fileID: 100000, guid: 107c608d711044347a5cab670c4d5c10, type: 2}
-  RobotTargetPrefab: {fileID: 100000, guid: 4968a696f9eef214582f1ae0a2635236, type: 2}
 --- !u!114 &1088182281
 MonoBehaviour:
   m_ObjectHideFlags: 0
