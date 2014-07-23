@@ -65,7 +65,7 @@ function create_puzzle_runner(module, sceneSelectType) {
     }
 
     function setState_puzzle(id, finish_type) {
-        var info = {id:id, puzzle:game_info.scenes[id], finish:finish_type};
+        var info = {id:id, puzzle:game_info.puzzles[id], finish:finish_type};
         HackcraftUI.State.goToPuzzle(function() {
             HackcraftUnity.Call.request_start_puzzle(info);
         });
@@ -76,7 +76,7 @@ function create_puzzle_runner(module, sceneSelectType) {
             case "module":
                 // bring up the level select
                 HackcraftUI.State.goToSceneSelect(function() {
-                    HackcraftUI.LevelSelect.create(module, game_info.scenes, progress.is_completed, function(pid) {
+                    HackcraftUI.LevelSelect.create(module, game_info.puzzles, progress.is_completed, function(pid) {
                         setState_puzzle(pid, "to_puzzle_select");
                     });
                 });
@@ -160,13 +160,28 @@ function setState_gallery(galleryObjectArray) {
 $(function() {
     function initialize_unity() {
         var d = Q.defer();
-        // this doesn't return a promise, unity will get back to us via hander.onSystemStart
-        handler.onSystemStart = function(json) {
-            game_info = JSON.parse(json);
+        handler.onSystemStart = function() {
             d.resolve();
         };
+        // this doesn't return a promise, unity will get back to us via hander.onSystemStart
         HackcraftUnity.Player.initialize();
         return d.promise;
+    }
+
+    function load_content() {
+        game_info = {};
+
+        var qm = Q($.get('content/modules.json'))
+            .then(function(json) {
+                game_info.modules = json;
+            });
+
+        var qs = Q($.get('content/puzzles.json'))
+            .then(function(json) {
+                game_info.puzzles = json;
+            });
+
+        return Q.all([qm, qs]);
     }
 
     // set up callbacks for transitions between application state
@@ -183,6 +198,7 @@ $(function() {
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
+    var promise_content = load_content();
     var promise_unity = initialize_unity();
     var promise_blockly = HackcraftBlockly.init();
 
@@ -238,7 +254,7 @@ $(function() {
     });
 
     // wait for all systems to start up, then go!
-    Q.all([promise_unity, promise_blockly]).done(function() {
+    Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
         console.info('EVERYTHING IS READY!');
         setState_title();
     });

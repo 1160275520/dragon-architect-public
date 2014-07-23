@@ -24,14 +24,7 @@ public class Global : MonoBehaviour {
 
         Application.RegisterLogCallbackThreaded(handleLog);
 
-        var modules = Json.Parse(Resources.Load<TextAsset>("md_module1").text);
-        var scenes = Json.Parse(Resources.Load<TextAsset>("sd_module1").text);
-        var dict = new Dictionary<string, Json.JsonValue>();
-        dict.Add("modules", modules);
-        dict.Add("scenes", scenes);
-        var json = Json.JsonValue.ObjectOf(dict);
-
-        Application.ExternalCall(ExternalAPI.ExternalApiFunc, ExternalAPI.OnSystemStart, Json.Serialize(json));
+        Application.ExternalCall(ExternalAPI.ExternalApiFunc, ExternalAPI.OnSystemStart, "");
     }
 
     void OnDisable() {
