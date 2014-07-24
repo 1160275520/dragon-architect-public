@@ -47,6 +47,12 @@ var progress = (function(){
         storage.save("levelsCompleted", levelsCompleted.toString());
     }
 
+    self.is_module_completed = function(module) {
+        return module.nodes.every(function (n) {
+            return self.is_completed(n);
+        });
+    }
+
     return self;
 }());
 
@@ -233,7 +239,11 @@ $(function() {
     // wait for all systems to start up, then go!
     Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
         console.info('EVERYTHING IS READY!');
-        setState_title();
+        if (progress.is_module_completed(game_info.modules["tutorial"])) {
+            setState_sandbox();
+        } else {
+            setState_title();
+        }
     });
 });
 
