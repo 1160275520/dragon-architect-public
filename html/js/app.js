@@ -138,6 +138,7 @@ function setState_intro() {
         // HACK assumes the get started button is inside #instructionsContainer
         $("#instructionsContainer").click(function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
+            $("#instructionsContainer").unbind("click");
         });
     });
 }
