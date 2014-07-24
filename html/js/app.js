@@ -291,6 +291,8 @@ handler.onSandboxStart = function() {
         questLogger = null;
     }
 
+    HackcraftUI.Instructions.show({summary:"Build something cool! Click [picture of button] to learn new code."});
+
     // TODO log this
 }
 
