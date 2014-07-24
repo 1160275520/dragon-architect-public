@@ -65,13 +65,17 @@ public class RobotController : MonoBehaviour {
         // increment the counter to kill off the other coroutines
         counter++;
 
+        Debug.Log("set robot");
+
         // immediately teloport to "old" position so animations start from correct spot
         if (Robot != null) {
+            Debug.Log("old pos: " + Robot.Position);
             transform.position = FindObjectOfType<Grid>().CenterOfCell(Robot.Position);
             transform.rotation = getRotation();
         }
 
         Robot = robot;
+
         if (secondsPerCommand > MIN_ANIMATION_TIME && com != null) {
             // if time is large enough, animmate the robot going to the new position
             var anim = transform.FindChild("dragon_improved").gameObject.animation;

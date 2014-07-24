@@ -37,10 +37,10 @@ public class ProgramManager : MonoBehaviour {
         // HACK need max proc length for historical purposes, but doesn't actually do anything
         Manipulator = new ImperativeAstManipulator(100);
         EditMode = EditMode.Workshop;
+        TicksPerStep = 30;
     }
     
     void Start () {
-        TicksPerStep = 30;
     }
 
     public void StartExecution() {
@@ -95,6 +95,7 @@ public class ProgramManager : MonoBehaviour {
 
     private void setGameState(Simulator.StepState state, float transitionTimeSeconds) {
         if (!state.Equals(currentState)) {
+            Debug.Log("set state");
             currentState = state;
             var robot = FindObjectOfType<RobotController>();
             var grid = GetComponent<Grid>();
@@ -127,6 +128,7 @@ public class ProgramManager : MonoBehaviour {
     }
     
     private void EvalEntireProgram() {
+        if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only call this in workshop mode!");
         if (Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
 
@@ -147,7 +149,10 @@ public class ProgramManager : MonoBehaviour {
     }
 
 	void Update () {
-        // well for now just fudge it to be one tick per frame
+        if (RunState == RunState.Executing) {
+            Debug.Log("update");
+        }
+
         var oldTicks = (int)totalTicks;
         if (RunState == RunState.Executing) {
             totalTicks += Time.deltaTime * TicksPerSecond;
@@ -165,14 +170,16 @@ public class ProgramManager : MonoBehaviour {
             lastStatementExecutionTime = Time.time;
         }
 
-        // figure out how many ticks have passed
-
         switch (EditMode) {
             case EditMode.Persistent: {
                 if (RunState == RunState.Executing) {
-                    setGameState(lazyProgramRunner.UpdateOneStep(), dt);
-                    if (lazyProgramRunner.IsDone) {
-                        RunState = RunState.Finished;
+                    for (var i = 0; i < stepsPassed; i++) {
+                        var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
+                        if (lazyProgramRunner.IsDone) {
+                            RunState = RunState.Stopped;
+                        } else {
+                            setGameState(lazyProgramRunner.UpdateOneStep(grid), dt);
+                        }
                     }
                 }
             } break;

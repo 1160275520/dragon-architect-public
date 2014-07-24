@@ -122,6 +122,7 @@ public class Grid : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
         grid = new Dictionary<IntVec3, GameObject>();
+        state = ImmArr.empty<KeyValuePair<IntVec3,int>>();
         offset = new IntVec3(GRID_SIZE / 2, GRID_SIZE / 2, GRID_SIZE / 2);
 	}
 	
