@@ -98,7 +98,7 @@ function create_puzzle_runner(module, sceneSelectType) {
                     // tutorial has been completed, go to sandbox
                     setState_sandbox();
                 }
-                
+
                 break;
 
             default:
