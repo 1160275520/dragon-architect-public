@@ -141,8 +141,10 @@ module.LevelSelect = (function() {
 module.Instructions = (function() {
 
     var self = {};
+    var isLarge = false;
 
     function makeSmall() {
+        isLarge = false;
         var instContainer = $("#instructionsContainer")[0];
         instContainer.onclick = null;
 
@@ -155,13 +157,15 @@ module.Instructions = (function() {
         detail.style.height = '0px';
 
         setTimeout(function() {
-            // instContainer.style.width = "50px";
-            instContainer.style.height = "auto";
-            instContainer.onclick = makeLarge;
+            if (!isLarge) {
+                instContainer.style.height = "auto";
+                instContainer.onclick = makeLarge;
+            }
         }, 1000);
     }
 
     function makeLarge() {
+        isLarge = true;
         var blockly = document.getElementById('blockly').contentWindow.document.body;
         var rect = $("svg g", blockly)[0].getBoundingClientRect();
         var instContainer = $("#instructionsContainer")[0];
@@ -193,15 +197,17 @@ module.Instructions = (function() {
 
         //Hackcraft.setInstructions(instructions);
 
-        setTimeout(function () { 
-            dragon.style.visibility = "visible";
-            goal.style.visibility = "visible";
-            detail.style.visibility = "visible";
-            dragon.style.webkitAnimationPlayState = "running";
-            dragon.style.animationPlayState = "running";
-            inst.style.webkitAnimationPlayState = "running";
-            inst.style.animationPlayState = "running";
-            instContainer.onclick = makeSmall;
+        setTimeout(function () {
+            if (isLarge) { 
+                dragon.style.visibility = "visible";
+                goal.style.visibility = "visible";
+                detail.style.visibility = "visible";
+                dragon.style.webkitAnimationPlayState = "running";
+                dragon.style.animationPlayState = "running";
+                inst.style.webkitAnimationPlayState = "running";
+                inst.style.animationPlayState = "running";
+                instContainer.onclick = makeSmall;
+            }
         }, 1000);
     }
 
@@ -256,9 +262,7 @@ module.SpeedSlider = (function() {
     };
 
     self.setVisible = function(isVisible) {
-        console.info(isVisible);
         $('#sliderContainer').css('visibility', isVisible ? 'visible' : 'hidden');
-        console.log($('#sliderContainer')[0]);
     }
 
     self.value = function() {

@@ -135,6 +135,10 @@ function setState_intro() {
             // start the 'tutorial' module in tutorial mode
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
         });
+        // HACK assumes the get started button is inside #instructionsContainer
+        $("#instructionsContainer").click(function() {
+            current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
+        });
     });
 }
 
