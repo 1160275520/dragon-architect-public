@@ -52,20 +52,6 @@ HackcraftBlockly.Commands = {"move2" :  '<block type="Forward"></block> \
                       "line" :   '<block type="Line"></block>',
                       "repeat" : '<block type="controls_repeat"></block>'};
 
-
-
-/**
- * Create call blocks for the helper functions present
- */
-HackcraftBlockly.makeFuncs = function (num) {
-    HackcraftBlockly.Commands['call'] = '';
-    for (var i = 0; i < num; i++) {
-        HackcraftBlockly.Commands['call'] += '<block type="procedures_callnoreturn"> \
-                                         <mutation name="F'+ (i+1) + '"></mutation> \
-                                       </block>';
-    }
-};
-
 HackcraftBlockly.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.maxBlocks - Blockly.mainWorkspace.getAllBlocks().length;
     var counter = $("#statement-counter")[0];
@@ -175,9 +161,6 @@ HackcraftBlockly.freezeBody = function(block, doFreezeArgs) {
  */
 HackcraftBlockly.setLevel = function(scene_info, library) {
     var toolXML = '<xml id="toolbox" style="display: none">';
-
-    // HACK
-    HackcraftBlockly.makeFuncs(4);
 
     // ignore scene_info.library, trust only the library parameter
     _.each(library, function(command) {
