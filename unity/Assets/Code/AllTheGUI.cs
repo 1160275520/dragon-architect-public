@@ -162,9 +162,18 @@ public class AllTheGUI : MonoBehaviour
             style.fontSize = 24;
             style.fontStyle = FontStyle.Bold;
 
-            var text = FindObjectOfType<Global>().PuzzleFinish == Global.PuzzleFinishType.to_next_puzzle
-                ? "Go to next puzzle"
-                : "Return to level select";
+            string text = "";
+            switch(FindObjectOfType<Global>().PuzzleFinish) {
+            case Global.PuzzleFinishType.to_next_puzzle:
+                text = "Go to next puzzle";
+                break;
+            case Global.PuzzleFinishType.to_puzzle_select:
+                text = "Return to level select";
+                break;
+            case Global.PuzzleFinishType.to_sandbox:
+                text = "Go to creative mode";
+                break;
+            }
 
             if (GUILayout.Button(text, style)) {
                 GetComponent<ExternalAPI>().SendPuzzleFinish();

@@ -9,6 +9,7 @@ public class Global : MonoBehaviour {
     {
         to_puzzle_select,
         to_next_puzzle,
+        to_sandbox,
     }
 
     public string CurrentSceneId { get; private set; }

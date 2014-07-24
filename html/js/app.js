@@ -59,6 +59,7 @@ var progress = (function(){
     */
 function create_puzzle_runner(module, sceneSelectType) {
     var self = {};
+    var tutorialCounter = 0;
 
     function onModuleComplete() {
         console.error("TODO make this do something!");
@@ -83,19 +84,15 @@ function create_puzzle_runner(module, sceneSelectType) {
                 break;
 
             case "tutorial":
-                // just start the next available puzzle immediately
-                // HACK for now just assume the nodes are in the correct order!
-                var did_start_level = false;
-                _.each(module.nodes, function(n) {
-                    if (!progress.is_completed(n)) {
-                        setState_puzzle(n, "to_next_puzzle");
-                        did_start_level = true;
-                        return false;
-                    }
-                });
-                if (!did_start_level) {
-                    onModuleComplete();
+                if (tutorialCounter < module.nodes.length) {
+                    // progress through tutorial using tutorialCounter
+                    var finishType = module.nodes.length - tutorialCounter === 1 ? "to_sandbox" : "to_next_puzzle";
+                    setState_puzzle(module.nodes[tutorialCounter++], finishType);
+                } else {
+                    // tutorial has been completed, go to sandbox
+                    setState_sandbox();
                 }
+                
                 break;
 
             default:
@@ -291,7 +288,7 @@ handler.onSandboxStart = function() {
         questLogger = null;
     }
 
-    HackcraftUI.Instructions.show({summary:"Build something cool! Click [picture of button] to learn new code."});
+    HackcraftUI.Instructions.show({summary:"Let's build something cool! Click [picture of button] to learn new code.", detail:""});
 
     // TODO log this
 }
