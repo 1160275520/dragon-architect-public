@@ -57,12 +57,12 @@ var progress = (function(){
 }());
 
 /**
-    * Starts a module.
-    * Returns an object with the function 'onPuzzleFinish' that should be called when puzzleCompleted is sent from unity.
-    * @param module A module object (from game_info.modules).
-    * @param sceneSelectType one of {"tutorial", "module"}.
-    * Controls whether you are shuttled through levels automatically or get the graph scene selctor.
-    */
+ * Starts a module.
+ * Returns an object with the function 'onPuzzleFinish' that should be called when puzzleCompleted is sent from unity.
+ * @param module A module object (from game_info.modules).
+ * @param sceneSelectType one of {"tutorial", "module"}.
+ * Controls whether you are shuttled through levels automatically or get the graph scene selctor.
+ */
 function create_puzzle_runner(module, sceneSelectType) {
     var self = {};
     var tutorialCounter = 0;
