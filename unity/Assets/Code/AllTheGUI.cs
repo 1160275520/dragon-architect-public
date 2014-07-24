@@ -210,17 +210,18 @@ public class AllTheGUI : MonoBehaviour
                 GUILayout.Height(BUTTON_HEIGHT)
             };
             if (!IsActiveBlockly) {
-                if (progman.IsRunning) {
-                    makeButton("Reset", new GUILayoutOption[] {
-                        GUILayout.Width(BUTTON_COLUMN_WIDTH),
-                        GUILayout.Height(2 * BUTTON_HEIGHT)
-                    }, () => progman.StopRunning(), false, "StopButton");
-                } else {
+#warning "run button broken!"
+                //if (progman.IsRunning) {
+                //    makeButton("Reset", new GUILayoutOption[] {
+                //        GUILayout.Width(BUTTON_COLUMN_WIDTH),
+                //        GUILayout.Height(2 * BUTTON_HEIGHT)
+                //    }, () => progman.ResetExecution(), false, "StopButton");
+                //} else {
                     makeButton("RUN!", new GUILayoutOption[] {
                         GUILayout.Width(BUTTON_COLUMN_WIDTH),
                         GUILayout.Height(2 * BUTTON_HEIGHT)
                     }, () => progman.StartExecution(), false, "RunButton");
-                }
+                //}
             }
             //makeButton("Undo", options, () => progman.Undo());
             makeButton("Zoom In", options, () => FindObjectOfType<MyCamera>().Zoom(0.5f));
@@ -240,10 +241,10 @@ public class AllTheGUI : MonoBehaviour
             curProc = GUILayout.SelectionGrid(curProc, procedures, procedures.Length);
             GUILayout.BeginHorizontal();
             GUILayout.Space(SPACING);
-            if (!progman.IsExecuting) {
+            //if (!progman.IsExecuting) {
                 //Debug.Log(Event.current.type);
                 dragDropFunctionOfDoom(procedures);
-            }
+            //}
             foreach (var procName in procedures) {
                 makeProc(procName);
                 GUILayout.Space(SPACING);
@@ -263,11 +264,14 @@ public class AllTheGUI : MonoBehaviour
 
         // time slider
         if (IsActiveTimeSlider) {
+#warning "maybe make the slider work again"
+#if false
             var sliderPos = progman.SliderPosition;
             var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 60, 400, 20), sliderPos, 0, 1);
             if (sliderPos != newSliderPos) {
                 progman.SetProgramStateBySlider(newSliderPos);
             }
+#endif
         }
 
         // fps display
@@ -285,8 +289,9 @@ public class AllTheGUI : MonoBehaviour
         GUI.ModalWindow(213421345, r, (id) => {
             makeButton("Yes", null, () => {
                 //Hackcraft.Serialization.SaveFile(string.Format("TestData/autosave-{0:yyyy-MM-dd_HH-mm-ss}.txt", DateTime.Now), GetComponent<ProgramManager>().Manipulator.Program);
-                GetComponent<ProgramManager>().Clear();
+                //GetComponent<ProgramManager>().Clear();
                 currentModalWindow = null;
+                throw new NotImplementedException("yeah clearing everything doesn't work with the current program manager");
             } );
             makeButton("No", null, () => currentModalWindow = null);
         }, "Confirm Clear?");
@@ -328,9 +333,9 @@ public class AllTheGUI : MonoBehaviour
                     newStatement = makeRepeat(command, highlight);
                 }
             }
-            if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
+            //if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
                 statementRects [procName].Add(getLastRect());
-            }
+            //}
             GUILayout.Space(SPACING / 2);
 
             if (newStatement != null) {
@@ -339,9 +344,9 @@ public class AllTheGUI : MonoBehaviour
         }
         GUILayout.FlexibleSpace();
         GUILayout.EndVertical();
-        if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
+        //if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
             procRects.Add(procName, getLastRect());
-        }
+        //}
     }
 
     private Imperative.Statement makeCall(Imperative.Statement statement, GUIStyleType highlight)

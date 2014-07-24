@@ -33,6 +33,11 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
 module Grid =
     type GridData = KeyValuePair<IntVec3, Block> []
     
+
+    let distinct (grid: GridData) =
+        grid |> Seq.distinctBy (fun kvp -> kvp.Key) |> Seq.toArray
+
+
     let private ENCODE_VERSION = 1
     let private ENDIAN_SENTINEL = 0xfffffffe
     let private encoding = System.Text.Encoding.UTF8

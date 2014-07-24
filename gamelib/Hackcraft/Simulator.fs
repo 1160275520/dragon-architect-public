@@ -22,7 +22,7 @@ type CallStackState = {
     mutable ToExecute: Statement list;
 }
 
-type State = {
+type private State = {
     mutable CallStack: CallStackState list;
     mutable LastExecuted: Statement list;
 }
@@ -46,10 +46,10 @@ let private exprAsInt meta (o:obj) =
         with _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger (sprintf "cannot convert '%s' to integer" s)
     | _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
-let CreateState program mainProcName =
+let private CreateState program mainProcName =
     {CallStack=[{Args=ImmArr.empty; Program=program; ToExecute=[Ast.Imperative.NewCall0 0 mainProcName];}]; LastExecuted=[];}
 
-let Evaluate (state:State) meta expression =
+let private Evaluate (state:State) meta expression =
     match expression with
     | Literal x -> x
     | Argument idx ->
@@ -95,14 +95,14 @@ let private internalError e =
     raise (CodeException (RuntimeError (int RuntimeErrorCode.InternalError, -1, "Internal runtime error.", e)))
 
 /// Executes a single line of the program, returning a robot command, if any.
-let ExecuteStep state =
+let private ExecuteStep state =
     try step state
     with
     | :? CodeException -> reraise ()
     | e -> internalError e
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
-let ExecuteUntilCommand state =
+let private ExecuteUntilCommand state =
     try
         let mutable cmd = None
         while cmd.IsNone && not state.CallStack.IsEmpty do
@@ -112,8 +112,11 @@ let ExecuteUntilCommand state =
     | :? CodeException -> reraise ()
     | e -> internalError e
 
-let IsDone (state:State) = state.CallStack.IsEmpty
+let inline private IsDone (state:State) = state.CallStack.IsEmpty
 
+// NOTE: just use reference equality, and be careful to always send the exact object
+// structural equality would simply be too expensive to usefully evaluate
+[<ReferenceEquality;NoComparison>]
 type StepState = {
     Command: Robot.Command;
     LastExecuted: Statement list;
@@ -121,17 +124,48 @@ type StepState = {
     Grid: ImmArr<KeyValuePair<IntVec3,Block>>;
 }
 
-let ExecuteProgramLazily program (grid:GridStateTracker) (robot:Robot.IRobot) =
+type LazyStepState = {
+    Command: Robot.Command;
+    LastExecuted: Statement list;
+}
+
+type LazySimulator (program) =
+    let state = CreateState program "MAIN"
+
+    member x.IsDone = IsDone state
+
+    member x.Step () =
+        let cmd = ExecuteUntilCommand state
+        {Command=cmd; LastExecuted=state.LastExecuted}
+
+let ExecuteProgramLazily program =
     let state = CreateState program "MAIN"
     seq {
-        yield {Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}
+        yield {Command=null; LastExecuted=[]}
         while not (IsDone state) do
             let cmd = ExecuteUntilCommand state
             if cmd <> null then
-                robot.Execute grid cmd
-                yield {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState}
+                yield {Command=cmd; LastExecuted=state.LastExecuted}
             else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
     }
+
+let SimultateWorld (grid:IGrid) (robots: (Robot.IRobot * LazyStepState[])[]) =
+
+    let bots = Array.map fst robots
+    let steps = robots |> Array.map (fun (_,arr) -> arr |> Array.map (fun s -> s.Command))
+
+    let commands = Array2D.create (Array.maxBy Array.length steps).Length bots.Length null
+
+    for botIdx = 0 to steps.Length - 1 do
+        let arr = steps.[botIdx]
+        for stepIdx = 0 to arr.Length - 1 do
+            commands.[stepIdx,botIdx] <- arr.[stepIdx]
+
+    for stepIdx = 0 to (commands.GetLength 0) - 1 do
+        for botIdx = 0 to bots.Length - 1 do
+            bots.[botIdx].Execute grid commands.[stepIdx,botIdx]
+
+    grid
 
 let ExecuteFullProgram program (grid:GridStateTracker) (robot:Robot.IRobot) =
     try

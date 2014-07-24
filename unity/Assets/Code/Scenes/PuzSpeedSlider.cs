@@ -33,6 +33,6 @@ public class PuzSpeedSlider : MonoBehaviour
 
     private bool programWinPredicate() {
         var progman = GetComponent<ProgramManager>();
-        return progman.DelayPerCommand < 0.25;
+        return progman.TicksPerStep < 15;
     }
 }

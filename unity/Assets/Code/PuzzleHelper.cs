@@ -41,7 +41,7 @@ public class PuzzleHelper : MonoBehaviour
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {
         var progman = GetComponent<ProgramManager>();
-        return progman.IsRunning && !progman.IsExecuting;
+        return progman.RunState == RunState.Finished;
     }
 
     /// Instantiates the blueprint prefab for each of the given cells.

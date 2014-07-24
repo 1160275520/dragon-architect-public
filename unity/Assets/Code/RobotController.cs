@@ -7,12 +7,16 @@ using Hackcraft.Robot;
 
 public class RobotController : MonoBehaviour {
 
-    public IRobot Robot;
+    public IRobot Robot { get; private set; }
     public GameObject HeldPrefab;
 
-	public bool moving { get; private set; }
-	private readonly float maxMoveTime = 0.2f;
-    private readonly float minAnimTime = 0.1f;
+    // if animation would take longer than this, take this time and then just sit idle
+	private const float MAX_ANIMATION_TIME = 0.2f;
+    // if animation would take less than this, just don't bother animating anything
+    private const float MIN_ANIMATION_TIME = 0.1f;
+
+    // used by coroutines to detect when a new SetRobot has been called so they can stop running once invalid.
+    private long counter = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -20,29 +24,16 @@ public class RobotController : MonoBehaviour {
     }
 
     public void Reset() {
-        Robot = new BasicImperativeRobot(IntVec3.Zero, IntVec3.UnitZ);
+        SetRobot(new BasicImperativeRobot(IntVec3.Zero, IntVec3.UnitZ), null, 0.0f);
     }
 
-	// Update is called once per frame
-	void Update () {
-        var grid = FindObjectOfType<Grid>();
-		if (!moving) {
-	        transform.position = grid.CenterOfCell(Robot.Position);
-	        transform.rotation = getRotation();
-		}
-	}
-
-	private IEnumerator<object> moveRobot(Vector3 deltaPos, float time) {
-		moving = true;
+	private IEnumerator<object> moveRobot(Vector3 deltaPos, float time, long id) {
 		var curPos = transform.position;
-		var wait = Math.Max((time - maxMoveTime) / 2, 0);
-		var moveTime = Math.Min (maxMoveTime, time);
-        // below a threshold, use don't animate movement
-        if (moveTime < minAnimTime) {
-            moving = false;
-            yield break;
-        }
-		for(float t = 0; t < time;) {
+		var wait = Math.Max((time - MAX_ANIMATION_TIME) / 2.0f, 0.0f);
+		var moveTime = Math.Min(MAX_ANIMATION_TIME, time);
+
+        // animate until either: animation is cancelled (indicated via counter changing) or the animation time finishes
+		for (float t = 0; counter == id && t < time;) {
             if (t > wait && t < time - wait) {
                 // use sinosoidal interpolation (equation from http://gizma.com/easing/#sin3)
                 transform.position = -deltaPos / 2 * (float)(Math.Cos (Math.PI * (t - wait) / moveTime) - 1) + curPos;
@@ -50,49 +41,66 @@ public class RobotController : MonoBehaviour {
             t += Time.fixedDeltaTime;
             yield return null;
         }
-        moving = false;
+        yield break;
 	}
 
-    private IEnumerator<object> rotateRobot(float angle, float time) {
-        moving = true;
+    private IEnumerator<object> rotateRobot(float angle, float time, long id) {
         var curRot = transform.rotation;
         var newRot = curRot * Quaternion.AngleAxis(angle, Vector3.up);
-        var wait = Math.Max((time - maxMoveTime) / 2, 0);
-        var moveTime = Math.Min (maxMoveTime, time);
-        // below a threshold, use don't animate rotation
-        if (time < minAnimTime) {
-            moving = false;
-            yield break;
-        }
-        for(float t = 0; t < time;) {
+		var wait = Math.Max((time - MAX_ANIMATION_TIME) / 2.0f, 0.0f);
+        var moveTime = Math.Min(MAX_ANIMATION_TIME, time);
+
+        // animate until either: animation is cancelled (indicated via counter changing) or the animation time finishes
+		for (float t = 0; counter == id && t < time;) {
             if (t > wait && t < time - wait) {
                 transform.rotation = Quaternion.Slerp(curRot, newRot, (t - wait) / moveTime);
             }
             t += Time.fixedDeltaTime;
             yield return null;
         }
-        moving = false;
+        yield break;
     }
 
-    public void SetRobot(IRobot robot, Command com, float? time) {
+    public void SetRobot(IRobot robot, Command com, float secondsPerCommand) {
+        // increment the counter to kill off the other coroutines
+        counter++;
+
+        // immediately teloport to "old" position so animations start from correct spot
+        if (Robot != null) {
+            transform.position = FindObjectOfType<Grid>().CenterOfCell(Robot.Position);
+            transform.rotation = getRotation();
+        }
+
         Robot = robot;
-        if (time.HasValue && com != null) {
+        if (secondsPerCommand > MIN_ANIMATION_TIME && com != null) {
+            // if time is large enough, animmate the robot going to the new position
             var anim = transform.FindChild("dragon_improved").gameObject.animation;
-            if (com.Type == "block" && time.Value > minAnimTime) {
-                anim["bite"].speed = anim["bite"].length / time.Value;
-                anim.Play("bite");
-                anim.PlayQueued("idle", QueueMode.CompleteOthers);
-            } else if (com.Type == "forward") {
-				StartCoroutine(moveRobot(Robot.Direction.AsVector3(), time.Value));
-			} else if (com.Type == "up") {
-				StartCoroutine(moveRobot(new Vector3(0, 1, 0), time.Value));
-			} else if (com.Type == "down") {
-				StartCoroutine(moveRobot(new Vector3(0, -1, 0), time.Value));
-            } else if (com.Type == "left") {
-                StartCoroutine(rotateRobot(-90, time.Value));
-            } else if (com.Type == "right") {
-                StartCoroutine(rotateRobot(90, time.Value));
+            switch (com.Type) {
+                case "block":
+                    anim["bite"].speed = anim["bite"].length / secondsPerCommand;
+                    anim.Play("bite");
+                    anim.PlayQueued("idle", QueueMode.CompleteOthers);
+                    break;
+                case "forward":
+                    StartCoroutine(moveRobot(Robot.Direction.AsVector3(), secondsPerCommand, counter));
+                    break;
+                case "up":
+                    StartCoroutine(moveRobot(Vector3.up, secondsPerCommand, counter));
+                    break;
+                case "down":
+                    StartCoroutine(moveRobot(Vector3.down, secondsPerCommand, counter));
+                    break;
+                case "left":
+                    StartCoroutine(rotateRobot(-90, secondsPerCommand, counter));
+                    break;
+                case "right":
+                    StartCoroutine(rotateRobot(90, secondsPerCommand, counter));
+                    break;
             }
+        } else {
+            // otherwise just teleport the robot there
+	        transform.position = FindObjectOfType<Grid>().CenterOfCell(Robot.Position);
+	        transform.rotation = getRotation();
         }
     }
 

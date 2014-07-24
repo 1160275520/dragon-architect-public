@@ -70,6 +70,7 @@
     <Compile Include="Grid.fs" />
     <Compile Include="Robot.fs" />
     <Compile Include="Simulator.fs" />
+    <Compile Include="World.fs" />
     <FilesToCopy Include="$(OutputPath)$(AssemblyName).dll" />
     <FilesToCopy Include="$(OutputPath)FSharp.Core.dll" />
   </ItemGroup>

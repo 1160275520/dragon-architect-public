@@ -113,13 +113,13 @@ public class ExternalAPI : MonoBehaviour
         if (isRunning) {
             progman.StartExecution();
         } else {
-            progman.StopRunning();
+            progman.ResetExecution();
         }
     }
 
     public void EAPI_SetProgramExecutionSpeed(string parameter) {
         var x = float.Parse(parameter);
-        GetComponent<ProgramManager>().DelayPerCommand = (float)Math.Pow(0.1f, 2.0f * x);
+        GetComponent<ProgramManager>().TicksPerStep = Math.Max(1, (int)(60*Math.Pow(0.1f, 2.0f * x)));
     }
 
     public void EAPI_ControlCamera(string action) {

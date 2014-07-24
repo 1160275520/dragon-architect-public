@@ -59,4 +59,3 @@ module Util =
         let arr : 'a[] = Array.zeroCreate (bytes.Length / sizeof<'a>)
         System.Buffer.BlockCopy (bytes, 0, arr, 0, bytes.Length)
         arr
-
