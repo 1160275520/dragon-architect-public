@@ -13,6 +13,8 @@ var current_puzzle_runner;
 
 var world_data;
 
+var current_scene = "title";
+
 var storage = (function() {
     var self = {};
 
@@ -143,6 +145,13 @@ function setState_sandbox() {
     });
 }
 
+function onProgramEdit() {
+    if (current_scene === 'sandbox') {
+        var prog = HackcraftBlockly.getXML();
+        storage.save('sandbox_program', prog);
+    }
+}
+
 // startup
 $(function() {
     function initialize_unity() {
@@ -245,6 +254,9 @@ $(function() {
 
     // wait for all systems to start up, then go!
     Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
+        // HACK add blockly change listener for saving
+        Blockly.addChangeListener(onProgramEdit);
+
         console.info('EVERYTHING IS READY!');
         if (progress.is_module_completed(game_info.modules["tutorial"])) {
             setState_sandbox();
@@ -284,10 +296,18 @@ handler.onTitleButtonClicked = function(button) {
 
 // TODO remove duplicate code from this an onPuzzleChange
 handler.onSandboxStart = function() {
+    current_scene = "sandbox";
+
     // HACKHACKAHCKAHCCKCK
     var current_library = ['move2', 'move3', 'place', 'repeat', 'speed_slider'];
 
     HackcraftBlockly.setLevel(null, current_library);
+
+    var storedProgXml = storage.load('sandbox_program');
+    if (storedProgXml) {
+        HackcraftBlockly.clearProgram();
+        HackcraftBlockly.loadBlocks(storedProgXml);
+    }
 
     HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
 
@@ -316,6 +336,8 @@ handler.onSandboxStart = function() {
 }
 
 handler.onPuzzleChange = function(json) {
+    current_scene = "puzzle";
+
     console.log(json);
     var info = JSON.parse(json);
 
