@@ -39,12 +39,17 @@ gulp.task('copy_media', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR + 'media/'));
 });
 
+gulp.task('copy_content', ['clean'], function() {
+    return gulp.src('content/**')
+        .pipe(gulp.dest(BUILD_DIR + 'content/'));
+});
+
 gulp.task('copy_fonts', ['clean'], function() {
     return gulp.src('lib/font-awesome/fonts/**')
         .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 });
 
-gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_fonts', 'copy_frame']);
+gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_content', 'copy_fonts', 'copy_frame']);
 
 gulp.task('default', ['usemin', 'copy_static']);
 
