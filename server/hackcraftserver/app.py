@@ -7,7 +7,6 @@ from flask import request
 import requests
 
 app = flask.Flask(__name__)
-app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
@@ -56,7 +55,7 @@ class SavedProcedure(db.Model):
 
     creator = db.relationship('Player', backref=db.backref('saved_procedures', lazy='dynamic'))
 
-def main():
+def setup():
     # Create the database tables.
     db.create_all()
 
@@ -66,9 +65,6 @@ def main():
     # Create API endpoints, which will be available at /api/<tablename> by default.
     manager.create_api(Player, methods=['GET', 'POST'])
     manager.create_api(SavedProcedure, methods=['GET', 'POST', 'PUT'])
-
-    # start the flask loop
-    app.run()
 
 def create_test_data():
     db.create_all()

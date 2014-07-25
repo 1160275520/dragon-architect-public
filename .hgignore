@@ -23,6 +23,6 @@ unity/*.unityproj
 unity/*.csproj
 html/generated/
 html/node_modules/
-server/venv/
+server/venv*/
 build/
 
