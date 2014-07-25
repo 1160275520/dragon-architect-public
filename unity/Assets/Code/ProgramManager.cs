@@ -95,7 +95,6 @@ public class ProgramManager : MonoBehaviour {
 
     private void setGameState(Simulator.StepState state, float transitionTimeSeconds) {
         if (!state.Equals(currentState)) {
-            Debug.Log("set state");
             currentState = state;
             var robot = FindObjectOfType<RobotController>();
             var grid = GetComponent<Grid>();
@@ -149,10 +148,6 @@ public class ProgramManager : MonoBehaviour {
     }
 
 	void Update () {
-        if (RunState == RunState.Executing) {
-            Debug.Log("update");
-        }
-
         var oldTicks = (int)totalTicks;
         if (RunState == RunState.Executing) {
             totalTicks += Time.deltaTime * TicksPerSecond;

@@ -65,11 +65,8 @@ public class RobotController : MonoBehaviour {
         // increment the counter to kill off the other coroutines
         counter++;
 
-        Debug.Log("set robot");
-
         // immediately teloport to "old" position so animations start from correct spot
         if (Robot != null) {
-            Debug.Log("old pos: " + Robot.Position);
             transform.position = FindObjectOfType<Grid>().CenterOfCell(Robot.Position);
             transform.rotation = getRotation();
         }
