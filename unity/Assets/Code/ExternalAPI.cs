@@ -117,6 +117,11 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    public void EAPI_TogglePause() {
+        var progman = GetComponent<ProgramManager>();
+        progman.TogglePauseExecution();
+    }
+
     public void EAPI_SetProgramExecutionSpeed(string parameter) {
         var x = float.Parse(parameter);
         GetComponent<ProgramManager>().TicksPerStep = Math.Max(1, (int)(60*Math.Pow(0.1f, 2.0f * x)));

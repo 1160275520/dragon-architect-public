@@ -142,6 +142,7 @@ module.Instructions = (function() {
 
     var self = {};
     var isLarge = false;
+    var clickCallback;
 
     function makeSmall() {
         isLarge = false;
@@ -159,7 +160,11 @@ module.Instructions = (function() {
         setTimeout(function() {
             if (!isLarge) {
                 instContainer.style.height = "auto";
-                instContainer.onclick = makeLarge;
+                if (clickCallback) {
+                    instContainer.onclick = clickCallback;                    
+                } else {
+                    instContainer.onclick = makeLarge;
+                }
             }
         }, 1000);
     }
@@ -206,7 +211,11 @@ module.Instructions = (function() {
                 dragon.style.animationPlayState = "running";
                 inst.style.webkitAnimationPlayState = "running";
                 inst.style.animationPlayState = "running";
-                instContainer.onclick = makeSmall;
+                if (clickCallback) {
+                    instContainer.onclick = clickCallback;                    
+                } else {
+                    instContainer.onclick = makeSmall;
+                }
             }
         }, 1000);
     }
@@ -215,7 +224,8 @@ module.Instructions = (function() {
         $('#instructionsContainer').css('visibility', 'hidden');
     }
 
-    self.show = function(instructions) {
+    self.show = function(instructions, cb) {
+        clickCallback = cb;
         if (instructions) {
             $('#instructions-goal').html(instructions.summary);
             $('#instructions-detail').html(instructions.detail);
@@ -230,14 +240,50 @@ module.Instructions = (function() {
 module.RunButton = (function() {
     var self = {};
 
-    self.update = function(isRunning) {
+    self.update = function(isRunning, isWorkshopMode) {
         var b = $('#btn-run')[0];
         if (isRunning) {
-            b.innerText = "Reset";
+            if (isWorkshopMode) {
+                b.innerText = "Reset";
+            } else {
+                b.innerText = "Stop";
+            }
             b.style.backgroundColor = "#B03737";
         } else {
             b.innerText = "Go!";
             b.style.backgroundColor = "#37B03F";
+        }
+    };
+
+    return self;
+}());
+
+module.ModeButton = (function() {
+    var self = {};
+
+    self.update = function(isWorkshopMode) {
+        var b = $('#btn-workshop')[0];
+        if (isWorkshopMode) {
+            b.innerText = "Exit Workshop Mode";
+        } else {
+            b.innerText = "Enter Workshop Mode";
+        }
+    };
+
+    return self;
+}());
+
+module.PauseButton = (function() {
+    var self = {};
+
+    self.update = function(isPaused) {
+        var b = $('#btn-pause')[0];
+        if (isPaused) {
+            b.innerText = "Resume";
+            b.style.backgroundColor = "#37B03F";
+        } else {
+            b.innerText = "Pause";
+            b.style.backgroundColor = "#F5D46F";
         }
     };
 

@@ -75,12 +75,16 @@ module.Call = (function() {
         send_message("System", "EAPI_ControlCamera", action);
     }
 
-    self.set_expr_mode = function(is_expr_mode) {
-        send_message("System", "EAPI_SetExperimentMode", is_expr_mode ? "true" : "false");
+    self.set_edit_mode = function(is_workshop_mode) {
+        send_message("System", "EAPI_SetWorkshopMode", is_workshop_mode ? "true" : "false");
     }
 
     self.request_world_state = function() {
         send_message("System", "EAPI_RequestWorldState", "");
+    }
+
+    self.toggle_pause = function() {
+        send_message("System", "EAPI_TogglePause", "");
     }
 
     return self;

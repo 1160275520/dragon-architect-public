@@ -11,15 +11,15 @@ public class Sandbox : MonoBehaviour {
         GetComponent<ExternalAPI>().NotifyOfSandbox();
 
         // default to persistent mode, not workshop
-        EAPI_SetExperimentMode("false");
+//        EAPI_SetWorkshopMode("false");
 	}
 	
-    public void EAPI_SetExperimentMode(string aIsExprMode) {
-        bool isExprMode = aIsExprMode == "true";
+    public void EAPI_SetWorkshopMode(string aIsWorkshopMode) {
+        bool isWorkshopMode = aIsWorkshopMode == "true";
         var plane = GameObject.Find("Plane");
         var progman = GetComponent<ProgramManager>();
 
-        if (!isExprMode) {
+        if (!isWorkshopMode) {
             var grass = (Material)Resources.Load("Grass", typeof(Material));
             var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));
             plane.renderer.materials = new Material[] {grass, grassGrid};

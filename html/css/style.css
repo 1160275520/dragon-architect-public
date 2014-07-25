@@ -76,6 +76,15 @@ header h1 {
     font-weight: bold;
 }
 
+#btn-pause {
+    float: right;
+    background-color: #F5D46F;
+    font-size: 24pt;
+    padding: 6.5pt; /* HACK to make it the same height as the Go button*/
+    margin-right: 15px;
+    font-weight: bold;
+}
+
 #mainLeftSide {
     position: absolute;
     padding: 0;
@@ -164,8 +173,8 @@ header h1 {
 
 #statement-counter {
     position: absolute;
-    left: 190px;
-    top: 20px;
+    right: 15px;
+    bottom: 150px;
     font-size: 18pt;
     font-family: sans-serif;
 }

@@ -1,7 +1,8 @@
 var onHackcraftEvent = (function(){ "use strict";
 
 var is_running = false;
-var is_expr_mode = false;
+var is_workshop_mode = true;
+var is_paused = false;
 var questLogger;
 var handler = {};
 var isDevMode = false;
@@ -130,15 +131,8 @@ function setState_intro() {
         HackcraftUI.Instructions.show({
             summary: 'This is intro text!',
             detail: d
-        });
-        $('#button_startTutorial').click(function() {
-            // start the 'tutorial' module in tutorial mode
+        }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
-        });
-        // HACK assumes the get started button is inside #instructionsContainer
-        $("#instructionsContainer").click(function() {
-            current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
-            $("#instructionsContainer").unbind("click");
         });
     });
 }
@@ -208,12 +202,11 @@ $(function() {
         var program = HackcraftBlockly.getProgram();
         HackcraftUnity.Call.set_program(program);
         is_running = !is_running;
-        HackcraftUI.RunButton.update(is_running);
+        is_paused = false;
+        HackcraftUI.PauseButton.update(is_paused);
+        HackcraftUI.RunButton.update(is_running, is_workshop_mode);
         HackcraftUnity.Call.set_is_running(is_running);
-        // if (Blockly.selected) {
-        //     Blockly.selected.unselect();
-        // }
-        // Blockly.mainWorkspace.traceOn(is_running);
+
         if (questLogger) {
             if (is_running) {
                 questLogger.logProgramExecutionStarted(JSON.stringify(program));
@@ -225,8 +218,17 @@ $(function() {
     HackcraftUI.Instructions.hide();
 
     $('#btn-expr').on('click', function() {
-        is_expr_mode = !is_expr_mode;
-        HackcraftUnity.Call.set_expr_mode(is_expr_mode);
+        is_workshop_mode = !is_workshop_mode;
+        HackcraftUI.ModeButton.update(is_workshop_mode);
+        HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
+    });
+
+    $('#btn-pause').on('click', function() {
+        if (is_running) {
+            is_paused = !is_paused;
+            HackcraftUI.PauseButton.update(is_paused);
+            HackcraftUnity.Call.toggle_pause();
+        }
     });
 
     // camera
@@ -292,7 +294,7 @@ handler.onSandboxStart = function() {
     HackcraftBlockly.history = [];
     // reset run button
     is_running = false;
-    HackcraftUI.RunButton.update(is_running);
+    HackcraftUI.RunButton.update(is_running, is_workshop_mode);
 
     // reset program execution speed, because the scene reload will have made Unity forget
     HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
@@ -304,6 +306,11 @@ handler.onSandboxStart = function() {
     }
 
     HackcraftUI.Instructions.show({summary:"Let's build something cool! Click [picture of button] to learn new code.", detail:""});
+
+    // default to persistent mode
+    is_workshop_mode = false;
+    HackcraftUI.ModeButton.update(is_workshop_mode);
+    HackcraftUnity.Call.set_edit_mode(is_workshop_mode);    
 
     // TODO log this
 }
@@ -328,7 +335,7 @@ handler.onPuzzleChange = function(json) {
         HackcraftBlockly.history = [];
         // reset run button
         is_running = false;
-        HackcraftUI.RunButton.update(is_running);
+        HackcraftUI.RunButton.update(is_running, is_workshop_mode);
 
         // reset program execution speed, because the scene reload will have made Unity forget
         HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
