@@ -66,7 +66,11 @@ public class ProgramManager : MonoBehaviour {
     public void TogglePauseExecution() {
         switch (RunState) {
             case RunState.Executing: RunState = RunState.Paused; break;
-            case RunState.Paused: RunState = RunState.Executing; break;
+            case RunState.Paused:
+                RunState = RunState.Executing;
+                // reset last statement execution time so dt isn't super wrong next time
+                lastStatementExecutionTime = Time.time;
+                break;
         }
     }
 
