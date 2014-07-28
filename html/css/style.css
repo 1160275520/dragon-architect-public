@@ -226,6 +226,10 @@ header h1 {
     padding: 15px;
 }
 
+p.instructions {
+    margin: 2px;
+}
+
 #instructions-goal {
     font-size: 16pt;
     padding-bottom: 20px;
