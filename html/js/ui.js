@@ -257,22 +257,23 @@ module.Instructions = (function() {
     return self;
 }());
 
+function update_button(selector, isActive, inactiveText, activeText) {
+    var b = $(selector);
+    if (isActive) {
+        b.html(activeText);
+        b.addClass('active');
+    } else {
+        b.html(inactiveText);
+        b.removeClass('active');
+    }
+}
+
 module.RunButton = (function() {
     var self = {};
 
     self.update = function(isRunning, isWorkshopMode) {
-        var b = $('#btn-run')[0];
-        if (isRunning) {
-            if (isWorkshopMode) {
-                b.innerText = "Reset";
-            } else {
-                b.innerText = "Stop";
-            }
-            b.style.backgroundColor = "#B03737";
-        } else {
-            b.innerText = "Go!";
-            b.style.backgroundColor = "#37B03F";
-        }
+        var at = isWorkshopMode ? "Reset" : "Stop";
+        update_button('#btn-run', isRunning, "Go!", at);
     };
 
     return self;
@@ -282,12 +283,7 @@ module.ModeButton = (function() {
     var self = {};
 
     self.update = function(isWorkshopMode) {
-        var b = $('#btn-workshop')[0];
-        if (isWorkshopMode) {
-            b.innerText = "Exit Workshop Mode";
-        } else {
-            b.innerText = "Enter Workshop Mode";
-        }
+        update_button('#btn-workshop', isWorkshopMode, "Enter Workshop Mode", "Exit Workshop Mode");
     };
 
     return self;
@@ -297,14 +293,7 @@ module.PauseButton = (function() {
     var self = {};
 
     self.update = function(isPaused) {
-        var b = $('#btn-pause')[0];
-        if (isPaused) {
-            b.innerText = "Resume";
-            b.style.backgroundColor = "#37B03F";
-        } else {
-            b.innerText = "Pause";
-            b.style.backgroundColor = "#F5D46F";
-        }
+        update_button('#btn-pause', isPaused, "Pause", "Resume");
     };
 
     return self;

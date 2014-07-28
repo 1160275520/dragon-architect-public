@@ -93,28 +93,49 @@ header h1 {
 /* Game controls, buttons and sliders */
 /************************************************************/
 
-#game-controls-section-top {
+.game-controls-bar {
     display: flex;
     align-items: center;
+    height: 75px;
+    padding: 10px;
 }
 
 .game-control {
 }
 
-#btn-run {
-    float: right;
-    background-color: #37B03F;
-    font-size: 32pt;
+#game-control-bar-playback {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.game-control-btn-playback {
     font-weight: bold;
+    width: 120px;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+#btn-run {
+    font-size: 32pt;
+    background-color: #37b03f;
+}
+
+#btn-run.active {
+    background-color: #b03737;
+    font-size: 24pt;
 }
 
 #btn-pause {
-    float: right;
-    background-color: #F5D46F;
+    background-color: #f5d46f;
     font-size: 24pt;
-    padding: 6.5pt; /* HACK to make it the same height as the Go button*/
-    margin-right: 15px;
-    font-weight: bold;
+}
+
+#btn-pause.active {
+    background-color: #37b03f;
+    font-size: 20pt;
 }
 
 .control-element {
@@ -129,7 +150,7 @@ header h1 {
     padding: 4px;
 }
 
-.control-button {
+.control-icon-btn {
     style: inline-block;
     width: 40px;
     height: 40px;

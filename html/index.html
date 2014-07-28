@@ -50,20 +50,18 @@
     </header>
     <div id="main">
       <div id="main-view-game">
-        <div id="game-controls-section-top" class="puzzleModeUI sandboxModeUI">
-          <button id="btn-run" class="game-control codeEditor">Go!</button>
-          <button id="btn-pause" class="game-control puzzleModeUI sandboxModeUI">Pause</button>
+        <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <span id="game-controls-camera" class="game-control codeEditor">
             <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>
-            <button class="control-button" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
-            <button class="control-button" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
-            <button class="control-button" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
-            <button class="control-button" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
+            <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
+            <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
+            <button class="control-icon-btn" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
+            <button class="control-icon-btn" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
           </span>
           <button id="btn-workshop" class="sandboxModeUI" style="margin:auto;">Enter Workshop Mode</button>
         </div>
         <div id="unity-player"></div>
-        <div id="bottomButtonBar">
+        <div id="game-controls-bar-bottom" class="game-controls-bar">
           <div id="sliderContainer" class="codeEditor">
             <div id="sliderSteps">
               <span class="tick" >Slow</span>
@@ -75,6 +73,7 @@
         </div>
       </div>
       <div id="main-view-code" class="codeEditor">
+        <iframe id="blockly" src="frame.html"></iframe>
         <div id="instructionsContainer" style="visibility: hidden;">
           <span id="instructionsBackground" style="display:block;">
             <img id="dragonIcon" src="media/dragon_icon.png" height="100px" style="visibility:hidden;float:left;"/>
@@ -85,7 +84,10 @@
             </div>
           </span>
         </div>
-        <iframe id="blockly" src="frame.html"></iframe>
+        <div id="game-control-bar-playback">
+          <button id="btn-run" class="game-control-btn-playback codeEditor">X</button>
+          <button id="btn-pause" class="game-control-btn-playback puzzleModeUI sandboxModeUI">X</button>
+        </div>
         <button id="btn-undo" style="display: none;">Undo</button>
         <p id="statement-counter"></p>
         <img id="trash-arrow" src="media/arrow.png"/>

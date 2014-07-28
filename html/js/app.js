@@ -226,7 +226,7 @@ $(function() {
     });
     HackcraftUI.Instructions.hide();
 
-    $('#btn-expr').on('click', function() {
+    $('#btn-workshop').on('click', function() {
         is_workshop_mode = !is_workshop_mode;
         HackcraftUI.ModeButton.update(is_workshop_mode);
         HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
