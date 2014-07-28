@@ -15,7 +15,7 @@ module.State = (function(){ "use strict";
         $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .levelSelector').hide();
     }
 
-    var main_selector = '#mainLeftSide, #mainRightSide';
+    var main_selector = '#main-view-game, #main-view-code';
 
     self.goToTitle = function(cb) {
         current_state = 'title';

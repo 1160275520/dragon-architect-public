@@ -1,4 +1,7 @@
 
+/* basic stuff */
+/************************************************************/
+
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -9,47 +12,70 @@ html {
     font-family: "Open Sans";
 }
 
-body {
-    margin: 8px;
-}
-
-p {
-    margin: 2px;
-}
-
 iframe {
     width: 100%;
     height: 800px;
 }
 
-header > div {
-    margin: auto;
-    width: 100%;
-}
+/* header */
+/************************************************************/
 
-header h1 {
-    float: left;
-    overflow: auto;
-    margin-right: 50px;
-}
-
-#navControls {
-    float: right;
-    margin-left: 50px;
-}
-
-.headerCenter {
-}
-
-#someheaderthingy {
+header {
     display: flex;
     height: 70px;
     background: #ffeedd;
 }
 
-#main {
-    position: relative;
+header h1 {
+    float: left;
+    overflow: auto;
+    margin: 0 50px 0 0;
 }
+
+#header-nav {
+    float: right;
+    margin-left: 50px;
+}
+
+/* main area and two main vertical divs */
+/************************************************************/
+
+#main {
+    display: flex;
+    width: 100%;
+}
+
+#main-view-game {
+    order: 1;
+    width: 40%;
+}
+
+#main-view-code {
+    position: relative;
+    order: 0;
+    width: 60%;
+}
+
+/*
+#main-view-game.transition {
+    transition: width 1.0s ease-in-out;
+}
+
+#main-view-code.transition {
+    transition: margin-left 1.0s ease-in-out;
+}
+
+#main-view-game.title {
+    width: 75%;
+}
+
+#main-view-code.title {
+    margin-left: 75%;
+}
+*/
+
+/* */
+/************************************************************/
 
 .titleScreen, .levelSelector {
     margin: 30px;
@@ -63,10 +89,6 @@ header h1 {
     margin: 20px auto;
     padding: 10px;
     display: block;
-}
-
-#topButtonBar {
-    overflow: auto;
 }
 
 #btn-run {
@@ -83,35 +105,6 @@ header h1 {
     padding: 6.5pt; /* HACK to make it the same height as the Go button*/
     margin-right: 15px;
     font-weight: bold;
-}
-
-#mainLeftSide {
-    position: absolute;
-    padding: 0;
-    margin: 0;
-    width: 40%;
-}
-
-#mainRightSide {
-    position: relative;
-    padding: 0;
-    margin-left: 40%;
-}
-
-#mainLeftSide.transition {
-    transition: width 1.0s ease-in-out;
-}
-
-#mainRightSide.transition {
-    transition: margin-left 1.0s ease-in-out;
-}
-
-#mainLeftSide.title {
-    width: 75%;
-}
-
-#mainRightSide.title {
-    margin-left: 75%;
 }
 
 #topButtonBar {

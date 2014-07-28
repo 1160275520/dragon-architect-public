@@ -37,22 +37,20 @@
     <!-- endbuild -->
   </head>
   <body>
-    <header id="someheaderthingy">
-      <div>
-        <h1>Hackcraft!</h1>
-        <div id="navControls">
-          <button id="button_header_levelSelect">Go to puzzle select</button>
-          <button id="button_header_sandbox">Go to sandbox</button>
-          <button id="button_header_save">Do a test save</button>
-        </div>
-        <div class="sandboxModeUI headerCenter">
-          <p>You are in creative mode!</p>
-        </div>
+    <header id="header">
+      <h1>Hackcraft!</h1>
+      <div id="header-nav">
+        <button id="button_header_levelSelect">Go to puzzle select</button>
+        <button id="button_header_sandbox">Go to sandbox</button>
+        <button id="button_header_save">Do a test save</button>
+      </div>
+      <div class="sandboxModeUI">
+        <p>You are in creative mode!</p>
       </div>
     </header>
     <div id="main">
-      <div id="mainLeftSide">
-        <div id="topButtonBar" class="puzzleModeUI sandboxModeUI">
+      <div id="main-view-game">
+        <div id="game-controls-top" class="puzzleModeUI sandboxModeUI">
           <button id="btn-run" class="codeEditor">Go!</button>
           <button id="btn-pause" class="puzzleModeUI sandboxModeUI">Pause</button>
           <span id="cameraControls" class="codeEditor">
@@ -76,7 +74,7 @@
           </div>
         </div>
       </div>
-      <div id="mainRightSide" class="codeEditor">
+      <div id="main-view-code" class="codeEditor">
         <div id="instructionsContainer" style="visibility: hidden;">
           <span id="instructionsBackground" style="display:block;">
             <img id="dragonIcon" src="media/dragon_icon.png" height="100px" style="visibility:hidden;float:left;"/>
@@ -99,6 +97,6 @@
         </svg>
       </div>
     </div>
-    <button onclick="devmode()">Activate Devloper Mode</button>
+    <!--<button onclick="devmode()">Activate Devloper Mode</button>-->
   </body>
 </html>
