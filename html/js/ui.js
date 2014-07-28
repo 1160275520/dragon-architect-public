@@ -229,7 +229,7 @@ module.Instructions = (function() {
         var instContainer = $("#instructionsContainer")[0];
         instContainer.style.top = '0px';
         instContainer.style.left = rect.width + 'px';
-        instContainer.style.width = (blockly.getBoundingClientRect().width - rect.width) + 'px';
+        instContainer.style.width = (blockly.getBoundingClientRect().width - rect.width - 150) + 'px';
         instContainer.style.height = "100%";
         instContainer.onclick = null;
 

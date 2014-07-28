@@ -217,7 +217,7 @@ header h1 {
     background: #333; /* default background for browsers without gradient support */
     opacity: 0.95;
     border-radius:10px;
-    width: 90%;
+    width: 100%;
 }
 
 #instructions {
