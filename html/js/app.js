@@ -212,7 +212,7 @@ $(function() {
         HackcraftUnity.Call.set_program(program);
         is_running = !is_running;
         is_paused = false;
-        HackcraftUI.PauseButton.update(is_paused);
+        HackcraftUI.PauseButton.update(is_running, is_paused);
         HackcraftUI.RunButton.update(is_running, is_workshop_mode);
         HackcraftUnity.Call.set_is_running(is_running);
 
@@ -235,7 +235,7 @@ $(function() {
     $('#btn-pause').on('click', function() {
         if (is_running) {
             is_paused = !is_paused;
-            HackcraftUI.PauseButton.update(is_paused);
+            HackcraftUI.PauseButton.update(true, is_paused);
             HackcraftUnity.Call.toggle_pause();
         }
     });
@@ -315,6 +315,7 @@ handler.onSandboxStart = function() {
     // reset run button
     is_running = false;
     HackcraftUI.RunButton.update(is_running, is_workshop_mode);
+    HackcraftUI.PauseButton.update(is_running, is_paused);
 
     // reset program execution speed, because the scene reload will have made Unity forget
     HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
@@ -358,6 +359,7 @@ handler.onPuzzleChange = function(json) {
         // reset run button
         is_running = false;
         HackcraftUI.RunButton.update(is_running, is_workshop_mode);
+        HackcraftUI.PauseButton.update(is_running, is_paused);
 
         // reset program execution speed, because the scene reload will have made Unity forget
         HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());

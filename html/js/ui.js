@@ -257,14 +257,20 @@ module.Instructions = (function() {
     return self;
 }());
 
-function update_button(selector, isActive, inactiveText, activeText) {
+function update_button(selector, isEnabled, isActive, inactiveText, activeText) {
     var b = $(selector);
-    if (isActive) {
-        b.html(activeText);
-        b.addClass('active');
+    if (isEnabled) {
+        b.removeClass('disabled');
+        if (isActive) {
+            b.html(activeText);
+            b.addClass('active');
+        } else {
+            b.html(inactiveText);
+            b.removeClass('active');
+        }
     } else {
         b.html(inactiveText);
-        b.removeClass('active');
+        b.addClass('disabled');
     }
 }
 
@@ -273,7 +279,7 @@ module.RunButton = (function() {
 
     self.update = function(isRunning, isWorkshopMode) {
         var at = isWorkshopMode ? "Reset" : "Stop";
-        update_button('#btn-run', isRunning, "Go!", at);
+        update_button('#btn-run', true, isRunning, "Go!", at);
     };
 
     return self;
@@ -283,7 +289,7 @@ module.ModeButton = (function() {
     var self = {};
 
     self.update = function(isWorkshopMode) {
-        update_button('#btn-workshop', isWorkshopMode, "Enter Workshop Mode", "Exit Workshop Mode");
+        update_button('#btn-workshop', true, isWorkshopMode, "Enter Workshop Mode", "Exit Workshop Mode");
     };
 
     return self;
@@ -292,8 +298,8 @@ module.ModeButton = (function() {
 module.PauseButton = (function() {
     var self = {};
 
-    self.update = function(isPaused) {
-        update_button('#btn-pause', isPaused, "Pause", "Resume");
+    self.update = function(isEnabled, isPaused) {
+        update_button('#btn-pause', isEnabled, isPaused, "Pause", "Resume");
     };
 
     return self;

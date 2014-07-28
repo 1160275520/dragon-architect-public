@@ -138,6 +138,11 @@ header h1 {
     font-size: 20pt;
 }
 
+#btn-pause.disabled {
+    background-color: #BBB;
+    color: #777;
+}
+
 .control-element {
     margin: 0 4px;
 }
