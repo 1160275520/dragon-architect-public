@@ -8,13 +8,23 @@
           box-sizing: border-box;
 }
 
+p {
+    margin: 0;
+    padding: 0;
+}
+
 html {
     font-family: "Open Sans";
 }
 
+body {
+    background: #000;
+}
+
 iframe {
     width: 100%;
-    height: 800px;
+    height: 100%;
+    border: none;
 }
 
 /* header */
@@ -23,7 +33,7 @@ iframe {
 header {
     display: flex;
     height: 70px;
-    background: #ffeedd;
+    background: #fff;
 }
 
 header h1 {
@@ -43,17 +53,23 @@ header h1 {
 #main {
     display: flex;
     width: 100%;
+    margin-top: 15px;
 }
 
 #main-view-game {
     order: 1;
     width: 40%;
+    margin-left: 25px;
+    margin-right: 25px;
+    background: #fff;
 }
 
 #main-view-code {
     position: relative;
     order: 0;
     width: 60%;
+    margin-left: 25px;
+    height: 800px;
 }
 
 /*
@@ -74,21 +90,15 @@ header h1 {
 }
 */
 
-/* */
+/* Game controls, buttons and sliders */
 /************************************************************/
 
-.titleScreen, .levelSelector {
-    margin: 30px;
-    border: 1px solid black;
-    padding: 30px;
+#game-controls-section-top {
+    display: flex;
+    align-items: center;
 }
 
-/* TODO pick a non-crap styling for these things */
-.titleScreen *, .levelSelector h2, .levelSelector > button {
-    text-align: center;
-    margin: 20px auto;
-    padding: 10px;
-    display: block;
+.game-control {
 }
 
 #btn-run {
@@ -107,15 +117,11 @@ header h1 {
     font-weight: bold;
 }
 
-#topButtonBar {
-    /*height: 300px;*/
-}
-
 .control-element {
     margin: 0 4px;
 }
 
-#cameraControls {
+#game-controls-camera {
     display: inline-block;
     border: 2px solid black;
     border-radius: 6px;
@@ -132,23 +138,46 @@ header h1 {
     margin: 1px;
 }
 
-#unityPlayer {
+/* unity player */
+/************************************************************/
+
+#unity-player {
     position: relative;
     width: 100%;
     padding: 0;
     margin: 0;
 }
-#unityPlayer:after {
+
+/* smoe hilarious hacks to keep fixed aspect ratio */
+#unity-player:after {
     padding-top: 75%;
     display: block;
     content: '';
 }
-#unityPlayer embed {
+
+#unity-player embed {
     width: 100%;
     height: 100%;
     padding: 0;
     margin: 0;
     position: absolute;
+}
+
+/* */
+/************************************************************/
+
+.titleScreen, .levelSelector {
+    margin: 30px;
+    border: 1px solid black;
+    padding: 30px;
+}
+
+/* TODO pick a non-crap styling for these things */
+.titleScreen *, .levelSelector h2, .levelSelector > button {
+    text-align: center;
+    margin: 20px auto;
+    padding: 10px;
+    display: block;
 }
 
 #languageMenu {
@@ -489,6 +518,7 @@ p.instructions {
 
 .levelSelector svg {
     overflow: hidden;
+    background: #fff;
 }
 
 .levelSelector .node rect {

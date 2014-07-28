@@ -13,15 +13,15 @@ module.Player = (function(){
     // TODO have these return correct values even when the thing isn't visible
 
     self.width = function() {
-        return $('#unityPlayer embed').width();
+        return $('#unity-player embed').width();
     };
 
     self.height = function() {
-        return $('#unityPlayer embed').height();
+        return $('#unity-player embed').height();
     };
 
     self.initialize = function() {
-        var div = $("#unityPlayer");
+        var div = $("#unity-player");
 
         var config = {
             params: { enableDebugging:"0" }
@@ -35,12 +35,12 @@ module.Player = (function(){
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
 
     self.hide = function() {
-        var u = $('#unityPlayer embed, #unityPlayer');
+        var u = $('#unity-player embed, #unity-player');
         u.css('width', '1px').css('height', '1px');
     };
 
     self.show = function() {
-        var u = $('#unityPlayer embed, #unityPlayer');
+        var u = $('#unity-player embed, #unity-player');
         u.css('width', '100%').css('height', '100%');
     };
 
