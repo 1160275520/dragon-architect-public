@@ -157,6 +157,9 @@ module.Instructions = (function() {
         var detail = $("#instructions-detail")[0];
         detail.style.height = '0px';
 
+        var reminder = $("#instructions-reminder")[0];
+        reminder.innerHTML = "(Click to show)";
+
         setTimeout(function() {
             if (!isLarge) {
                 instContainer.style.height = "auto";
@@ -171,12 +174,7 @@ module.Instructions = (function() {
 
     function makeLarge() {
         isLarge = true;
-        var blockly = document.getElementById('blockly').contentWindow.document.body;
-        var rect = $("svg g", blockly)[0].getBoundingClientRect();
         var instContainer = $("#instructionsContainer")[0];
-        instContainer.style.top = '0px';
-        instContainer.style.left = rect.width + 'px';
-        instContainer.style.width = (blockly.getBoundingClientRect().width - rect.width) + 'px';
         instContainer.style.height = "100%";
         instContainer.onclick = null;
 
@@ -200,17 +198,11 @@ module.Instructions = (function() {
         var detail = $("#instructions-detail")[0];
         detail.style.height = "auto";
 
-        //Hackcraft.setInstructions(instructions);
+        var reminder = $("#instructions-reminder")[0];
+        reminder.innerHTML = "(Click to hide)";
 
         setTimeout(function () {
             if (isLarge) { 
-                dragon.style.visibility = "visible";
-                goal.style.visibility = "visible";
-                detail.style.visibility = "visible";
-                dragon.style.webkitAnimationPlayState = "running";
-                dragon.style.animationPlayState = "running";
-                inst.style.webkitAnimationPlayState = "running";
-                inst.style.animationPlayState = "running";
                 if (clickCallback) {
                     instContainer.onclick = clickCallback;                    
                 } else {
@@ -224,14 +216,42 @@ module.Instructions = (function() {
         $('#instructionsContainer').css('visibility', 'hidden');
     }
 
-    self.show = function(instructions, cb) {
+    self.show = function(instructions, cb, startLarge) {
         clickCallback = cb;
         if (instructions) {
             $('#instructions-goal').html(instructions.summary);
             $('#instructions-detail').html(instructions.detail);
         }
         $('#instructionsContainer').css('visibility', 'visible');
-        makeLarge();
+
+        var blockly = document.getElementById('blockly').contentWindow.document.body;
+        var rect = $("svg g", blockly)[0].getBoundingClientRect();
+        var instContainer = $("#instructionsContainer")[0];
+        instContainer.style.top = '0px';
+        instContainer.style.left = rect.width + 'px';
+        instContainer.style.width = (blockly.getBoundingClientRect().width - rect.width) + 'px';
+        instContainer.style.height = "100%";
+        instContainer.onclick = null;
+
+        var inst = $("#instructions")[0];
+        var goal = $("#instructions-goal")[0];
+        var dragon = $("#dragonIcon")[0];
+        var detail = $("#instructions-detail")[0];
+        var reminder = $("#instructions-reminder")[0];
+        dragon.style.visibility = "visible";
+        goal.style.visibility = "visible";
+        detail.style.visibility = "visible";
+        reminder.style.visibility = "visible";
+        dragon.style.webkitAnimationPlayState = "running";
+        dragon.style.animationPlayState = "running";
+        inst.style.webkitAnimationPlayState = "running";
+        inst.style.animationPlayState = "running";
+
+        if (startLarge) {
+            makeLarge();
+        } else {
+            makeSmall();
+        }
     }
 
     return self;

@@ -135,7 +135,7 @@ function setState_intro() {
             detail: d
         }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
-        });
+        }, true);
     });
 }
 
