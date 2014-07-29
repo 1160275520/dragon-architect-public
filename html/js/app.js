@@ -29,6 +29,10 @@ var storage = (function() {
         return sessionStorage.getItem(key);
     }
 
+    self.remove = function(key) {
+        sessionStorage.removeItem(key);
+    }
+
     return self;
 }());
 
@@ -197,6 +201,15 @@ $(function() {
 
     $('#button_header_save').on('click', function() {
         HackcraftUnity.Call.request_world_state();
+    });
+
+    $('#button_header_clear_sandbox').on('click', function() {
+        storage.remove('sandbox_program');
+        storage.remove('sandbox_world_data');
+        // HACK if they're in the sandbox, just reload it to force a clear
+        if (current_scene == 'sandbox') {
+            setState_sandbox();
+        }
     });
 
     $('#button_header_sandbox').on('click', setState_sandbox);

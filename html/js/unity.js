@@ -64,7 +64,7 @@ module.Call = (function() {
     }
 
     self.request_start_sandbox = function(world_data) {
-        send_message("Global", "EAPI_RequestStartSandbox", world_data);
+        send_message("Global", "EAPI_RequestStartSandbox", world_data ? world_data : "");
     }
 
     self.set_is_running = function(is_running) {
