@@ -48,6 +48,11 @@
         <p>You are in creative mode!</p>
       </div>
     </header>
+    <div id="selector-puzzle" class="levelSelector">
+      <svg width=1400 height=350>
+        <g transform="translate(20,20)"/>
+      </svg>
+    </div>
     <div id="main">
       <div id="main-view-game">
         <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
@@ -61,7 +66,7 @@
           <button id="btn-workshop" class="sandboxModeUI" style="margin:auto;">Enter Workshop Mode</button>
         </div>
         <div id="unity-player"></div>
-        <div id="game-controls-bar-bottom" class="game-controls-bar">
+        <div id="game-controls-bar-bottom" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <div id="sliderContainer" class="codeEditor">
             <div id="sliderSteps">
               <span class="tick" >Slow</span>
@@ -91,12 +96,6 @@
         <button id="btn-undo" style="display: none;">Undo</button>
         <p id="statement-counter"></p>
         <img id="trash-arrow" src="media/arrow.png"/>
-      </div>
-      <div class="levelSelector">
-        <h2>I am the level selector!</h2>
-        <svg width=1400 height=350>
-          <g transform="translate(20,20)"/>
-        </svg>
       </div>
     </div>
     <!--<button onclick="devmode()">Activate Devloper Mode</button>-->

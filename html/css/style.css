@@ -192,14 +192,14 @@ header h1 {
 /* */
 /************************************************************/
 
-.titleScreen, .levelSelector {
+.titleScreen, .selector-puzzle {
     margin: 30px;
     border: 1px solid black;
     padding: 30px;
 }
 
 /* TODO pick a non-crap styling for these things */
-.titleScreen *, .levelSelector h2, .levelSelector > button {
+.titleScreen *, .selector-puzzle h2, .selector-puzzle > button {
     text-align: center;
     margin: 20px auto;
     padding: 10px;
@@ -542,33 +542,40 @@ p.instructions {
     padding: 5px;
 }
 
-.levelSelector svg {
-    overflow: hidden;
+/* Puzzle selector */
+/************************************************************/
+
+#selector-puzzle {
+    position: relative
+    width: 100%;
+    margin: 100px;
+    background-color: black;
+    z-index: 1;
+}
+
+#selector-puzzle svg {
+    display: block;
+    margin: auto;
     background: #fff;
 }
 
-.levelSelector .node rect {
+#selector-puzzle .node rect {
     stroke: #333;
     stroke-width: 1.5px;
     fill: #fff;
 }
 
-.levelSelector .node circle {
-    stroke: #333;
-    stroke-width: 1.5px;
-    fill: #fff;
-}
-
-.levelSelector .node, .clickable {
+#selector-puzzle .node, .clickable {
     cursor: pointer;
 }
 
-.levelSelector .edgeLabel rect {
+#selector-puzzle .edgeLabel rect {
     fill: #fff;
 }
 
-.levelSelector .edgePath {
+#selector-puzzle .edgePath {
     stroke: #333;
     stroke-width: 1.5px;
     fill: none;
 }
+
