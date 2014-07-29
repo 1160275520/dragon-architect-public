@@ -149,7 +149,7 @@ function setState_intro() {
 
 function setState_sandbox() {
     HackcraftUI.State.goToSandbox(function() {
-        HackcraftUnity.Call.request_start_sandbox();
+        HackcraftUnity.Call.request_start_sandbox(storage.load('sandbox_world_data'));
     });
 }
 
@@ -238,6 +238,11 @@ $(function() {
             } else {
                 questLogger.logProgramExecutionReset();
             }
+        }
+
+        // HACK this should really be done in a separate stop function so it can also be handled when the player naviagates away from the page
+        if (current_scene === 'sandbox') {
+            HackcraftUnity.Call.request_world_state();
         }
     });
     HackcraftUI.Instructions.hide();
@@ -343,7 +348,7 @@ handler.onSandboxStart = function() {
     // default to persistent mode
     is_workshop_mode = false;
     HackcraftUI.ModeButton.update(is_workshop_mode);
-    HackcraftUnity.Call.set_edit_mode(is_workshop_mode);    
+    HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
 
     // TODO log this
 }
@@ -444,7 +449,7 @@ handler.onWorldDataChunkSend = function(chunk) {
 
 handler.onWorldDataEnd = function() {
     console.info(world_data);
-    storage.save('world_data', world_data);
+    storage.save('sandbox_world_data', world_data);
 }
 
 handler.onUnlockDevMode = function() {

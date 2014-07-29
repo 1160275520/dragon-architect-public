@@ -10,8 +10,11 @@ public class Sandbox : MonoBehaviour {
         progman.Manipulator.CreateProcedure("MAIN");
         GetComponent<ExternalAPI>().NotifyOfSandbox();
 
-        // default to persistent mode, not workshop
-//        EAPI_SetWorkshopMode("false");
+        var worldData = FindObjectOfType<Global>().SandboxWorldData;
+        if (worldData != null) {
+            var blocks = Hackcraft.ImmArr.ofArray(Hackcraft.Grid.decodeFromString(worldData));
+            GetComponent<Grid>().SetGrid(blocks);
+        }
 	}
 	
     public void EAPI_SetWorkshopMode(string aIsWorkshopMode) {
@@ -20,12 +23,12 @@ public class Sandbox : MonoBehaviour {
         var progman = GetComponent<ProgramManager>();
 
         if (!isWorkshopMode) {
-            var grass = (Material)Resources.Load("Grass", typeof(Material));
+            var grass = Resources.Load<Material>("Grass");
             var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));
             plane.renderer.materials = new Material[] {grass, grassGrid};
             progman.EditMode = Hackcraft.EditMode.Persistent;
         } else {
-            var ground = (Material)Resources.Load("Ground", typeof(Material));
+            var ground = Resources.Load<Material>("Ground");
             plane.renderer.materials = new Material[] {ground};
             progman.EditMode = Hackcraft.EditMode.Workshop;
         }

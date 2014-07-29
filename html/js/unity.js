@@ -63,8 +63,8 @@ module.Call = (function() {
         send_message("Global", "EAPI_RequestStartPuzzle", JSON.stringify(puzzle_info));
     }
 
-    self.request_start_sandbox = function() {
-        send_message("Global", "EAPI_RequestStartSandbox", "");
+    self.request_start_sandbox = function(world_data) {
+        send_message("Global", "EAPI_RequestStartSandbox", world_data);
     }
 
     self.set_is_running = function(is_running) {

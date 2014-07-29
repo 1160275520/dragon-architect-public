@@ -15,6 +15,7 @@ public class Global : MonoBehaviour {
     public string CurrentSceneId { get; private set; }
     public Scene.PuzzleInfo CurrentPuzzle { get; set; }
     public PuzzleFinishType PuzzleFinish { get; private set; }
+    public string SandboxWorldData { get; private set; }
 
     void Awake() {
         DontDestroyOnLoad(this);
@@ -67,9 +68,10 @@ public class Global : MonoBehaviour {
         Application.LoadLevel("puzzle");
     }
 
-    public void EAPI_RequestStartSandbox(string unused) {
+    public void EAPI_RequestStartSandbox(string worldData) {
         CurrentSceneId = null;
         CurrentPuzzle = null;
+        SandboxWorldData = worldData != null && worldData.Length > 0 ? worldData : null;
         Application.LoadLevel("sandbox");
     }
 }
