@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         HackcraftUnity.Player.hide();
-        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .levelSelector').hide();
+        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .levelSelector, .moduleSelector').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -65,6 +65,51 @@ module.State = (function(){ "use strict";
         $(main_selector).removeClass('title');
         cb();
     };
+
+    self.goToModuleSelect = function(cb) {
+        hideAll();
+        $('.moduleSelector').show();
+        cb();
+    }
+
+    return self;
+}());
+
+module.ModuleSelect = (function() {
+    var self = {};
+
+    function makeModule(module) {
+        var span = document.createElement("span");
+        span.id = 'module_' + module.name;
+        $(span).addClass('moduleOption');
+        var title = document.createElement("p");
+        title.innerHTML = module.name;
+        $(title).css("font-weight", "700");
+        $(title).css("padding-bottom", "5px");
+        $(span).append(title);
+        $(span).append("<u>You will learn:</u>");
+        var learnList = document.createElement("ul");
+        _.each(module.learn, function(item) {
+            var e = document.createElement("li");
+            e.innerHTML = item;
+
+            $(learnList).append(e);
+        })
+        $(span).append(learnList);
+        return span;
+    }
+
+    self.create = function(modules, onSelectCallback) {
+        var selector = $(".moduleOptions");
+        selector.empty();
+        _.each(modules, function(module) {
+            var m = makeModule(module, onSelectCallback);
+            $(m).on('click', function () {
+                onSelectCallback(module); 
+            });
+            selector.append(m);
+        });
+    }
 
     return self;
 }());

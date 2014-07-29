@@ -12,26 +12,20 @@
         ["tutorial.movement2d_part3", "tutorial.place_blocks"]
     ]
 },
-"module1":{
+"repeat":{
     "nodes": [
-        "tutorial.movement3d",
         "tutorial.arguments",
-        "tutorial.speed_slider",
-        "tutorial.call_1",
-        "tutorial.call_2",
         "tutorial.repeat_1",
         "tutorial.repeat_2",
-        "tutorial.sandbox"
+        "tutorial.speed_slider"
     ],
     "edges": [
-        ["tutorial.movement3d", "tutorial.sandbox"],
-        ["tutorial.speed_slider", "tutorial.sandbox"],
-        ["tutorial.call_1", "tutorial.call_2"],
-        ["tutorial.call_2", "tutorial.sandbox"],
         ["tutorial.arguments", "tutorial.repeat_1"],
         ["tutorial.repeat_1", "tutorial.repeat_2"],
-        ["tutorial.repeat_2", "tutorial.sandbox"]
-    ]
+        ["tutorial.repeat_2", "tutorial.speed_slider"]
+    ],
+    "name": "Meaty Beaty Big and Bouncy",
+    "learn": ["How to use arguments","How to use the repeat block","How to control program speed"]
 }
 }
 

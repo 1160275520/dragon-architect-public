@@ -123,8 +123,3 @@ type PuzzleInfo = {
         // implementation relies on json library to sort keys.
         let text = x.ToJson () |> J.Serialize |> System.Text.Encoding.UTF8.GetBytes
         hash.ComputeHash text |> Util.binaryToHex
-
-type ModuleInfo = {
-    Scenes: Set<int>;
-
-}

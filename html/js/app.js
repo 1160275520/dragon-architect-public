@@ -192,7 +192,7 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
     $('#button_header_levelSelect').on('click', function() {
         // HACK
-        current_puzzle_runner = create_puzzle_runner(game_info.modules["module1"], "module");
+        current_puzzle_runner = create_puzzle_runner(game_info.modules["repeat"], "module");
     });
 
     $('#button_header_save').on('click', function() {
@@ -200,6 +200,14 @@ $(function() {
     });
 
     $('#button_header_sandbox').on('click', setState_sandbox);
+
+    $('#btn-modules').on('click', function() {
+        HackcraftUI.State.goToModuleSelect(function () {
+            HackcraftUI.ModuleSelect.create(game_info.modules, function(module) {
+                current_puzzle_runner = create_puzzle_runner(module, "module");
+            });
+        });
+    });
 
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
