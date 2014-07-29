@@ -35,26 +35,34 @@ var storage = (function() {
 var progress = (function(){
     var self = {};
 
-    var levelsCompleted = [];
-    // load the level progress from this session (if any)
-    if (sessionStorage.getItem("levelsCompleted")) {
-        levelsCompleted = storage.load("levelsCompleted").split(',');
+    var puzzles_completed = [];
+    var library = [];
+
+    self.initialize = function(game_info) {
+        // load the level progress from this session (if any)
+        if (sessionStorage.getItem("puzzles_completed")) {
+            puzzles_completed = storage.load("puzzles_completed").split(',');
+            library = _.unique(_.flatten(_.map(puzzles_completed, function(id) { return game_info.puzzles[id].library.granted; })));
+        }
+    };
+
+    self.mark_puzzle_completed = function(id, puzzle) {
+        if (!_.contains(puzzles_completed, id, puzzle)) {
+            puzzles_completed.push(id);
+            library = _.union(library, puzzle.library.granted);
+            storage.save("puzzles_completed", puzzles_completed.toString());
+        }
     }
 
-    self.is_completed = function(puzzle_id) {
-        return isDevMode || _.contains(levelsCompleted, puzzle_id);
-    }
-
-    self.mark_completed = function(puzzle_id) {
-        levelsCompleted.push(puzzle_id);
-        storage.save("levelsCompleted", levelsCompleted.toString());
+    self.is_puzzle_completed = function(puzzle_id) {
+        return isDevMode || _.contains(puzzles_completed, puzzle_id);
     }
 
     self.is_module_completed = function(module) {
-        return module.nodes.every(function (n) {
-            return self.is_completed(n);
-        });
+        return module.nodes.every(self.is_puzzle_completed);
     }
+
+    self.get_library = function() { return library; }
 
     return self;
 }());
@@ -86,7 +94,7 @@ function create_puzzle_runner(module, sceneSelectType) {
             case "module":
                 // bring up the level select
                 HackcraftUI.State.goToSceneSelect(function() {
-                    HackcraftUI.LevelSelect.create(module, game_info.puzzles, progress.is_completed, function(pid) {
+                    HackcraftUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                         setState_puzzle(pid, "to_puzzle_select");
                     });
                 });
@@ -258,6 +266,8 @@ $(function() {
         Blockly.addChangeListener(onProgramEdit);
 
         console.info('EVERYTHING IS READY!');
+
+        progress.initialize(game_info);
         if (progress.is_module_completed(game_info.modules["tutorial"])) {
             setState_sandbox();
         } else {
@@ -268,14 +278,8 @@ $(function() {
 
 // SPECIFIC HANDLER FUNCTIONS
 
-function add_to_library(name, program) {
-    // TODO check for reserved names (e.g., main)
-    // TODO actually implement this function
-}
-
-function calculate_library(puzzle_info) {
-    var lib = puzzle_info.library;
-    var tools = lib.required.concat(lib.granted);
+function calculate_library(puzzle_lib) {
+    var tools = _.union(puzzle_lib.required, puzzle_lib.granted, progress.get_library());
     if (isDevMode) {
         tools.push('speed_slider');
         tools.push('camera_controls');
@@ -299,7 +303,7 @@ handler.onSandboxStart = function() {
     current_scene = "sandbox";
 
     // HACKHACKAHCKAHCCKCK
-    var current_library = ['move2', 'move3', 'place', 'repeat', 'speed_slider'];
+    var current_library = calculate_library({required:[],granted:[]});
 
     HackcraftBlockly.setLevel(null, current_library);
 
@@ -349,7 +353,7 @@ handler.onPuzzleChange = function(json) {
     }
 
     if (info.is_starting) {
-        var current_library = calculate_library(info.puzzle);
+        var current_library = calculate_library(info.puzzle.library);
 
         HackcraftBlockly.setLevel(info.puzzle, current_library);
 
@@ -405,7 +409,7 @@ handler.onSetColors = function(json) {
 
 // sent the moment they "win" a puzzle
 handler.onPuzzleComplete = function(puzzle_id) {
-    progress.mark_completed(puzzle_id);
+    progress.mark_puzzle_completed(puzzle_id, game_info.puzzles[puzzle_id]);
 
     if (questLogger) {
         questLogger.logPuzzledCompleted();
@@ -414,7 +418,6 @@ handler.onPuzzleComplete = function(puzzle_id) {
 
 // sent when they exit a puzzle
 handler.onPuzzleFinish = function(puzzle_id) {
-    progress.mark_completed(puzzle_id);
     current_puzzle_runner.onPuzzleFinish();
 
     if (questLogger) {
