@@ -307,9 +307,9 @@ handler.onSandboxStart = function() {
 
     HackcraftBlockly.setLevel(null, current_library);
 
+    HackcraftBlockly.clearProgram();
     var storedProgXml = storage.load('sandbox_program');
     if (storedProgXml) {
-        HackcraftBlockly.clearProgram();
         HackcraftBlockly.loadBlocks(storedProgXml);
     }
 
