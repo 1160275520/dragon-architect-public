@@ -36,24 +36,50 @@ var storage = (function() {
     return self;
 }());
 
+var content = (function() {
+    var self = {};
+
+    /** Returns a promise. */
+    self.initialize = function() {
+        game_info = {};
+
+        var qm = Q($.get('content/modules.json'))
+            .then(function(json) {
+                game_info.modules = json;
+            });
+
+        var qs = Q($.get('content/puzzles.json'))
+            .then(function(json) {
+                game_info.puzzles = json;
+                // HACK we want these objects to have id as a property instead of being a mysterious key mapping.
+                _.each(json, function(val, key) {
+                    val.id = key;
+                });
+            });
+
+        return Q.all([qm, qs]);
+    }
+
+    self.puzzles = function() { return _.values(game_info.puzzles); }
+
+    return self;
+}());
+
 var progress = (function(){
     var self = {};
 
     var puzzles_completed = [];
-    var library = [];
 
-    self.initialize = function(game_info) {
+    self.initialize = function() {
         // load the level progress from this session (if any)
         if (sessionStorage.getItem("puzzles_completed")) {
             puzzles_completed = storage.load("puzzles_completed").split(',');
-            library = _.unique(_.flatten(_.map(puzzles_completed, function(id) { return game_info.puzzles[id].library.granted; })));
         }
     };
 
     self.mark_puzzle_completed = function(id, puzzle) {
         if (!_.contains(puzzles_completed, id, puzzle)) {
             puzzles_completed.push(id);
-            library = _.union(library, puzzle.library.granted);
             storage.save("puzzles_completed", puzzles_completed.toString());
         }
     }
@@ -62,11 +88,18 @@ var progress = (function(){
         return isDevMode || _.contains(puzzles_completed, puzzle_id);
     }
 
+    self.completed_puzzles = function() {
+        return _.filter(content.puzzles(), self.is_puzzle_completed);
+    }
+
     self.is_module_completed = function(module) {
         return module.nodes.every(self.is_puzzle_completed);
     }
 
-    self.get_library = function() { return library; }
+    self.get_library = function() {
+        var libs = _.map(self.completed_puzzles(), function(p) { return p.library.granted; });
+        return _.unique(_.flatten(libs));
+    }
 
     return self;
 }());
@@ -176,22 +209,6 @@ $(function() {
         return d.promise;
     }
 
-    function load_content() {
-        game_info = {};
-
-        var qm = Q($.get('content/modules.json'))
-            .then(function(json) {
-                game_info.modules = json;
-            });
-
-        var qs = Q($.get('content/puzzles.json'))
-            .then(function(json) {
-                game_info.puzzles = json;
-            });
-
-        return Q.all([qm, qs]);
-    }
-
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
     $('#button_header_levelSelect').on('click', function() {
@@ -225,7 +242,7 @@ $(function() {
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
-    var promise_content = load_content();
+    var promise_content = content.initialize();
     var promise_unity = initialize_unity();
     var promise_blockly = HackcraftBlockly.init();
 
@@ -293,7 +310,7 @@ $(function() {
 
         console.info('EVERYTHING IS READY!');
 
-        progress.initialize(game_info);
+        progress.initialize();
         if (progress.is_module_completed(game_info.modules["tutorial"])) {
             setState_sandbox();
         } else {
