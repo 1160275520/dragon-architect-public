@@ -10,7 +10,12 @@ public class Sandbox : MonoBehaviour {
         progman.Manipulator.CreateProcedure("MAIN");
         GetComponent<ExternalAPI>().NotifyOfSandbox();
 
+        // if we don't do this, the program manager will just clear the grid immediately
+        // TODO consider making a really unintuitive hack like this unecessary
+        EAPI_SetWorkshopMode("false");
+
         var worldData = FindObjectOfType<Global>().SandboxWorldData;
+        Debug.Log(worldData);
         if (worldData != null) {
             var blocks = Hackcraft.ImmArr.ofArray(Hackcraft.Grid.decodeFromString(worldData));
             GetComponent<Grid>().SetGrid(blocks);
