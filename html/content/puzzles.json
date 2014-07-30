@@ -68,16 +68,16 @@
         },
         "logging_id": 23
     },
-    "tutorial.arguments":{
+    "repeat.arguments":{
         "name": "Using Arguments",
         "component": "PuzMovementArgs",
         "library": {
-            "required": [],
+            "required": ["move2", "place"],
             "granted": []
         },
         "logging_id": 24
     },
-    "tutorial.speed_slider": {
+    "repeat.speed_slider": {
         "name": "Speed Slider",
         "component": "PuzSpeedSlider",
         "library": {
@@ -86,56 +86,32 @@
         },
         "logging_id": 25
     },
-    "tutorial.call_1": {
-        "name": "Calling Procedures",
-        "component": "PuzCall",
+    "repeat.repeat_fixedProgram": {
+        "name": "A Bit of Repeat",
+        "component": "PuzRepeatFixedProgram",
         "library": {
             "required": ["move2", "place"],
-            "granted": ["call"]
-        },
-        "tutorial": {
-            "highlighted": ["procedures_callnoreturn"]
+            "granted": ["repeat"]
         },
         "logging_id": 26
     },
-    "tutorial.call_2": {
-        "name": "Calling More Procedures",
-        "component": "PuzCall2",
+    "repeat.repeat_fixedLoops": {
+        "name": "Nested Repeats",
+        "component": "PuzRepeatFixedLoops",
         "library": {
-            "required": ["move2", "place", "call"],
+            "required": ["move2", "place", "repeat"],
             "granted": []
         },
         "logging_id": 27
     },
-    "tutorial.repeat_1": {
-        "name": "Loops",
-        "component": "PuzRepeat",
+    "repeat.repeat_101Blocks": {
+        "name": "101 Blocks",
+        "component": "PuzRepeat101Blocks",
         "library": {
-            "required": ["move2", "place", "call"],
-            "granted": ["repeat"]
-        },
-        "tutorial": {
-            "highlighted": ["controls_repeat"]
+            "required": ["move2", "place", "repeat"],
+            "granted": []
         },
         "logging_id": 28
-    },
-    "tutorial.repeat_2": {
-        "name": "More Loops",
-        "component": "PuzRepeat2",
-        "library": {
-            "required": ["move2", "place", "call", "repeat"],
-            "granted": []
-        },
-        "logging_id": 29
-    },
-    "tutorial.sandbox": {
-        "name": "~ Free Play Mode ~",
-        "component": "PuzFinal",
-        "library": {
-            "required": ["move2", "place", "call", "repeat"],
-            "granted": []
-        },
-        "logging_id": 30
     }
 }
 

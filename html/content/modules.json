@@ -14,15 +14,18 @@
 },
 "repeat":{
     "nodes": [
-        "tutorial.arguments",
-        "tutorial.repeat_1",
-        "tutorial.repeat_2",
-        "tutorial.speed_slider"
+        "repeat.arguments",
+        "repeat.repeat_fixedProgram",
+        "repeat.repeat_fixedLoops",
+        "repeat.repeat_101Blocks",
+        "repeat.speed_slider"
     ],
     "edges": [
-        ["tutorial.arguments", "tutorial.repeat_1"],
-        ["tutorial.repeat_1", "tutorial.repeat_2"],
-        ["tutorial.repeat_2", "tutorial.speed_slider"]
+        ["repeat.arguments", "repeat.repeat_fixedProgram"],
+        ["repeat.arguments", "repeat.repeat_fixedLoops"],
+        ["repeat.repeat_fixedProgram", "repeat.repeat_101Blocks"],
+        ["repeat.repeat_fixedLoops", "repeat.repeat_101Blocks"],
+        ["repeat.repeat_101Blocks", "repeat.speed_slider"]
     ],
     "name": "Meaty Beaty Big and Bouncy",
     "learn": ["How to use arguments","How to use the repeat block","How to control program speed"]
