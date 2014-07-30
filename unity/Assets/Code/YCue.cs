@@ -6,6 +6,15 @@ public class YCue : MonoBehaviour
 {
     public Material lineMat;
 
+    // cached component references
+    private RobotController robot;
+    private Grid grid;
+
+    void Awake() {
+        robot = FindObjectOfType<RobotController>();
+        grid = FindObjectOfType<Grid>();
+    }
+
     // Use this for initialization
     void Start() {
         LineRenderer lineRenderer = gameObject.AddComponent<LineRenderer>();
@@ -16,8 +25,6 @@ public class YCue : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        var grid = FindObjectOfType<Grid>();
-        var robot = FindObjectOfType<RobotController>();
         var robotPos = robot.transform.position;
         var yPos = 0.1f;
         for (int i = 0; i <= robot.Robot.Position.Y; i++) {

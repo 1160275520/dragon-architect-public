@@ -18,6 +18,13 @@ public class RobotController : MonoBehaviour {
     // used by coroutines to detect when a new SetRobot has been called so they can stop running once invalid.
     private long counter = 0;
 
+    // cached component references
+    private Grid grid;
+
+    void Awake() {
+        grid = FindObjectOfType<Grid>();
+    }
+
 	// Use this for initialization
 	void Start () {
         Reset();
@@ -62,18 +69,22 @@ public class RobotController : MonoBehaviour {
     }
 
     public void SetRobot(IRobot robot, Command com, float secondsPerCommand) {
+        Profiler.BeginSample("RobotController.SetRobot");
         // increment the counter to kill off the other coroutines
         counter++;
 
+        Profiler.BeginSample("RobotController.SetRobot.resetPosition");
         // immediately teloport to "old" position so animations start from correct spot
         if (Robot != null) {
-            transform.position = FindObjectOfType<Grid>().CenterOfCell(Robot.Position);
+            transform.position = grid.CenterOfCell(Robot.Position);
             transform.rotation = getRotation();
         }
+        Profiler.EndSample();
 
         Robot = robot;
 
         if (secondsPerCommand > MIN_ANIMATION_TIME && com != null) {
+            Profiler.BeginSample("RobotController.SetRobot.setAnim");
             // if time is large enough, animmate the robot going to the new position
             var anim = transform.FindChild("dragon_improved").gameObject.animation;
             switch (com.Type) {
@@ -98,11 +109,15 @@ public class RobotController : MonoBehaviour {
                     StartCoroutine(rotateRobot(90, secondsPerCommand, counter));
                     break;
             }
+            Profiler.EndSample();
         } else {
+            Profiler.BeginSample("RobotController.SetRobot.setImmediate");
             // otherwise just teleport the robot there
-	        transform.position = FindObjectOfType<Grid>().CenterOfCell(Robot.Position);
+	        transform.position = grid.CenterOfCell(Robot.Position);
 	        transform.rotation = getRotation();
+            Profiler.EndSample();
         }
+        Profiler.EndSample();
     }
 
     private Quaternion getRotation() {

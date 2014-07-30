@@ -138,6 +138,8 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void EAPI_RequestWorldState(string ignored) {
-        SendWorldState(Hackcraft.Grid.encodeToString(GetComponent<Grid>().AllCells));
+        var blocks = GetComponent<Grid>().AllCells;
+        Debug.Log("Saving! num blocks: " + blocks.Length.ToString());
+        SendWorldState(Hackcraft.Grid.encodeToString(blocks));
     }
 }

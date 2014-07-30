@@ -33,11 +33,16 @@ public class ProgramManager : MonoBehaviour {
     private LazyProgramRunner lazyProgramRunner;
     private Simulator.StepState currentState;
 
+    // cached component references
+    private RobotController robot;
+
     void Awake() {
         // HACK need max proc length for historical purposes, but doesn't actually do anything
         Manipulator = new ImperativeAstManipulator(100);
         EditMode = EditMode.Workshop;
         TicksPerStep = 30;
+
+        robot = FindObjectOfType<RobotController>();
     }
     
     void Start () {
@@ -53,8 +58,7 @@ public class ProgramManager : MonoBehaviour {
                 // use the current grid as the initial state
                 var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
                 // just use wherever the robot current is as the initial state
-                var robot = FindObjectOfType<RobotController>().Robot;
-                lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot);
+                lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
             } break;
             case EditMode.Workshop:
                 EvalEntireProgram();
@@ -98,15 +102,16 @@ public class ProgramManager : MonoBehaviour {
     }
 
     private void setGameState(Simulator.StepState state, float transitionTimeSeconds) {
+        Profiler.BeginSample("ProgramManager.setGameState");
         if (!state.Equals(currentState)) {
             currentState = state;
-            var robot = FindObjectOfType<RobotController>();
             var grid = GetComponent<Grid>();
             robot.SetRobot(state.Robot, state.Command, transitionTimeSeconds);
             grid.SetGrid(state.Grid);
             lastExecuted = state.LastExecuted;
             GetComponent<ExternalAPI>().SendCurrentStatement();
         }
+        Profiler.EndSample();
     }
 
 #if false
@@ -137,7 +142,6 @@ public class ProgramManager : MonoBehaviour {
 
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
-            var robot = FindObjectOfType<RobotController>();
             var grid = GridStateTracker.Empty();
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
@@ -152,6 +156,7 @@ public class ProgramManager : MonoBehaviour {
     }
 
 	void Update () {
+        Profiler.BeginSample("ProgramManager.Update.CalculateTicks");
         var oldTicks = (int)totalTicks;
         if (RunState == RunState.Executing) {
             totalTicks += Time.deltaTime * TicksPerSecond;
@@ -168,16 +173,22 @@ public class ProgramManager : MonoBehaviour {
             }
             lastStatementExecutionTime = Time.time;
         }
+        Profiler.EndSample();
 
         switch (EditMode) {
             case EditMode.Persistent: {
                 if (RunState == RunState.Executing) {
                     for (var i = 0; i < stepsPassed; i++) {
+                        Profiler.BeginSample("ProgramManager.Update.GetGrid");
                         var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
+                        Profiler.EndSample();
                         if (lazyProgramRunner.IsDone) {
                             RunState = RunState.Stopped;
                         } else {
-                            setGameState(lazyProgramRunner.UpdateOneStep(grid), dt);
+                            Profiler.BeginSample("ProgramManager.Update.ProgramStep");
+                            var state = lazyProgramRunner.UpdateOneStep(grid);
+                            Profiler.EndSample();
+                            setGameState(state, dt);
                         }
                     }
                 }

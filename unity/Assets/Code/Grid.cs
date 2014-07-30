@@ -20,8 +20,11 @@ public class Grid : MonoBehaviour {
     // just kept around to make AllCells and serialization work for now
     private ImmArr<KeyValuePair<IntVec3, int>> state;
 
+    // cached component references
+    private RobotController robot;
+    private GridMarker marker;
+
     public Vector3 CenterOfCell(IntVec3 idx) {
-        var marker = Component.FindObjectOfType<GridMarker>();
         var origin = marker.transform.position;
         var scale = marker.CellSize * Vector3.one;
         return origin + Vector3.Scale(scale, new Vector3(idx.X + 0.5f, idx.Y + 0.5f, idx.Z + 0.5f));
@@ -41,6 +44,18 @@ public class Grid : MonoBehaviour {
             }
         }
     }
+
+    void Awake() {
+        robot = FindObjectOfType<RobotController>();
+        marker = FindObjectOfType<GridMarker>();
+    }
+
+	// Use this for initialization
+	void Start() {
+        grid = new Dictionary<IntVec3, GameObject>();
+        state = ImmArr.empty<KeyValuePair<IntVec3,int>>();
+        offset = new IntVec3(GRID_SIZE / 2, GRID_SIZE / 2, GRID_SIZE / 2);
+	}
 
     public KeyValuePair<IntVec3,int>[] AllCells {
         get {
@@ -76,26 +91,37 @@ public class Grid : MonoBehaviour {
     }
 
     public void SetGrid(ImmArr<KeyValuePair<IntVec3,int>> state) {
+        Profiler.BeginSample("Grid.SetGrid");
         this.state = state;
+        Profiler.BeginSample("Grid.SetGrid.calculateChange");
         var set = new HashSet<IntVec3>(state.Select(x => x.Key));
         var toRemove = new List<IntVec3>();
-        var prefab = FindObjectOfType<RobotController>().HeldPrefab;
+        var prefab = robot.HeldPrefab;
         foreach (var kvp in grid) {
             var idx = kvp.Key - offset;
             if (!set.Contains(idx)) {
                 toRemove.Add(idx);
             }
         }
+        Profiler.EndSample();
+
+        Profiler.BeginSample("Grid.SetGrid.addObjects");
         foreach (var idx in state) {
             AddObject(idx.Key, prefab);
         }
+        Profiler.EndSample();
+        Profiler.BeginSample("Grid.SetGrid.removeObjects");
         foreach (var idx in toRemove) {
             RemoveObject(idx);
         }
+        Profiler.EndSample();
+        Profiler.BeginSample("Grid.SetGrid.assignCubeValues");
         foreach (var kvp in state) {
             var obj = this[kvp.Key];
             obj.GetComponent<Cube>().CubeId = kvp.Value;
         }
+        Profiler.EndSample();
+        Profiler.EndSample();
     }
 
     public void Undo() {
@@ -118,15 +144,4 @@ public class Grid : MonoBehaviour {
     public void ResetUndo() {
         additions.Clear();
     }
-
-	// Use this for initialization
-	void Start() {
-        grid = new Dictionary<IntVec3, GameObject>();
-        state = ImmArr.empty<KeyValuePair<IntVec3,int>>();
-        offset = new IntVec3(GRID_SIZE / 2, GRID_SIZE / 2, GRID_SIZE / 2);
-	}
-	
-	// Update is called once per frame
-	void Update() {
-	}
 }

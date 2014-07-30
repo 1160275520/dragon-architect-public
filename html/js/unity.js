@@ -56,6 +56,7 @@ module.Call = (function() {
 
     self.set_program = function(prog) {
         var s = JSON.stringify(prog);
+        console.log(s);
         send_message("System", "EAPI_SetProgramFromJson", s);
     }
 

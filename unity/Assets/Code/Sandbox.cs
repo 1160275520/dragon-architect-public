@@ -15,7 +15,6 @@ public class Sandbox : MonoBehaviour {
         EAPI_SetWorkshopMode("false");
 
         var worldData = FindObjectOfType<Global>().SandboxWorldData;
-        Debug.Log(worldData);
         if (worldData != null) {
             var blocks = Hackcraft.ImmArr.ofArray(Hackcraft.Grid.decodeFromString(worldData));
             GetComponent<Grid>().SetGrid(blocks);
