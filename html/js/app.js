@@ -89,7 +89,7 @@ var progress = (function(){
     }
 
     self.completed_puzzles = function() {
-        return _.filter(content.puzzles(), self.is_puzzle_completed);
+        return _.filter(content.puzzles(), function(p) { return self.is_puzzle_completed(p.id); });
     }
 
     self.is_module_completed = function(module) {
@@ -324,12 +324,7 @@ $(function() {
 // SPECIFIC HANDLER FUNCTIONS
 
 function calculate_library(puzzle_lib) {
-    var tools = _.union(puzzle_lib.required, puzzle_lib.granted, progress.get_library());
-    if (isDevMode) {
-        tools.push('speed_slider');
-        tools.push('camera_controls');
-    }
-    return tools;
+    return _.union(puzzle_lib.required, puzzle_lib.granted, progress.get_library());
 }
 
 handler.onTitleButtonClicked = function(button) {
@@ -356,7 +351,6 @@ function start_editor(info) {
         var current_library = calculate_library(info.puzzle.library);
 
         HackcraftBlockly.setLevel(info.puzzle, current_library);
-
         HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
         HackcraftUI.CameraControls.setVisible(current_library);
 
