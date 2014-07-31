@@ -278,7 +278,7 @@ Renderer:
     type: 2}
   m_PrefabInternal: {fileID: 553391658}
   m_GameObject: {fileID: 348876642}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_LightmapIndex: 255
@@ -311,7 +311,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!114 &348876646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,7 +433,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 34fb5911770e50444bde7b6bb8ef8e43, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 34fb5911770e50444bde7b6bb8ef8e43, type: 2}
@@ -911,7 +911,7 @@ Transform:
   m_LocalScale: {x: .100000001, y: 1, z: .100000001}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!114 &1483769471
 MonoBehaviour:
   m_ObjectHideFlags: 0
