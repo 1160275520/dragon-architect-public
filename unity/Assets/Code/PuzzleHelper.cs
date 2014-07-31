@@ -28,6 +28,25 @@ public class PuzzleHelper : MonoBehaviour
         }
     }
 
+    void Start() {
+        var global = FindObjectOfType<Global>();
+        var worldOp = global.CurrentPuzzle.WorldData;
+        if (OptionModule.IsSome(worldOp)) {
+            var world = worldOp.Value;
+            var blocks = Hackcraft.ImmArr.ofArray(world.Blocks);
+            // only set world if there are a non-zero number of blocks,
+            // since puzzles may be using this to set the robot but setting their own blocks in a component
+            // if not, then the blocks default to empty anyway.
+            if (blocks.Length > 0) {
+                GetComponent<Grid>().SetGrid(blocks);
+            }
+            if (world.Robots.Length > 0) {
+                var d = world.Robots[0];
+                FindObjectOfType<RobotController>().SetRobot(new Hackcraft.Robot.BasicImperativeRobot(d.Position, d.Direction), null, 0.0f);
+            }
+        }
+    }
+
     public void SetInstructions(string summary, string detail) {
         var global = FindObjectOfType<Global>();
         global.CurrentPuzzle = global.CurrentPuzzle.UpdateInstructions(new Scene.Instructions(summary, detail));
