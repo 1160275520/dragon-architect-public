@@ -91,7 +91,12 @@ module World =
                 KeyValuePair (cell, block)
             )
         | "json" ->
-            Array.empty
+            let blocks = jload json "data" J.arrayToArray
+            blocks |> Array.map (fun b ->
+                let cell = jload b "pos" decodeVec
+                let block = jload b "blk" J.asInt
+                KeyValuePair (cell, block)
+            )
         // TODO throw a better error here
         | s -> invalidArg "json" (sprintf "invalid block encoding type '%s'" s)
 
@@ -121,15 +126,17 @@ module World =
 
     let encodeToString data = (encodeToJson data).Serialize ()
 
+    let decodeFromJsonNoMeta json =
+        {
+            Blocks = defaultArg (tryJload json "blocks" decodeBlocks) Array.empty;
+            Robots = defaultArg (tryJload json "robots" J.arrayToArray) Array.empty |> Array.map decodeRobot;
+        }
+
     /// Decode a blocks from a stream. Closes the stream when finished.
     let decodeFromJson json =
         let meta = J.getField json "meta"
         if jload meta "version" J.asInt <> ENCODE_VERSION then invalidArg "json" "invalid version!"
         if jload meta "type" J.asString <> ENCODE_TYPE then invalidArg "json" "invalid data type!"
-
-        {
-            Blocks = defaultArg (tryJload json "blocks" decodeBlocks) Array.empty;
-            Robots = defaultArg (tryJload json "robots" J.arrayToArray) Array.empty |> Array.map decodeRobot;
-        }
+        decodeFromJsonNoMeta json
 
     let decodeFromString str = J.Parse str |> decodeFromJson
