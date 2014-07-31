@@ -278,7 +278,7 @@ Renderer:
     type: 2}
   m_PrefabInternal: {fileID: 553391658}
   m_GameObject: {fileID: 348876642}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_LightmapIndex: 255
@@ -434,6 +434,10 @@ Prefab:
     - target: {fileID: 400000, guid: 34fb5911770e50444bde7b6bb8ef8e43, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 34fb5911770e50444bde7b6bb8ef8e43, type: 2}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 34fb5911770e50444bde7b6bb8ef8e43, type: 2}
