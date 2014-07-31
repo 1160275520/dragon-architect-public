@@ -343,56 +343,11 @@ handler.onTitleButtonClicked = function(button) {
     }
 }
 
-// TODO remove duplicate code from this an onPuzzleChange
-handler.onSandboxStart = function() {
-    current_scene = "sandbox";
+var PUZZLE_FORMAT_VERSION = 1;
 
-    // HACKHACKAHCKAHCCKCK
-    var current_library = calculate_library({required:[],granted:[]});
+function start_editor(info) {
 
-    HackcraftBlockly.setLevel(null, current_library);
-
-    HackcraftBlockly.clearProgram();
-    var storedProgXml = storage.load('sandbox_program');
-    if (storedProgXml) {
-        HackcraftBlockly.loadBlocks(storedProgXml);
-    }
-
-    HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
-
-    HackcraftBlockly.history = [];
-    // reset run button
-    is_running = false;
-    HackcraftUI.RunButton.update(is_running, is_workshop_mode);
-    HackcraftUI.PauseButton.update(is_running, is_paused);
-
-    // reset program execution speed, because the scene reload will have made Unity forget
-    HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
-
-    // clear old quest logger if it exists
-    if (questLogger) {
-        questLogger.logQuestEnd();
-        questLogger = null;
-    }
-
-    HackcraftUI.Instructions.show({summary:"Let's build something cool! Click [picture of button] to learn new code.", detail:""});
-
-    // default to persistent mode
-    is_workshop_mode = false;
-    HackcraftUI.ModeButton.update(is_workshop_mode);
-    HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
-
-    // TODO log this
-}
-
-handler.onPuzzleChange = function(json) {
-    current_scene = "puzzle";
-
-    console.log(json);
-    var info = JSON.parse(json);
-
-    var VERSION = 1;
-    if (info.puzzle.version !== VERSION) {
+    if (info.puzzle.version !== PUZZLE_FORMAT_VERSION) {
         console.error("Invalid puzzle info version '" + info.puzzle.version + "'!");
         return;
     }
@@ -429,6 +384,12 @@ handler.onPuzzleChange = function(json) {
             case "preserve":
                 // want to leave the old program, so do nothing!
                 break;
+            case "xml":
+                HackcraftBlockly.clearProgram();
+                if (info.puzzle.program.value) {
+                    HackcraftBlockly.loadBlocks(info.puzzle.program.value);
+                }
+                break;
             default:
                 console.error("Unknown program type '" + info.puzzle.program.type + "'!");
                 break;
@@ -436,6 +397,36 @@ handler.onPuzzleChange = function(json) {
     }
 
     HackcraftUI.Instructions.show(info.puzzle.instructions);
+}
+
+// TODO remove duplicate code from this an onPuzzleChange
+handler.onSandboxStart = function() {
+    current_scene = "sandbox";
+
+    var info = {
+        checksum: 0,
+        is_starting: true,
+        puzzle: {
+            version: PUZZLE_FORMAT_VERSION,
+            logging_id: 11,
+            library: {required:[],granted:[]},
+            program: {type: 'xml', value: storage.load('sandbox_program')},
+            instructions: {summary:"Let's build something cool! Click [picture of button] to learn new code.", detail:""}
+        }
+    };
+
+    start_editor(info);
+
+    // default to persistent mode
+    is_workshop_mode = false;
+    HackcraftUI.ModeButton.update(is_workshop_mode);
+    HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
+}
+
+handler.onPuzzleChange = function(json) {
+    console.log('starting puzzle ' + json);
+    current_scene = "puzzle";
+    start_editor(JSON.parse(json));
 };
 
 handler.onStatementHighlight = function(id) {
