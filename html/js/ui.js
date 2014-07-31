@@ -352,6 +352,17 @@ module.PauseButton = (function() {
     return self;
 }());
 
+module.CameraControls = (function() {
+    var self = {};
+
+    self.setVisible = function(components) {
+        var isRotate = _.contains(components, 'camera_rotate');
+        $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
+    }
+
+    return self;
+}());
+
 module.SpeedSlider = (function() {
     var self = {};
 

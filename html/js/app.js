@@ -358,6 +358,7 @@ function start_editor(info) {
         HackcraftBlockly.setLevel(info.puzzle, current_library);
 
         HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
+        HackcraftUI.CameraControls.setVisible(current_library);
 
         HackcraftBlockly.history = [];
         // reset run button

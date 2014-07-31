@@ -118,7 +118,7 @@
         "component": "PuzRotate",
         "library": {
             "required": ["move2", "place", "up", "down"],
-            "granted": []
+            "granted": ["camera_rotate"]
         },
         "logging_id": 35
     },
