@@ -46,14 +46,15 @@ document.write('<script type="text/javascript" src="generated/' +
 HackcraftBlockly.Commands = {"move2" :  '<block type="Forward"></block> \
                                   <block type="Left"></block> \
                                   <block type="Right"></block>',
-                      "move3" :  '<block type="Up"></block> \
-                                  <block type="Down"></block>',
+                      "up" :  '<block type="Up"></block>',
+                      "down":  '<block type="Down"></block>',
                       "place" :  '<block type="PlaceBlock"></block>',
+                      "remove" : '<block type="RemoveBlock"></block>',
                       "line" :   '<block type="Line"></block>',
                       "repeat" : '<block type="controls_repeat"></block>'};
 
 HackcraftBlockly.makeCounter = function() {
-    var blocksLeft = Blockly.mainWorkspace.maxBlocks - Blockly.mainWorkspace.getAllBlocks().length;
+    var blocksLeft = Blockly.mainWorkspace.remainingCapacity();
     var counter = $("#statement-counter")[0];
     if (blocksLeft < 5) {
         counter.innerHTML = blocksLeft + " blocks left.";

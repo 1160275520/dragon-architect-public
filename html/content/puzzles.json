@@ -57,7 +57,7 @@
         "logging_id": 22
     },
     "tutorial.place_blocks": {
-        "name": "Placing Blocks",
+        "name": "Placing Cubes",
         "component": "PuzPlacement",
         "library": {
             "required": ["move2"],
@@ -67,6 +67,60 @@
             "highlighted": ["PlaceBlock"]
         },
         "logging_id": 23
+    },
+    "remove.remove_blocks":{
+        "name": "Removing Cubes",
+        "component": "PuzRemove",
+        "library": {
+            "required": ["move2", "place"],
+            "granted": ["remove"]
+        },
+        "tutorial": {
+            "highlighted": ["RemoveBlock"]
+        },
+        "logging_id": 29
+    },
+    "up.what_is_up":{
+        "name": "What is Up?",
+        "component": "PuzWhatIsUp",
+        "library": {
+            "required": ["move2"],
+            "granted": ["up"]
+        },
+        "tutorial": {
+            "highlighted": ["Up"]
+        },
+        "logging_id": 30
+    },
+    "up.what_is_down":{
+        "name": "What is Down?",
+        "component": "PuzWhatIsDown",
+        "library": {
+            "required": ["move2"],
+            "granted": ["down"]
+        },
+        "tutorial": {
+            "highlighted": ["Down"]
+        },
+        "logging_id": 33
+    },
+    "up.bridge":{
+        "name": "Building a Bridge",
+        "component": "PuzBridge",
+        "library": {
+            "required": ["move2", "place", "up", "down"],
+            "granted": []
+        },
+        "logging_id": 34
+    },
+    "up.rotate_camera":{
+        "name": "A New Perspective",
+        "component": "PuzRotate",
+        "library": {
+            "required": ["move2", "place", "up", "down"],
+            "granted": []
+        },
+        "logging_id": 35
     },
     "repeat.arguments":{
         "name": "Using Arguments",
@@ -93,6 +147,9 @@
             "required": ["move2", "place"],
             "granted": ["repeat"]
         },
+        "tutorial": {
+            "highlighted": ["controls_repeat"]
+        },
         "logging_id": 26
     },
     "repeat.repeat_fixedLoops": {
@@ -105,7 +162,7 @@
         "logging_id": 27
     },
     "repeat.repeat_101Blocks": {
-        "name": "101 Blocks",
+        "name": "101 Cubes",
         "component": "PuzRepeat101Blocks",
         "library": {
             "required": ["move2", "place", "repeat"],

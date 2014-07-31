@@ -112,7 +112,6 @@ Blockly.UnityJSON['Down'] = function(block) {
 
 // PLACEBLOCK
 Blockly.Blocks['PlaceBlock'] = {
-  // Block for moving placeblock.
     init: function() {
         this.setColour(35);
         this.appendDummyInput()
@@ -125,6 +124,21 @@ Blockly.Blocks['PlaceBlock'] = {
 
 Blockly.UnityJSON['PlaceBlock'] = function(block) {
     return {"args":[{"type":"literal", "value":block.getFieldValue("VALUE")}],"meta":{"id":Number(block.id)},"proc":"PlaceBlock","type":"call"};
+};
+
+// REMOVEBLOCK
+Blockly.Blocks['RemoveBlock'] = {
+    init: function() {
+        this.setColour(35);
+        this.appendDummyInput()
+            .appendField("remove block")
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+    }
+};
+
+Blockly.UnityJSON['RemoveBlock'] = function(block) {
+    return {"args":[],"meta":{"id":Number(block.id)},"proc":"RemoveBlock","type":"call"};
 };
 
 // FORWARD

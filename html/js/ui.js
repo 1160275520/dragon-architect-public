@@ -87,7 +87,7 @@ module.ModuleSelect = (function() {
         $(title).css("font-weight", "700");
         $(title).css("padding-bottom", "5px");
         $(span).append(title);
-        $(span).append("<u>You will learn:</u>");
+        $(span).append("<u>You will learn how to:</u>");
         var learnList = document.createElement("ul");
         _.each(module.learn, function(item) {
             var e = document.createElement("li");
@@ -103,11 +103,13 @@ module.ModuleSelect = (function() {
         var selector = $(".moduleOptions");
         selector.empty();
         _.each(modules, function(module) {
-            var m = makeModule(module, onSelectCallback);
-            $(m).on('click', function () {
-                onSelectCallback(module); 
-            });
-            selector.append(m);
+            if (module.name) {
+                var m = makeModule(module, onSelectCallback);
+                $(m).on('click', function () {
+                    onSelectCallback(module); 
+                });
+                selector.append(m);
+            }
         });
     }
 

@@ -12,6 +12,27 @@
         ["tutorial.movement2d_part3", "tutorial.place_blocks"]
     ]
 },
+"remove":{
+    "nodes": ["remove.remove_blocks"],
+    "edge": [],
+    "name": "To Err is Dragon",
+    "learn": ["Remove cubes"]
+},
+"up":{
+    "nodes": [
+        "up.what_is_up",
+        "up.what_is_down",
+        "up.bridge",
+        "up.rotate_camera"
+    ],
+    "edges": [
+        ["up.what_is_up", "up.bridge"],
+        ["up.what_is_down", "up.bridge"],
+        ["up.bridge", "up.rotate_camera"]
+    ],
+    "name": "Up, Up and Away",
+    "learn": ["Move upwards", "Move downwards", "Rotate the view"]
+},
 "repeat":{
     "nodes": [
         "repeat.arguments",
@@ -28,7 +49,7 @@
         ["repeat.repeat_101Blocks", "repeat.speed_slider"]
     ],
     "name": "Meaty Beaty Big and Bouncy",
-    "learn": ["How to use arguments","How to use the repeat block","How to control program speed"]
+    "learn": ["Use arguments","Repeat code many times","Control program speed"]
 }
 }
 
