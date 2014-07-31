@@ -139,7 +139,14 @@ public class ExternalAPI : MonoBehaviour
 
     public void EAPI_RequestWorldState(string ignored) {
         var blocks = GetComponent<Grid>().AllCells;
+        var robot = FindObjectOfType<RobotController>().Robot;
+        var robots = new List<RobotData>();
+        if (robot != null) {
+            robots.Add(World.dataOfRobot(robot));
+        }
+        var world = new WorldData(blocks, robots.ToArray());
+
         Debug.Log("Saving! num blocks: " + blocks.Length.ToString());
-        SendWorldState(Hackcraft.Grid.encodeToString(blocks));
+        SendWorldState(World.encodeToString(world));
     }
 }

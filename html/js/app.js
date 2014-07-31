@@ -471,7 +471,7 @@ handler.onWorldDataChunkSend = function(chunk) {
 }
 
 handler.onWorldDataEnd = function() {
-    //console.info(world_data);
+    console.info(world_data);
     storage.save('sandbox_world_data', world_data);
 }
 

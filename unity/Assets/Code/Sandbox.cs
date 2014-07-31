@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;
+using Hackcraft;
 
 public class Sandbox : MonoBehaviour {
 
@@ -16,8 +16,13 @@ public class Sandbox : MonoBehaviour {
 
         var worldData = FindObjectOfType<Global>().SandboxWorldData;
         if (worldData != null) {
-            var blocks = Hackcraft.ImmArr.ofArray(Hackcraft.Grid.decodeFromString(worldData));
+            var world = World.decodeFromString(worldData);
+            var blocks = Hackcraft.ImmArr.ofArray(world.Blocks);
             GetComponent<Grid>().SetGrid(blocks);
+            if (world.Robots.Length > 0) {
+                var d = world.Robots[0];
+                FindObjectOfType<RobotController>().SetRobot(new Hackcraft.Robot.BasicImperativeRobot(d.Position, d.Direction), null, 0.0f);
+            }
         }
 	}
 	

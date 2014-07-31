@@ -63,16 +63,17 @@
     <Compile Include="Json.fs" />
     <Compile Include="Math.fs" />
     <Compile Include="Collections.fs" />
-    <Compile Include="Scene.fs" />
     <Compile Include="Ast.fs" />
     <Compile Include="AstManipulator.fs" />
     <Compile Include="Serialization.fs" />
     <Compile Include="Grid.fs" />
     <Compile Include="Robot.fs" />
     <Compile Include="Simulator.fs" />
-    <Compile Include="World.fs" />
     <FilesToCopy Include="$(OutputPath)$(AssemblyName).dll" />
     <FilesToCopy Include="$(OutputPath)FSharp.Core.dll" />
+    <Compile Include="World.fs" />
+    <Compile Include="Scene.fs" />
+    <Compile Include="Runner.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

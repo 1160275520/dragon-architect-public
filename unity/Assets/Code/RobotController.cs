@@ -27,7 +27,11 @@ public class RobotController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Reset();
+        // check if the robot is still null here before resetting, in case sandbox/puzzle set the robot for us
+        // TODO find a system with less bulls@$# initialization procedures.
+        if (Robot == null) {
+            Reset();
+        }
     }
 
     public void Reset() {

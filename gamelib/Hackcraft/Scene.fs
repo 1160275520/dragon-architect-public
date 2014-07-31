@@ -88,6 +88,7 @@ type PuzzleInfo = {
     Tutorial: Tutorial option;
     Instructions: Instructions option;
     StartingProgram: Program option;
+    WorldData: WorldData option;
 } with
     // need to produce the json with and without the checksum so the checksum can actually be computed
     member x.ToJson () =
@@ -111,6 +112,7 @@ type PuzzleInfo = {
             Tutorial = tryJload j "tutorial" Tutorial.Parse;
             Instructions = tryJload j "instructions" Instructions.Parse;
             StartingProgram = tryJload j "program" Program.Parse;
+            WorldData = tryJload j "world" World.decodeFromJson;
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}
