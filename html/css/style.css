@@ -97,7 +97,11 @@ header h1 {
     display: flex;
     align-items: center;
     height: 75px;
-    padding: 10px;
+    padding: 5px;
+}
+
+.game-controls-bar > * {
+    margin: 5px;
 }
 
 .game-control {
@@ -155,12 +159,15 @@ header h1 {
     margin: 0 7px;
 }
 
-.control-icon-btn {
+.control-btn, .control-icon-btn {
     display: inline-block;
-    width: 40px;
     height: 40px;
     border: 2px solid black;
     border-radius: 4px;
+}
+
+.control-icon-btn {
+    width: 40px;
     margin: 5px 5px 5px 0;
 }
 
@@ -192,18 +199,10 @@ header h1 {
 /* */
 /************************************************************/
 
-.titleScreen, .selector-puzzle {
+.selector-puzzle {
     margin: 30px;
     border: 1px solid black;
     padding: 30px;
-}
-
-/* TODO pick a non-crap styling for these things */
-.titleScreen *, .selector-puzzle h2, .selector-puzzle > button {
-    text-align: center;
-    margin: 20px auto;
-    padding: 10px;
-    display: block;
 }
 
 #languageMenu {
@@ -528,7 +527,6 @@ p.instructions {
 
 .tick { 
     position: relative;
-    text-align:center;
     font-family: "Ubuntu Mono";
     font-weight: bold;
 }
