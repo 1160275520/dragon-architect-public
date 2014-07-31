@@ -44,18 +44,6 @@
             "detail": "Add a <object data=\"media/blockSvgs/right.svg\" style=\"vertical-align:middle\"></object> to my program and click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object>."
         }
     },
-    "tutorial.movement3d": {
-        "name": "3D Movement",
-        "component": "PuzMovement3D",
-        "library": {
-            "required": ["move2"],
-            "granted": ["move3"]
-        },
-        "tutorial": {
-            "highlighted": ["Up"]
-        },
-        "logging_id": 22
-    },
     "tutorial.place_blocks": {
         "name": "Placing Cubes",
         "component": "PuzPlacement",
