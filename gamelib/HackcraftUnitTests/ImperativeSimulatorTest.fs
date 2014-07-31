@@ -10,7 +10,7 @@ let newRobot () = Robot.BasicImperativeRobot (IntVec3.Zero, IntVec3.UnitZ)
 
 [<Fact>]
 let ``Simulator nop program test`` () =
-    let prog = Serialization.Load SerializationTest.nopTestProgram
+    let prog = Serialization.Load ProgramSerializationTest.nopTestProgram
     let grid = Simulator.ExecuteFullProgram prog (GridStateTracker []) (newRobot ())
 
     grid.Length |> should equal 1
@@ -20,7 +20,7 @@ let ``Simulator nop program test`` () =
 let ``Simulator simple program test`` () =
     // tests Forward, Call F1, Up, PlaceBlock
 
-    let prog = Serialization.Load SerializationTest.simpleTestProgram
+    let prog = Serialization.Load ProgramSerializationTest.simpleTestProgram
     let grid = Simulator.ExecuteFullProgram prog (GridStateTracker []) (newRobot ())
 
     grid.Length |> should equal 36

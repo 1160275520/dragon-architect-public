@@ -39,9 +39,9 @@
     <None Include="packages.config" />
     <None Include="app.config" />
     <Compile Include="JsonTest.fs" />
-    <Compile Include="SerializationTest.fs" />
+    <Compile Include="ProgramSerializationTest.fs" />
     <Compile Include="ImperativeSimulatorTest.fs" />
-    <Compile Include="GridTest.fs" />
+    <Compile Include="WorldPuzzleSerializationTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsUnit.CustomMatchers">

@@ -1,4 +1,4 @@
-module Hackcraft.UnitTest.GridTest
+module Hackcraft.UnitTest.WorldPuzzleSerializationTest
 
 open Xunit
 open Xunit.Extensions
@@ -9,25 +9,34 @@ open Hackcraft
 
 let newRobot () = Robot.BasicImperativeRobot (IntVec3.Zero, IntVec3.UnitZ)
 
-(*
 [<Fact>]
 let ``Grid serialization empty test`` () =
-    let grid = [||]
+    let world = {Blocks=[||]; Robots=[||]}
 
-    let encoded = World.encodeToString grid
+    let encoded = World.encodeToString world
     let decoded = World.decodeFromString encoded 
-    decoded |> should equal grid
+    decoded |> should equal world
+
+    let empty = [
+        """{"meta":{"version":1,"type":"world"}}""";
+        """{"meta":{"version":1,"type":"world"}, "blocks":{"type":"json", "data":[]}}""";
+        """{"meta":{"version":1,"type":"world"}, "blocks":{"type":"binary", "data":"", "little_endian":true}}""";
+        """{"meta":{"version":1,"type":"world"}, "robots":[]}""";
+    ]
+    for text in empty do
+        World.decodeFromString text |> should equal world
 
 [<Fact>]
 let ``Grid serialization simple test`` () =
     let kvp (k, v) = KeyValuePair (k,v)
 
-    let grid = [| IntVec3.UnitX, 1; IntVec3.UnitY, 2; IntVec3.UnitZ, 3; |] |> Array.map kvp
+    let blocks = [| IntVec3.UnitX, 1; IntVec3.UnitY, 2; IntVec3.UnitZ, 3; |] |> Array.map kvp
+    let robots = [| {Position=IntVec3(2,3,4); Direction= -IntVec3.UnitZ} |]
+    let world = {Blocks=blocks; Robots=robots}
 
-    let encoded = World.encodeToString grid
+    let encoded = World.encodeToString world
     let decoded = World.decodeFromString encoded 
-    decoded |> should equal grid
-
+    decoded |> should equal world
 
 let repeatTestProg = """
 {"meta":{"language":"imperative_v01","version":{"major":0,"minor":1}},"procedures":{"F1":{"arity":0,"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":3},"proc":"Forward","type":"call"},{"args":[],"meta":{"id":4},"proc":"Right","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":5},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":6},"proc":"PlaceBlock","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":7},"proc":"Forward","type":"call"},{"args":[],"meta":{"id":8},"proc":"Left","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":9},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":10},"proc":"PlaceBlock","type":"call"}]},"MAIN":{"arity":0,"body":[{"numtimes":{"type":"literal","value":"10"},"meta":{"id":20},"stmt":{"meta":{"id":22},"body":[{"args":[],"meta":{"id":21},"proc":"F1","type":"call"}],"type":"block"},"type":"repeat"}]}}} 
@@ -37,9 +46,10 @@ let repeatTestProg = """
 let ``Grid serialization repeat program test`` () =
     let prog = Serialization.Load repeatTestProg
     let states = Simulator.ExecuteFullProgram prog (GridStateTracker []) (newRobot ())
-    let grid = states.[states.Length - 1].Grid.ToArray()
+    let blocks = states.[states.Length - 1].Grid.ToArray()
+    let robots = [| World.dataOfRobot states.[states.Length - 1].Robot |]
+    let world = {Blocks=blocks; Robots=robots}
 
-    let encoded = World.encodeToString grid
+    let encoded = World.encodeToString world 
     let decoded = World.decodeFromString encoded 
-    decoded |> should equal grid
-*)
+    decoded |> should equal world

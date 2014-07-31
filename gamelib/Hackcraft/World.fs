@@ -33,10 +33,11 @@ module World =
         {Position=r.Position; Direction=r.Direction}
 
     let private ENCODE_VERSION = 1
-    let private ENDIAN_SENTINEL = 0xfffffffe
+    let private ENCODE_TYPE = "world"
     let private encoding = System.Text.Encoding.UTF8
 
     let private jload obj key fn = fn (J.getField obj key)
+    let private tryJload obj key fn = Option.map fn (J.tryGetField obj key)
 
     let private encodeVec (v:IntVec3) =
         J.JsonValue.ArrayOf [J.Int v.X; J.Int v.Y; J.Int v.Z]
@@ -61,15 +62,11 @@ module World =
 
         // TODO gzip it
 
-        // HACK assume little endian because this isn't changing systems atm
-        // well okay binary encode a test int so we can at least detect it later
-        let sentinel = [| ENDIAN_SENTINEL |]
-
         let toHexStr x = x |> Util.arrayToBytes |> Convert.ToBase64String |> J.String
 
         J.JsonValue.ObjectOf [
             "type", J.String "binary";
-            "sentinel", toHexStr sentinel;
+            "little_endian", J.Bool BitConverter.IsLittleEndian;
             "gzip", J.Bool false;
             "data", toHexStr arr;
         ] 
@@ -79,10 +76,10 @@ module World =
 
         match jload json "type" J.asString with
         | "binary" ->
-            let sentinel: int[] = jload json "sentinel" fromHexStr
+            let isLittleEndian = jload json "little_endian" J.asBool
             let blocks: int[] = jload json "data" fromHexStr
 
-            if sentinel.[0] <> ENDIAN_SENTINEL then invalidArg "stream" "endianess of stream is different!"
+            if isLittleEndian <> BitConverter.IsLittleEndian then invalidArg "stream" "endianess of stream is different than machine architecture!"
             // this is really more like an assert but ah well
             // TODO throw a better error
             if blocks.Length % 4 <> 0 then invalidArg "stream" "blocks does not have correct number of elements"
@@ -94,7 +91,7 @@ module World =
                 KeyValuePair (cell, block)
             )
         | "json" ->
-            raise (NotImplementedException ())
+            Array.empty
         // TODO throw a better error here
         | s -> invalidArg "json" (sprintf "invalid block encoding type '%s'" s)
 
@@ -116,6 +113,7 @@ module World =
             "meta", J.JsonValue.ObjectOf
                 [
                     "version", J.Int ENCODE_VERSION;
+                    "type", J.String ENCODE_TYPE;
                 ];
             "blocks", encodeBlocks data.Blocks;
             "robots", Array.map encodeRobot data.Robots |> J.arrayOfArray;
@@ -126,12 +124,12 @@ module World =
     /// Decode a blocks from a stream. Closes the stream when finished.
     let decodeFromJson json =
         let meta = J.getField json "meta"
-        let version = jload meta "version" J.asInt
-        if version <> ENCODE_VERSION then invalidArg "stream" "invalid version!"
+        if jload meta "version" J.asInt <> ENCODE_VERSION then invalidArg "json" "invalid version!"
+        if jload meta "type" J.asString <> ENCODE_TYPE then invalidArg "json" "invalid data type!"
 
         {
-            Blocks = jload json "blocks" decodeBlocks;
-            Robots = jload json "robots" J.arrayToArray |> Array.map decodeRobot;
+            Blocks = defaultArg (tryJload json "blocks" decodeBlocks) Array.empty;
+            Robots = defaultArg (tryJload json "robots" J.arrayToArray) Array.empty |> Array.map decodeRobot;
         }
 
     let decodeFromString str = J.Parse str |> decodeFromJson
