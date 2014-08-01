@@ -211,7 +211,7 @@ module.Instructions = (function() {
             if (!isLarge) {
                 instContainer.style.height = "auto";
                 if (clickCallback) {
-                    instContainer.onclick = clickCallback;                    
+                    instContainer.onclick = clickCallback;
                 } else {
                     instContainer.onclick = makeLarge;
                 }
