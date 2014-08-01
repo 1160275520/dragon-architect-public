@@ -391,6 +391,19 @@ module.SpeedSlider = (function() {
     return self;
 }());
 
+module.CubeCounter = (function() {
+    var self = {};
+
+    self.setVisible = function(goals) {
+        var isVisible = goals ? goals.some(function(g) {
+            return g.type === "cube_count";
+        }) : false;
+        $('#cube-counter').css('display', isVisible ? 'block' : 'none');
+    };
+
+    return self;
+}());
+
 return module;
 }());
 

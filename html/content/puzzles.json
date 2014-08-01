@@ -66,6 +66,13 @@
         "tutorial": {
             "highlighted": ["RemoveBlock"]
         },
+        "world": {
+            "blocks": {"type":"json", "data":[
+                {"pos": [0,0,3], "blk": 0},
+                {"pos": [0,0,4], "blk": 0},
+                {"pos": [0,0,5], "blk": 0}
+            ]}
+        },
         "logging_id": 29
     },
     "up.what_is_up":{
@@ -89,6 +96,9 @@
         },
         "tutorial": {
             "highlighted": ["Down"]
+        },
+        "world": {
+            "robots": [{"pos": [2, 3, 0], "dir":[-1, 0, 0]}]
         },
         "logging_id": 33
     },
@@ -156,6 +166,11 @@
             "required": ["move2", "place", "repeat"],
             "granted": []
         },
+        "goals": [{
+            "type": "cube_count", 
+            "comp":">=", 
+            "value":101
+        }],
         "logging_id": 28
     }
 }

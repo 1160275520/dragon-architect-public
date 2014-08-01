@@ -80,7 +80,7 @@ var progress = (function(){
     };
 
     self.mark_puzzle_completed = function(id, puzzle) {
-        if (!_.contains(puzzles_completed, id, puzzle)) {
+        if (!_.contains(puzzles_completed, id)) {
             puzzles_completed.push(id);
             storage.save("puzzles_completed", puzzles_completed.toString());
         }
@@ -96,6 +96,10 @@ var progress = (function(){
 
     self.is_module_completed = function(module) {
         return module.nodes.every(self.is_puzzle_completed);
+    }
+
+    self.puzzles_remaining = function(module) {
+        return _.filter(module.nodes, function(p) { return !self.is_puzzle_completed(p); }).length;
     }
 
     self.get_library = function() {
@@ -131,12 +135,21 @@ function create_puzzle_runner(module, sceneSelectType) {
     self.onPuzzleFinish = function() {
         switch (sceneSelectType) {
             case "module":
-                // bring up the level select
-                HackcraftUI.State.goToSceneSelect(function() {
-                    HackcraftUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                        setState_puzzle(pid, "to_puzzle_select");
+                if (progress.puzzles_remaining(module) > 0 || isDevMode) {
+                    // bring up the level select
+                    HackcraftUI.State.goToSceneSelect(function() {
+                        HackcraftUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                            if (progress.puzzles_remaining(module) === 1) {
+                                setState_puzzle(pid, "to_sandbox");
+                            } else {
+                                setState_puzzle(pid, "to_puzzle_select");
+                            }
+                        });
                     });
-                });
+                } else {
+                    // module has been completed, go to sandbox
+                    setState_sandbox();
+                }
                 break;
 
             case "tutorial":
@@ -237,7 +250,8 @@ $(function() {
 
     $('#btn-modules').on('click', function() {
         HackcraftUI.State.goToModuleSelect(function () {
-            HackcraftUI.ModuleSelect.create(game_info.modules, function(module) {
+            HackcraftUI.ModuleSelect.create(_.filter(game_info.modules, function(m) { return !progress.is_module_completed(m) && !isDevMode; }), 
+                                            function(module) {
                 current_puzzle_runner = create_puzzle_runner(module, "module");
             });
         });
@@ -344,12 +358,15 @@ function start_editor(info) {
         HackcraftBlockly.setLevel(info.puzzle, current_library);
         HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
         HackcraftUI.CameraControls.setVisible(current_library);
+        HackcraftUI.CubeCounter.setVisible(info.puzzle.goals);
 
         HackcraftBlockly.history = [];
 
         // reset program execution speed, because the scene reload will have made Unity forget
-        // FIXME
-        HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
+        // FIXME use the unified API
+        if (info.puzzle.name !== "101 Cubes") { // HACK to allow 101 Cubes to have a faster default execution speed
+            HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
+        }
 
         // clear old quest logger if it exists
         if (questLogger) {

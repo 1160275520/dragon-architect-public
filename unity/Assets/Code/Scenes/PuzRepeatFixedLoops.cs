@@ -27,7 +27,7 @@ public class PuzRepeatFixedLoops : MonoBehaviour {
         
         var template = new List<IntVec3>();
         const int size = 10;
-        const int offset = 0;
+        const int offset = 1;
         for (int x = 0; x < size; x++) {
             if (x == 0 || x == size - 1) {
                 for (int z = 0; z < size; z++) {

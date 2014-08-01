@@ -171,7 +171,7 @@ public class AllTheGUI : MonoBehaviour
                 text = "Return to level select";
                 break;
             case Global.PuzzleFinishType.to_sandbox:
-                text = "Go to creative mode";
+                text = "Go to sandbox mode";
                 break;
             }
 

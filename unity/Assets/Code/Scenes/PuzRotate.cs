@@ -11,7 +11,7 @@ public class PuzRotate: MonoBehaviour
     
     void Start () {
         var lh = GetComponent<PuzzleHelper>();
-        var rotCW = "<object data=\"media/rotateCWButon.png\" style=\"vertical-align:middle\"></object>";
+        var rotCW = "<object data=\"media/rotateCWButton.png\" style=\"vertical-align:middle\"></object>";
         var rotCCW = "<object data=\"media/rotateCCWButton.png\" style=\"vertical-align:middle\"></object>";
         lh.SetInstructions(
             "Solve the challenge by filling in the blueprint!",
