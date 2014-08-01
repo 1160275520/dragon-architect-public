@@ -1,0 +1,268 @@
+
+#instructionsContainer {
+    position: absolute;
+    z-index: 1;
+    height: 100%;
+}
+
+#instructionsBackground {
+    top: 0px;
+    left: 10px;
+    padding:10px;
+    background: #333; /* default background for browsers without gradient support */
+    opacity: 0.95;
+    border-radius:10px;
+    width: 100%;
+}
+
+#instructions {
+    color:#fff;
+    font-family: "Ubuntu Mono";
+    padding: 15px;
+}
+
+p.instructions {
+    margin: 2px;
+}
+
+#instructions-goal {
+    font-size: 16pt;
+    padding-bottom: 20px;
+}
+
+#instructions-detail {
+    font-size: 12pt;
+}
+
+#instructions-reminder {
+    float: right;
+    color: #ffcc99;
+    cursor: pointer;
+}
+
+#instructions button {
+    display: block;
+    color: black;
+    font-size: 18pt;
+    text-align: center;
+    padding: 15px;
+    margin: 40px auto;
+    border-radius: 8px;
+}
+
+.instructionsShown {
+    border-style: solid;
+    border-width: 4px;
+    border-color: #B24E3A;
+    border-radius:10px;
+    padding: 25px;
+    padding-bottom: 10px;  
+}
+
+#dragonIcon {
+    top: -10px;
+    padding: 10px;
+    position: relative;
+}
+
+@-webkit-keyframes instructionsShow {
+    0% {
+        min-height: 0%;
+    }
+
+    100% {
+        min-height: 100%;
+    }
+}
+
+@keyframes instructionsShow {
+    0% {
+        min-height: 0%;
+    }
+
+    100% {
+        min-height: 100%;
+    }
+}
+
+.instructionsShow {
+    -webkit-animation-name: instructionsShow;
+    animation-name: instructionsShow;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes instructionsHide {
+    0% {
+        min-height: 100%;
+    }
+
+    100% {
+        min-height: 0%;
+    }
+}
+
+@keyframes instructionsHide {
+    0% {
+        min-height: 100%;
+    }
+
+    100% {
+        min-height: 0%;
+    }
+}
+
+.instructionsHide {
+    -webkit-animation-name: instructionsHide;
+    animation-name: instructionsHide;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes detailShow {
+    0% {
+        opacity: 0;
+        padding-bottom: 0px;
+    }
+
+    100% {
+        opacity: 1;
+        padding-bottom: 25px;
+    }
+}
+
+@keyframes detailShow {
+    0% {
+        opacity: 0;
+        padding-bottom: 0px;
+    }
+
+    100% {
+        opacity: 1;
+        padding-bottom: 25px;
+    }
+}
+
+.detailShow {
+    -webkit-animation-name: detailShow;
+    animation-name: detailShow;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes detailHide {
+    0% {
+        opacity: 1;
+        padding-bottom: 25px;
+    }
+
+    100% {
+        opacity: 0;
+        padding-bottom: 0px;
+    }
+}
+
+@keyframes detailHide {
+    0% {
+        opacity: 1;
+        padding-bottom: 25px;
+    }
+
+    100% {
+        opacity: 0;
+        padding-bottom: 0px;
+    }
+}
+
+.detailHide {
+    -webkit-animation-name: detailHide;
+    animation-name: detailHide;
+    -webkit-animation-duration: 0.75s;
+    animation-duration: 0.75s;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes speechBubble {
+/*    0% {
+        opacity: 0;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    25% {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }*/
+
+    35%, 50%, 65%, 80%, 95% {
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    72% {
+        -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    88% {
+        -webkit-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes speechBubble {
+/*    0% {
+        opacity: 0;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    25% {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }*/
+
+    35%, 50%, 65%, 80%, 95% {
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    72% {
+        -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    88% {
+        -webkit-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+
+.speechBubble {
+    -webkit-animation-name: speechBubble;
+    animation-name: speechBubble;
+    -webkit-animation-duration: 1.2s;
+    animation-duration: 1.2s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
