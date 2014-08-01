@@ -116,14 +116,16 @@ header h1 {
 }
 
 .game-control-btn-playback {
+    display: block;
     font-weight: bold;
     width: 120px;
-    height: 80px;
     margin-bottom: 10px;
+    border-radius: 8px;
 }
 
 #btn-run {
     font-size: 32pt;
+    height: 80px;
     background-color: #37b03f;
 }
 
@@ -134,7 +136,9 @@ header h1 {
 
 #btn-pause {
     background-color: #f5d46f;
-    font-size: 24pt;
+    height: 40px;
+    line-height: 36px;
+    font-size: 20pt;
 }
 
 #btn-pause.active {
