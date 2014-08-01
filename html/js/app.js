@@ -273,28 +273,21 @@ $(function() {
 
     $('#btn-run').on('click', function() {
         HackcraftUnity.Call.set_program(HackcraftBlockly.getProgram());
-
         var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
         HackcraftUnity.Call.set_program_state({run_state: newRS});
 
-        // HACK this should really be done in a separate stop function so it can also be handled when the player naviagates away from the page
-        if (current_scene === 'sandbox') {
-            HackcraftUnity.Call.request_world_state();
-        }
     });
-    HackcraftUI.Instructions.hide();
 
     $('#btn-workshop').on('click', function() {
-        is_workshop_mode = !is_workshop_mode;
-        HackcraftUI.ModeButton.update(is_workshop_mode);
-        HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
+        var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
+        HackcraftUnity.Call.set_program_state({edit_mode: newEM});
     });
 
     $('#btn-pause').on('click', function() {
-        if (is_running) {
-            is_paused = !is_paused;
-            HackcraftUI.PauseButton.update(true, is_paused);
-            HackcraftUnity.Call.toggle_pause();
+        var oldRS = program_state.run_state;
+        if (oldRS === 'executing' || oldRS === 'paused') {
+            var newRS = oldRS === 'executing' ? 'paused' : 'executing';
+            HackcraftUnity.Call.set_program_state({run_state: newRS});
         }
     });
 
@@ -307,6 +300,8 @@ $(function() {
     // undo button
     // TODO shouldn't this be in blockly/hackcraft.js?
     $('#btn-undo').on('click', HackcraftBlockly.undo);
+
+    HackcraftUI.Instructions.hide();
 
     HackcraftUI.SpeedSlider.initialize(HackcraftUnity.Call.set_program_execution_speed);
 
@@ -430,6 +425,7 @@ handler.onProgramStateChange = function(data) {
     if ('edit_mode' in json) {
         console.log('on edit mode change');
         program_state.edit_mode = json.edit_mode;
+        HackcraftUI.ModeButton.update(program_state.edit_mode === 'workshop');
     }
 
     if ('run_state' in json) {
@@ -444,6 +440,10 @@ handler.onProgramStateChange = function(data) {
                 questLogger.logProgramExecutionStarted(JSON.stringify(HackcraftBlockly.getProgram()));
             } else if (rs === 'stopped') {
                 questLogger.logProgramExecutionReset();
+                // HACK this should really be done in a separate stop function so it can also be handled when the player naviagates away from the page
+                if (current_scene === 'sandbox') {
+                    HackcraftUnity.Call.request_world_state();
+                }
             }
         }
 
