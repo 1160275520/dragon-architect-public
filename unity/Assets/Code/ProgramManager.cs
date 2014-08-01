@@ -18,16 +18,21 @@ public class ProgramManager : MonoBehaviour {
     private RunState runState;
     private EditMode editMode;
 
+    // the grid state at the beginning of workshop mode
+    private KeyValuePair<IntVec3, int>[] initialCells;
+
     public EditMode EditMode {
         get { return editMode; }
         set {
             if (editMode == value) return;
 
-            if (value.IsPersistent) {
+            // stop playback when mode changes (which should clear out any workshop changes)
+            RunState = RunState.Stopped;
 
-
-            } else if (value.IsWorkshop) {
-
+            if (value.IsWorkshop) {
+                // if switching to workshop mode, backup all cells
+                var grid = GetComponent<Grid>();
+                initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
             }
             editMode = value;
             GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
@@ -81,13 +86,13 @@ public class ProgramManager : MonoBehaviour {
     void Awake() {
         // HACK need max proc length for historical purposes, but doesn't actually do anything
         Manipulator = new ImperativeAstManipulator(100);
-        EditMode = EditMode.Workshop;
         TicksPerStep = 30;
 
         robot = FindObjectOfType<RobotController>();
 
         runState = RunState.Stopped;
         editMode = EditMode.Workshop;
+        initialCells = new KeyValuePair<IntVec3, int>[] { };
     }
     
     void Start () {
@@ -182,7 +187,7 @@ public class ProgramManager : MonoBehaviour {
 
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
-            var grid = GridStateTracker.Empty();
+            var grid = new GridStateTracker(initialCells);
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
             States = Simulator.ExecuteFullProgram(Manipulator.Program, grid, initialRobotState.Clone);
