@@ -23,6 +23,7 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
+    min-width: 1200px;
 }
 
 /* header */
