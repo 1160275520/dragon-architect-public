@@ -19,7 +19,7 @@ public class PuzRepeat101Blocks : MonoBehaviour {
         );
 
         var progman = GetComponent<ProgramManager>();
-        progman.TicksPerStep = 15; // make execution a little faster, as there's no speed slider yet and the programs will need to place lots of blocks
+        progman.TicksPerStep = 10; // make execution a little faster, as there's no speed slider yet and the programs will need to place lots of blocks
 
         winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(101) });
 	}

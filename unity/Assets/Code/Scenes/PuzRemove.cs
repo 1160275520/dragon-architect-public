@@ -20,12 +20,6 @@ public class PuzRemove : MonoBehaviour
         
         FindObjectOfType<MyCamera>().Rotate(-90);
 
-        var grid = GetComponent<Grid>();
-        var cube = GameObject.FindGameObjectWithTag("Cube");
-        grid.AddObject(new IntVec3(0, 0, 3), cube);
-        grid.AddObject(new IntVec3(0, 0, 4), cube);
-        grid.AddObject(new IntVec3(0, 0, 5), cube);
-
         lh.CreateBlueprint(template);
         winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }

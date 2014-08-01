@@ -13,8 +13,8 @@ public class PuzSpeedSlider : MonoBehaviour
         var lh = GetComponent<PuzzleHelper>();
 
         lh.SetInstructions(
-            "The <b>Speed Slider</b> changes the rate at which your program executes.",
-            "This program takes a long time to run; speed it up by dragging the slider to <b>Fast</b>!"
+            "<object data=\"media/speedSlider.png\" style=\"vertical-align:middle\"></object> changes the rate at which your program executes.",
+            "This program takes a long time to run; speed it up by dragging the <i>Speed Slider</i> to <b>Fast</b>!"
         );
 
         var progman = GetComponent<ProgramManager>();
