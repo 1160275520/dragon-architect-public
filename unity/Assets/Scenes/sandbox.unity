@@ -1410,6 +1410,7 @@ GameObject:
   - 33: {fileID: 2073389019}
   - 64: {fileID: 2073389018}
   - 23: {fileID: 2073389017}
+  - 114: {fileID: 2073389021}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -1469,6 +1470,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
+--- !u!114 &2073389021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2073389016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50115220ab001fa45b5d93dcf281dddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2078575518
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ public class ExternalAPI : MonoBehaviour
     public const string ExternalApiFunc = "onHackcraftEvent";
     public const string OnSystemStart = "onSystemStart";
     public const string OnPuzzleChange = "onPuzzleChange";
+    public const string OnProgramStateChange = "onProgramStateChange";
     public const string OnStatementHighlight = "onStatementHighlight";
 
     private bool isFirstUpdate;
@@ -44,6 +45,9 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    // startup and ui state changes
+    //////////////////////////////////////////////////////////////////////////
+
     public void NotifyOfSandbox() {
         Application.ExternalCall(ExternalApiFunc, "onSandboxStart", "");
     }
@@ -56,14 +60,6 @@ public class ExternalAPI : MonoBehaviour
         dict.Add("is_starting", Json.JsonValue.NewBool(isStarting));
 
         Application.ExternalCall(ExternalApiFunc, OnPuzzleChange, Json.Serialize(Json.JsonValue.ObjectOf(dict)));
-    }
-
-    public void SendCurrentStatement() {
-        try {
-            Application.ExternalCall(ExternalApiFunc, OnStatementHighlight, GetComponent<ProgramManager>().LastExecuted.First());
-        } catch (InvalidOperationException) {
-            Application.ExternalCall(ExternalApiFunc, OnStatementHighlight, ""); // clear final highlight when done executing
-        }
     }
 
     public void SendColors() {
@@ -82,19 +78,8 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onTitleButtonClicked", button);
     }
 
-    public void SendWorldState(string data) {
-        const int chunkSize = 8192;
-        var numChunks = (data.Length + chunkSize - 1) / chunkSize;
-        Application.ExternalCall(ExternalApiFunc, "onWorldDataStart", "");
-        for (var i = 0; i < numChunks; i++) {
-            var offset = chunkSize * i;
-            var s = data.Substring(offset, Math.Min(chunkSize, data.Length - offset));
-            Application.ExternalCall(ExternalApiFunc, "onWorldDataChunkSend", s);
-        }
-        Application.ExternalCall(ExternalApiFunc, "onWorldDataEnd", "");
-    }
-
-    // external API
+    // program state
+    //////////////////////////////////////////////////////////////////////////
 
     public void EAPI_SetProgramFromJson(string json) {
         try {
@@ -107,25 +92,53 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
-    public void EAPI_SetIsRunning(string aIsRunning) {
-        bool isRunning = aIsRunning == "true";
+    private void notifyProgramStateChange(string name, Json.JsonValue value) {
+        var arg = Json.JsonValue.ObjectOf(new[] { new KeyValuePair<string, Json.JsonValue>(name, value) });
+        Application.ExternalCall(ExternalApiFunc, OnProgramStateChange, arg.Serialize());
+    }
+
+    public void NotifyPS_RunState(RunState rs) {
+        notifyProgramStateChange("run_state", rs.ToJson());
+    }
+
+    public void NotifyPS_EditMode(EditMode em) {
+        notifyProgramStateChange("edit_mode", em.ToJson());
+    }
+
+    public void NotifyPS_TicksPerSecond(int tps) {
+        notifyProgramStateChange("ticks_per_second", Json.JsonValue.NewInt(tps));
+    }
+
+    public void NotifyPS_CurrentBlock(int? id) {
+        notifyProgramStateChange("current_block", id.HasValue ? Json.JsonValue.NewInt(id.Value) : Json.JsonValue.Null);
+    }
+
+    public void EAPI_SetProgramState(string arg) {
+        var json = Json.Parse(arg).AsObject.ToMap;
         var progman = GetComponent<ProgramManager>();
-        if (isRunning) {
-            progman.StartExecution();
-        } else {
-            progman.ResetExecution();
+
+        foreach (var kvp in json) {
+            var name = kvp.Key;
+            var value = kvp.Value;
+            switch (name) {
+                case "run_state":
+                    progman.RunState = RunState.FromJson(value);
+                    break;
+                case "edit_mode":
+                    progman.EditMode = EditMode.FromJson(value);
+                    break;
+                case "ticks_per_step":
+                    progman.TicksPerStep = value.AsInt;
+                    break;
+                case "current_block":
+                    throw new NotImplementedException();
+                default: throw new ArgumentException("Invalid program state property name " + name);
+            }
         }
     }
 
-    public void EAPI_TogglePause() {
-        var progman = GetComponent<ProgramManager>();
-        progman.TogglePauseExecution();
-    }
-
-    public void EAPI_SetProgramExecutionSpeed(string parameter) {
-        var x = float.Parse(parameter);
-        GetComponent<ProgramManager>().TicksPerStep = Math.Max(1, (int)(60*Math.Pow(0.1f, 2.0f * x)));
-    }
+    // other controls
+    //////////////////////////////////////////////////////////////////////////
 
     public void EAPI_ControlCamera(string action) {
         var camera = FindObjectOfType<MyCamera>();
@@ -135,6 +148,21 @@ public class ExternalAPI : MonoBehaviour
             case "rotateleft": camera.Rotate(90); break;
             case "rotateright": camera.Rotate(-90); break;
         }
+    }
+
+    // world state
+    //////////////////////////////////////////////////////////////////////////
+
+    public void SendWorldState(string data) {
+        const int chunkSize = 8192;
+        var numChunks = (data.Length + chunkSize - 1) / chunkSize;
+        Application.ExternalCall(ExternalApiFunc, "onWorldDataStart", "");
+        for (var i = 0; i < numChunks; i++) {
+            var offset = chunkSize * i;
+            var s = data.Substring(offset, Math.Min(chunkSize, data.Length - offset));
+            Application.ExternalCall(ExternalApiFunc, "onWorldDataChunkSend", s);
+        }
+        Application.ExternalCall(ExternalApiFunc, "onWorldDataEnd", "");
     }
 
     public void EAPI_RequestWorldState(string ignored) {
@@ -148,5 +176,10 @@ public class ExternalAPI : MonoBehaviour
 
         Debug.Log("Saving! num blocks: " + blocks.Length.ToString());
         SendWorldState(World.encodeToString(world));
+    }
+
+    public void EAPI_SetProgramExecutionSpeed(string parameter) {
+        var x = float.Parse(parameter);
+        GetComponent<ProgramManager>().TicksPerStep = Math.Max(1, (int)(60 * Math.Pow(0.1f, 2.0f * x)));
     }
 }

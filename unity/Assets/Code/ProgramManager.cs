@@ -14,10 +14,52 @@ public class ProgramManager : MonoBehaviour {
     public ImperativeAstManipulator Manipulator { get; private set; }
     private ImmArr<Simulator.StepState> States;
 
-    public EditMode EditMode { get; set; }
-    public RunState RunState { get; private set; }
+    // never access these directly, even for private code!
+    private RunState runState;
+    private EditMode editMode;
 
-    public bool IsSimulationRunning { get { return EditMode == EditMode.Persistent || RunState == RunState.Executing; } }
+    public EditMode EditMode {
+        get { return editMode; }
+        set {
+            if (editMode == value) return;
+
+            if (value.IsPersistent) {
+
+
+            } else if (value.IsWorkshop) {
+
+            }
+            editMode = value;
+            GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
+        }
+    }
+
+    public RunState RunState {
+        get { return runState; }
+        set {
+            if (runState == value) return;
+
+            if (value.IsStopped) {
+                if (EditMode.IsWorkshop) {
+                    setGameStateToIndex(0, 0.0f);
+                }
+            } else if (value.IsExecuting) {
+                if (runState.IsStopped) {
+                    startExecution();
+                }
+            } else if (value.IsFinished) {
+                throw new ArgumentException("cannot directly set run state to 'finished'");
+            } else if (value.IsPaused) {
+                if (runState.IsStopped) throw new ArgumentException("may only pause if not stopped");
+                // reset last statement execution time so dt isn't super wrong next time
+                lastStatementExecutionTime = Time.time;
+            }
+            runState = value;
+            GetComponent<ExternalAPI>().NotifyPS_RunState(value);
+        }
+    }
+
+    public bool IsSimulationRunning { get { return EditMode.IsPersistent || RunState.IsExecuting; } }
 
     /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame
     /// set this to false when the gui is changing the program state
@@ -43,54 +85,47 @@ public class ProgramManager : MonoBehaviour {
         TicksPerStep = 30;
 
         robot = FindObjectOfType<RobotController>();
+
+        runState = RunState.Stopped;
+        editMode = EditMode.Workshop;
     }
     
     void Start () {
+        var eapi = GetComponent<ExternalAPI>();
+        eapi.NotifyPS_EditMode(EditMode);
+        eapi.NotifyPS_RunState(RunState);
+        eapi.NotifyPS_CurrentBlock(null);
     }
 
-    public void StartExecution() {
-        RunState = RunState.Executing;
+    private void startExecution() {
         totalTicks = 0.0f;
         lastStatementExecutionTime = Time.time;
 
-        switch (EditMode) {
-            case EditMode.Persistent: {
-                // use the current grid as the initial state
-                var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
-                // just use wherever the robot current is as the initial state
-                lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
-            } break;
-            case EditMode.Workshop:
-                EvalEntireProgram();
-                setGameStateToIndex(0, 0.0f);
-                break;
+        if (EditMode.IsPersistent) {
+            // use the current grid as the initial state
+            var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
+            // just use wherever the robot current is as the initial state
+            lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
+        } else if (EditMode.IsWorkshop) {
+            EvalEntireProgram();
+            setGameStateToIndex(0, 0.0f);
         }
     }
 
     public void TogglePauseExecution() {
-        switch (RunState) {
-            case RunState.Executing: RunState = RunState.Paused; break;
-            case RunState.Paused:
-                RunState = RunState.Executing;
-                // reset last statement execution time so dt isn't super wrong next time
-                lastStatementExecutionTime = Time.time;
-                break;
-        }
     }
 
     public void ResetExecution() {
         RunState = RunState.Stopped;
-        if (EditMode == EditMode.Workshop) {
+        if (EditMode.IsWorkshop) {
             setGameStateToIndex(0, 0.0f);
         }
     }
 
     public IEnumerable<int> LastExecuted {
         get {
-            switch (RunState) {
-                case RunState.Stopped: return Enumerable.Empty<int>();
-                default: return lastExecuted.Select(s => s.Meta.Id).Where(id => id > 0);
-            }
+            if (RunState.IsStopped) return Enumerable.Empty<int>();
+            else return lastExecuted.Select(s => s.Meta.Id).Where(id => id > 0);
         }
     }
 
@@ -109,7 +144,12 @@ public class ProgramManager : MonoBehaviour {
             robot.SetRobot(state.Robot, state.Command, transitionTimeSeconds);
             grid.SetGrid(state.Grid);
             lastExecuted = state.LastExecuted;
-            GetComponent<ExternalAPI>().SendCurrentStatement();
+
+            if (state.LastExecuted.IsEmpty) {
+                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
+            } else {
+                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(state.LastExecuted.Head.Meta.Id);
+            }
         }
         Profiler.EndSample();
     }
@@ -158,7 +198,7 @@ public class ProgramManager : MonoBehaviour {
 	void Update () {
         Profiler.BeginSample("ProgramManager.Update.CalculateTicks");
         var oldTicks = (int)totalTicks;
-        if (RunState == RunState.Executing) {
+        if (RunState.IsExecuting) {
             totalTicks += Time.deltaTime * TicksPerSecond;
         }
 
@@ -175,38 +215,35 @@ public class ProgramManager : MonoBehaviour {
         }
         Profiler.EndSample();
 
-        switch (EditMode) {
-            case EditMode.Persistent: {
-                if (RunState == RunState.Executing) {
-                    for (var i = 0; i < stepsPassed; i++) {
-                        Profiler.BeginSample("ProgramManager.Update.GetGrid");
-                        var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
-                        Profiler.EndSample();
-                        if (lazyProgramRunner.IsDone) {
-                            RunState = RunState.Stopped;
-                        } else {
-                            Profiler.BeginSample("ProgramManager.Update.ProgramStep");
-                            var state = lazyProgramRunner.UpdateOneStep(grid);
-                            Profiler.EndSample();
-                            setGameState(state, dt);
-                        }
-                    }
+        if (EditMode.IsPersistent && RunState.IsExecuting) {
+            for (var i = 0; i < stepsPassed; i++) {
+                Profiler.BeginSample("ProgramManager.Update.GetGrid");
+                var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
+                Profiler.EndSample();
+                if (lazyProgramRunner.IsDone) {
+                    RunState = RunState.Stopped;
+                } else {
+                    Profiler.BeginSample("ProgramManager.Update.ProgramStep");
+                    var state = lazyProgramRunner.UpdateOneStep(grid);
+                    Profiler.EndSample();
+                    setGameState(state, dt);
                 }
-            } break;
+            }
+        }
 
-            case EditMode.Workshop: {
-                EvalEntireProgram();
+        else if (EditMode.IsWorkshop) {
+            EvalEntireProgram();
 
-                if (RunState == RunState.Executing) {
-                    currentStateIndex += stepsPassed;
-                    if (currentStateIndex >= States.Length) {
-                        RunState = RunState.Finished;
-                        GetComponent<ExternalAPI>().SendCurrentStatement(); // clear final highlight
-                    } else {
-                        setGameStateToIndex(currentStateIndex, dt);
-                    }
+            if (RunState.IsExecuting) {
+                currentStateIndex += stepsPassed;
+                if (currentStateIndex >= States.Length) {
+                    // use the private var, the public setter will throw if you try to set to finished manually
+                    runState = RunState.Finished;
+                    GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
+                } else {
+                    setGameStateToIndex(currentStateIndex, dt);
                 }
-            } break;
+            }
         }
 
 	}

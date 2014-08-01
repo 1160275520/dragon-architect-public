@@ -50,6 +50,11 @@ module.Player = (function(){
 module.Call = (function() {
     var self = {};
 
+    self.set_program_state = function(parameter) {
+        console.info('setting program state: ' + JSON.stringify(parameter));
+        send_message("System", "EAPI_SetProgramState", JSON.stringify(parameter));
+    }
+
     self.set_program_execution_speed = function(parameter) {
         send_message("System", "EAPI_SetProgramExecutionSpeed", parameter.toString());
     }
@@ -68,24 +73,12 @@ module.Call = (function() {
         send_message("Global", "EAPI_RequestStartSandbox", world_data ? world_data : "");
     }
 
-    self.set_is_running = function(is_running) {
-        send_message("System", "EAPI_SetIsRunning", is_running ? "true" : "false");
-    }
-
     self.control_camera = function(action) {
         send_message("System", "EAPI_ControlCamera", action);
     }
 
-    self.set_edit_mode = function(is_workshop_mode) {
-        send_message("System", "EAPI_SetWorkshopMode", is_workshop_mode ? "true" : "false");
-    }
-
     self.request_world_state = function() {
         send_message("System", "EAPI_RequestWorldState", "");
-    }
-
-    self.toggle_pause = function() {
-        send_message("System", "EAPI_TogglePause", "");
     }
 
     return self;

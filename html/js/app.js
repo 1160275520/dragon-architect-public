@@ -1,8 +1,10 @@
 var onHackcraftEvent = (function(){ "use strict";
 
-var is_running = false;
-var is_workshop_mode = true;
-var is_paused = false;
+var program_state = {
+    run_state: null,
+    edit_mode: null
+};
+
 var questLogger;
 var handler = {};
 var isDevMode = false;
@@ -162,7 +164,7 @@ function create_puzzle_runner(module, sceneSelectType) {
 
 // callback function that receives messages from unity, sends to handler
 function onHackcraftEvent(func, arg) {
-    if (func !== 'onStatementHighlight') {
+    if (func !== 'onProgramStateChange') {
         console.info('received Unity event ' + func);
     }
     handler[func](arg);
@@ -256,21 +258,10 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
-        var program = HackcraftBlockly.getProgram();
-        HackcraftUnity.Call.set_program(program);
-        is_running = !is_running;
-        is_paused = false;
-        HackcraftUI.PauseButton.update(is_running, is_paused);
-        HackcraftUI.RunButton.update(is_running, is_workshop_mode);
-        HackcraftUnity.Call.set_is_running(is_running);
+        HackcraftUnity.Call.set_program(HackcraftBlockly.getProgram());
 
-        if (questLogger) {
-            if (is_running) {
-                questLogger.logProgramExecutionStarted(JSON.stringify(program));
-            } else {
-                questLogger.logProgramExecutionReset();
-            }
-        }
+        var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
+        HackcraftUnity.Call.set_program_state({run_state: newRS});
 
         // HACK this should really be done in a separate stop function so it can also be handled when the player naviagates away from the page
         if (current_scene === 'sandbox') {
@@ -355,12 +346,9 @@ function start_editor(info) {
         HackcraftUI.CameraControls.setVisible(current_library);
 
         HackcraftBlockly.history = [];
-        // reset run button
-        is_running = false;
-        HackcraftUI.RunButton.update(is_running, is_workshop_mode);
-        HackcraftUI.PauseButton.update(is_running, is_paused);
 
         // reset program execution speed, because the scene reload will have made Unity forget
+        // FIXME
         HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
 
         // clear old quest logger if it exists
@@ -411,11 +399,6 @@ handler.onSandboxStart = function() {
     };
 
     start_editor(info);
-
-    // default to persistent mode
-    is_workshop_mode = false;
-    HackcraftUI.ModeButton.update(is_workshop_mode);
-    HackcraftUnity.Call.set_edit_mode(is_workshop_mode);
 }
 
 handler.onPuzzleChange = function(json) {
@@ -424,12 +407,39 @@ handler.onPuzzleChange = function(json) {
     start_editor(JSON.parse(json));
 };
 
-handler.onStatementHighlight = function(id) {
-    if (id) {
-        Blockly.mainWorkspace.traceOn(true);
-        Blockly.mainWorkspace.highlightBlock(id.toString());
-    } 
-};
+handler.onProgramStateChange = function(data) {
+    var json = JSON.parse(data);
+
+    if ('edit_mode' in json) {
+        console.log('on edit mode change');
+        program_state.edit_mode = json.edit_mode;
+    }
+
+    if ('run_state' in json) {
+        console.log('on run state change');
+        var rs = json.run_state;
+        program_state.run_state = rs;
+        HackcraftUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
+        HackcraftUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
+
+        if (questLogger) {
+            if (rs === 'executing') {
+                questLogger.logProgramExecutionStarted(JSON.stringify(HackcraftBlockly.getProgram()));
+            } else if (rs === 'stopped') {
+                questLogger.logProgramExecutionReset();
+            }
+        }
+
+    }
+
+    if ('current_block' in json) {
+        var id = json.current_block;
+        if (id !== null) {
+            Blockly.mainWorkspace.traceOn(true);
+            Blockly.mainWorkspace.highlightBlock(id.toString());
+        }
+    }
+}
 
 handler.onSetColors = function(json) {
     console.info('on set colors!');

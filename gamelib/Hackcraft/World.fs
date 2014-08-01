@@ -5,15 +5,47 @@ open System.Collections.Generic
 open System.IO
 module J = Hackcraft.Json
 
+[<RequireQualifiedAccess>]
 type EditMode =
-| Workshop = 0
-| Persistent = 1
+| Workshop
+| Persistent
+with
+    static member FromJson j =
+        match J.asString j with
+        | "workshop" -> Workshop
+        | "persistent" -> Persistent
+        | s -> raise (J.TypeMismatchException (j, "EditMode", sprintf "'%s' is not a valid edit mode" s, null))
 
+    override x.ToString () =
+        match x with
+        | Workshop -> "workshop"
+        | Persistent -> "persistent"
+
+    member x.ToJson () = J.String (x.ToString ())
+
+[<RequireQualifiedAccess>]
 type RunState =
-| Stopped = 0
-| Executing = 1
-| Paused = 2
-| Finished = 3
+| Stopped
+| Executing
+| Paused
+| Finished
+with
+    static member FromJson j =
+        match J.asString j with
+        | "stopped" -> Stopped
+        | "executing" -> Executing
+        | "paused" -> Paused
+        | "finished" -> Finished
+        | s -> raise (J.TypeMismatchException (j, "RunState", sprintf "'%s' is not a valid run state" s, null))
+
+    override x.ToString () =
+        match x with
+        | Stopped -> "stopped"
+        | Executing -> "executing"
+        | Paused -> "paused"
+        | Finished -> "finished"
+
+    member x.ToJson () = J.String (x.ToString ())
 
 type BlockData = KeyValuePair<IntVec3, Block> []
 
@@ -28,7 +60,6 @@ type WorldData = {
 }
 
 module World =
-
     let dataOfRobot (r:Robot.IRobot) =
         {Position=r.Position; Direction=r.Direction}
 

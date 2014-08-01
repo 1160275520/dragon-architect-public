@@ -12,7 +12,7 @@ public class Sandbox : MonoBehaviour {
 
         // if we don't do this, the program manager will just clear the grid immediately
         // TODO consider making a really unintuitive hack like this unecessary
-        EAPI_SetWorkshopMode("false");
+        progman.EditMode = EditMode.Persistent;
 
         var worldData = FindObjectOfType<Global>().SandboxWorldData;
         if (worldData != null) {
@@ -26,23 +26,6 @@ public class Sandbox : MonoBehaviour {
         }
 	}
 	
-    public void EAPI_SetWorkshopMode(string aIsWorkshopMode) {
-        bool isWorkshopMode = aIsWorkshopMode == "true";
-        var plane = GameObject.Find("Plane");
-        var progman = GetComponent<ProgramManager>();
-
-        if (!isWorkshopMode) {
-            var grass = Resources.Load<Material>("Grass");
-            var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));
-            plane.renderer.materials = new Material[] {grass, grassGrid};
-            progman.EditMode = Hackcraft.EditMode.Persistent;
-        } else {
-            var ground = Resources.Load<Material>("Ground");
-            plane.renderer.materials = new Material[] {ground};
-            progman.EditMode = Hackcraft.EditMode.Workshop;
-        }
-    }
-
 	// Update is called once per frame
 	void Update () {
 	

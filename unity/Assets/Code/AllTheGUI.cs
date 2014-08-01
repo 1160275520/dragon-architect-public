@@ -229,7 +229,7 @@ public class AllTheGUI : MonoBehaviour
                     makeButton("RUN!", new GUILayoutOption[] {
                         GUILayout.Width(BUTTON_COLUMN_WIDTH),
                         GUILayout.Height(2 * BUTTON_HEIGHT)
-                    }, () => progman.StartExecution(), false, "RunButton");
+                    }, () => progman.RunState = Hackcraft.RunState.Executing, false, "RunButton");
                 //}
             }
             //makeButton("Undo", options, () => progman.Undo());
