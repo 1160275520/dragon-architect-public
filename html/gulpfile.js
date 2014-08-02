@@ -5,6 +5,7 @@ var usemin = require('gulp-usemin');
 var uglify = require('gulp-uglify');
 var minifyHtml = require('gulp-minify-html');
 var minifyCss = require('gulp-minify-css');
+var preprocess = require('gulp-preprocess');
 var rev = require('gulp-rev');
 var rimraf = require('rimraf');
 
@@ -16,6 +17,7 @@ gulp.task('clean', function(cb) {
 
 gulp.task('usemin', ['clean'], function() {
     return gulp.src('index.html')
+        .pipe(preprocess({context: {}}))
         .pipe(usemin({
             css: [minifyCss(), 'concat'],
             html: [minifyHtml({empty: true})],

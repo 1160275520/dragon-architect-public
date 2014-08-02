@@ -40,11 +40,13 @@
     <header id="header">
       <h1>Hackcraft!</h1>
       <div id="header-nav">
+        <!-- @ifdef DEV -->
         <button id="button_header_levelSelect">Go to puzzle select</button>
         <button id="button_header_sandbox">Go to sandbox</button>
         <button id="button_header_save">Do a test save</button>
         <button id="button_header_clear_sandbox">Clear sandbox save data</button>
         <button onclick="devmode()">Activate Devloper Mode</button>
+        <!-- @endif -->
       </div>
       <div class="sandboxModeUI">
         <p>You are in sandbox mode!</p>
