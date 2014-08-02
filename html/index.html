@@ -86,24 +86,26 @@
         </div>
       </div>
       <div id="main-view-code" class="codeEditor">
-        <iframe id="blockly" src="frame.html"></iframe>
-        <div id="instructionsContainer" style="visibility: hidden;">
-          <span id="instructionsBackground" style="display:block;">
-            <img id="dragonIcon" src="media/dragon_icon.png" height="100px" style="visibility:hidden;float:left;"/>
-            <div id="instructions">
-              <p id="instructions-reminder" class="instructions" style="visibility:hidden;"></p>
-              <p id="instructions-goal" class="instructions" style="visibility:hidden;"></p>
-              <p id="instructions-detail" class="instructions" style="visibility:hidden;vertical-align:middle;"></p>
+        <div id="instructions-container">
+          <div id="instructions-display">
+            <div id="instructions-header">
+              <img id="instructions-icon" src="media/dragon_icon.png">
+              <p id="instructions-reminder"></p>
+              <p id="instructions-goal"></p>
             </div>
-          </span>
+            <p id="instructions-detail"></p>
+          </div>
         </div>
-        <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">
-          <button id="btn-run" class="game-control-btn-playback codeEditor">X</button>
-          <button id="btn-pause" class="game-control-btn-playback puzzleModeUI sandboxModeUI">X</button>
+        <div id="code-area">
+          <iframe id="blockly" src="frame.html"></iframe>
+          <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">
+            <button id="btn-run" class="game-control-btn-playback codeEditor">X</button>
+            <button id="btn-pause" class="game-control-btn-playback puzzleModeUI sandboxModeUI">X</button>
+          </div>
+          <button id="btn-undo" style="display: none;">Undo</button>
+          <p id="statement-counter"></p>
+          <img id="trash-arrow" src="media/arrow.png"/>
         </div>
-        <button id="btn-undo" style="display: none;">Undo</button>
-        <p id="statement-counter"></p>
-        <img id="trash-arrow" src="media/arrow.png"/>
       </div>
     </div>
   </body>

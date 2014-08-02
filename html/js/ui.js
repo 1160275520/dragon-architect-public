@@ -191,110 +191,53 @@ module.Instructions = (function() {
     var isLarge = false;
     var clickCallback;
 
+    function setOnExpandAnimationDone(f) {
+        setTimeout(f, 1000);
+    }
+
     function makeSmall() {
         isLarge = false;
-        var instContainer = $("#instructionsContainer")[0];
-        instContainer.onclick = null;
 
-        $("#instructionsBackground").removeClass("instructionsShow");
-        $("#instructionsBackground").addClass("instructionsHide");
-        $("#instructions-detail").removeClass("detailShow");
-        $("#instructions-detail").addClass("detailHide");
+        var container = $("#instructions-container")[0];
+        container.onclick = null;
+        $("#instructions-display").removeClass("expanded");
 
-        var detail = $("#instructions-detail")[0];
-        detail.style.height = '0px';
-
-        var reminder = $("#instructions-reminder")[0];
-        reminder.innerHTML = "(Click to show)";
-
-        setTimeout(function() {
+        setOnExpandAnimationDone(function() {
             if (!isLarge) {
-                instContainer.style.height = "auto";
-                if (clickCallback) {
-                    instContainer.onclick = clickCallback;
-                } else {
-                    instContainer.onclick = makeLarge;
-                }
+                $("#instructions-reminder").html("(Click to show more)");
+                container.onclick = clickCallback ? clickCallback : makeLarge;
             }
-        }, 1000);
+        });
     }
 
     function makeLarge() {
         isLarge = true;
-        var instContainer = $("#instructionsContainer")[0];
-        instContainer.style.height = "100%";
-        instContainer.onclick = null;
 
-        $("#instructionsBackground").removeClass("instructionsHide");
-        $("#instructionsBackground").addClass("instructionsShow");
-        $("#instructions-detail").removeClass("detailHide");
-        $("#instructions-detail").addClass("detailShow");
+        var container = $("#instructions-container")[0];
+        container.onclick = null;
+        $("#instructions-display").addClass("expanded");
 
-        $("#instructions").addClass("speechBubble");
-        var inst = $("#instructions")[0];
-        inst.style.webkitAnimationPlayState = "paused";
-        inst.style.animationPlayState = "paused";
-
-        var dragon = $("#dragonIcon")[0];
-        $("#dragonIcon").addClass("speechBubble");
-        dragon.style.webkitAnimationPlayState = "paused";
-        dragon.style.animationPlayState = "paused";
-
-        var goal = $("#instructions-goal")[0];
-
-        var detail = $("#instructions-detail")[0];
-        detail.style.height = "auto";
-
-        var reminder = $("#instructions-reminder")[0];
-        reminder.innerHTML = "(Click to hide)";
-
-        setTimeout(function () {
-            if (isLarge) { 
-                if (clickCallback) {
-                    instContainer.onclick = clickCallback;                    
-                } else {
-                    instContainer.onclick = makeSmall;
-                }
+        setOnExpandAnimationDone(function () {
+            if (isLarge) {
+                $("#instructions-reminder").html("(Click to hide)");
+                container.onclick = clickCallback ? clickCallback : makeSmall;
             }
-        }, 1000);
+        });
     }
 
     self.hide = function() {
-        $('#instructionsContainer').css('visibility', 'hidden');
+        $('#instructions-container').css('visibility', 'hidden');
     }
 
-    self.show = function(instructions, cb, startLarge) {
+    self.show = function(instructions, cb, doStartLarge) {
         clickCallback = cb;
         if (instructions) {
             $('#instructions-goal').html(instructions.summary);
             $('#instructions-detail').html(instructions.detail);
         }
-        $('#instructionsContainer').css('visibility', 'visible');
+        $('#instructions-container').css('visibility', 'visible');
 
-        var blockly = document.getElementById('blockly').contentWindow.document.body;
-        var rect = $("svg g", blockly)[0].getBoundingClientRect();
-        var instContainer = $("#instructionsContainer")[0];
-        instContainer.style.top = '0px';
-        instContainer.style.left = rect.width + 'px';
-        instContainer.style.width = (blockly.getBoundingClientRect().width - rect.width - 150) + 'px';
-        instContainer.style.height = "100%";
-        instContainer.onclick = null;
-
-        var inst = $("#instructions")[0];
-        var goal = $("#instructions-goal")[0];
-        var dragon = $("#dragonIcon")[0];
-        var detail = $("#instructions-detail")[0];
-        var reminder = $("#instructions-reminder")[0];
-        dragon.style.visibility = "visible";
-        goal.style.visibility = "visible";
-        detail.style.visibility = "visible";
-        reminder.style.visibility = "visible";
-        dragon.style.webkitAnimationPlayState = "running";
-        dragon.style.animationPlayState = "running";
-        inst.style.webkitAnimationPlayState = "running";
-        inst.style.animationPlayState = "running";
-
-        if (startLarge) {
+        if (doStartLarge) {
             makeLarge();
         } else {
             makeSmall();

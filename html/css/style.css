@@ -31,7 +31,7 @@ body {
 
 header {
     display: flex;
-    height: 70px;
+    height: 60px;
     flex: none;
     background: #fff;
 }
@@ -54,7 +54,7 @@ header h1 {
     display: flex;
     align-items: stretch;
     width: 100%;
-    margin-top: 15px;
+    margin: 10px 0;
     flex-grow: 1;
     min-height: 800px;
 }
@@ -73,31 +73,21 @@ header h1 {
     width: 60%;
     margin-left: 25px;
     display: flex;
+    flex-direction: column;
     align-items: stretch;
+}
+
+#code-area {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    flex-grow: 1;
 }
 
 #blockly {
     border: none;
     flex-grow: 1;
 }
-
-/*
-#main-view-game.transition {
-    transition: width 1.0s ease-in-out;
-}
-
-#main-view-code.transition {
-    transition: margin-left 1.0s ease-in-out;
-}
-
-#main-view-game.title {
-    width: 75%;
-}
-
-#main-view-code.title {
-    margin-left: 75%;
-}
-*/
 
 /* Game controls, buttons and sliders */
 /************************************************************/

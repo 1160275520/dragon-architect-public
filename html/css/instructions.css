@@ -1,37 +1,48 @@
 
-#instructionsContainer {
-    position: absolute;
+#instructions-container {
     z-index: 1;
-    height: 100%;
+    height: 110px;
+    max-height: 110px;
+    min-height: 110px;
+    overflow: visible;
+    flex: none;
 }
 
-#instructionsBackground {
-    top: 0px;
-    left: 10px;
-    padding:10px;
-    background: #333; /* default background for browsers without gradient support */
+#instructions-display {
+    padding: 10px;
+    background: #333;
     opacity: 0.95;
     border-radius:10px;
     width: 100%;
-}
-
-#instructions {
     color:#fff;
     font-family: "Ubuntu Mono";
-    padding: 15px;
 }
 
-p.instructions {
+#instructions-header {
+    overflow: auto;
+}
+
+#instructions > p {
     margin: 2px;
 }
 
 #instructions-goal {
     font-size: 16pt;
-    padding-bottom: 20px;
 }
 
 #instructions-detail {
     font-size: 12pt;
+    max-height: 0px;
+    overflow: hidden;
+    padding: 0;
+
+    transition: none 1.0s;
+    transition-property: padding-top, max-height;
+}
+
+#instructions-display.expanded #instructions-detail {
+    max-height: 1000px;
+    padding-top: 10px;
 }
 
 #instructions-reminder {
@@ -40,7 +51,7 @@ p.instructions {
     cursor: pointer;
 }
 
-#instructions button {
+#instructions-display button {
     display: block;
     color: black;
     font-size: 18pt;
@@ -50,143 +61,11 @@ p.instructions {
     border-radius: 8px;
 }
 
-.instructionsShown {
-    border-style: solid;
-    border-width: 4px;
-    border-color: #B24E3A;
-    border-radius:10px;
-    padding: 25px;
-    padding-bottom: 10px;  
-}
-
-#dragonIcon {
-    top: -10px;
-    padding: 10px;
+#instructions-icon {
+    float: left;
+    padding-right: 10px;
     position: relative;
-}
-
-@-webkit-keyframes instructionsShow {
-    0% {
-        min-height: 0%;
-    }
-
-    100% {
-        min-height: 100%;
-    }
-}
-
-@keyframes instructionsShow {
-    0% {
-        min-height: 0%;
-    }
-
-    100% {
-        min-height: 100%;
-    }
-}
-
-.instructionsShow {
-    -webkit-animation-name: instructionsShow;
-    animation-name: instructionsShow;
-    -webkit-animation-duration: 0.75s;
-    animation-duration: 0.75s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
-}
-
-@-webkit-keyframes instructionsHide {
-    0% {
-        min-height: 100%;
-    }
-
-    100% {
-        min-height: 0%;
-    }
-}
-
-@keyframes instructionsHide {
-    0% {
-        min-height: 100%;
-    }
-
-    100% {
-        min-height: 0%;
-    }
-}
-
-.instructionsHide {
-    -webkit-animation-name: instructionsHide;
-    animation-name: instructionsHide;
-    -webkit-animation-duration: 0.75s;
-    animation-duration: 0.75s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
-}
-
-@-webkit-keyframes detailShow {
-    0% {
-        opacity: 0;
-        padding-bottom: 0px;
-    }
-
-    100% {
-        opacity: 1;
-        padding-bottom: 25px;
-    }
-}
-
-@keyframes detailShow {
-    0% {
-        opacity: 0;
-        padding-bottom: 0px;
-    }
-
-    100% {
-        opacity: 1;
-        padding-bottom: 25px;
-    }
-}
-
-.detailShow {
-    -webkit-animation-name: detailShow;
-    animation-name: detailShow;
-    -webkit-animation-duration: 0.75s;
-    animation-duration: 0.75s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
-}
-
-@-webkit-keyframes detailHide {
-    0% {
-        opacity: 1;
-        padding-bottom: 25px;
-    }
-
-    100% {
-        opacity: 0;
-        padding-bottom: 0px;
-    }
-}
-
-@keyframes detailHide {
-    0% {
-        opacity: 1;
-        padding-bottom: 25px;
-    }
-
-    100% {
-        opacity: 0;
-        padding-bottom: 0px;
-    }
-}
-
-.detailHide {
-    -webkit-animation-name: detailHide;
-    animation-name: detailHide;
-    -webkit-animation-duration: 0.75s;
-    animation-duration: 0.75s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+    height: 80px;
 }
 
 @-webkit-keyframes speechBubble {
