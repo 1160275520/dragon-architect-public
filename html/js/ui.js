@@ -189,40 +189,43 @@ module.Instructions = (function() {
 
     var self = {};
     var isLarge = false;
-    var clickCallback;
 
     function setOnExpandAnimationDone(f) {
         setTimeout(f, 1000);
     }
 
-    function makeSmall() {
-        isLarge = false;
+    function setSize(doMakeLarge, clickCallback, doAnimate) {
 
-        var container = $("#instructions-container")[0];
-        container.onclick = null;
-        $("#instructions-display").removeClass("expanded");
+        return function() {
+            isLarge = doMakeLarge;
+            var container = $("#instructions-container")[0];
+            container.onclick = null;
 
-        setOnExpandAnimationDone(function() {
-            if (!isLarge) {
-                $("#instructions-reminder").html("(Click to show more)");
-                container.onclick = clickCallback ? clickCallback : makeLarge;
+            if (doAnimate) {
+                $("#instructions-display").removeClass("no-transition");
+            } else {
+                $("#instructions-display").addClass("no-transition");
             }
-        });
-    }
 
-    function makeLarge() {
-        isLarge = true;
-
-        var container = $("#instructions-container")[0];
-        container.onclick = null;
-        $("#instructions-display").addClass("expanded");
-
-        setOnExpandAnimationDone(function () {
-            if (isLarge) {
-                $("#instructions-reminder").html("(Click to hide)");
-                container.onclick = clickCallback ? clickCallback : makeSmall;
+            if (doMakeLarge) {
+                $("#instructions-display").addClass("expanded");
+            } else {
+                $("#instructions-display").removeClass("expanded");
             }
-        });
+
+            function onDone() {
+                if (isLarge === doMakeLarge) {
+                    $("#instructions-reminder").html(isLarge ? "(Click to show hide)" : "(Click to show more)");
+                    container.onclick = clickCallback ? clickCallback : setSize(!doMakeLarge, null, true);
+                }
+            }
+
+            if (doAnimate) {
+                setOnExpandAnimationDone(onDone);
+            } else {
+                onDone();
+            }
+        }
     }
 
     self.hide = function() {
@@ -230,18 +233,12 @@ module.Instructions = (function() {
     }
 
     self.show = function(instructions, cb, doStartLarge) {
-        clickCallback = cb;
         if (instructions) {
             $('#instructions-goal').html(instructions.summary);
             $('#instructions-detail').html(instructions.detail);
         }
         $('#instructions-container').css('visibility', 'visible');
-
-        if (doStartLarge) {
-            makeLarge();
-        } else {
-            makeSmall();
-        }
+        setSize(doStartLarge, cb, false)();
     }
 
     return self;

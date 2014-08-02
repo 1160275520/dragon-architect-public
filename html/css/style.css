@@ -322,3 +322,10 @@ header h1 {
     cursor: pointer;
 }
 
+/* misc */
+/************************************************************/
+
+.no-transition {
+    transition: none !important;
+}
+
