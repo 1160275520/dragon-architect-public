@@ -1,11 +1,11 @@
 
 import sys
 import argparse
-from tornado.wsgi import WSGIContainer
-from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop
+import gevent.monkey
+from gevent.wsgi import WSGIServer
 from . import app
 
+PORT=5000
 
 def _go(args):
     app.setup()
@@ -13,12 +13,12 @@ def _go(args):
     if args.mode == 'dev':
         print("Starting development server...")
         app.app.config['DEBUG'] = True
-        app.app.run()
+        app.app.run(port=PORT)
     elif args.mode == 'prd':
         print("Starting production server...")
-        http_server = HTTPServer(WSGIContainer(app.app))
-        http_server.listen(5000)
-        IOLoop.instance().start()
+        gevent.monkey.patch_all()
+        http_server = WSGIServer(('', PORT), app.app)
+        http_server.serve_forever()
     else:
         sys.stderr.write("Invalid mode %s, aborting.\n" % args.mode)
         sys.exit(1)

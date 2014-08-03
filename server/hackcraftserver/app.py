@@ -4,7 +4,6 @@ import flask
 import flask.ext.sqlalchemy
 import flask.ext.restless
 from flask import request
-import requests
 
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -18,27 +17,6 @@ def add_cors_header(response):
     response.headers['Access-Control-Allow-Credentials'] = 'true'
 
     return response
-
-params_to_not_copy = frozenset(['r_url_s', 'r_url_p', 'r_url_action_type'])
-headers_to_not_copy = frozenset(['Host', 'Content-Length'])
-
-@app.route('/api/logging_proxy', methods=['GET', 'POST'])
-def logging_proxy():
-    a = request.args
-    url = 'http://' + a['r_url_s'] + a['r_url_p']
-    method = a['r_url_action_type']
-    headers = {k:v for k,v in request.headers.items() if k not in headers_to_not_copy}
-    params = {k:v for k,v in request.args.items() if k not in params_to_not_copy}
-
-    data = None
-    if method == 'POST':
-        data = request.stream.read()
-
-    print('proxying request to ' + url)
-    resp = requests.request(method=method, url=url, params=params, data=data, headers=headers, stream=True)
-    headers = dict(resp.headers.items())
-
-    return (resp.raw.data, resp.status_code, headers)
 
 class Player(db.Model):
     __tablename__ = 'player'
