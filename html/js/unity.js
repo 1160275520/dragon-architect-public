@@ -34,16 +34,14 @@ module.Player = (function(){
 
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
 
+    var selector = '#unity-player embed, #unity-player, #main-view-game';
+
     self.hide = function() {
-        $('#unity-player embed, #unity-player')
-            .css('width', '1px').css('height', '1px');
+        $(selector).css('width', '1px').css('height', '1px');
     };
 
     self.show = function() {
-        $('#unity-player embed')
-            .css('width', '100%').css('height', '100%');
-        $('#unity-player')
-            .css('width', '100%').css('height', 'auto');
+        $(selector).removeAttr('style');
     };
 
     return self;
