@@ -31,7 +31,6 @@ public class AllTheGUI : MonoBehaviour
     public static readonly int SPACING = 10;
 
     public GUISkin CustomSkin;
-    public GameObject SpeechBubble;
 
     public bool IsActiveMainControls = true;
     public bool IsActiveCodeEditor = true;
@@ -47,7 +46,7 @@ public class AllTheGUI : MonoBehaviour
     private Rect area;
     private float lastUpdateTime = 0.0f;
 
-    private static readonly string[] PROCS = new string[] { "MAIN", "F1", "F2", "F3", "F4", "F5" };
+    private static readonly string[] PROCS = new string[] { "MAIN"};
 
     private bool isFirstUpdate = true;
     private Action currentModalWindow = null;
@@ -342,9 +341,9 @@ public class AllTheGUI : MonoBehaviour
                     newStatement = makeRepeat(command, highlight);
                 }
             }
-            //if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
+            if (!progman.RunState.IsExecuting && Event.current.type == EventType.Repaint) {
                 statementRects [procName].Add(getLastRect());
-            //}
+            }
             GUILayout.Space(SPACING / 2);
 
             if (newStatement != null) {
@@ -353,9 +352,9 @@ public class AllTheGUI : MonoBehaviour
         }
         GUILayout.FlexibleSpace();
         GUILayout.EndVertical();
-        //if (!progman.IsExecuting && Event.current.type == EventType.Repaint) {
+        if (!progman.RunState.IsExecuting && Event.current.type == EventType.Repaint) {
             procRects.Add(procName, getLastRect());
-        //}
+        }
     }
 
     private Imperative.Statement makeCall(Imperative.Statement statement, GUIStyleType highlight)

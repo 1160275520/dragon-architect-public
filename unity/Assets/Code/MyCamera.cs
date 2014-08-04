@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class MyCamera : MonoBehaviour
 {
@@ -101,12 +102,13 @@ public class MyCamera : MonoBehaviour
     }
 
     public void Rotate(float degrees) {
-        //Debug.Log("rotating " + degrees);
         relCameraPos = Quaternion.AngleAxis(degrees, Vector3.up) * relCameraPos;
     }
 
     public void Zoom(float scale) {
-        relCameraPos *= scale;
-        relCameraPosMag = relCameraPos.magnitude - 0.5f;
+        if ((relCameraPosMag > 5 && scale < 1) || (relCameraPosMag < 100 && scale > 1)) { // limits on how far or close camera can zoom           
+            relCameraPos *= scale;
+            relCameraPosMag = relCameraPos.magnitude - 0.5f;
+        }
     }
 }
