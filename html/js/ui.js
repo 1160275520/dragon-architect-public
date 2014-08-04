@@ -339,6 +339,8 @@ module.CubeCounter = (function() {
             return g.type === "cube_count";
         }) : false;
         $('#cube-counter').css('display', isVisible ? 'block' : 'none');
+        var n = 0;
+        $('#cube-counter').html(n.toString() + " cubes placed.");
     };
 
     self.update = function(count) {

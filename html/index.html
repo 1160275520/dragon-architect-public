@@ -39,17 +39,18 @@
   <body>
     <header id="header">
       <h1>Hackcraft!</h1>
-      <div id="header-nav">
+      <div class="sandboxModeUI">
+        <p>You are in sandbox mode!</p>
+        <button id="btn-modules">Learn more code</button>
+        <button id="button_header_clear_sandbox">Clear sandbox save data</button>
+      </div>
+      <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
+      <div>
         <!-- @ifdef DEV -->
         <button id="button_header_levelSelect">Go to puzzle select</button>
         <button id="button_header_sandbox">Go to sandbox</button>
         <button onclick="devmode()">Activate Devloper Mode</button>
         <!-- @endif -->
-      </div>
-      <div class="sandboxModeUI">
-        <p>You are in sandbox mode!</p>
-        <button id="btn-modules">Learn more code</button>
-        <button id="button_header_clear_sandbox">Clear sandbox save data</button>
       </div>
     </header>
     <div id="selector-puzzle" class="levelSelector">
@@ -64,13 +65,13 @@
     <div id="main">
       <div id="main-view-game">
         <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
-          <span id="game-controls-camera" class="game-control codeEditor">
+          <div class="game-control codeEditor">
             <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>
             <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
             <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
             <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
             <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
-          </span>
+          </div>
           <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop Mode</button>
         </div>
         <div id="unity-player"></div>
@@ -83,7 +84,7 @@
             </div>
             <div id="slider"></div>
           </div>
-          <div id="cube-counter" class="puzzleModeUI" style:"display: none;">0 cubes placed</div>
+          <p id="cube-counter" class="game-control puzzleModeUI">X</p>
         </div>
       </div>
       <div id="main-view-code" class="codeEditor">

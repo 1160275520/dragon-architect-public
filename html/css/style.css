@@ -31,20 +31,26 @@ body {
 
 header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     height: 60px;
     flex: none;
     background: #fff;
 }
 
-header h1 {
-    float: left;
-    overflow: auto;
-    margin: 0 50px 0 0;
+header > div {
+    flex-grow: 0;
+    display: flex;
+    align-items: center;
 }
 
-#header-nav {
-    float: right;
-    margin-left: 50px;
+header > div * {
+    margin: 7px;
+}
+
+header > h1 {
+    margin: 0 10px;
+    flex-grow: 0;
 }
 
 /* main area and two main vertical divs */
@@ -95,6 +101,7 @@ header h1 {
 .game-controls-bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 75px;
     padding: 5px;
 }
@@ -104,7 +111,40 @@ header h1 {
 }
 
 .game-control {
+    border: 2px solid black;
+    border-radius: 6px;
+    height: 52px;
 }
+
+p.game-control {
+    font-size: 16pt;
+    padding: 10px;
+}
+
+div.game-control {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+.control-element {
+    margin: 0 2px 0 0;
+}
+
+header button, .control-btn, .control-icon-btn {
+    display: block;
+    height: 40px;
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+.control-icon-btn {
+    width: 40px;
+    margin: 0 0 0 5px;
+}
+
+/* run/pause buttons */
+/************************************************************/
 
 #game-control-bar-playback {
     display: flex;
@@ -112,16 +152,6 @@ header h1 {
     position: absolute;
     right: 10px;
     top: 10px;
-}
-
-#game-controls-bar-bottom {
-    justify-content: space-between;
-}
-
-#cube-counter {
-    border: 2px solid black;
-    border-radius: 6px;
-    font-size: 16pt;
 }
 
 .game-control-btn-playback {
@@ -158,30 +188,6 @@ header h1 {
 #btn-pause.disabled {
     background-color: #BBB;
     color: #777;
-}
-
-#game-controls-camera {
-    display: flex;
-    align-items: center;
-    border: 2px solid black;
-    border-radius: 6px;
-    padding: 0;
-}
-
-.control-element {
-    margin: 0 7px;
-}
-
-.control-btn, .control-icon-btn {
-    display: inline-block;
-    height: 40px;
-    border: 2px solid black;
-    border-radius: 4px;
-}
-
-.control-icon-btn {
-    width: 40px;
-    margin: 5px 5px 5px 0;
 }
 
 /* unity player */
