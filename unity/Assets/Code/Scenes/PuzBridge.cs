@@ -11,11 +11,6 @@ public class PuzBridge : MonoBehaviour {
     
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-
-        lh.SetInstructions(
-            "Use what you've learned to help me fill in the blueprint!",
-            ""
-            );
         
         var template = new List<IntVec3>();
         template.Add(new IntVec3(1,0,0));

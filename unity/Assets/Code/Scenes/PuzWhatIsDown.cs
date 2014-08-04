@@ -10,10 +10,7 @@ public class PuzWhatIsDown : MonoBehaviour
     
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-        lh.SetInstructions(
-            "Help me get to the pink box!",
-            "Use three <object data=\"media/blockSvgs/down.svg\" style=\"vertical-align:middle\"></object>."
-            );
+
         var progman = GetComponent<ProgramManager>();
         var target = new IntVec3(0,0,0);
         

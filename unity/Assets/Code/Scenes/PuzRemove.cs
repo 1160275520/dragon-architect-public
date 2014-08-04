@@ -10,10 +10,7 @@ public class PuzRemove : MonoBehaviour
     
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-        lh.SetInstructions(
-            "Help me remove those three cubes!",
-            "Add one more <object data=\"media/blockSvgs/removeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program."
-            );
+
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.remove.remove_blocks");
         var template = new IntVec3[] {};

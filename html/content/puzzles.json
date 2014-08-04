@@ -54,6 +54,10 @@
         "tutorial": {
             "highlighted": ["PlaceBlock"]
         },
+        "instructions": {
+            "summary": "I need to place some blocks in the blue boxes, but my program skips one!",
+            "detail": "Use one {placeblock} to fix my program."
+        },
         "logging_id": 23
     },
     "remove.remove_blocks":{
@@ -73,6 +77,10 @@
                 {"pos": [0,0,5], "blk": 0}
             ]}
         },
+        "instructions": {
+            "summary": "Help me remove those three cubes!",
+            "detail": "Add one more {removeblock} to fix my program."
+        },
         "logging_id": 29
     },
     "up.what_is_up":{
@@ -84,6 +92,10 @@
         },
         "tutorial": {
             "highlighted": ["Up"]
+        },
+        "instructions": {
+            "summary": "Help me get to the pink box!",
+            "detail": "Use two {up} to complete my program."
         },
         "logging_id": 30
     },
@@ -100,6 +112,10 @@
         "world": {
             "robots": [{"pos": [2, 3, 0], "dir":[-1, 0, 0]}]
         },
+        "instructions": {
+            "summary": "Help me get to the pink box!",
+            "detail": "Use three {down} to get me there."
+        },
         "logging_id": 33
     },
     "up.bridge":{
@@ -108,6 +124,10 @@
         "library": {
             "required": ["move2", "place", "up", "down"],
             "granted": []
+        },
+        "instructions": {
+            "summary": "Use what you've learned to help me fill in the blueprint!",
+            "detail": ""
         },
         "logging_id": 34
     },
@@ -118,6 +138,10 @@
             "required": ["move2", "place", "up", "down"],
             "granted": ["camera_rotate"]
         },
+        "instructions": {
+            "summary": "Solve the challenge by filling in the blueprint!",
+            "detail": "It's hard to see where the blocks should go from this angle! When you need a better view, use the {rotateCW} and {rotateCCW} buttons to rotate your view."
+        },
         "logging_id": 35
     },
     "repeat.arguments":{
@@ -127,6 +151,10 @@
             "required": ["move2", "place"],
             "granted": []
         },
+        "instructions": {
+            "summary":  "Help me put blocks on the blue boxes!",
+            "detail": "The number in each {forward} tells me how many spaces to move. Change the numbers to complete my program."
+        },
         "logging_id": 24
     },
     "repeat.speed_slider": {
@@ -135,6 +163,10 @@
         "library": {
             "required": ["move2", "place", "repeat"],
             "granted": ["speed_slider"]
+        },
+        "instructions": {
+            "summary": "This program takes a long time to run. Speed me up by dragging {speedSlider} to <b>Fast</b>!",
+            "detail": ""
         },
         "logging_id": 25
     },
@@ -148,6 +180,10 @@
         "tutorial": {
             "highlighted": ["controls_repeat"]
         },
+        "instructions": {
+            "summary": "Help me fill in the blueprint by using {repeat5}!",
+            "detail": "{repeat5} tells me to do everything inside 5 times. You will need to attach it to my existing code, and change the number of times from 10 to 5."
+        },
         "logging_id": 26
     },
     "repeat.repeat_fixedLoops": {
@@ -156,6 +192,10 @@
         "library": {
             "required": ["move2", "place", "repeat"],
             "granted": []
+        },
+        "instructions": {
+            "summary": "Help me fill in the blueprint by adding a {forward} and a {placeblock} to my program!",
+            "detail": "Try adding those blocks inside {repeat}."
         },
         "logging_id": 27
     },
@@ -171,6 +211,10 @@
             "comp":">=", 
             "value":101
         }],
+        "instructions": {
+            "summary": "Write a program to have me place 101 cubes!",
+            "detail": "It may be helpful to use {repeat}."
+        },
         "logging_id": 28
     }
 }

@@ -12,11 +12,6 @@ public class PuzSpeedSlider : MonoBehaviour
 	void Start() {
         var lh = GetComponent<PuzzleHelper>();
 
-        lh.SetInstructions(
-            "<object data=\"media/speedSlider.png\" style=\"vertical-align:middle\"></object> changes the rate at which your program executes.",
-            "This program takes a long time to run; speed it up by dragging the <i>Speed Slider</i> to <b>Fast</b>!"
-        );
-
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.speed_slider");
         lh.SetIsFrozenBlocks("MAIN", true);

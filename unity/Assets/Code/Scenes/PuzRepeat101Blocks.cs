@@ -12,12 +12,6 @@ public class PuzRepeat101Blocks : MonoBehaviour {
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
 
-        var rep = "<object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object>";
-        lh.SetInstructions(
-            String.Format("Write a program to have me place 101 cubes!"),
-            String.Format("It may be helpful to use {0}.", rep)
-        );
-
         var progman = GetComponent<ProgramManager>();
         progman.TicksPerStep = 10; // make execution a little faster, as there's no speed slider yet and the programs will need to place lots of blocks
 

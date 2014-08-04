@@ -12,12 +12,6 @@ public class PuzRepeatFixedProgram : MonoBehaviour {
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
         
-        var rep = "<object data=\"media/blockSvgs/repeat5.svg\" style=\"vertical-align:middle\"></object>";
-        lh.SetInstructions(
-            String.Format("Help me fill in the blueprint by using {0}!", rep),
-            String.Format("{0} tells me to do everything inside 5 times. You will need to attach it to my existing code, and change the number of times from 10 to 5.", rep)
-        );
-        
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.repeat.repeat_fixedProgram");
         lh.SetIsFrozenBlocks("MAIN", true);

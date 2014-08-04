@@ -190,6 +190,39 @@ module.Instructions = (function() {
     var self = {};
     var isLarge = false;
 
+    var imgFileMap = {
+        forward: "media/blockSvgs/forward.svg",
+        left: "media/blockSvgs/left.svg",
+        right: "media/blockSvgs/right.svg",
+        placeblock: "media/blockSvgs/placeblock.svg",
+        removeblock: "media/blockSvgs/removeblock.svg",
+        up: "media/blockSvgs/up.svg",
+        down: "media/blockSvgs/down.svg",
+        repeat: "media/blockSvgs/repeat.svg",
+        repeat4: "media/blockSvgs/repeat4.svg",
+        repeat5: "media/blockSvgs/repeat5.svg",
+        repeat9: "media/blockSvgs/repeat9.svg",
+        go: "media/runButton.png",
+        rotateCW: "media/rotateCWButton.png",
+        rotateCCW: "media/rotateCCWButton.png",
+        learn: "media/learnButton.png",
+        speedSlider: "media/speedSlider.png"
+    }
+
+    function makeImgHtml(file) {
+        return "<object data=\"" + file + "\" style=\"vertical-align:middle\"></object>";
+    }
+
+    function processTemplate(str) {
+        return str.replace(/{(\w+)}/g, function(match, id) {
+            console.log(id); 
+            return typeof imgFileMap[id] != 'undefined'
+                ? makeImgHtml(imgFileMap[id]) 
+                : match
+            ;
+        });
+    }
+
     function setOnExpandAnimationDone(f) {
         setTimeout(f, 1000);
     }
@@ -234,8 +267,8 @@ module.Instructions = (function() {
 
     self.show = function(instructions, cb, doStartLarge) {
         if (instructions) {
-            $('#instructions-goal').html(instructions.summary);
-            $('#instructions-detail').html(instructions.detail);
+            $('#instructions-goal').html(processTemplate(instructions.summary));
+            $('#instructions-detail').html(processTemplate(instructions.detail));
         }
         $('#instructions-container').css('visibility', 'visible');
         setSize(doStartLarge, cb, false)();

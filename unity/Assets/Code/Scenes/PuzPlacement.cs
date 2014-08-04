@@ -10,10 +10,7 @@ public class PuzPlacement : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-        lh.SetInstructions(
-            "I need to place some blocks in the blue boxes, but my program skips one!",
-            "Use one <object data=\"media/blockSvgs/placeblock.svg\" style=\"vertical-align:middle\"></object> to fix my program."
-        );
+
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.tutorial.placement");
         var template = new IntVec3[] {

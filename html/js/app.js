@@ -406,7 +406,7 @@ handler.onSandboxStart = function() {
             logging_id: 11,
             library: {required:[],granted:[]},
             program: {type: 'xml', value: storage.load('sandbox_program')},
-            instructions: {summary:"Let's build something cool! Click <object data=\"media/learnButton.png\" style=\"vertical-align:middle\"></object> to get new code blocks and abilities.", detail:""}
+            instructions: {summary:"Let's build something cool! Click {learn} to get new code blocks and abilities.", detail:""}
         }
     };
 
