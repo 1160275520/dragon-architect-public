@@ -14,7 +14,7 @@ public class PuzRepeat101Blocks : MonoBehaviour {
 
         var rep = "<object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object>";
         lh.SetInstructions(
-            String.Format("Write a program to have me place 101 blocks!"),
+            String.Format("Write a program to have me place 101 cubes!"),
             String.Format("It may be helpful to use {0}.", rep)
         );
 

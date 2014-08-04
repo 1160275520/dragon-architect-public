@@ -114,6 +114,16 @@ header h1 {
     top: 10px;
 }
 
+#game-controls-bar-bottom {
+    justify-content: space-between;
+}
+
+#cube-counter {
+    border: 2px solid black;
+    border-radius: 6px;
+    font-size: 16pt;
+}
+
 .game-control-btn-playback {
     display: block;
     font-weight: bold;
@@ -301,11 +311,13 @@ header h1 {
     fill: none;
 }
 
-.moduleSelector {
+#selector-module {
     display: flex;
     flex-direction: column;
     background-color: #fff;
     align-items: center;
+    z-index: 1;
+    min-height: 400px;
 }
 
 .moduleOptions {

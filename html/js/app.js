@@ -502,6 +502,10 @@ handler.onUnlockDevMode = function() {
     Blockly.mainWorkspace.maxBlocks = 5000;
 };
 
+handler.onCubeCount = function(count) {
+    HackcraftUI.CubeCounter.update(count);
+}
+
 return onHackcraftEvent;
 }());
 

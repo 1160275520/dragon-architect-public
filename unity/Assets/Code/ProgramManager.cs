@@ -247,6 +247,7 @@ public class ProgramManager : MonoBehaviour {
                     GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
                 } else {
                     setGameStateToIndex(currentStateIndex, dt);
+                    GetComponent<ExternalAPI>().SendCubeCount(GetComponent<Grid>().CellsFilled);
                 }
             }
         }

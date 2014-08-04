@@ -341,6 +341,10 @@ module.CubeCounter = (function() {
         $('#cube-counter').css('display', isVisible ? 'block' : 'none');
     };
 
+    self.update = function(count) {
+        $('#cube-counter').html(count + " cubes placed.");
+    }
+
     return self;
 }());
 

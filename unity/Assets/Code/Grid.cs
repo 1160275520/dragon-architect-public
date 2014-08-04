@@ -63,6 +63,12 @@ public class Grid : MonoBehaviour {
         }
     }
 
+    public int CellsFilled {
+        get {
+            return state.Length;
+        }
+    }
+
     public IEnumerable<IntVec3> AllCellLocations {
         get {
             var offsetKeys = new List<IntVec3>();

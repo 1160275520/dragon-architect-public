@@ -78,8 +78,9 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onTitleButtonClicked", button);
     }
 
-    // program state
-    //////////////////////////////////////////////////////////////////////////
+    public void SendCubeCount(int count) {
+        Application.ExternalCall(ExternalApiFunc, "onCubeCount", count);
+    }
 
     public void EAPI_SetProgramFromJson(string json) {
         try {
