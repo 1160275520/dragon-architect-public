@@ -35,13 +35,15 @@ module.Player = (function(){
     // HACK TODO oh god come up with something better than this that works to hide/show the player T_T
 
     self.hide = function() {
-        var u = $('#unity-player embed, #unity-player');
-        u.css('width', '1px').css('height', '1px');
+        $('#unity-player embed, #unity-player')
+            .css('width', '1px').css('height', '1px');
     };
 
     self.show = function() {
-        var u = $('#unity-player embed, #unity-player');
-        u.css('width', '100%').css('height', '100%');
+        $('#unity-player embed')
+            .css('width', '100%').css('height', '100%');
+        $('#unity-player')
+            .css('width', '100%').css('height', 'auto');
     };
 
     return self;
