@@ -2,14 +2,10 @@
 var HackcraftLogging = (function(){ "use strict";
 
 var user;
+var is_initialized = false;
 var self = {};
 
 self.initialize = function(uid) {
-    //Create the url requester to handle making requests.
-    var loader = new cgs.http.UrlLoader(new cgs.js.http.DefaultHttpLoaderFactory());
-    var handler = new cgs.http.requests.UrlRequestHandler(loader, new cgs.http.requests.RequestFailureHandler());
-
-    var api = new cgs.CgsApi(handler, new cgs.CgsCache(null));
 
     var skey = HACKCRAFT_CONFIG.logging.game.skey;
     var skeyHash = cgs.server.logging.GameServerData.UUID_SKEY_HASH;
@@ -22,7 +18,12 @@ self.initialize = function(uid) {
 
     if (!serverTag || !gameName || !gameId || !versionId || (!categoryId && categoryId !== 0)) {
         console.warn('invalid logging configuration!');
+        return;
     }
+
+    var loader = new cgs.http.UrlLoader(new cgs.js.http.DefaultHttpLoaderFactory());
+    var handler = new cgs.http.requests.UrlRequestHandler(loader, new cgs.http.requests.RequestFailureHandler());
+    var api = new cgs.CgsApi(handler, new cgs.CgsCache(null));
 
     var props = new cgs.user.CgsUserProperties(
         skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
@@ -49,9 +50,12 @@ self.initialize = function(uid) {
     //Initialize an anonymous user. TODO - Local cache still needs
     //to be written for js.
     user = api.initializeUser(props);
+
+    is_initialized = true;
 };
 
 self.startQuest = function(qid, checksum) {
+
     var localDqid = 1; //Optional parameter that is needed if more than one quest is being logged at a time.
     var msStartTime = Date.now();
 
@@ -78,6 +82,8 @@ self.startQuest = function(qid, checksum) {
     };
 
     function log(actionId, actionDetail) {
+        if (!is_initialized) return;
+
         var startTs = Date.now() - msStartTime;
         var endTs = 0;
         var questAction = new cgs.QuestAction(actionId, startTs, endTs);
@@ -98,6 +104,8 @@ self.startQuest = function(qid, checksum) {
     };
 
     questLogger.logQuestEnd = function() {
+        if (!is_initialized) return;
+
         var questEndDetail = {test:"test"};
         user.logQuestEnd(questEndDetail, function(response) {
             //Callback is optional and usually is only used for testing.
@@ -105,7 +113,9 @@ self.startQuest = function(qid, checksum) {
         console.info('logging quest end for qid ' + qid);
     };
 
-    start();
+    if (is_initialized) {
+        start();
+    }
     return questLogger;
 };
 
