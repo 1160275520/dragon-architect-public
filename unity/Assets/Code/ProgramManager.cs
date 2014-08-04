@@ -91,7 +91,7 @@ public class ProgramManager : MonoBehaviour {
         robot = FindObjectOfType<RobotController>();
 
         runState = RunState.Stopped;
-        editMode = EditMode.Workshop;
+        editMode = EditMode.Persistent;
         initialCells = new KeyValuePair<IntVec3, int>[] { };
     }
     

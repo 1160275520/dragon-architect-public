@@ -45,6 +45,9 @@ public class PuzzleHelper : MonoBehaviour
                 FindObjectOfType<RobotController>().SetRobot(new Hackcraft.Robot.BasicImperativeRobot(d.Position, d.Direction), null, 0.0f);
             }
         }
+
+        // set the edit more to workshop to save any initial world state
+        GetComponent<ProgramManager>().EditMode = EditMode.Workshop;
     }
 
     public void SetInstructions(string summary, string detail) {
