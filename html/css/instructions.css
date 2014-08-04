@@ -32,16 +32,16 @@
 
 #instructions-detail {
     font-size: 12pt;
-    max-height: 0px;
+    height: 0px;
     overflow: hidden;
     padding: 0;
 
     transition: none 1.0s;
-    transition-property: padding-top, max-height;
+    transition-property: padding-top, height;
 }
 
 #instructions-display.expanded #instructions-detail {
-    max-height: 1000px;
+    height: 700px;
     padding-top: 10px;
 }
 

@@ -215,7 +215,7 @@ module.Instructions = (function() {
 
             function onDone() {
                 if (isLarge === doMakeLarge) {
-                    $("#instructions-reminder").html(isLarge ? "(Click to show hide)" : "(Click to show more)");
+                    $("#instructions-reminder").html(isLarge ? "(Click to hide)" : "(Click to show more)");
                     container.onclick = clickCallback ? clickCallback : setSize(!doMakeLarge, null, true);
                 }
             }
