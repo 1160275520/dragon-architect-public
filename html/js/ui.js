@@ -215,7 +215,6 @@ module.Instructions = (function() {
 
     function processTemplate(str) {
         return str.replace(/{(\w+)}/g, function(match, id) {
-            console.log(id); 
             return typeof imgFileMap[id] != 'undefined'
                 ? makeImgHtml(imgFileMap[id]) 
                 : match
