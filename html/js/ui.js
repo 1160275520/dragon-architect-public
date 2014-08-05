@@ -52,6 +52,7 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
+        module.CubeCounter.setVisible(false);
         $('.codeEditor, .puzzleModeUI').show();
         HackcraftUnity.Player.show();
         $(main_selector).removeClass('title');
@@ -366,10 +367,8 @@ module.SpeedSlider = (function() {
 module.CubeCounter = (function() {
     var self = {};
 
-    self.setVisible = function(goals) {
-        var isVisible = goals ? goals.some(function(g) {
-            return g.type === "cube_count";
-        }) : false;
+    self.setVisible = function(isVisible) {
+        console.log('setting to ' + isVisible.toString());
         $('#cube-counter').css('display', isVisible ? 'block' : 'none');
         var n = 0;
         $('#cube-counter').html(n.toString() + " cubes placed.");

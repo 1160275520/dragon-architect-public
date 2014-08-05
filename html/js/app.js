@@ -352,11 +352,12 @@ function start_editor(info) {
 
     if (info.is_starting) {
         var current_library = calculate_library(info.puzzle.library);
+        var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
         HackcraftBlockly.setLevel(info.puzzle, current_library);
         HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
         HackcraftUI.CameraControls.setVisible(current_library);
-        HackcraftUI.CubeCounter.setVisible(info.puzzle.goals);
+        HackcraftUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
         HackcraftBlockly.history = [];
 
