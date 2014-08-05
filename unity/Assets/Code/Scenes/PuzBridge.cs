@@ -15,14 +15,14 @@ public class PuzBridge : MonoBehaviour {
         var template = new List<IntVec3>();
         template.Add(new IntVec3(1,0,0));
         template.Add(new IntVec3(2,0,0));
-        template.Add(new IntVec3(2,1,0));
+        template.Add(new IntVec3(3,0,0));
         template.Add(new IntVec3(3,1,0));
         template.Add(new IntVec3(3,2,0));
         template.Add(new IntVec3(4,2,0));
         template.Add(new IntVec3(5,2,0));
         template.Add(new IntVec3(6,2,0));
         template.Add(new IntVec3(6,1,0));
-        template.Add(new IntVec3(7,1,0));
+        template.Add(new IntVec3(6,0,0));
         template.Add(new IntVec3(7,0,0));
         template.Add(new IntVec3(8,0,0));
         

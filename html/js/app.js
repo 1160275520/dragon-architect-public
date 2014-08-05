@@ -191,12 +191,12 @@ function setState_title() {
 }
 
 function setState_intro() {
-    var d = '<p>where the 0.5% of you reading this will be informed that you will be PROGRAMMING WOO and you should click somewhere to get started!</p>' +
+    var d = '<p>I\'m a Dragon who can build things out of cubes. I follow instructions written in <b>code</b>. Click anywhere to start learning <b>code</b>, so we can build things together!</p>' +
         '<button id="button_startTutorial">Get Started!</button>';
 
     HackcraftUI.State.goToIntro(function(){
         HackcraftUI.Instructions.show({
-            summary: 'This is intro text!',
+            summary: 'Welcome to Hackcraft!',
             detail: d
         }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");

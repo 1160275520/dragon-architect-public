@@ -203,7 +203,7 @@ module.Instructions = (function() {
         repeat4: "media/blockSvgs/repeat4.svg",
         repeat5: "media/blockSvgs/repeat5.svg",
         repeat9: "media/blockSvgs/repeat9.svg",
-        go: "media/runButton.png",
+        go: "media/goButton.png",
         rotateCW: "media/rotateCWButton.png",
         rotateCCW: "media/rotateCCWButton.png",
         learn: "media/learnButton.png",

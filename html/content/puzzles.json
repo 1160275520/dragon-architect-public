@@ -8,7 +8,7 @@
         },
         "logging_id": 21,
         "instructions": {
-            "summary": "Click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object> to have me run my program!",
+            "summary": "Click {go} to have me run my program!",
             "detail": "My program tells me what to do. You can see it below."
         }
     },
@@ -25,7 +25,7 @@
         "logging_id": 31,
         "instructions": {
             "summary": "I need to get to the pink box, and my program doesn't move me far enough.",
-            "detail": "Add a <object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object> to complete my program and click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object>."
+            "detail": "Add a {forward} to complete my program and click {go}."
         }
     },
     "tutorial.movement2d_part3": {
@@ -41,7 +41,7 @@
         "logging_id": 32,
         "instructions": {
             "summary": "The pink box has moved. Change my program to help me get there!",
-            "detail": "Add a <object data=\"media/blockSvgs/right.svg\" style=\"vertical-align:middle\"></object> to my program and click <object data=\"media/runButton.png\" style=\"vertical-align:middle\"></object>."
+            "detail": "Add a {right} to my program and click {go}."
         }
     },
     "tutorial.place_blocks": {
@@ -93,6 +93,9 @@
         "tutorial": {
             "highlighted": ["Up"]
         },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
         "instructions": {
             "summary": "Help me get to the pink box!",
             "detail": "Use two {up} to complete my program."
@@ -124,6 +127,9 @@
         "library": {
             "required": ["move2", "place", "up", "down"],
             "granted": []
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "instructions": {
             "summary": "Use what you've learned to help me fill in the blueprint!",
@@ -195,7 +201,7 @@
         },
         "instructions": {
             "summary": "Help me fill in the blueprint by adding a {forward} and a {placeblock} to my program!",
-            "detail": "Try adding those blocks inside {repeat}."
+            "detail": "Try adding those blocks inside {repeat9}."
         },
         "logging_id": 27
     },
