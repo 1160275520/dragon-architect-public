@@ -274,12 +274,14 @@ $(function() {
     $('#btn-run').on('click', function() {
         HackcraftUnity.Call.set_program(HackcraftBlockly.getProgram());
         var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
+        if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
         HackcraftUnity.Call.set_program_state({run_state: newRS});
 
     });
 
     $('#btn-workshop').on('click', function() {
         var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
+        if (questLogger) { questLogger.logDoEditModeChange(newEM); }
         HackcraftUnity.Call.set_program_state({edit_mode: newEM});
     });
 
@@ -287,6 +289,7 @@ $(function() {
         var oldRS = program_state.run_state;
         if (oldRS === 'executing' || oldRS === 'paused') {
             var newRS = oldRS === 'executing' ? 'paused' : 'executing';
+            if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
             HackcraftUnity.Call.set_program_state({run_state: newRS});
         }
     });
@@ -426,6 +429,7 @@ handler.onProgramStateChange = function(data) {
         console.log('on edit mode change');
         program_state.edit_mode = json.edit_mode;
         HackcraftUI.ModeButton.update(program_state.edit_mode === 'workshop');
+        if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
     }
 
     if ('run_state' in json) {
@@ -435,16 +439,10 @@ handler.onProgramStateChange = function(data) {
         HackcraftUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
         HackcraftUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
-        if (questLogger) {
-            if (rs === 'executing') {
-                questLogger.logProgramExecutionStarted(JSON.stringify(HackcraftBlockly.getProgram()));
-            } else if (rs === 'stopped') {
-                questLogger.logProgramExecutionReset();
-                // HACK this should really be done in a separate stop function so it can also be handled when the player naviagates away from the page
-                if (current_scene === 'sandbox') {
-                    HackcraftUnity.Call.request_world_state();
-                }
-            }
+        if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(HackcraftBlockly.getProgram())); }
+
+        if (rs === 'stopped' && current_scene === 'sandbox') {
+            HackcraftUnity.Call.request_world_state();
         }
 
     }
@@ -468,10 +466,7 @@ handler.onSetColors = function(json) {
 // sent the moment they "win" a puzzle
 handler.onPuzzleComplete = function(puzzle_id) {
     progress.mark_puzzle_completed(puzzle_id, game_info.puzzles[puzzle_id]);
-
-    if (questLogger) {
-        questLogger.logPuzzledCompleted();
-    }
+    if (questLogger) { questLogger.logOnPuzzledCompleted(); }
 };
 
 // sent when they exit a puzzle
