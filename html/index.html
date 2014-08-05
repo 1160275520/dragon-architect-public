@@ -39,21 +39,24 @@
   <body>
     <header id="header">
       <h1>Hackcraft!</h1>
-      <div class="sandboxModeUI">
-        <p>You are in sandbox mode!</p>
-        <button id="btn-modules">Learn more code</button>
-        <button id="button_header_clear_sandbox">Clear sandbox save data</button>
+      <div>
+        <p class="sandboxModeUI">You are in sandbox mode!</p>
+        <button id="btn-modules" class="sandboxModeUI">Learn more code</button>
+        <button id="button_header_clear_sandbox" class="sandboxModeUI">Clear sandbox save data</button>
+        <button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button>
+        <button id="btn-back-selector-module" class="puzzleModeUI puzzleSelector hideTutorial">Try a different module</button>
+        <button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector moduleSelector hideTutorial">Go back to sandbox mode</button>
       </div>
       <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
       <div>
         <!-- @ifdef DEV -->
-        <button id="button_header_levelSelect">Go to puzzle select</button>
-        <button id="button_header_sandbox">Go to sandbox</button>
-        <button onclick="devmode()">Activate Devloper Mode</button>
+        <button id="button_header_levelSelect">Test Puz Slct</button>
+        <button id="button_header_sandbox">Sandbox</button>
+        <button onclick="devmode()">Dev Mode</button>
         <!-- @endif -->
       </div>
     </header>
-    <div id="selector-puzzle" class="levelSelector">
+    <div id="selector-puzzle" class="puzzleSelector">
       <svg width=1400 height=350>
         <g transform="translate(20,20)"/>
       </svg>

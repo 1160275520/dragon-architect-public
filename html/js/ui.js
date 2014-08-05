@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         HackcraftUnity.Player.hide();
-        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .levelSelector, .moduleSelector').hide();
+        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -45,7 +45,7 @@ module.State = (function(){ "use strict";
 
     self.goToSceneSelect = function(cb) {
         hideAll();
-        $('.levelSelector').show();
+        $('.puzzleSelector').show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -153,10 +153,10 @@ module.LevelSelect = (function() {
         renderer.zoom(false);
         var layout = dagreD3.layout()
                             .rankDir("LR");
-        renderer.layout(layout).run(graph, d3.select(".levelSelector svg g"));
+        renderer.layout(layout).run(graph, d3.select(".puzzleSelector svg g"));
 
         // color rectangles
-        var nodes = d3.selectAll(".levelSelector .node")[0];
+        var nodes = d3.selectAll(".puzzleSelector .node")[0];
 
         // setup onclick behavior
         var SANDBOX_LEVEL_ID = 'tutorial.sandbox';

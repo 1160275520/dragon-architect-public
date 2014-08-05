@@ -128,6 +128,9 @@ function create_puzzle_runner(module, sceneSelectType) {
     function setState_puzzle(id, finish_type) {
         var info = {id:id, puzzle:game_info.puzzles[id], finish:finish_type};
         HackcraftUI.State.goToPuzzle(function() {
+            if (sceneSelectType === 'tutorial') {
+                $('.hideTutorial').hide();
+            }
             HackcraftUnity.Call.request_start_puzzle(info);
         });
     }
@@ -247,15 +250,24 @@ $(function() {
     });
 
     $('#button_header_sandbox').on('click', setState_sandbox);
+    $('#btn-back-sandbox').on('click', setState_sandbox);
 
-    $('#btn-modules').on('click', function() {
+    $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
+
+    function goToModules() {
         HackcraftUI.State.goToModuleSelect(function () {
-            HackcraftUI.ModuleSelect.create(_.filter(game_info.modules, function(m) { return !progress.is_module_completed(m) && !isDevMode; }), 
-                                            function(module) {
-                current_puzzle_runner = create_puzzle_runner(module, "module");
-            });
+            HackcraftUI.ModuleSelect.create(_.filter(game_info.modules,
+                function(m) {
+                    return !progress.is_module_completed(m) && !isDevMode;
+                }),
+                function(module) {
+                    current_puzzle_runner = create_puzzle_runner(module, "module");
+                });
         });
-    });
+    }
+
+    $('#btn-modules').on('click', goToModules);
+    $('#btn-back-selector-module').on('click', goToModules);
 
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
