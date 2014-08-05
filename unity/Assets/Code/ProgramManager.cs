@@ -30,9 +30,11 @@ public class ProgramManager : MonoBehaviour {
             RunState = RunState.Stopped;
 
             if (value.IsWorkshop) {
-                // if switching to workshop mode, backup all cells
+                // if switching to workshop mode, backup all cells and clear old states
                 var grid = GetComponent<Grid>();
                 initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
+                States = null;
+
             }
             editMode = value;
             GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
@@ -113,16 +115,6 @@ public class ProgramManager : MonoBehaviour {
             lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
             EvalEntireProgram();
-            setGameStateToIndex(0, 0.0f);
-        }
-    }
-
-    public void TogglePauseExecution() {
-    }
-
-    public void ResetExecution() {
-        RunState = RunState.Stopped;
-        if (EditMode.IsWorkshop) {
             setGameStateToIndex(0, 0.0f);
         }
     }
