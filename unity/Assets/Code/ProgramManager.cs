@@ -145,7 +145,7 @@ public class ProgramManager : MonoBehaviour {
             if (state.LastExecuted.IsEmpty) {
                 GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
             } else {
-                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(state.LastExecuted.Head.Meta.Id);
+                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(this.LastExecuted.First());
             }
         }
         Profiler.EndSample();
