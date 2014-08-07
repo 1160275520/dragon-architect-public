@@ -1,5 +1,5 @@
 
-Source is in rutherfjordserver (which is also the package name).
+Source is in ruthefjordserver (which is also the package name).
 
 To get running on a linux system:
 

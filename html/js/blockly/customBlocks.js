@@ -1,4 +1,4 @@
-function RutherfjordBlocklyCustomInit() {
+function RuthefjordBlocklyCustomInit() {
 'use strict';
 
 // Extensions to Blockly's language and JavaScript generator.

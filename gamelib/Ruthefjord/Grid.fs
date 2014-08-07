@@ -1,6 +1,6 @@
 /// Implementation of the world grid, used by simulation to compute game state.
 /// See Ast.fs
-namespace Rutherfjord
+namespace Ruthefjord
 
 open System
 open System.Collections.Generic

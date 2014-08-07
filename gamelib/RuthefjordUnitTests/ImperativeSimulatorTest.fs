@@ -1,10 +1,10 @@
-module Rutherfjord.UnitTest.ImperativeSimulatorTest
+module Ruthefjord.UnitTest.ImperativeSimulatorTest
 
 open Xunit
 open Xunit.Extensions
 open FsUnit.Xunit
 open System.Collections.Generic
-open Rutherfjord
+open Ruthefjord
 
 let newRobot () = Robot.BasicImperativeRobot (IntVec3.Zero, IntVec3.UnitZ)
 

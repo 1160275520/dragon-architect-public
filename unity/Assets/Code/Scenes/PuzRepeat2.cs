@@ -1,8 +1,8 @@
 using UnityEngine;
 using System;
 using System.Linq;
-using Rutherfjord;
-using Rutherfjord.Ast;
+using Ruthefjord;
+using Ruthefjord.Ast;
 using System.Collections.Generic;
 
 public class PuzRepeat2 : MonoBehaviour

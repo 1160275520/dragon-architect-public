@@ -26,7 +26,7 @@ def _go(args):
 def main():
 
     _desc = '''
-    Run the rutherfjord web server.
+    Run the ruthefjord web server.
     '''
     parser = argparse.ArgumentParser(description=_desc)
 

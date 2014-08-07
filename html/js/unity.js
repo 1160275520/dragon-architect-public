@@ -1,4 +1,4 @@
-var RutherfjordUnity = (function(){ "use strict";
+var RuthefjordUnity = (function(){ "use strict";
 var module = {};
 
 var unityObject;

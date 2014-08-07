@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Rutherfjord.Robot;
+using Ruthefjord.Robot;
 
 public class CubeTextures : MonoBehaviour {
 

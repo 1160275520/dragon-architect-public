@@ -1,4 +1,4 @@
-var onRutherfjordEvent = (function(){ "use strict";
+var onRuthefjordEvent = (function(){ "use strict";
 
 var program_state = {
     run_state: null,
@@ -130,11 +130,11 @@ function create_puzzle_runner(module, sceneSelectType) {
 
     function setState_puzzle(id, finish_type) {
         var info = {id:id, puzzle:game_info.puzzles[id], finish:finish_type};
-        RutherfjordUI.State.goToPuzzle(function() {
+        RuthefjordUI.State.goToPuzzle(function() {
             if (sceneSelectType === 'tutorial') {
                 $('.hideTutorial').hide();
             }
-            RutherfjordUnity.Call.request_start_puzzle(info);
+            RuthefjordUnity.Call.request_start_puzzle(info);
         });
     }
 
@@ -143,8 +143,8 @@ function create_puzzle_runner(module, sceneSelectType) {
             case "module":
                 if (progress.puzzles_remaining(module) > 0 || isDevMode) {
                     // bring up the level select
-                    RutherfjordUI.State.goToSceneSelect(function() {
-                        RutherfjordUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                    RuthefjordUI.State.goToSceneSelect(function() {
+                        RuthefjordUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                             if (progress.puzzles_remaining(module) === 1) {
                                 setState_puzzle(pid, "to_sandbox");
                             } else {
@@ -182,7 +182,7 @@ function create_puzzle_runner(module, sceneSelectType) {
 };
 
 // callback function that receives messages from unity, sends to handler
-function onRutherfjordEvent(func, arg) {
+function onRuthefjordEvent(func, arg) {
     if (func !== 'onProgramStateChange') {
         console.info('received Unity event ' + func);
     }
@@ -190,16 +190,16 @@ function onRutherfjordEvent(func, arg) {
 }
 
 function setState_title() {
-    RutherfjordUI.State.goToTitle(function(){});
+    RuthefjordUI.State.goToTitle(function(){});
 }
 
 function setState_intro() {
     var d = '<p>I\'m a Dragon who can build things out of cubes. I follow instructions written in <b>code</b>. Click anywhere to start learning <b>code</b>, so we can build things together!</p>' +
         '<button id="button_startTutorial">Get Started!</button>';
 
-    RutherfjordUI.State.goToIntro(function(){
-        RutherfjordUI.Instructions.show({
-            summary: 'Welcome to Rutherfjord!',
+    RuthefjordUI.State.goToIntro(function(){
+        RuthefjordUI.Instructions.show({
+            summary: 'Welcome to Ruthefjord!',
             detail: d
         }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
@@ -208,16 +208,16 @@ function setState_intro() {
 }
 
 function setState_sandbox() {
-    RutherfjordUI.State.goToSandbox(function() {
+    RuthefjordUI.State.goToSandbox(function() {
         storage.load('sandbox_world_data', function(wd) {
-            RutherfjordUnity.Call.request_start_sandbox(wd);
+            RuthefjordUnity.Call.request_start_sandbox(wd);
         });
     });
 }
 
 function onProgramEdit() {
     if (current_scene === 'sandbox') {
-        var prog = RutherfjordBlockly.getXML();
+        var prog = RuthefjordBlockly.getXML();
         storage.save('sandbox_program', prog);
     }
 }
@@ -230,7 +230,7 @@ $(function() {
             d.resolve();
         };
         // this doesn't return a promise, unity will get back to us via hander.onSystemStart
-        RutherfjordUnity.Player.initialize();
+        RuthefjordUnity.Player.initialize();
         return d.promise;
     }
 
@@ -242,7 +242,7 @@ $(function() {
     });
 
     $('#button_header_save').on('click', function() {
-        RutherfjordUnity.Call.request_world_state();
+        RuthefjordUnity.Call.request_world_state();
     });
 
     $('#button_header_clear_sandbox').on('click', function() {
@@ -260,8 +260,8 @@ $(function() {
     $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
     function goToModules() {
-        RutherfjordUI.State.goToModuleSelect(function () {
-            RutherfjordUI.ModuleSelect.create(_.filter(game_info.modules,
+        RuthefjordUI.State.goToModuleSelect(function () {
+            RuthefjordUI.ModuleSelect.create(_.filter(game_info.modules,
                 function(m) {
                     return !progress.is_module_completed(m) && !isDevMode;
                 }),
@@ -279,27 +279,27 @@ $(function() {
 
     var promise_content = content.initialize();
     var promise_unity = initialize_unity();
-    var promise_blockly = RutherfjordBlockly.init();
+    var promise_blockly = RuthefjordBlockly.init();
 
     // fetch the uid from the GET params and pass that to logging initializer
     var uid = $.url().param('uid');
-    RutherfjordLogging.initialize(uid);
+    RuthefjordLogging.initialize(uid);
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
-        RutherfjordUnity.Call.set_program(RutherfjordBlockly.getProgram());
+        RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
         var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
         if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
-        RutherfjordUnity.Call.set_program_state({run_state: newRS});
+        RuthefjordUnity.Call.set_program_state({run_state: newRS});
 
     });
 
     $('#btn-workshop').on('click', function() {
         var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
         if (questLogger) { questLogger.logDoEditModeChange(newEM); }
-        RutherfjordUnity.Call.set_program_state({edit_mode: newEM});
+        RuthefjordUnity.Call.set_program_state({edit_mode: newEM});
     });
 
     $('#btn-pause').on('click', function() {
@@ -307,23 +307,23 @@ $(function() {
         if (oldRS === 'executing' || oldRS === 'paused') {
             var newRS = oldRS === 'executing' ? 'paused' : 'executing';
             if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
-            RutherfjordUnity.Call.set_program_state({run_state: newRS});
+            RuthefjordUnity.Call.set_program_state({run_state: newRS});
         }
     });
 
     // camera
-    $('#camera-zoom-in').click(function(){RutherfjordUnity.Call.control_camera('zoomin');});
-    $('#camera-zoom-out').click(function(){RutherfjordUnity.Call.control_camera('zoomout');});
-    $('#camera-rotate-left').click(function(){RutherfjordUnity.Call.control_camera('rotateleft');});
-    $('#camera-rotate-right').click(function(){RutherfjordUnity.Call.control_camera('rotateright');});
+    $('#camera-zoom-in').click(function(){RuthefjordUnity.Call.control_camera('zoomin');});
+    $('#camera-zoom-out').click(function(){RuthefjordUnity.Call.control_camera('zoomout');});
+    $('#camera-rotate-left').click(function(){RuthefjordUnity.Call.control_camera('rotateleft');});
+    $('#camera-rotate-right').click(function(){RuthefjordUnity.Call.control_camera('rotateright');});
 
     // undo button
-    // TODO shouldn't this be in blockly/rutherfjord.js?
-    $('#btn-undo').on('click', RutherfjordBlockly.undo);
+    // TODO shouldn't this be in blockly/ruthefjord.js?
+    $('#btn-undo').on('click', RuthefjordBlockly.undo);
 
-    RutherfjordUI.Instructions.hide();
+    RuthefjordUI.Instructions.hide();
 
-    RutherfjordUI.SpeedSlider.initialize(RutherfjordUnity.Call.set_program_execution_speed);
+    RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
 
     // wait for all systems to start up, then go!
     Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
@@ -370,17 +370,17 @@ function start_editor(info) {
         var current_library = calculate_library(info.puzzle.library);
         var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
-        RutherfjordBlockly.setLevel(info.puzzle, current_library);
-        RutherfjordUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
-        RutherfjordUI.CameraControls.setVisible(current_library);
-        RutherfjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
+        RuthefjordBlockly.setLevel(info.puzzle, current_library);
+        RuthefjordUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
+        RuthefjordUI.CameraControls.setVisible(current_library);
+        RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
-        RutherfjordBlockly.history = [];
+        RuthefjordBlockly.history = [];
 
         // reset program execution speed, because the scene reload will have made Unity forget
         // FIXME use the unified API
         if (info.puzzle.name !== "101 Cubes") { // HACK to allow 101 Cubes to have a faster default execution speed
-            RutherfjordUnity.Call.set_program_execution_speed(RutherfjordUI.SpeedSlider.value());
+            RuthefjordUnity.Call.set_program_execution_speed(RuthefjordUI.SpeedSlider.value());
         }
 
         // clear old quest logger if it exists
@@ -389,20 +389,20 @@ function start_editor(info) {
             questLogger = null;
         }
         // then start new quest logger if this is not an empty level
-        questLogger = RutherfjordLogging.startQuest(info.puzzle.logging_id, info.checksum);
+        questLogger = RuthefjordLogging.startQuest(info.puzzle.logging_id, info.checksum);
 
         switch (info.puzzle.program.type) {
             case "text":
                 var program = JSON.parse(info.puzzle.program.value);
-                RutherfjordBlockly.setProgram(program);
+                RuthefjordBlockly.setProgram(program);
                 break;
             case "preserve":
                 // want to leave the old program, so do nothing!
                 break;
             case "xml":
-                RutherfjordBlockly.clearProgram();
+                RuthefjordBlockly.clearProgram();
                 if (info.puzzle.program.value) {
-                    RutherfjordBlockly.loadBlocks(info.puzzle.program.value);
+                    RuthefjordBlockly.loadBlocks(info.puzzle.program.value);
                 }
                 break;
             default:
@@ -411,7 +411,7 @@ function start_editor(info) {
         }
     }
 
-    RutherfjordUI.Instructions.show(info.puzzle.instructions);
+    RuthefjordUI.Instructions.show(info.puzzle.instructions);
 }
 
 // TODO remove duplicate code from this an onPuzzleChange
@@ -447,7 +447,7 @@ handler.onProgramStateChange = function(data) {
     if ('edit_mode' in json) {
         console.log('on edit mode change');
         program_state.edit_mode = json.edit_mode;
-        RutherfjordUI.ModeButton.update(program_state.edit_mode === 'workshop');
+        RuthefjordUI.ModeButton.update(program_state.edit_mode === 'workshop');
         if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
     }
 
@@ -455,13 +455,13 @@ handler.onProgramStateChange = function(data) {
         console.log('on run state change');
         var rs = json.run_state;
         program_state.run_state = rs;
-        RutherfjordUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
-        RutherfjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
+        RuthefjordUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
+        RuthefjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
-        if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RutherfjordBlockly.getProgram())); }
+        if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }
 
         if (rs === 'stopped' && current_scene === 'sandbox') {
-            RutherfjordUnity.Call.request_world_state();
+            RuthefjordUnity.Call.request_world_state();
         }
 
     }
@@ -519,13 +519,13 @@ handler.onUnlockDevMode = function() {
 };
 
 handler.onCubeCount = function(count) {
-    RutherfjordUI.CubeCounter.update(count);
+    RuthefjordUI.CubeCounter.update(count);
 }
 
-return onRutherfjordEvent;
+return onRuthefjordEvent;
 }());
 
 function devmode() {
-    onRutherfjordEvent('onUnlockDevMode');
+    onRuthefjordEvent('onUnlockDevMode');
 }
 

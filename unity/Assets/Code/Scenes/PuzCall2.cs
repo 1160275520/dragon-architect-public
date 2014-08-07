@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Linq;
-using Rutherfjord.Ast;
+using Ruthefjord.Ast;
 
 public class PuzCall2 : MonoBehaviour
 {

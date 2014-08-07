@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-using Rutherfjord;
-using Rutherfjord.Ast;
+using Ruthefjord;
+using Ruthefjord.Ast;
 
 public class ProgramManager : MonoBehaviour {
 
@@ -166,7 +166,7 @@ public class ProgramManager : MonoBehaviour {
 #endif
 
     public void LoadProgram(string resourceName) {
-        Manipulator.Program = Rutherfjord.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
+        Manipulator.Program = Ruthefjord.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
     }
     
     private void EvalEntireProgram() {

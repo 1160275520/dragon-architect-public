@@ -1,5 +1,5 @@
 /// Miscellaneous collection types and utility functions.
-namespace Rutherfjord
+namespace Ruthefjord
 
 open System.Collections
 open System.Collections.Generic

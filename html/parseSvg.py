@@ -31,7 +31,7 @@ for i, b in enumerate(blocks):
                         '.blocklyText { cursor: default; font-family: sans-serif; font-size: 11pt; fill: rgb(255, 255, 255); }\n.blocklyNonEditableText>rect,.blocklyEditableText>rect { fill: #fff; fill-opacity: .6; }\n.blocklyNonEditableText>text,.blocklyEditableText>text { fill: #000 }')
     text = text.replace('<style type="text/css">', '<style type="text/css"><![CDATA[')
     text = text.replace('</style>', ']]></style>')
-    text = text.replace('.blocklyDraggable { cursor: url(file:///Users/awb/Documents/Research/rutherfjord/html/media/handopen.cur) 8 5, auto; }', '')
+    text = text.replace('.blocklyDraggable { cursor: url(file:///Users/awb/Documents/Research/ruthefjord/html/media/handopen.cur) 8 5, auto; }', '')
     f.seek(0)
     f.write(text)
     f.close()

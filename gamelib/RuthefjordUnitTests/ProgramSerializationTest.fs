@@ -1,13 +1,13 @@
-module Rutherfjord.UnitTest.ProgramSerializationTest
+module Ruthefjord.UnitTest.ProgramSerializationTest
 
 open Xunit
 open Xunit.Extensions
 open FsUnit.Xunit
 open System.IO
 
-module J = Rutherfjord.Json
-module S = Rutherfjord.Serialization
-module A = Rutherfjord.Ast.Imperative
+module J = Ruthefjord.Json
+module S = Ruthefjord.Serialization
+module A = Ruthefjord.Ast.Imperative
 
 
 let emptyTestProgram = """

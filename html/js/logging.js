@@ -1,5 +1,5 @@
 
-var RutherfjordLogging = (function(){ "use strict";
+var RuthefjordLogging = (function(){ "use strict";
 
 var user;
 var is_initialized = false;
@@ -7,14 +7,14 @@ var self = {};
 
 self.initialize = function(uid) {
 
-    var skey = HACKCRAFT_CONFIG.logging.game.skey;
+    var skey = RUTHEFJORD_CONFIG.logging.game.skey;
     var skeyHash = cgs.server.logging.GameServerData.UUID_SKEY_HASH;
-    var serverTag = cgs.server.CGSServerProps[HACKCRAFT_CONFIG.logging.server_tag];
+    var serverTag = cgs.server.CGSServerProps[RUTHEFJORD_CONFIG.logging.server_tag];
     console.info(serverTag);
-    var gameName = HACKCRAFT_CONFIG.logging.game.name;
-    var gameId = HACKCRAFT_CONFIG.logging.game.id;
+    var gameName = RUTHEFJORD_CONFIG.logging.game.name;
+    var gameId = RUTHEFJORD_CONFIG.logging.game.id;
     var versionId = 1;
-    var categoryId = HACKCRAFT_CONFIG.logging.category_id;
+    var categoryId = RUTHEFJORD_CONFIG.logging.category_id;
 
     if (!serverTag || !gameName || !gameId || !versionId || (!categoryId && categoryId !== 0)) {
         console.warn('invalid logging configuration!');
@@ -36,9 +36,9 @@ self.initialize = function(uid) {
         props.setForceUid(uid);
     }
 
-    if (HACKCRAFT_CONFIG.logging.proxy_url) {
+    if (RUTHEFJORD_CONFIG.logging.proxy_url) {
         props.setUseProxy(true);
-        props.setProxyUrl(HACKCRAFT_CONFIG.game_server.url + HACKCRAFT_CONFIG.logging.proxy_url);
+        props.setProxyUrl(RUTHEFJORD_CONFIG.game_server.url + RUTHEFJORD_CONFIG.logging.proxy_url);
     }
 
     //Wait to save data until everything has been loaded.

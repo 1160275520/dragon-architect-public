@@ -1,10 +1,10 @@
 /// Simulator for the in-game programs.
 /// See Ast.fs, Grid.fs, Robot.fs
-module Rutherfjord.Simulator
+module Ruthefjord.Simulator
 
-open Rutherfjord
-open Rutherfjord.Ast.Imperative
-open Rutherfjord.Ast.Library
+open Ruthefjord
+open Ruthefjord.Ast.Imperative
+open Ruthefjord.Ast.Library
 open System.Collections.Generic
 
 type RuntimeErrorCode =

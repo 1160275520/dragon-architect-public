@@ -6,10 +6,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Rutherfjord</RootNamespace>
-    <AssemblyName>Rutherfjord</AssemblyName>
+    <RootNamespace>Ruthefjord</RootNamespace>
+    <AssemblyName>Ruthefjord</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <Name>Rutherfjord</Name>
+    <Name>Ruthefjord</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,7 +19,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Rutherfjord.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Ruthefjord.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,7 +28,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Rutherfjord.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Ruthefjord.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

@@ -1,4 +1,4 @@
-namespace Rutherfjord
+namespace Ruthefjord
 
 // HACK this should really just give back the commands and will break once there are multiple robots.
 // But for now it will suffice.

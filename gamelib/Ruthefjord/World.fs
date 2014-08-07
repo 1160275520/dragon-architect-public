@@ -1,9 +1,9 @@
-namespace Rutherfjord
+namespace Ruthefjord
 
 open System
 open System.Collections.Generic
 open System.IO
-module J = Rutherfjord.Json
+module J = Ruthefjord.Json
 
 [<RequireQualifiedAccess>]
 type EditMode =

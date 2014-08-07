@@ -3,6 +3,6 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 
-from rutherfjordserver.app import create_test_data
+from ruthefjordserver.app import create_test_data
 create_test_data()
 

@@ -1,12 +1,12 @@
-module Rutherfjord.UnitTest.WorldPuzzleSerializationTest
+module Ruthefjord.UnitTest.WorldPuzzleSerializationTest
 
 open Xunit
 open Xunit.Extensions
 open FsUnit.Xunit
 open System.Collections.Generic
 open System.IO
-open Rutherfjord
-open Rutherfjord.Scene
+open Ruthefjord
+open Ruthefjord.Scene
 
 let newRobot () = Robot.BasicImperativeRobot (IntVec3.Zero, IntVec3.UnitZ)
 let newBlock (pos, block) = KeyValuePair<IntVec3, int> (pos, block)

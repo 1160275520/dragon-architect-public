@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Rutherfjord;
+using Ruthefjord;
 
 public class PuzMovement2D_3 : MonoBehaviour {
 	

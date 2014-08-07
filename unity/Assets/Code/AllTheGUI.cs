@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Rutherfjord.Ast;
+using Ruthefjord.Ast;
 
 public class Dragged
 {
@@ -228,7 +228,7 @@ public class AllTheGUI : MonoBehaviour
                     makeButton("RUN!", new GUILayoutOption[] {
                         GUILayout.Width(BUTTON_COLUMN_WIDTH),
                         GUILayout.Height(2 * BUTTON_HEIGHT)
-                    }, () => progman.RunState = Rutherfjord.RunState.Executing, false, "RunButton");
+                    }, () => progman.RunState = Ruthefjord.RunState.Executing, false, "RunButton");
                 //}
             }
             //makeButton("Undo", options, () => progman.Undo());
@@ -296,7 +296,7 @@ public class AllTheGUI : MonoBehaviour
         var r = new Rect(midx - hw, midy - hh, 2 * hw, 2 * hh);
         GUI.ModalWindow(213421345, r, (id) => {
             makeButton("Yes", null, () => {
-                //Rutherfjord.Serialization.SaveFile(string.Format("TestData/autosave-{0:yyyy-MM-dd_HH-mm-ss}.txt", DateTime.Now), GetComponent<ProgramManager>().Manipulator.Program);
+                //Ruthefjord.Serialization.SaveFile(string.Format("TestData/autosave-{0:yyyy-MM-dd_HH-mm-ss}.txt", DateTime.Now), GetComponent<ProgramManager>().Manipulator.Program);
                 //GetComponent<ProgramManager>().Clear();
                 currentModalWindow = null;
                 throw new NotImplementedException("yeah clearing everything doesn't work with the current program manager");

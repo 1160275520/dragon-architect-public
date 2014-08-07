@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rutherfjord.Ast;
+using Ruthefjord.Ast;
 
 public class TitleGUI : MonoBehaviour
 {

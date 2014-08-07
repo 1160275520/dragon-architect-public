@@ -1,10 +1,10 @@
 /// Code to parse/serialize the AST from/to JSON.
 /// See Ast.fs
-module Rutherfjord.Serialization
+module Ruthefjord.Serialization
 
-open Rutherfjord.Ast.Imperative
+open Ruthefjord.Ast.Imperative
 
-module J = Rutherfjord.Json
+module J = Ruthefjord.Json
 
 let LANGUAGE_NAME = "imperative_v01"
 let CURR_MAJOR_VERSION = 0

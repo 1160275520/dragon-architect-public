@@ -1,5 +1,5 @@
 /// Types and parsing/serialization functions for the JSON data structures that represent puzzles and modules.
-module Rutherfjord.Scene
+module Ruthefjord.Scene
 
 module J = Json
 

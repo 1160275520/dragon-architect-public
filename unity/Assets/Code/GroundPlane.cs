@@ -1,5 +1,5 @@
 using UnityEngine;
-using Rutherfjord;
+using Ruthefjord;
 
 public class GroundPlane : MonoBehaviour {
 

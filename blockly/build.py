@@ -93,7 +93,7 @@ def build(deps):
 
     # HACK assumes this is blockly
     blockly = deps[0]
-    assert(blockly['local'] == 'blockly-rutherfjord')
+    assert(blockly['local'] == 'blockly-ruthefjord')
     runcmd(['python', 'build.py'], blockly)
     tocopy = ['blockly_compressed.js', 'blocks_compressed.js']
 
@@ -125,7 +125,7 @@ def main(args):
     with open(os.path.join(THIS_DIR,'dependencies.json')) as f:
         deps = json.load(f)
 
-    local = 'blockly-rutherfjord'
+    local = 'blockly-ruthefjord'
 
     for dep in deps:
         if not does_exist(dep):
