@@ -9,7 +9,7 @@
 /// It also aims to allow for simple parsing of data structures from JSON ast (for use with storing data files) without using schemas.
 /// The json processing functions that come with the AST throw exceptions which can be paired with meta data to allow tools to pinpoint problematic data, without a significant burden on the external code that processes JSON.
 /// </remarks>
-module Hackcraft.Json
+module Rutherfjord.Json
 
 open System.Collections
 open System.Collections.Generic

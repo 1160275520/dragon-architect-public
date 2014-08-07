@@ -6,10 +6,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Hackcraft</RootNamespace>
-    <AssemblyName>Hackcraft</AssemblyName>
+    <RootNamespace>Rutherfjord</RootNamespace>
+    <AssemblyName>Rutherfjord</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <Name>Hackcraft</Name>
+    <Name>Rutherfjord</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,7 +19,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Hackcraft.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Rutherfjord.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,7 +28,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Hackcraft.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Rutherfjord.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

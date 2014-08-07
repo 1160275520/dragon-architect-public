@@ -1,6 +1,6 @@
 /// Code that makes manipulating the immutable AST from C# easier.
 /// See Ast.fs
-namespace Hackcraft
+namespace Rutherfjord
 
 open Ast.Imperative
 open System.Collections.Generic

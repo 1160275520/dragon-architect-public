@@ -1,5 +1,5 @@
 /// Menagerie of common types and utility functions that do not have a better home.
-namespace Hackcraft
+namespace Rutherfjord
 
 open System
 open System.Diagnostics

@@ -1,4 +1,4 @@
-var HackcraftUnity = (function(){ "use strict";
+var RutherfjordUnity = (function(){ "use strict";
 var module = {};
 
 var unityObject;

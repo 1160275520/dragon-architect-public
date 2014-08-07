@@ -1,10 +1,10 @@
 /// Code to parse/serialize the AST from/to JSON.
 /// See Ast.fs
-module Hackcraft.Serialization
+module Rutherfjord.Serialization
 
-open Hackcraft.Ast.Imperative
+open Rutherfjord.Ast.Imperative
 
-module J = Hackcraft.Json
+module J = Rutherfjord.Json
 
 let LANGUAGE_NAME = "imperative_v01"
 let CURR_MAJOR_VERSION = 0

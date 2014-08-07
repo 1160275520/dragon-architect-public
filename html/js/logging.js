@@ -1,5 +1,5 @@
 
-var HackcraftLogging = (function(){ "use strict";
+var RutherfjordLogging = (function(){ "use strict";
 
 var user;
 var is_initialized = false;

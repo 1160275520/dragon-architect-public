@@ -1,4 +1,4 @@
-var onHackcraftEvent = (function(){ "use strict";
+var onRutherfjordEvent = (function(){ "use strict";
 
 var program_state = {
     run_state: null,
@@ -127,11 +127,11 @@ function create_puzzle_runner(module, sceneSelectType) {
 
     function setState_puzzle(id, finish_type) {
         var info = {id:id, puzzle:game_info.puzzles[id], finish:finish_type};
-        HackcraftUI.State.goToPuzzle(function() {
+        RutherfjordUI.State.goToPuzzle(function() {
             if (sceneSelectType === 'tutorial') {
                 $('.hideTutorial').hide();
             }
-            HackcraftUnity.Call.request_start_puzzle(info);
+            RutherfjordUnity.Call.request_start_puzzle(info);
         });
     }
 
@@ -140,8 +140,8 @@ function create_puzzle_runner(module, sceneSelectType) {
             case "module":
                 if (progress.puzzles_remaining(module) > 0 || isDevMode) {
                     // bring up the level select
-                    HackcraftUI.State.goToSceneSelect(function() {
-                        HackcraftUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                    RutherfjordUI.State.goToSceneSelect(function() {
+                        RutherfjordUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                             if (progress.puzzles_remaining(module) === 1) {
                                 setState_puzzle(pid, "to_sandbox");
                             } else {
@@ -179,7 +179,7 @@ function create_puzzle_runner(module, sceneSelectType) {
 };
 
 // callback function that receives messages from unity, sends to handler
-function onHackcraftEvent(func, arg) {
+function onRutherfjordEvent(func, arg) {
     if (func !== 'onProgramStateChange') {
         console.info('received Unity event ' + func);
     }
@@ -187,16 +187,16 @@ function onHackcraftEvent(func, arg) {
 }
 
 function setState_title() {
-    HackcraftUI.State.goToTitle(function(){});
+    RutherfjordUI.State.goToTitle(function(){});
 }
 
 function setState_intro() {
     var d = '<p>I\'m a Dragon who can build things out of cubes. I follow instructions written in <b>code</b>. Click anywhere to start learning <b>code</b>, so we can build things together!</p>' +
         '<button id="button_startTutorial">Get Started!</button>';
 
-    HackcraftUI.State.goToIntro(function(){
-        HackcraftUI.Instructions.show({
-            summary: 'Welcome to Hackcraft!',
+    RutherfjordUI.State.goToIntro(function(){
+        RutherfjordUI.Instructions.show({
+            summary: 'Welcome to Rutherfjord!',
             detail: d
         }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
@@ -205,14 +205,14 @@ function setState_intro() {
 }
 
 function setState_sandbox() {
-    HackcraftUI.State.goToSandbox(function() {
-        HackcraftUnity.Call.request_start_sandbox(storage.load('sandbox_world_data'));
+    RutherfjordUI.State.goToSandbox(function() {
+        RutherfjordUnity.Call.request_start_sandbox(storage.load('sandbox_world_data'));
     });
 }
 
 function onProgramEdit() {
     if (current_scene === 'sandbox') {
-        var prog = HackcraftBlockly.getXML();
+        var prog = RutherfjordBlockly.getXML();
         storage.save('sandbox_program', prog);
     }
 }
@@ -225,7 +225,7 @@ $(function() {
             d.resolve();
         };
         // this doesn't return a promise, unity will get back to us via hander.onSystemStart
-        HackcraftUnity.Player.initialize();
+        RutherfjordUnity.Player.initialize();
         return d.promise;
     }
 
@@ -237,7 +237,7 @@ $(function() {
     });
 
     $('#button_header_save').on('click', function() {
-        HackcraftUnity.Call.request_world_state();
+        RutherfjordUnity.Call.request_world_state();
     });
 
     $('#button_header_clear_sandbox').on('click', function() {
@@ -255,8 +255,8 @@ $(function() {
     $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
     function goToModules() {
-        HackcraftUI.State.goToModuleSelect(function () {
-            HackcraftUI.ModuleSelect.create(_.filter(game_info.modules,
+        RutherfjordUI.State.goToModuleSelect(function () {
+            RutherfjordUI.ModuleSelect.create(_.filter(game_info.modules,
                 function(m) {
                     return !progress.is_module_completed(m) && !isDevMode;
                 }),
@@ -274,27 +274,27 @@ $(function() {
 
     var promise_content = content.initialize();
     var promise_unity = initialize_unity();
-    var promise_blockly = HackcraftBlockly.init();
+    var promise_blockly = RutherfjordBlockly.init();
 
     // fetch the uid from the GET params and pass that to logging initializer
     var uid = $.url().param('uid');
-    HackcraftLogging.initialize(uid);
+    RutherfjordLogging.initialize(uid);
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
-        HackcraftUnity.Call.set_program(HackcraftBlockly.getProgram());
+        RutherfjordUnity.Call.set_program(RutherfjordBlockly.getProgram());
         var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
         if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
-        HackcraftUnity.Call.set_program_state({run_state: newRS});
+        RutherfjordUnity.Call.set_program_state({run_state: newRS});
 
     });
 
     $('#btn-workshop').on('click', function() {
         var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
         if (questLogger) { questLogger.logDoEditModeChange(newEM); }
-        HackcraftUnity.Call.set_program_state({edit_mode: newEM});
+        RutherfjordUnity.Call.set_program_state({edit_mode: newEM});
     });
 
     $('#btn-pause').on('click', function() {
@@ -302,23 +302,23 @@ $(function() {
         if (oldRS === 'executing' || oldRS === 'paused') {
             var newRS = oldRS === 'executing' ? 'paused' : 'executing';
             if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
-            HackcraftUnity.Call.set_program_state({run_state: newRS});
+            RutherfjordUnity.Call.set_program_state({run_state: newRS});
         }
     });
 
     // camera
-    $('#camera-zoom-in').click(function(){HackcraftUnity.Call.control_camera('zoomin');});
-    $('#camera-zoom-out').click(function(){HackcraftUnity.Call.control_camera('zoomout');});
-    $('#camera-rotate-left').click(function(){HackcraftUnity.Call.control_camera('rotateleft');});
-    $('#camera-rotate-right').click(function(){HackcraftUnity.Call.control_camera('rotateright');});
+    $('#camera-zoom-in').click(function(){RutherfjordUnity.Call.control_camera('zoomin');});
+    $('#camera-zoom-out').click(function(){RutherfjordUnity.Call.control_camera('zoomout');});
+    $('#camera-rotate-left').click(function(){RutherfjordUnity.Call.control_camera('rotateleft');});
+    $('#camera-rotate-right').click(function(){RutherfjordUnity.Call.control_camera('rotateright');});
 
     // undo button
-    // TODO shouldn't this be in blockly/hackcraft.js?
-    $('#btn-undo').on('click', HackcraftBlockly.undo);
+    // TODO shouldn't this be in blockly/rutherfjord.js?
+    $('#btn-undo').on('click', RutherfjordBlockly.undo);
 
-    HackcraftUI.Instructions.hide();
+    RutherfjordUI.Instructions.hide();
 
-    HackcraftUI.SpeedSlider.initialize(HackcraftUnity.Call.set_program_execution_speed);
+    RutherfjordUI.SpeedSlider.initialize(RutherfjordUnity.Call.set_program_execution_speed);
 
     // wait for all systems to start up, then go!
     Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
@@ -366,17 +366,17 @@ function start_editor(info) {
         var current_library = calculate_library(info.puzzle.library);
         var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
-        HackcraftBlockly.setLevel(info.puzzle, current_library);
-        HackcraftUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
-        HackcraftUI.CameraControls.setVisible(current_library);
-        HackcraftUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
+        RutherfjordBlockly.setLevel(info.puzzle, current_library);
+        RutherfjordUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
+        RutherfjordUI.CameraControls.setVisible(current_library);
+        RutherfjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
-        HackcraftBlockly.history = [];
+        RutherfjordBlockly.history = [];
 
         // reset program execution speed, because the scene reload will have made Unity forget
         // FIXME use the unified API
         if (info.puzzle.name !== "101 Cubes") { // HACK to allow 101 Cubes to have a faster default execution speed
-            HackcraftUnity.Call.set_program_execution_speed(HackcraftUI.SpeedSlider.value());
+            RutherfjordUnity.Call.set_program_execution_speed(RutherfjordUI.SpeedSlider.value());
         }
 
         // clear old quest logger if it exists
@@ -385,20 +385,20 @@ function start_editor(info) {
             questLogger = null;
         }
         // then start new quest logger if this is not an empty level
-        questLogger = HackcraftLogging.startQuest(info.puzzle.logging_id, info.checksum);
+        questLogger = RutherfjordLogging.startQuest(info.puzzle.logging_id, info.checksum);
 
         switch (info.puzzle.program.type) {
             case "text":
                 var program = JSON.parse(info.puzzle.program.value);
-                HackcraftBlockly.setProgram(program);
+                RutherfjordBlockly.setProgram(program);
                 break;
             case "preserve":
                 // want to leave the old program, so do nothing!
                 break;
             case "xml":
-                HackcraftBlockly.clearProgram();
+                RutherfjordBlockly.clearProgram();
                 if (info.puzzle.program.value) {
-                    HackcraftBlockly.loadBlocks(info.puzzle.program.value);
+                    RutherfjordBlockly.loadBlocks(info.puzzle.program.value);
                 }
                 break;
             default:
@@ -407,7 +407,7 @@ function start_editor(info) {
         }
     }
 
-    HackcraftUI.Instructions.show(info.puzzle.instructions);
+    RutherfjordUI.Instructions.show(info.puzzle.instructions);
 }
 
 // TODO remove duplicate code from this an onPuzzleChange
@@ -441,7 +441,7 @@ handler.onProgramStateChange = function(data) {
     if ('edit_mode' in json) {
         console.log('on edit mode change');
         program_state.edit_mode = json.edit_mode;
-        HackcraftUI.ModeButton.update(program_state.edit_mode === 'workshop');
+        RutherfjordUI.ModeButton.update(program_state.edit_mode === 'workshop');
         if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
     }
 
@@ -449,13 +449,13 @@ handler.onProgramStateChange = function(data) {
         console.log('on run state change');
         var rs = json.run_state;
         program_state.run_state = rs;
-        HackcraftUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
-        HackcraftUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
+        RutherfjordUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
+        RutherfjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
-        if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(HackcraftBlockly.getProgram())); }
+        if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RutherfjordBlockly.getProgram())); }
 
         if (rs === 'stopped' && current_scene === 'sandbox') {
-            HackcraftUnity.Call.request_world_state();
+            RutherfjordUnity.Call.request_world_state();
         }
 
     }
@@ -513,13 +513,13 @@ handler.onUnlockDevMode = function() {
 };
 
 handler.onCubeCount = function(count) {
-    HackcraftUI.CubeCounter.update(count);
+    RutherfjordUI.CubeCounter.update(count);
 }
 
-return onHackcraftEvent;
+return onRutherfjordEvent;
 }());
 
 function devmode() {
-    onHackcraftEvent('onUnlockDevMode');
+    onRutherfjordEvent('onUnlockDevMode');
 }
 

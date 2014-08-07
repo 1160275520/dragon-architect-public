@@ -1,6 +1,6 @@
 /// Implementation of the world grid, used by simulation to compute game state.
 /// See Ast.fs
-namespace Hackcraft
+namespace Rutherfjord
 
 open System
 open System.Collections.Generic

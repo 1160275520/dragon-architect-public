@@ -1,4 +1,4 @@
-function HackcraftBlocklyCustomInit() {
+function RutherfjordBlocklyCustomInit() {
 'use strict';
 
 // Extensions to Blockly's language and JavaScript generator.

@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Hackcraft;
+using Rutherfjord;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 
 public class ExternalAPI : MonoBehaviour
 {
-    public const string ExternalApiFunc = "onHackcraftEvent";
+    public const string ExternalApiFunc = "onRutherfjordEvent";
     public const string OnSystemStart = "onSystemStart";
     public const string OnPuzzleChange = "onPuzzleChange";
     public const string OnProgramStateChange = "onProgramStateChange";

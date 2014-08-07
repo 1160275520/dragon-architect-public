@@ -26,7 +26,7 @@ def _go(args):
 def main():
 
     _desc = '''
-    Run the hackcraft web server.
+    Run the rutherfjord web server.
     '''
     parser = argparse.ArgumentParser(description=_desc)
 

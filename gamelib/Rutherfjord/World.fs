@@ -1,9 +1,9 @@
-namespace Hackcraft
+namespace Rutherfjord
 
 open System
 open System.Collections.Generic
 open System.IO
-module J = Hackcraft.Json
+module J = Rutherfjord.Json
 
 [<RequireQualifiedAccess>]
 type EditMode =

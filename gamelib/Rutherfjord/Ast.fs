@@ -1,9 +1,9 @@
 /// The abstract syntax tree for the imperative programming language.
 /// Also currently contains the standard library as hard-coded ASTs.
-namespace Hackcraft.Ast
+namespace Rutherfjord.Ast
 
 open System
-open Hackcraft
+open Rutherfjord
 
 module Imperative =
 

@@ -1,5 +1,5 @@
 /// Miscellaneous collection types and utility functions.
-namespace Hackcraft
+namespace Rutherfjord
 
 open System.Collections
 open System.Collections.Generic

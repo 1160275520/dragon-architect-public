@@ -1,5 +1,5 @@
 
-var HackcraftUI = (function(){ "use strict";
+var RutherfjordUI = (function(){ "use strict";
 var module = {};
 
 /**
@@ -11,7 +11,7 @@ module.State = (function(){ "use strict";
     var current_state;
 
     function hideAll() {
-        HackcraftUnity.Player.hide();
+        RutherfjordUnity.Player.hide();
         $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
     }
 
@@ -22,7 +22,7 @@ module.State = (function(){ "use strict";
 
         hideAll();
         $('.codeEditor').show();
-        HackcraftUnity.Player.show();
+        RutherfjordUnity.Player.show();
         $(main_selector).addClass('title');
 
         cb();
@@ -54,7 +54,7 @@ module.State = (function(){ "use strict";
         hideAll();
         module.CubeCounter.setVisible(false);
         $('.codeEditor, .puzzleModeUI').show();
-        HackcraftUnity.Player.show();
+        RutherfjordUnity.Player.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -62,7 +62,7 @@ module.State = (function(){ "use strict";
     self.goToSandbox = function(cb) {
         hideAll();
         $('.codeEditor, .sandboxModeUI').show();
-        HackcraftUnity.Player.show();
+        RutherfjordUnity.Player.show();
         $(main_selector).removeClass('title');
         cb();
     };
