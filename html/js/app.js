@@ -27,8 +27,8 @@ var storage = (function() {
         sessionStorage.setItem(key, value);
     }
 
-    self.load = function(key) {
-        return sessionStorage.getItem(key);
+    self.load = function(key, cb) {
+        cb(sessionStorage.getItem(key));
     }
 
     self.remove = function(key) {
@@ -72,10 +72,13 @@ var progress = (function(){
 
     var puzzles_completed = [];
 
-    self.initialize = function() {
+    self.initialize = function(cb) {
         // load the level progress from this session (if any)
         if (sessionStorage.getItem("puzzles_completed")) {
-            puzzles_completed = storage.load("puzzles_completed").split(',');
+            storage.load("puzzles_completed", function(x) {
+                puzzles_completed = x.split(',');
+                cb();
+            });
         }
     };
 
@@ -206,7 +209,9 @@ function setState_intro() {
 
 function setState_sandbox() {
     RutherfjordUI.State.goToSandbox(function() {
-        RutherfjordUnity.Call.request_start_sandbox(storage.load('sandbox_world_data'));
+        storage.load('sandbox_world_data', function(wd) {
+            RutherfjordUnity.Call.request_start_sandbox(wd);
+        });
     });
 }
 
@@ -327,7 +332,6 @@ $(function() {
 
         console.info('EVERYTHING IS READY!');
 
-        progress.initialize();
         if (progress.is_module_completed(game_info.modules["tutorial"])) {
             setState_sandbox();
         } else {
@@ -414,19 +418,21 @@ function start_editor(info) {
 handler.onSandboxStart = function() {
     current_scene = "sandbox";
 
-    var info = {
-        checksum: 0,
-        is_starting: true,
-        puzzle: {
-            version: PUZZLE_FORMAT_VERSION,
-            logging_id: 11,
-            library: {required:[],granted:[]},
-            program: {type: 'xml', value: storage.load('sandbox_program')},
-            instructions: {summary:"Let's build something cool! Click {learn} to get new code blocks and abilities.", detail:""}
-        }
-    };
+    storage.load('sandbox_program', function(sandbox_program) {
+        var info = {
+            checksum: 0,
+            is_starting: true,
+            puzzle: {
+                version: PUZZLE_FORMAT_VERSION,
+                logging_id: 11,
+                library: {required:[],granted:[]},
+                program: {type: 'xml', value: sandbox_program},
+                instructions: {summary:"Let's build something cool! Click {learn} to get new code blocks and abilities.", detail:""}
+            }
+        };
 
-    start_editor(info);
+        start_editor(info);
+    });
 }
 
 handler.onPuzzleChange = function(json) {
@@ -437,7 +443,7 @@ handler.onPuzzleChange = function(json) {
 
 handler.onProgramStateChange = function(data) {
     var json = JSON.parse(data);
-    
+
     if ('edit_mode' in json) {
         console.log('on edit mode change');
         program_state.edit_mode = json.edit_mode;
