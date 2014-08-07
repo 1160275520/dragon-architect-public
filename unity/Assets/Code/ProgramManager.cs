@@ -141,10 +141,7 @@ public class ProgramManager : MonoBehaviour {
             robot.SetRobot(state.Robot, state.Command, transitionTimeSeconds);
             grid.SetGrid(state.Grid);
             lastExecuted = state.LastExecuted;
-
-            if (state.LastExecuted.IsEmpty) {
-                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
-            } else {
+            if (!state.LastExecuted.IsEmpty) {
                 GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(this.LastExecuted.First());
             }
         }
@@ -219,6 +216,7 @@ public class ProgramManager : MonoBehaviour {
                 Profiler.EndSample();
                 if (lazyProgramRunner.IsDone) {
                     RunState = RunState.Stopped;
+                    GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
                 } else {
                     Profiler.BeginSample("ProgramManager.Update.ProgramStep");
                     var state = lazyProgramRunner.UpdateOneStep(grid);

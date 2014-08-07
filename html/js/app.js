@@ -437,7 +437,7 @@ handler.onPuzzleChange = function(json) {
 
 handler.onProgramStateChange = function(data) {
     var json = JSON.parse(data);
-
+    
     if ('edit_mode' in json) {
         console.log('on edit mode change');
         program_state.edit_mode = json.edit_mode;
@@ -465,6 +465,8 @@ handler.onProgramStateChange = function(data) {
         if (id !== null) {
             Blockly.mainWorkspace.traceOn(true);
             Blockly.mainWorkspace.highlightBlock(id.toString());
+        } else if (Blockly.selected) {
+            Blockly.selected.unselect();
         }
     }
 }
