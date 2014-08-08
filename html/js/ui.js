@@ -208,6 +208,8 @@ module.Instructions = (function() {
         rotateCW: "media/rotateCWButton.png",
         rotateCCW: "media/rotateCCWButton.png",
         learn: "media/learnButton.png",
+        workshop: "media/workshopButton.png",
+        clear: "media/clearSandboxButton.png",
         speedSlider: "media/speedSlider.png"
     }
 
@@ -216,6 +218,8 @@ module.Instructions = (function() {
         rotateCW: "camera-rotate-right",
         rotateCCW: "camera-rotate-left",
         learn: "btn-modules",
+        workshop: "btn-workshop",
+        clear: "button_header_clear_sandbox",
         speedSlider: "slider-container"
     }
 

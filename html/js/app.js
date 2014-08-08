@@ -498,7 +498,14 @@ handler.onSandboxStart = function() {
                 logging_id: 11,
                 library: {required:[],granted:[]},
                 program: {type: 'xml', value: sandbox_program},
-                instructions: {summary:"Let's build something cool! Click {learn} to get new code blocks and abilities.", detail:""}
+                instructions: {
+                    summary: "Let's build something cool! Click {learn} to get new tools and abilities, like moving up and down or rotating the camera.",
+                    detail:
+                        "In this mode, any code you run will stick around <b>permanently</b>. " +
+                        "Click on {workshop} to toggle to a mode where you can test code without blocks sticking around." +
+                        "<br><br>" +
+                        "You can also clear away all of your code and blocks by clicking {clear}."
+                }
             }
         };
 
