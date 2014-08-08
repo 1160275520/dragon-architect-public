@@ -162,7 +162,8 @@ RuthefjordBlockly.setLevel = function(scene_info, library) {
     var toolXML = '<xml id="toolbox" style="display: none">';
 
     // ignore scene_info.library, trust only the library parameter
-    _.each(library, function(command) {
+    var lib = _.contains(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
+    _.each(lib, function(command) {
         if (RuthefjordBlockly.Commands[command]) {
             toolXML += RuthefjordBlockly.Commands[command];
         }

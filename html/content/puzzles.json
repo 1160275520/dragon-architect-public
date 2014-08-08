@@ -3,6 +3,7 @@
         "name": "2D Movement part 1",
         "component": "PuzMovement2D_1",
         "library": {
+            "restricted": ["blocks"],
             "required": [],
             "granted": ["move2"]
         },
@@ -16,6 +17,7 @@
         "name": "2D Movement part 2",
         "component": "PuzMovement2D_2",
         "library": {
+            "restricted": ["blocks"],
             "required": ["move2"],
             "granted": []
         },
@@ -32,6 +34,7 @@
         "name": "2D Movement part 3",
         "component": "PuzMovement2D_3",
         "library": {
+            "restricted": ["blocks"],
             "required": ["move2"],
             "granted": []
         },
@@ -48,6 +51,7 @@
         "name": "Placing Cubes",
         "component": "PuzPlacement",
         "library": {
+            "restricted": ["blocks"],
             "required": ["move2"],
             "granted": ["place"]
         },
@@ -154,7 +158,8 @@
         "name": "Using Arguments",
         "component": "PuzMovementArgs",
         "library": {
-            "required": ["move2", "place"],
+            "restricted": ["blocks"],
+            "required": [],
             "granted": []
         },
         "instructions": {
@@ -167,7 +172,8 @@
         "name": "Speed Slider",
         "component": "PuzSpeedSlider",
         "library": {
-            "required": ["move2", "place", "repeat"],
+            "restricted": ["blocks"],
+            "required": [],
             "granted": ["speed_slider"]
         },
         "instructions": {
@@ -180,7 +186,8 @@
         "name": "A Bit of Repeat",
         "component": "PuzRepeatFixedProgram",
         "library": {
-            "required": ["move2", "place"],
+            "restricted": ["blocks"],
+            "required": [],
             "granted": ["repeat"]
         },
         "tutorial": {
@@ -196,7 +203,8 @@
         "name": "Nested Repeats",
         "component": "PuzRepeatFixedLoops",
         "library": {
-            "required": ["move2", "place", "repeat"],
+            "restricted": ["blocks"],
+            "required": ["move2", "place"],
             "granted": []
         },
         "instructions": {
@@ -213,9 +221,9 @@
             "granted": []
         },
         "goals": [{
-            "type": "cube_count", 
-            "comp":">=", 
-            "value":101
+            "type": "cube_count",
+            "comp": ">=",
+            "value": 101
         }],
         "instructions": {
             "summary": "Write a program to have me place 101 cubes!",

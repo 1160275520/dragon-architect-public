@@ -413,10 +413,6 @@ $(function() {
 
 // SPECIFIC HANDLER FUNCTIONS
 
-function calculate_library(puzzle_lib) {
-    return _.union(puzzle_lib.required, puzzle_lib.granted, progress.get_library());
-}
-
 handler.onTitleButtonClicked = function(button) {
     switch (button) {
         case 'tutorial':
@@ -438,12 +434,17 @@ function start_editor(info) {
     }
 
     if (info.is_starting) {
-        var current_library = calculate_library(info.puzzle.library);
+        var library = {
+            current: progress.get_library(),
+            puzzle: _.union(info.puzzle.library.required, info.puzzle.library.granted)
+        };
+        library.all = _.union(library.current, library.puzzle);
+
         var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
-        RuthefjordBlockly.setLevel(info.puzzle, current_library);
-        RuthefjordUI.SpeedSlider.setVisible(_.contains(current_library, 'speed_slider'));
-        RuthefjordUI.CameraControls.setVisible(current_library);
+        RuthefjordBlockly.setLevel(info.puzzle, library);
+        RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
+        RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
         RuthefjordBlockly.history = [];
