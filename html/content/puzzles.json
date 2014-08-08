@@ -194,8 +194,8 @@
             "highlighted": ["controls_repeat"]
         },
         "instructions": {
-            "summary": "Help me fill in the blueprint by using {repeat5}!",
-            "detail": "{repeat5} tells me to do everything inside 5 times. You will need to attach it to my existing code, and change the number of times from 10 to 5."
+            "summary": "Help me fill in the blueprint by putting a {repeat5} around the code that's already there!",
+            "detail": "{repeat5} tells me to do everything inside 5 times. You will need to put it around my existing code, and change the number of times from 10 to 5."
         },
         "logging_id": 26
     },
