@@ -190,7 +190,7 @@ module.Instructions = (function() {
 
     var self = {};
     var isLarge = false;
-    var arrowOn = false;
+    var arrowTarget = "";
 
     var imgFileMap = {
         forward: "media/blockSvgs/forward.svg",
@@ -250,12 +250,13 @@ module.Instructions = (function() {
                 var uiElem = $($(this).attr("data-uiId"));
                 $(this).on('click', function (ev) {
                     ev.stopPropagation();
-                    if (!arrowOn) {
-                        arrowOn = true;
+                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiId")) {
+                        arrowTarget = $(this).attr("data-uiId");
                         var arrow = $("#attention-arrow");
                         arrow.css("display", "block");
                         module.Arrow.positionLeftOf(uiElem);
-                        arrow.fadeOut(5000, "easeInExpo", function() { arrowOn = false; });
+                        arrow.stop().animate({opacity: '100'});
+                        arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
                     }
                 });
             }
