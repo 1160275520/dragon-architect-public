@@ -19,20 +19,82 @@ var current_scene = "title";
 
 var storage = (function() {
     var self = {};
+    var base_url = RUTHEFJORD_CONFIG.game_server.url;
+    var remote_data;
+
+    self.initialize = function(cb) {
+        if (RUTHEFJORD_CONFIG.are_logins) {
+            var username = '';
+            while (!username) {
+                username = window.prompt("Please enter your username");
+            }
+            // try to grab all the user data
+            $.get(base_url + 'player/' + username)
+                .done(function(data) {
+                    remote_data = data;
+                    cb();
+                })
+                .fail(function(data) {
+                    // on failure, make a new user
+                    $.ajax(base_url + 'player', {
+                        data: JSON.stringify({id:username}),
+                        contentType: 'application/json',
+                        type: 'POST'
+                    })
+                        .done(function(data) {
+                            remote_data = data;
+                            cb();
+                        })
+                        .fail(function(data) {
+                            // if THIS fails, give up and turn off logins
+                            console.log("creating a player failed D:")
+                            cb();
+                        });
+                });
+
+        } else {
+            cb();
+        }
+    }
 
     self.save = function(key, value) {
         if (typeof key !== "string") throw new TypeError("keys must be strings!");
         if (value !== null && typeof value !== "string") throw new TypeError("can only save string values!");
 
-        sessionStorage.setItem(key, value);
+        var o = {};
+        o[key] = value;
+
+        if (remote_data) {
+            $.ajax(base_url + 'player/' + remote_data.id, {
+                data: JSON.stringify(o),
+                contentType: 'application/json',
+                type: 'PUT'
+            });
+            remote_data[key] = value;
+        } else {
+            sessionStorage.setItem(key, value);
+        }
     }
 
     self.load = function(key, cb) {
-        cb(sessionStorage.getItem(key));
+        if (remote_data) {
+            cb(remote_data[key]);
+        } else {
+            cb(sessionStorage.getItem(key));
+        }
     }
 
     self.remove = function(key) {
-        sessionStorage.removeItem(key);
+        if (remote_data) {
+            $.ajax(base_url + 'player/' + remote_data.id, {
+                data: JSON.stringify({key:null}),
+                contentType: 'application/json',
+                type: 'PUT'
+            });
+            remote_data[key] = null;
+        } else {
+            sessionStorage.removeItem(key);
+        }
     }
 
     return self;
@@ -234,6 +296,12 @@ $(function() {
         return d.promise;
     }
 
+    function load_save_data() {
+        var d = Q.defer();
+        storage.initialize(function() { d.resolve(); });
+        return d.promise;
+    }
+
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
     $('#button_header_levelSelect').on('click', function() {
@@ -277,9 +345,12 @@ $(function() {
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
-    var promise_content = content.initialize();
-    var promise_unity = initialize_unity();
-    var promise_blockly = RuthefjordBlockly.init();
+    var promise_all = Q.all([
+        content.initialize(),
+        load_save_data(),
+        initialize_unity(),
+        RuthefjordBlockly.init(),
+    ]);
 
     // fetch the uid from the GET params and pass that to logging initializer
     var uid = $.url().param('uid');
@@ -326,7 +397,7 @@ $(function() {
     RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
 
     // wait for all systems to start up, then go!
-    Q.all([promise_unity, promise_blockly, promise_content]).done(function() {
+    promise_all.done(function() {
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 
