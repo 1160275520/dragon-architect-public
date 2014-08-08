@@ -407,7 +407,7 @@ module.SpeedSlider = (function() {
     };
 
     self.setVisible = function(isVisible) {
-        $('#sliderContainer').css('visibility', isVisible ? 'visible' : 'hidden');
+        $('#slider-container').css('visibility', isVisible ? 'visible' : 'hidden');
     }
 
     self.value = function() {
