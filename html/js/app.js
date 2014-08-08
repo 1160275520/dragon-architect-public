@@ -483,7 +483,7 @@ function start_editor(info) {
         }
     }
 
-    RuthefjordUI.Instructions.show(info.puzzle.instructions);
+    RuthefjordUI.Instructions.show(info.puzzle.instructions, null, true);
 }
 
 // TODO remove duplicate code from this an onPuzzleChange
