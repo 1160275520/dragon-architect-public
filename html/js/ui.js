@@ -190,6 +190,7 @@ module.Instructions = (function() {
 
     var self = {};
     var isLarge = false;
+    var arrowOn = false;
 
     var imgFileMap = {
         forward: "media/blockSvgs/forward.svg",
@@ -210,16 +211,49 @@ module.Instructions = (function() {
         speedSlider: "media/speedSlider.png"
     }
 
-    function makeImgHtml(file) {
-        return "<object data=\"" + file + "\" style=\"vertical-align:middle\"></object>";
+    var uiIdMap = {
+        go: "btn-run",
+        rotateCW: "camera-rotate-right",
+        rotateCCW: "camera-rotate-left",
+        learn: "btn-modules",
+        speedSlider: "slider-container"
     }
 
+    function makeImgHtml(file, uiId) {
+        var html = "<object class=\"instructions-img\" data=\"" + file + "\" style=\"vertical-align:middle\"";
+        if (uiId) {
+            html += " data-uiId=\"#" + uiId + "\"";
+        } 
+        html += "></object>";
+        return html;
+    }
+
+    // replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
     function processTemplate(str) {
         return str.replace(/{(\w+)}/g, function(match, id) {
             return typeof imgFileMap[id] != 'undefined'
-                ? makeImgHtml(imgFileMap[id]) 
+                ? makeImgHtml(imgFileMap[id], uiIdMap[id]) 
                 : match
             ;
+        });
+    }
+
+    // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element 
+    // when the image is clicked
+    function makeImgOnClick() {
+        $(".instructions-img").each(function() {
+            if ($(this).attr("data-uiId")) {
+                var uiElem = $($(this).attr("data-uiId"));
+                $(this).on('click', function () {
+                    if (!arrowOn) {
+                        arrowOn = true;
+                        var arrow = $("#attention-arrow");
+                        arrow.css("display", "block");
+                        module.Arrow.positionLeftOf(uiElem);
+                        arrow.fadeOut(5000, "easeInExpo", function() { arrowOn = false; });
+                    }
+                });
+            }
         });
     }
 
@@ -272,6 +306,25 @@ module.Instructions = (function() {
         }
         $('#instructions-container').css('visibility', 'visible');
         setSize(doStartLarge, cb, false)();
+        makeImgOnClick();
+    }
+
+    return self;
+}());
+
+module.Arrow = (function() {
+    var self = {};
+
+    self.positionLeftOf = function(uiElem) {
+        var arrow = $("#attention-arrow");
+        arrow.css("top", (uiElem.offset().top - arrow.height()/2 + uiElem.outerHeight()/2) + 'px')
+        arrow.css("left", (uiElem.offset().left - arrow.width()) + 'px');
+    }
+
+    self.positionAt = function(top, left, height) {
+        var arrow = $("#attention-arrow");
+        arrow.css("top", (top - arrow.height()/2 + height/2) + 'px')
+        arrow.css("left", (left - arrow.width()) + 'px');
     }
 
     return self;

@@ -61,15 +61,13 @@ RuthefjordBlockly.makeCounter = function() {
     } else { 
         counter.innerHTML = "";
     }
-    var arrow = $("#trash-arrow")[0];
+    var arrow = $("#attention-arrow");
     if (blocksLeft === 0) {
-        arrow.style.visibility = "visible";
-        arrow.style.webkitAnimationPlayState = "running";
-        arrow.style.animationPlayState = "running";
+        arrow.css("display", "block");
+        var trash = Blockly.mainWorkspace.trashcan;
+        RuthefjordUI.Arrow.positionAt(trash.top_ + $("#blockly").offset().top, trash.left_ + $("#blockly").offset().left, trash.BODY_HEIGHT_ + trash.LID_HEIGHT_);
     } else {
-        arrow.style.visibility = "hidden";
-        arrow.style.webkitAnimationPlayState = "paused";
-        arrow.style.animationPlayState = "paused";
+        arrow.css("display", "none");
     }
 };
 
@@ -135,7 +133,7 @@ RuthefjordBlockly.setProgram = function(program) {
     });
 
     // set maximum blocks to 15 per function
-    Blockly.mainWorkspace.maxBlocks = program.procedures.length * 15;
+    // Blockly.mainWorkspace.maxBlocks = Object.keys(program.procedures).length * 15;
 };
 
 /**
