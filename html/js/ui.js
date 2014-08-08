@@ -244,7 +244,8 @@ module.Instructions = (function() {
         $(".instructions-img").each(function() {
             if ($(this).attr("data-uiId")) {
                 var uiElem = $($(this).attr("data-uiId"));
-                $(this).on('click', function () {
+                $(this).on('click', function (ev) {
+                    ev.stopPropagation();
                     if (!arrowOn) {
                         arrowOn = true;
                         var arrow = $("#attention-arrow");
