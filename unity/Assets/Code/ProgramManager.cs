@@ -101,7 +101,7 @@ public class ProgramManager : MonoBehaviour {
         var eapi = GetComponent<ExternalAPI>();
         eapi.NotifyPS_EditMode(EditMode);
         eapi.NotifyPS_RunState(RunState);
-        eapi.NotifyPS_CurrentBlock(null);
+        eapi.NotifyPS_CurrentState(new StateData(new int[]{}, 0.0f, GetComponent<Grid>().CellsFilled));
     }
 
     private void startExecution() {
@@ -114,7 +114,7 @@ public class ProgramManager : MonoBehaviour {
             // just use wherever the robot current is as the initial state
             lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
-            EvalEntireProgram();
+            evalEntireProgram();
             setGameStateToIndex(0, 0.0f);
         }
     }
@@ -141,35 +141,39 @@ public class ProgramManager : MonoBehaviour {
             robot.SetRobot(state.Robot, state.Command, transitionTimeSeconds);
             grid.SetGrid(state.Grid);
             lastExecuted = state.LastExecuted;
-            if (!state.LastExecuted.IsEmpty) {
-                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(this.LastExecuted.First());
-            }
+            GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
         }
         Profiler.EndSample();
     }
 
-#if false
     public void SetProgramStateBySlider(float slider) {
-        var newIndex = (int)Math.Floor(States.Length * slider);
-        if (currentStateIndex != newIndex) {
-            setGameStateToIndex(newIndex);
-            IsExecuting = false;
+        if (EditMode.IsWorkshop) {
+            // run if we haven't yet
+            evalEntireProgram();
+
+            // sometimes evaling entire program fails, so check again anyway
+            if (States != null) {
+                RunState = RunState.Stopped;
+                var newIndex = (int)Math.Floor(States.Length * slider);
+                if (currentStateIndex != newIndex) {
+                    setGameStateToIndex(newIndex, 0.0f);
+                }
+            }
         }
     }
 
     public float SliderPosition {
         get {
             if (States == null) return 0.0f;
-            return (float)currentStateIndex / States.Length;
+            else return (float)currentStateIndex / States.Length;
         }
     }
-#endif
 
     public void LoadProgram(string resourceName) {
         Manipulator.Program = Ruthefjord.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
     }
     
-    private void EvalEntireProgram() {
+    private void evalEntireProgram() {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only call this in workshop mode!");
         if (Manipulator.IsDirty) {
             Manipulator.ClearDirtyBit();
@@ -216,7 +220,7 @@ public class ProgramManager : MonoBehaviour {
                 Profiler.EndSample();
                 if (lazyProgramRunner.IsDone) {
                     RunState = RunState.Stopped;
-                    GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
+                    GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
                 } else {
                     Profiler.BeginSample("ProgramManager.Update.ProgramStep");
                     var state = lazyProgramRunner.UpdateOneStep(grid);
@@ -227,17 +231,16 @@ public class ProgramManager : MonoBehaviour {
         }
 
         else if (EditMode.IsWorkshop) {
-            EvalEntireProgram();
+            evalEntireProgram();
 
             if (RunState.IsExecuting) {
                 currentStateIndex += stepsPassed;
                 if (currentStateIndex >= States.Length) {
                     // use the private var, the public setter will throw if you try to set to finished manually
                     runState = RunState.Finished;
-                    GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
+                    GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
                 } else {
                     setGameStateToIndex(currentStateIndex, dt);
-                    GetComponent<ExternalAPI>().SendCubeCount(GetComponent<Grid>().CellsFilled);
                 }
             }
         }

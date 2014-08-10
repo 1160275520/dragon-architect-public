@@ -420,7 +420,7 @@ function Slider(selector, labels) {
             value: 0.22,
             min: 0.0,
             max: 1.0,
-            step: 0.05,
+            step: 0.01,
             slide: function( event, ui ) {
                 onChangeCallback(ui.value);
             }
@@ -431,14 +431,20 @@ function Slider(selector, labels) {
         container.css('visibility', isVisible ? 'visible' : 'hidden');
     };
 
-    self.value = function() {
-        return slider.slider("option", "value");
+    self.value = function(x) {
+        if (x === undefined) {
+            return slider.slider("option", "value");
+        } else {
+            slider.slider("value", x);
+        }
     };
 
     return self;
 }
 
 module.SpeedSlider = Slider('#speed-slider', ['Slow', 'Medium', 'Fast']);
+
+module.TimeSlider = Slider('#time-slider', ['Beginning', 'Middle', 'End']);
 
 module.CubeCounter = (function() {
     var self = {};

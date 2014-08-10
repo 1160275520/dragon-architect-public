@@ -58,7 +58,7 @@ public class AllTheGUI : MonoBehaviour
     }
 
     void Start() {
-        #warning "If you want non-blockly mode to work, you need to make this work, but not here because that will break puzzles"
+        //#warning "If you want non-blockly mode to work, you need to make this work, but not here because that will break puzzles"
         /*
         foreach (var proc in PROCS) {
             Manipulator.CreateProcedure(proc);
@@ -218,7 +218,6 @@ public class AllTheGUI : MonoBehaviour
                 GUILayout.Height(BUTTON_HEIGHT)
             };
             if (!IsActiveBlockly) {
-#warning "run button broken!"
                 //if (progman.IsRunning) {
                 //    makeButton("Reset", new GUILayoutOption[] {
                 //        GUILayout.Width(BUTTON_COLUMN_WIDTH),
@@ -272,7 +271,6 @@ public class AllTheGUI : MonoBehaviour
 
         // time slider
         if (IsActiveTimeSlider) {
-#warning "maybe make the slider work again"
 #if false
             var sliderPos = progman.SliderPosition;
             var newSliderPos = GUI.HorizontalSlider(new Rect(20, Screen.height - 60, 400, 20), sliderPos, 0, 1);

@@ -78,10 +78,6 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onTitleButtonClicked", button);
     }
 
-    public void SendCubeCount(int count) {
-        Application.ExternalCall(ExternalApiFunc, "onCubeCount", count);
-    }
-
     public void EAPI_SetProgramFromJson(string json) {
         try {
             var prog = Serialization.ProgramOfJson(Json.Parse(json));
@@ -110,8 +106,8 @@ public class ExternalAPI : MonoBehaviour
         notifyProgramStateChange("ticks_per_second", Json.JsonValue.NewInt(tps));
     }
 
-    public void NotifyPS_CurrentBlock(int? id) {
-        notifyProgramStateChange("current_block", id.HasValue ? Json.JsonValue.NewInt(id.Value) : Json.JsonValue.Null);
+    public void NotifyPS_CurrentState(StateData sd) {
+        notifyProgramStateChange("current_state", sd.ToJson());
     }
 
     public void EAPI_SetProgramState(string arg) {
@@ -182,5 +178,10 @@ public class ExternalAPI : MonoBehaviour
     public void EAPI_SetProgramExecutionSpeed(string parameter) {
         var x = float.Parse(parameter);
         GetComponent<ProgramManager>().TicksPerStep = Math.Max(1, (int)(60 * Math.Pow(0.1f, 2.0f * x)));
+    }
+
+    public void EAPI_SetProgramExecutionTime(string parameter) {
+        var x = float.Parse(parameter);
+        GetComponent<ProgramManager>().SetProgramStateBySlider(x);
     }
 }

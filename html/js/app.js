@@ -395,6 +395,7 @@ $(function() {
     RuthefjordUI.Instructions.hide();
 
     RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
+    RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
 
     // wait for all systems to start up, then go!
     promise_all.done(function() {
@@ -446,6 +447,8 @@ function start_editor(info) {
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
         RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
+        //RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
+        RuthefjordUI.TimeSlider.setVisible(true);
         RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
@@ -547,14 +550,21 @@ handler.onProgramStateChange = function(data) {
 
     }
 
-    if ('current_block' in json) {
-        var id = json.current_block;
-        if (id !== null) {
+    if ('current_state' in json) {
+        var s = json.current_state;
+
+        // highlight current block
+
+        if (s.current_code_elements.length > 0) {
             Blockly.mainWorkspace.traceOn(true);
-            Blockly.mainWorkspace.highlightBlock(id.toString());
+            Blockly.mainWorkspace.highlightBlock(s.current_code_elements[0].toString());
         } else if (Blockly.selected) {
             Blockly.selected.unselect();
         }
+
+        // set time slider position
+
+        RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
 }
 
