@@ -191,6 +191,7 @@ function create_puzzle_runner(module, sceneSelectType) {
     }
 
     function setState_puzzle(id, finish_type) {
+        current_scene = 'transition';
         var info = {id:id, puzzle:game_info.puzzles[id], finish:finish_type};
         RuthefjordUI.State.goToPuzzle(function() {
             if (sceneSelectType === 'tutorial') {
@@ -270,6 +271,7 @@ function setState_intro() {
 }
 
 function setState_sandbox() {
+    current_scene = 'transition';
     RuthefjordUI.State.goToSandbox(function() {
         storage.load('sandbox_world_data', function(wd) {
             RuthefjordUnity.Call.request_start_sandbox(wd);
@@ -307,10 +309,6 @@ $(function() {
     $('#button_header_levelSelect').on('click', function() {
         // HACK
         current_puzzle_runner = create_puzzle_runner(game_info.modules["repeat"], "module");
-    });
-
-    $('#button_header_save').on('click', function() {
-        RuthefjordUnity.Call.request_world_state();
     });
 
     $('#button_header_clear_sandbox').on('click', function() {
