@@ -282,6 +282,8 @@ function setState_sandbox() {
 }
 
 function onProgramEdit() {
+    RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
+
     if (current_scene === 'sandbox') {
         var prog = RuthefjordBlockly.getXML();
         storage.save('sandbox_program', prog);
@@ -360,7 +362,6 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
-        RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
         var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
         if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
         RuthefjordUnity.Call.set_program_state({run_state: newRS});
@@ -536,10 +537,10 @@ handler.onProgramStateChange = function(data) {
     }
 
     if ('run_state' in json) {
-        console.log('on run state change');
         var rs = json.run_state;
+        console.log('on run state change: ' + rs);
         program_state.run_state = rs;
-        RuthefjordUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
+        RuthefjordUI.PauseButton.update(rs !== 'stopped' && rs !== 'finished', rs === 'paused');
         RuthefjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
         if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }

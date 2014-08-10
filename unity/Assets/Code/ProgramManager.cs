@@ -59,6 +59,13 @@ public class ProgramManager : MonoBehaviour {
         eapi.NotifyPS_CurrentState(new StateData(new int[]{}, 0.0f, GetComponent<Grid>().CellsFilled));
     }
 
+    private void setEditMode(EditMode newEM) {
+        if (editMode != newEM) {
+            editMode = newEM;
+            GetComponent<ExternalAPI>().NotifyPS_EditMode(newEM);
+        }
+    }
+
     public EditMode EditMode {
         get { return editMode; }
         set {
@@ -74,8 +81,15 @@ public class ProgramManager : MonoBehaviour {
                 States = null;
 
             }
-            editMode = value;
-            GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
+
+            setEditMode(value);
+        }
+    }
+
+    private void setRunState(RunState newRS) {
+        if (runState != newRS) {
+            runState = newRS;
+            GetComponent<ExternalAPI>().NotifyPS_RunState(newRS);
         }
     }
 
@@ -97,11 +111,11 @@ public class ProgramManager : MonoBehaviour {
                 }
             } else if (value.IsFinished) {
                 throw new ArgumentException("cannot directly set run state to 'finished'");
-            } else if (value.IsPaused) {
-                if (runState.IsStopped) throw new ArgumentException("may only pause if not stopped");
+            } else if (value.IsPaused && !runState.IsExecuting) {
+                throw new ArgumentException("cannot pause when not executing!");
             }
-            runState = value;
-            GetComponent<ExternalAPI>().NotifyPS_RunState(value);
+
+            setRunState(value);
         }
     }
 
@@ -154,7 +168,7 @@ public class ProgramManager : MonoBehaviour {
 
             // sometimes evaling entire program fails, so check again anyway
             if (States != null) {
-                runState = RunState.Paused;
+                setRunState(RunState.Paused);
                 var newIndex = (int)Math.Floor(States.Length * slider);
                 if (currentStateIndex != newIndex) {
                     setGameStateToIndex(newIndex, 0.0f);
@@ -176,7 +190,7 @@ public class ProgramManager : MonoBehaviour {
     
     private void evalEntireProgram() {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only call this in workshop mode!");
-        if (Manipulator.IsDirty) {
+        if (Manipulator.IsDirty || States == null) {
             Manipulator.ClearDirtyBit();
 
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
@@ -238,7 +252,7 @@ public class ProgramManager : MonoBehaviour {
                 currentStateIndex += stepsPassed;
                 if (currentStateIndex >= States.Length) {
                     // use the private var, the public setter will throw if you try to set to finished manually
-                    runState = RunState.Finished;
+                    setRunState(RunState.Finished);
                     GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
                 } else {
                     setGameStateToIndex(currentStateIndex, dt);
