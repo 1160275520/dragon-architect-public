@@ -141,6 +141,8 @@ var progress = (function(){
                 puzzles_completed = x.split(',');
                 cb();
             });
+        } else {
+            cb();
         }
     };
 
