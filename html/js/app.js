@@ -401,11 +401,13 @@ $(function() {
 
         console.info('EVERYTHING IS READY!');
 
-        if (progress.is_module_completed(game_info.modules["tutorial"])) {
-            setState_sandbox();
-        } else {
-            setState_title();
-        }
+        progress.initialize(function() {
+            if (progress.is_module_completed(game_info.modules["tutorial"])) {
+                setState_sandbox();
+            } else {
+                setState_title();
+            }
+        });
     });
 });
 
