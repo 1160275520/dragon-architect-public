@@ -431,6 +431,11 @@ function Slider(selector, labels) {
         container.css('visibility', isVisible ? 'visible' : 'hidden');
     };
 
+    self.setEnabled = function(isEnabled) {
+        slider.slider("option", "disabled", !isEnabled);
+        container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
+    }
+
     self.value = function(x) {
         if (x === undefined) {
             return slider.slider("option", "value");

@@ -531,8 +531,10 @@ handler.onProgramStateChange = function(data) {
 
     if ('edit_mode' in json) {
         console.log('on edit mode change');
-        program_state.edit_mode = json.edit_mode;
-        RuthefjordUI.ModeButton.update(program_state.edit_mode === 'workshop');
+        var em = json.edit_mode;
+        program_state.edit_mode = em;
+        RuthefjordUI.ModeButton.update(em === 'workshop');
+        RuthefjordUI.TimeSlider.setEnabled(em === 'workshop');
         if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
     }
 
