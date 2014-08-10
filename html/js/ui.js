@@ -395,11 +395,28 @@ module.CameraControls = (function() {
     return self;
 }());
 
-module.SpeedSlider = (function() {
+function Slider(selector, labels) {
     var self = {};
+    var container;
+    var slider;
 
     self.initialize = function(onChangeCallback) {
-        $( "#slider" ).slider({
+        container = $(selector);
+
+        container.addClass('slider-container');
+
+        container.append(
+            '<div class="slider-labels">' +
+                '<span style="text-align: left;">' + labels[0] + '</span>' +
+                '<span style="text-align: center;">' + labels[1] + '</span>' +
+                '<span style="text-align: right;">' + labels[2] + '</span>' +
+            '</div>');
+
+        slider = $('<div/>');
+
+        container.append(slider);
+
+        slider.slider({
             value: 0.22,
             min: 0.0,
             max: 1.0,
@@ -408,20 +425,20 @@ module.SpeedSlider = (function() {
                 onChangeCallback(ui.value);
             }
         });
-        // start invisible
-        self.setVisible(false);
     };
 
     self.setVisible = function(isVisible) {
-        $('#slider-container').css('visibility', isVisible ? 'visible' : 'hidden');
-    }
+        container.css('visibility', isVisible ? 'visible' : 'hidden');
+    };
 
     self.value = function() {
-        return $('#slider').slider("option", "value");
+        return slider.slider("option", "value");
     };
 
     return self;
-}());
+}
+
+module.SpeedSlider = Slider('#speed-slider', ['Slow', 'Medium', 'Fast']);
 
 module.CubeCounter = (function() {
     var self = {};
