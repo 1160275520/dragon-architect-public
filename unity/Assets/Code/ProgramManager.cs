@@ -21,51 +21,6 @@ public class ProgramManager : MonoBehaviour {
     // the grid state at the beginning of workshop mode
     private KeyValuePair<IntVec3, int>[] initialCells;
 
-    public EditMode EditMode {
-        get { return editMode; }
-        set {
-            if (editMode == value) return;
-
-            // stop playback when mode changes (which should clear out any workshop changes)
-            RunState = RunState.Stopped;
-
-            if (value.IsWorkshop) {
-                // if switching to workshop mode, backup all cells and clear old states
-                var grid = GetComponent<Grid>();
-                initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
-                States = null;
-
-            }
-            editMode = value;
-            GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
-        }
-    }
-
-    public RunState RunState {
-        get { return runState; }
-        set {
-            if (runState == value) return;
-
-            if (value.IsStopped) {
-                if (EditMode.IsWorkshop) {
-                    setGameStateToIndex(0, 0.0f);
-                }
-            } else if (value.IsExecuting) {
-                if (runState.IsStopped) {
-                    startExecution();
-                }
-            } else if (value.IsFinished) {
-                throw new ArgumentException("cannot directly set run state to 'finished'");
-            } else if (value.IsPaused) {
-                if (runState.IsStopped) throw new ArgumentException("may only pause if not stopped");
-                // reset last statement execution time so dt isn't super wrong next time
-                lastStatementExecutionTime = Time.time;
-            }
-            runState = value;
-            GetComponent<ExternalAPI>().NotifyPS_RunState(value);
-        }
-    }
-
     public bool IsSimulationRunning { get { return EditMode.IsPersistent || RunState.IsExecuting; } }
 
     /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame
@@ -102,6 +57,52 @@ public class ProgramManager : MonoBehaviour {
         eapi.NotifyPS_EditMode(EditMode);
         eapi.NotifyPS_RunState(RunState);
         eapi.NotifyPS_CurrentState(new StateData(new int[]{}, 0.0f, GetComponent<Grid>().CellsFilled));
+    }
+
+    public EditMode EditMode {
+        get { return editMode; }
+        set {
+            if (editMode == value) return;
+
+            // stop playback when mode changes (which should clear out any workshop changes)
+            RunState = RunState.Stopped;
+
+            if (value.IsWorkshop) {
+                // if switching to workshop mode, backup all cells and clear old states
+                var grid = GetComponent<Grid>();
+                initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
+                States = null;
+
+            }
+            editMode = value;
+            GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
+        }
+    }
+
+    public RunState RunState {
+        get { return runState; }
+        set {
+            if (runState == value) return;
+
+            if (value.IsStopped) {
+                if (EditMode.IsWorkshop) {
+                    setGameStateToIndex(0, 0.0f);
+                }
+            } else if (value.IsExecuting) {
+                if (runState.IsStopped) {
+                    startExecution();
+                } else {
+                    // reset last statement execution time so dt isn't super wrong next time
+                    lastStatementExecutionTime = Time.time;
+                }
+            } else if (value.IsFinished) {
+                throw new ArgumentException("cannot directly set run state to 'finished'");
+            } else if (value.IsPaused) {
+                if (runState.IsStopped) throw new ArgumentException("may only pause if not stopped");
+            }
+            runState = value;
+            GetComponent<ExternalAPI>().NotifyPS_RunState(value);
+        }
     }
 
     private void startExecution() {
@@ -153,7 +154,7 @@ public class ProgramManager : MonoBehaviour {
 
             // sometimes evaling entire program fails, so check again anyway
             if (States != null) {
-                RunState = RunState.Stopped;
+                runState = RunState.Paused;
                 var newIndex = (int)Math.Floor(States.Length * slider);
                 if (currentStateIndex != newIndex) {
                     setGameStateToIndex(newIndex, 0.0f);
