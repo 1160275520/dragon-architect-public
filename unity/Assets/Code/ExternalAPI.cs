@@ -148,6 +148,8 @@ public class ExternalAPI : MonoBehaviour
             case "zoomout": camera.Zoom(2.0f); break;
             case "rotateleft": camera.Rotate(90); break;
             case "rotateright": camera.Rotate(-90); break;
+            case "tiltup": camera.Tilt(10); break;
+            case "tiltdown": camera.Tilt(-10); break;
         }
     }
 

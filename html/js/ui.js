@@ -389,7 +389,9 @@ module.CameraControls = (function() {
 
     self.setVisible = function(components) {
         var isRotate = _.contains(components, 'camera_rotate');
+        var isTilt = _.contains(components, 'camera_tilt');
         $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
+        $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
     }
 
     return self;

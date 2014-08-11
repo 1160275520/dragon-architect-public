@@ -105,6 +105,13 @@ public class MyCamera : MonoBehaviour
         relCameraPos = Quaternion.AngleAxis(degrees, Vector3.up) * relCameraPos;
     }
 
+    public void Tilt(float degrees) {
+        var curDot = Vector3.Dot(relCameraPos.normalized, Vector3.up);
+        if ((curDot > 0.05 || degrees > 0) & (curDot < 0.95 || degrees < 0)) {
+            relCameraPos = Quaternion.AngleAxis(degrees, Vector3.Cross(relCameraPos, Vector3.up)) * relCameraPos;
+        }
+    }
+
     public void Zoom(float scale) {
         if ((relCameraPosMag > 5 && scale < 1) || (relCameraPosMag < 100 && scale > 1)) { // limits on how far or close camera can zoom           
             relCameraPos *= scale;
