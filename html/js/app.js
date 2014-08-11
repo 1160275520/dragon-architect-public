@@ -460,8 +460,7 @@ function start_editor(info) {
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
         RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
-        //RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
-        RuthefjordUI.TimeSlider.setVisible(true);
+        RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
         RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
