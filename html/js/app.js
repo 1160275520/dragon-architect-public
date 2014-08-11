@@ -488,7 +488,8 @@ function start_editor(info) {
                 RuthefjordBlockly.setProgram(program);
                 break;
             case "preserve":
-                // want to leave the old program, so do nothing!
+                // want to leave the old program, so do nothing (except tell the system)!
+                onProgramEdit();
                 break;
             case "xml":
                 RuthefjordBlockly.clearProgram();
