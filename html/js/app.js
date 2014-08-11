@@ -571,11 +571,13 @@ handler.onProgramStateChange = function(data) {
 
         // highlight current block
 
-        if (s.current_code_elements.length > 0) {
-            Blockly.mainWorkspace.traceOn(true);
-            Blockly.mainWorkspace.highlightBlock(s.current_code_elements[0].toString());
-        } else if (Blockly.selected) {
-            Blockly.selected.unselect();
+        if (program_state.run_state === 'executing' && Blockly.Block.dragMode_ === 0) {
+            if (s.current_code_elements.length > 0) {
+                Blockly.mainWorkspace.traceOn(true);
+                Blockly.mainWorkspace.highlightBlock(s.current_code_elements[0].toString());
+            } else if (Blockly.selected) {
+                Blockly.selected.unselect();
+            }
         }
 
         // set time slider position
