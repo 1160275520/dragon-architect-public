@@ -35,7 +35,7 @@ header {
     align-items: center;
     height: 60px;
     flex: none;
-    background: #24a2ef;
+    background: #4aaae3;
 }
 
 header > div {
@@ -70,7 +70,7 @@ header > h1 {
     width: 40%;
     margin-left: 25px;
     margin-right: 25px;
-    background: #a4dcff;
+    background: #ccebff;
     padding: 0 10px;
 }
 
@@ -133,7 +133,7 @@ header button, .control-btn, .control-icon-btn {
     height: 40px;
     border: 2px solid black;
     border-radius: 4px;
-    background-color: #feea29;
+    background-color: #d1bd7d;
 }
 
 .control-icon-btn {
@@ -163,7 +163,7 @@ header button, .control-btn, .control-icon-btn {
 #btn-run {
     font-size: 32pt;
     height: 80px;
-    background-color: #9ee229;
+    background-color: #8fe200;
 }
 
 #btn-run.active {
@@ -179,7 +179,7 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-pause.active {
-    background-color: #37b03f;
+    background-color: #8fe200;
     font-size: 20pt;
 }
 
@@ -281,7 +281,7 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #slider .ui-slider-handle {
-    background: #feea29;
+    background: #d1bd7d;
     border-color: black;
 }
 
