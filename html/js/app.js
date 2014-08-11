@@ -136,14 +136,14 @@ var progress = (function(){
 
     self.initialize = function(cb) {
         // load the level progress from this session (if any)
-        if (sessionStorage.getItem("puzzles_completed")) {
-            storage.load("puzzles_completed", function(x) {
+        console.info('loading saved puzzles!');
+        storage.load("puzzles_completed", function(x) {
+            console.log(x);
+            if (x) {
                 puzzles_completed = x.split(',');
-                cb();
-            });
-        } else {
+            }
             cb();
-        }
+        });
     };
 
     self.mark_puzzle_completed = function(id, puzzle) {
@@ -292,6 +292,8 @@ function onProgramEdit() {
 
 // startup
 $(function() {
+    RuthefjordUI.State.goToLoading();
+
     function initialize_unity() {
         var d = Q.defer();
         handler.onSystemStart = function() {

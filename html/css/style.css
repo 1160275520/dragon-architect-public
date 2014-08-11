@@ -19,7 +19,7 @@ html {
 }
 
 body {
-    background: #000;
+    background: #b5b5b5;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -35,7 +35,7 @@ header {
     align-items: center;
     height: 60px;
     flex: none;
-    background: #fff;
+    background: #4aaae3;
 }
 
 header > div {
@@ -51,6 +51,22 @@ header > div * {
 header > h1 {
     margin: 0 10px;
     flex-grow: 0;
+}
+
+/* loading pane */
+/************************************************************/
+
+.view-loading {
+    display: flex;
+    margin: 40px auto;
+    padding: 60px;
+    align-items: center;
+    justify-content: center;
+    background: white;
+}
+
+.view-loading > p {
+    font-size: 40pt;
 }
 
 /* main area and two main vertical divs */
@@ -70,7 +86,8 @@ header > h1 {
     width: 40%;
     margin-left: 25px;
     margin-right: 25px;
-    background: #fff;
+    background: #ccebff;
+    padding: 0 10px;
 }
 
 #main-view-code {
@@ -103,11 +120,7 @@ header > h1 {
     align-items: center;
     justify-content: space-between;
     height: 75px;
-    padding: 5px;
-}
-
-.game-controls-bar > * {
-    margin: 5px;
+    padding: 5px 0;
 }
 
 .game-control {
@@ -136,6 +149,7 @@ header button, .control-btn, .control-icon-btn {
     height: 40px;
     border: 2px solid black;
     border-radius: 4px;
+    background-color: #d1bd7d;
 }
 
 .control-icon-btn {
@@ -162,10 +176,13 @@ header button, .control-btn, .control-icon-btn {
     border-radius: 8px;
 }
 
+#btn-run, #btn-pause.active {
+    background-color: #6ed800;
+}
+
 #btn-run {
     font-size: 32pt;
     height: 80px;
-    background-color: #37b03f;
 }
 
 #btn-run.active {
@@ -181,7 +198,6 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-pause.active {
-    background-color: #37b03f;
     font-size: 20pt;
 }
 
@@ -278,8 +294,13 @@ header button, .control-btn, .control-icon-btn {
     height: 52px;
     border: 2px solid black;
     border-radius: 6px;
-    background-color: rgba(90, 90, 90, 0.2);
     padding: 5px;
+    background-color: transparent;
+}
+
+#slider .ui-slider-handle {
+    background: #d1bd7d;
+    border-color: black;
 }
 
 /* Puzzle selector */

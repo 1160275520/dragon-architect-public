@@ -106,6 +106,7 @@ let ``Puzzle load actual content test`` () =
         File.ReadAllText (dir + "puzzles.json")
         |> Json.Parse
         |> Json.objectToSeq
+        |> Seq.filter (fun (k,v_) -> k <> "dummy")
         |> Seq.map snd
         |> Seq.map PuzzleInfo.Parse
         |> Seq.toArray
