@@ -50,7 +50,9 @@
       <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
       <div>
         <!-- @ifdef DEV -->
-        <button id="button_header_levelSelect">Test Puz Slct</button>
+        <select id="dev-select-module">
+          <option>- Jump to Module -</option>
+        </select>
         <button id="button_header_sandbox">Sandbox</button>
         <button onclick="devmode()">Dev Mode</button>
         <!-- @endif -->

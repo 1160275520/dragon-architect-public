@@ -308,9 +308,14 @@ $(function() {
 
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
-    $('#button_header_levelSelect').on('click', function() {
-        // HACK
-        current_puzzle_runner = create_puzzle_runner(game_info.modules["repeat"], "module");
+
+    var devSelectModule = $('#dev-select-module');
+    devSelectModule.change(function() {
+        var val = devSelectModule.val();
+        // HACK assumes opening line starts with '-'
+        if (val[0] !== '-') {
+            current_puzzle_runner = create_puzzle_runner(game_info.modules[val], "module");
+        }
     });
 
     $('#button_header_clear_sandbox').on('click', function() {
@@ -402,6 +407,11 @@ $(function() {
         Blockly.addChangeListener(onProgramEdit);
 
         console.info('EVERYTHING IS READY!');
+
+        // HACK this needs to wait for the modules to be loaded
+        _.each(game_info.modules, function(module, id) {
+            devSelectModule.append('<option value="' + id + '">' + id + '</option>');
+        });
 
         progress.initialize(function() {
             if (progress.is_module_completed(game_info.modules["tutorial"])) {
