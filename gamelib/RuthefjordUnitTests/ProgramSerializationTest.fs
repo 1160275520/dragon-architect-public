@@ -12,7 +12,7 @@ module A = Ruthefjord.Ast.Imperative
 
 let emptyTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
 "procedures":{}
 }
 """
@@ -28,9 +28,9 @@ let ``Serialization empty test`` () =
 
 let nopTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
 "procedures":{
-    "MAIN":{"arity":0,"body":[]}
+    "MAIN":{"params":[],"body":[]}
 }
 }
 """
@@ -51,14 +51,14 @@ let ``Serialization nop test`` () =
 
 let simpleTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
 "procedures":{
-    "F1":{"arity":0,"body":[
+    "F1":{"params":[],"body":[
         {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
         {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
     ]},
-    "F2":{"arity":0,"body":[]},
-    "MAIN":{"arity":0,"body":[
+    "F2":{"params":[],"body":[]},
+    "MAIN":{"params":[],"body":[
         {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
         {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
             {"meta":{"id":27},"body":[
@@ -90,16 +90,16 @@ let ``Serialization simple test`` () =
 
 let moduleTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
 "modules":{
     "foo":{
         "procedures":{
-            "F1":{"arity":0,"body":[
+            "F1":{"params":[],"body":[
                 {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
                 {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
             ]},
-            "F2":{"arity":0,"body":[]},
-            "MAIN":{"arity":0,"body":[
+            "F2":{"params":[],"body":[]},
+            "MAIN":{"params":[],"body":[
                 {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
                 {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
                     {"meta":{"id":27},"body":[
@@ -110,12 +110,12 @@ let moduleTestProgram = """
     }
 },
 "procedures":{
-    "F1":{"arity":0,"body":[
+    "F1":{"params":[],"body":[
         {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
         {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
     ]},
-    "F2":{"arity":0,"body":[]},
-    "MAIN":{"arity":0,"body":[
+    "F2":{"params":[],"body":[]},
+    "MAIN":{"params":[],"body":[
         {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
         {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
             {"meta":{"id":27},"body":[

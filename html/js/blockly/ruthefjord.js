@@ -190,7 +190,7 @@ RuthefjordBlockly.getProgram = function() {
     var procedures = {};
     procedures["MAIN"] = {};
     var main = procedures["MAIN"];
-    main['arity'] = 0;
+    main['params'] = [];
     main['body'] = [];
     // iterate over top-level blocks
     for (var i = 0; i < topBlocks.length; i++) {
@@ -199,7 +199,7 @@ RuthefjordBlockly.getProgram = function() {
         if (block.type === "procedures_defnoreturn") {
             procedures[block.getFieldValue("NAME")] = {};
             var fn = procedures[block.getFieldValue("NAME")];
-            fn['arity'] = 0;
+            fn['params'] = [];
             fn['body'] = Blockly.UnityJSON.processStructure(block);
         } else { // everything else is part of MAIN
             main['body'] = main['body'].concat(Blockly.UnityJSON.processStructure(block));
@@ -208,7 +208,7 @@ RuthefjordBlockly.getProgram = function() {
     return {
         meta: {
             language: 'imperative_v01',
-            version: {major: 0, minor: 1}
+            version: {major: 0, minor: 2}
         },
         procedures: procedures,
     };

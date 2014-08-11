@@ -17,7 +17,7 @@ let private runtimeError (meta:Ast.Imperative.Meta) (code: RuntimeErrorCode) msg
     raise (CodeException (RuntimeError (int code, meta.Id, msg, null)))
 
 type CallStackState = {
-    Args: ImmArr<obj>;
+    Args: Map<string,obj>;
     Program: Program;
     mutable ToExecute: Statement list;
 }
@@ -34,9 +34,9 @@ let private getProc (program:Program, procname:string) =
         | None ->
             match Builtins.TryFind procname with
             | None -> runtimeError (Ast.Imperative.NewMeta 0) RuntimeErrorCode.UnknownProcedure (sprintf "procedure '%s' does not exist" procname)
-            | Some x -> (program, List.ofSeq x.Body)
-        | Some m -> (m, [Ast.Imperative.NewCall0 0 "MAIN"])
-    | Some x -> (program, List.ofSeq x.Body)
+            | Some x -> (program, x.Parameters, List.ofSeq x.Body)
+        | Some m -> (m, ImmArr.empty, [Ast.Imperative.NewCall0 0 "MAIN"])
+    | Some x -> (program, x.Parameters, List.ofSeq x.Body)
 
 let private exprAsInt meta (o:obj) =
     match o with
@@ -47,14 +47,14 @@ let private exprAsInt meta (o:obj) =
     | _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
 let private CreateState program mainProcName =
-    {CallStack=[{Args=ImmArr.empty; Program=program; ToExecute=[Ast.Imperative.NewCall0 0 mainProcName];}]; LastExecuted=[];}
+    {CallStack=[{Args=Map.empty; Program=program; ToExecute=[Ast.Imperative.NewCall0 0 mainProcName];}]; LastExecuted=[];}
 
 let private Evaluate (state:State) meta expression =
     match expression with
     | Literal x -> x
-    | Argument idx ->
-        try state.CallStack.Head.Args.[idx]
-        with :? System.IndexOutOfRangeException as e -> runtimeError meta RuntimeErrorCode.IncorrectNumberOfArguments (sprintf "Invalid argument index %d, arguments are only length %d" idx state.CallStack.Head.Args.Length)
+    | Argument name ->
+        try state.CallStack.Head.Args.[name]
+        with :? System.IndexOutOfRangeException as e -> runtimeError meta RuntimeErrorCode.IncorrectNumberOfArguments (sprintf "Invalid argument %s." name)
 
 let private step (state:State) =
     match state.CallStack with
@@ -79,8 +79,9 @@ let private step (state:State) =
                 None
             | Call {Proc=procname; Args=args} ->
                 let args = ImmArr.map (Evaluate state stmt.Meta) args
-                let prog, toexec = getProc (head.Program, procname)
-                state.CallStack <- {head with Args=args; Program=prog; ToExecute=toexec} :: state.CallStack
+                let prog, param, toexec = getProc (head.Program, procname)
+                let argsName = Seq.zip param args |> Map.ofSeq
+                state.CallStack <- {head with Args=argsName; Program=prog; ToExecute=toexec} :: state.CallStack
                 None
             | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
                 let ntimes = Evaluate state stmt.Meta ntimesExpr |> exprAsInt stmt.Meta

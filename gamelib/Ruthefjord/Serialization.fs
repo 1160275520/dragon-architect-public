@@ -8,7 +8,7 @@ module J = Ruthefjord.Json
 
 let LANGUAGE_NAME = "imperative_v01"
 let CURR_MAJOR_VERSION = 0
-let CURR_MINOR_VERSION = 1
+let CURR_MINOR_VERSION = 2
 
 let JsonOfProgram (program:Program) =
     let jarrmap f x = ImmArr.toArray x |> Array.map f |> J.arrayOfArray
@@ -28,7 +28,7 @@ let JsonOfProgram (program:Program) =
     let jsonOfExpr (expr:Expression) =
         match expr with
         | Literal o -> [("type", J.String "literal"); ("value", jsonOfObj o)] |> J.JsonValue.ObjectOf
-        | Argument a -> [("type", J.String "argument"); ("index", J.Int a)] |> J.JsonValue.ObjectOf
+        | Argument a -> [("type", J.String "argument"); ("name", J.String a)] |> J.JsonValue.ObjectOf
 
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
@@ -42,7 +42,7 @@ let JsonOfProgram (program:Program) =
     let jsonOfProc (name:string) (proc:Procedure) =
         let meta = jsonOfMeta proc.Meta
         [
-            Some ("arity", J.Int proc.Arity);
+            Some ("params", J.JsonValue.ArrayOf (Seq.map J.String proc.Parameters));
             Some ("body", jarrmap jsonOfStmt proc.Body);
             (if meta = J.emptyObject then None else Some ("meta", meta));
         ] |> List.choose (fun x -> x) |> J.JsonValue.ObjectOf
@@ -92,7 +92,7 @@ let ProgramOfJson (json: J.JsonValue) =
     let parseExpr j =
         match jload j "type" J.asString with
         | "literal" -> Literal (jload j "value" parseObject)
-        | "argument" -> Argument (jload j "index" J.asInt)
+        | "argument" -> Argument (jload j "name" J.asString)
         | t -> syntaxError j SerializationErrorCode.InvalidExpressionType ("invalid expression type " + t)
 
     let rec parseStmt j =
@@ -108,7 +108,8 @@ let ProgramOfJson (json: J.JsonValue) =
     let parseProc n j =
         let body = Array.map parseStmt (jload j "body" J.arrayToArray)
         let meta = tryJload j "meta" parseMeta
-        {Meta=defaultArg meta (NewMeta 0); Arity=jload j "arity" J.asInt; Body=ImmArr.ofSeq body}
+        let param = jload j "params" J.arrayToArray |> Array.map J.asString
+        {Meta=defaultArg meta (NewMeta 0); Parameters=ImmArr.ofArray param; Body=ImmArr.ofSeq body}
 
     let rec parseModule n j =
         let procs = jload j "procedures" J.objectToMap

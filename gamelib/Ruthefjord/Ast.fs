@@ -16,7 +16,7 @@ module Imperative =
 
     type Expression =
     | Literal of obj
-    | Argument of int
+    | Argument of string
 
     type Expression with
         member x.AsLiteral = match x with Literal o -> o | _ -> invalidOp "not a literal"
@@ -36,10 +36,12 @@ module Imperative =
     with
         override x.ToString() = sprintf "%O: %O" x.Meta x.Stmt
     and Procedure = {
-        Arity: int;
+        Parameters: ImmArr<string>;
         Body: ImmArr<Statement>;
         Meta: Meta;
     }
+    with
+        member x.Arity = x.Parameters.Length
 
     type StatementT with
         member x.AsCall = match x with Call c -> c | _ -> invalidOp "not a call"
@@ -96,13 +98,13 @@ module Library =
 
     let Builtins =
         Map([
-            ("Forward", {Meta=NewMeta 0; Arity=1; Body=arr [NewRepeat 0 (NewCommandZ 0 "forward") (Argument 0)]});
-            ("Right", {Meta=NewMeta 0; Arity=0; Body=arr [NewCommandZ 0 "right"]});
-            ("Left", {Meta=NewMeta 0; Arity=0; Body=arr [NewCommandZ 0 "left"]});
-            ("Up", {Meta=NewMeta 0; Arity=1; Body=arr [NewRepeat 0 (NewCommandZ 0 "up") (Argument 0)]});
-            ("Down", {Meta=NewMeta 0; Arity=1; Body=arr [NewRepeat 0 (NewCommandZ 0 "down") (Argument 0)]});
-            ("TurnAround", {Meta=NewMeta 0; Arity=0; Body=arr [NewCommandZ 0 "right"; NewCommandZ 0 "right"]});
-            ("PlaceBlock", {Meta=NewMeta 0; Arity=1; Body=arr [NewCommand 0 "block" (ImmArr.ofSeq [Argument 0])]});
-            ("RemoveBlock", {Meta=NewMeta 0; Arity=0; Body=arr [NewCommandZ 0 "remove"]});
-            ("Line", {Meta=NewMeta 0; Arity=1; Body=arr [NewRepeat 0 (NewBlock 0 (ImmArr.ofSeq [NewCommand 0 "block" (ImmArr.ofSeq [Literal "5cab32"]); NewCommandZ 0 "forward"])) (Argument 0)]});
+            ("Forward", {Meta=NewMeta 0; Parameters=ImmArr.ofSeq ["x"]; Body=arr [NewRepeat 0 (NewCommandZ 0 "forward") (Argument "x")]});
+            ("Right", {Meta=NewMeta 0; Parameters=ImmArr.empty; Body=arr [NewCommandZ 0 "right"]});
+            ("Left", {Meta=NewMeta 0; Parameters=ImmArr.empty; Body=arr [NewCommandZ 0 "left"]});
+            ("Up", {Meta=NewMeta 0; Parameters=ImmArr.ofSeq ["x"]; Body=arr [NewRepeat 0 (NewCommandZ 0 "up") (Argument "x")]});
+            ("Down", {Meta=NewMeta 0; Parameters=ImmArr.ofSeq ["x"]; Body=arr [NewRepeat 0 (NewCommandZ 0 "down") (Argument "x")]});
+            ("TurnAround", {Meta=NewMeta 0; Parameters=ImmArr.empty; Body=arr [NewCommandZ 0 "right"; NewCommandZ 0 "right"]});
+            ("PlaceBlock", {Meta=NewMeta 0; Parameters=ImmArr.ofSeq ["x"]; Body=arr [NewCommand 0 "block" (ImmArr.ofSeq [Argument "x"])]});
+            ("RemoveBlock", {Meta=NewMeta 0; Parameters=ImmArr.empty; Body=arr [NewCommandZ 0 "remove"]});
+            ("Line", {Meta=NewMeta 0; Parameters=ImmArr.ofSeq ["x"]; Body=arr [NewRepeat 0 (NewBlock 0 (ImmArr.ofSeq [NewCommand 0 "block" (ImmArr.ofSeq [Literal "5cab32"]); NewCommandZ 0 "forward"])) (Argument "x")]});
         ])
