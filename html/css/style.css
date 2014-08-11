@@ -160,10 +160,13 @@ header button, .control-btn, .control-icon-btn {
     border-radius: 8px;
 }
 
+#btn-run, #btn-pause.active {
+    background-color: #6ed800;
+}
+
 #btn-run {
     font-size: 32pt;
     height: 80px;
-    background-color: #8fe200;
 }
 
 #btn-run.active {
@@ -179,7 +182,6 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-pause.active {
-    background-color: #8fe200;
     font-size: 20pt;
 }
 
