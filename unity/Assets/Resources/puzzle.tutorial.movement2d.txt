@@ -1,4 +1,4 @@
-{"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+{"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
 "procedures":
-{"MAIN":{"arity":0,"body":[{"args":[{"type":"literal", "value":"1"}],"meta":{"id":80},"proc":"Forward","type":"call"}]}}
+{"MAIN":{"params":[],"body":[{"args":[{"type":"literal", "value":"1"}],"meta":{"id":80},"proc":"Forward","type":"call"}]}}
 }

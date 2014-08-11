@@ -31,7 +31,7 @@ let ``Simulator simple program test`` () =
     blocks.SetEquals (grid.[grid.Length - 1].Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
 let repeatTestProg = """
-{"meta":{"language":"imperative_v01","version":{"major":0,"minor":1}},"procedures":{"F1":{"arity":0,"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":3},"proc":"Forward","type":"call"},{"args":[],"meta":{"id":4},"proc":"Right","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":5},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":6},"proc":"PlaceBlock","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":7},"proc":"Forward","type":"call"},{"args":[],"meta":{"id":8},"proc":"Left","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":9},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":10},"proc":"PlaceBlock","type":"call"}]},"MAIN":{"arity":0,"body":[{"numtimes":{"type":"literal","value":"10"},"meta":{"id":20},"stmt":{"meta":{"id":22},"body":[{"args":[],"meta":{"id":21},"proc":"F1","type":"call"}],"type":"block"},"type":"repeat"}]}}} 
+{"meta":{"language":"imperative_v01","version":{"major":0,"minor":2}},"procedures":{"F1":{"params":[],"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":3},"proc":"Forward","type":"call"},{"args":[],"meta":{"id":4},"proc":"Right","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":5},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":6},"proc":"PlaceBlock","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":7},"proc":"Forward","type":"call"},{"args":[],"meta":{"id":8},"proc":"Left","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":9},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":10},"proc":"PlaceBlock","type":"call"}]},"MAIN":{"params":[],"body":[{"numtimes":{"type":"literal","value":"10"},"meta":{"id":20},"stmt":{"meta":{"id":22},"body":[{"args":[],"meta":{"id":21},"proc":"F1","type":"call"}],"type":"block"},"type":"repeat"}]}}} 
 """
 
 [<Fact>]
@@ -47,16 +47,16 @@ let ``Simulator repeat program test`` () =
 
 let moduleTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":1}},
+"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
 "modules":{
     "foo":{
         "procedures":{
-            "F1":{"arity":0,"body":[
+            "F1":{"params":[],"body":[
                 {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
                 {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
             ]},
-            "F2":{"arity":0,"body":[]},
-            "MAIN":{"arity":0,"body":[
+            "F2":{"params":[],"body":[]},
+            "MAIN":{"params":[],"body":[
                 {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
                 {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
                     {"meta":{"id":27},"body":[
@@ -67,7 +67,7 @@ let moduleTestProgram = """
     }
 },
 "procedures":{
-    "MAIN":{"arity":0,"body":[
+    "MAIN":{"params":[],"body":[
         {"args":[],"meta":{"id":12351},"proc":"foo","type":"call"},
     ]}
 }
