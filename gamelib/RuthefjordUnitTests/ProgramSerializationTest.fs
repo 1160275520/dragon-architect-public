@@ -1,13 +1,13 @@
-module Hackcraft.UnitTest.ProgramSerializationTest
+module Ruthefjord.UnitTest.ProgramSerializationTest
 
 open Xunit
 open Xunit.Extensions
 open FsUnit.Xunit
 open System.IO
 
-module J = Hackcraft.Json
-module S = Hackcraft.Serialization
-module A = Hackcraft.Ast.Imperative
+module J = Ruthefjord.Json
+module S = Ruthefjord.Serialization
+module A = Ruthefjord.Ast.Imperative
 
 
 let emptyTestProgram = """

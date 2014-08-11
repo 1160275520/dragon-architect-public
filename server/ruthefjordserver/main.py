@@ -1,3 +1,4 @@
+from __future__ import absolute_import, print_function, unicode_literals
 
 import sys
 import argparse
@@ -26,7 +27,7 @@ def _go(args):
 def main():
 
     _desc = '''
-    Run the hackcraft web server.
+    Run the ruthefjord web server.
     '''
     parser = argparse.ArgumentParser(description=_desc)
 

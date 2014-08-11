@@ -149,7 +149,7 @@ header button, .control-btn, .control-icon-btn {
     flex-direction: column;
     position: absolute;
     right: 10px;
-    top: 10px;
+    top: 30px;
 }
 
 .game-control-btn-playback {
@@ -232,51 +232,52 @@ header button, .control-btn, .control-icon-btn {
 }
 
 @-webkit-keyframes trash-arrow {
-    0%   {-webkit-transform: rotate(90deg) translate(0px,0px); }
-    50%  {-webkit-transform: rotate(90deg) translate(0px,50px);}
-    100% {-webkit-transform: rotate(90deg) translate(0px,0px); }
+    0%   {-webkit-transform: translate(0px,0px); }
+    50%  {-webkit-transform: translate(-50px,0px);}
+    100% {-webkit-transform: translate(0px,0px); }
 }
 
 @keyframes trash-arrow {
-    0%   {transform: rotate(90deg) translate(0px,0px);}
-    50%  {transform: rotate(90deg) translate(0px,50px);}
-    100% {transform: rotate(90deg) translate(0px,0px);}
+    0%   {transform: translate(0px,0px);}
+    50%  {transform: translate(-50px,0px);}
+    100% {transform: translate(0px,0px);}
 }
 
-#trash-arrow {
+#attention-arrow {
     position: absolute;
-    right: 125px;
-    bottom: -10px;
-    height: 150px;
+    width: 75px;
     -webkit-animation-name: trash-arrow;
     -webkit-animation-duration: 2s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-direction: alternate;
     -webkit-animation-timing-function: ease-in-out;
-    -webkit-animation-play-state: paused;
     animation-name: trash-arrow;
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-direction: alternate;
     animation-timing-function: ease-in-out;
-    animation-play-state: paused;
-    visibility: hidden;
+    display: none;
+    z-index: 1;
 }
 
-.tick {
-    position: relative;
+.slider-labels {
+    display: flex;
+    width: auto;
+}
+
+.slider-labels > span {
+    flex-grow: 1;
     font-family: "Ubuntu Mono";
     font-weight: bold;
 }
 
-#sliderContainer {
+.slider-container {
     width: 300px;
-    background-color: transparent;
-    border-color: #000;
-    border-width: 2px;
-    border-style: solid;
+    height: 52px;
+    border: 2px solid black;
     border-radius: 6px;
     padding: 5px;
+    background-color: transparent;
 }
 
 #slider .ui-slider-handle {

@@ -7,10 +7,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f949f7d5-c389-47cf-8b9e-5ef7ac8ec11d</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>HackcraftUnitTests</RootNamespace>
-    <AssemblyName>HackcraftUnitTests</AssemblyName>
+    <RootNamespace>RuthefjordUnitTests</RootNamespace>
+    <AssemblyName>RuthefjordUnitTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <Name>HackcraftUnitTests</Name>
+    <Name>RuthefjordUnitTests</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,7 +20,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\HackcraftUnitTests.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\RuthefjordUnitTests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,7 +29,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\HackcraftUnitTests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\RuthefjordUnitTests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -72,8 +72,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hackcraft\Hackcraft.fsproj">
-      <Name>Hackcraft</Name>
+    <ProjectReference Include="..\Ruthefjord\Ruthefjord.fsproj">
+      <Name>Ruthefjord</Name>
       <Project>{8ac42bfa-8d32-4b3d-a51f-8ed54ed67a5a}</Project>
       <Private>True</Private>
     </ProjectReference>

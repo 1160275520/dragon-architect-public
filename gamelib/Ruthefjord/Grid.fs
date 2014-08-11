@@ -1,6 +1,6 @@
 /// Implementation of the world grid, used by simulation to compute game state.
 /// See Ast.fs
-namespace Hackcraft
+namespace Ruthefjord
 
 open System
 open System.Collections.Generic
@@ -15,6 +15,9 @@ type IGrid =
     abstract member RemoveObject : idx:IntVec3 -> unit
 
 type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
+
+    let MAX_BLOCKS = 8000
+
     let mutable cells = Dictionary()
     do
         for kvp in init do cells.Add (kvp.Key, kvp.Value)
@@ -25,6 +28,6 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
         ImmArr.ofSeq cells
 
     interface IGrid with
-        member x.AddObject idx block = if not (cells.ContainsKey idx) then cells.Add (idx, block)
+        member x.AddObject idx block = if cells.Count < MAX_BLOCKS && not (cells.ContainsKey idx) then cells.Add (idx, block)
         member x.OverwriteObject idx block = cells.[idx] <- block
         member x.RemoveObject idx = cells.Remove idx |> ignore

@@ -1,5 +1,5 @@
 
-var HackcraftUI = (function(){ "use strict";
+var RuthefjordUI = (function(){ "use strict";
 var module = {};
 
 /**
@@ -11,8 +11,8 @@ module.State = (function(){ "use strict";
     var current_state;
 
     function hideAll() {
-        HackcraftUnity.Player.hide();
-        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .levelSelector, .moduleSelector').hide();
+        RuthefjordUnity.Player.hide();
+        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -22,7 +22,7 @@ module.State = (function(){ "use strict";
 
         hideAll();
         $('.codeEditor').show();
-        HackcraftUnity.Player.show();
+        RuthefjordUnity.Player.show();
         $(main_selector).addClass('title');
 
         cb();
@@ -45,15 +45,16 @@ module.State = (function(){ "use strict";
 
     self.goToSceneSelect = function(cb) {
         hideAll();
-        $('.levelSelector').show();
+        $('.puzzleSelector').show();
         $(main_selector).removeClass('title');
         cb();
     };
 
     self.goToPuzzle = function(cb) {
         hideAll();
+        module.CubeCounter.setVisible(false);
         $('.codeEditor, .puzzleModeUI').show();
-        HackcraftUnity.Player.show();
+        RuthefjordUnity.Player.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -61,7 +62,7 @@ module.State = (function(){ "use strict";
     self.goToSandbox = function(cb) {
         hideAll();
         $('.codeEditor, .sandboxModeUI').show();
-        HackcraftUnity.Player.show();
+        RuthefjordUnity.Player.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -152,10 +153,10 @@ module.LevelSelect = (function() {
         renderer.zoom(false);
         var layout = dagreD3.layout()
                             .rankDir("LR");
-        renderer.layout(layout).run(graph, d3.select(".levelSelector svg g"));
+        renderer.layout(layout).run(graph, d3.select(".puzzleSelector svg g"));
 
         // color rectangles
-        var nodes = d3.selectAll(".levelSelector .node")[0];
+        var nodes = d3.selectAll(".puzzleSelector .node")[0];
 
         // setup onclick behavior
         var SANDBOX_LEVEL_ID = 'tutorial.sandbox';
@@ -189,6 +190,78 @@ module.Instructions = (function() {
 
     var self = {};
     var isLarge = false;
+    var arrowTarget = "";
+
+    var imgFileMap = {
+        forward: "media/blockSvgs/forward.svg",
+        left: "media/blockSvgs/left.svg",
+        right: "media/blockSvgs/right.svg",
+        placeblock: "media/blockSvgs/placeblock.svg",
+        removeblock: "media/blockSvgs/removeblock.svg",
+        up: "media/blockSvgs/up.svg",
+        down: "media/blockSvgs/down.svg",
+        repeat: "media/blockSvgs/repeat.svg",
+        repeat4: "media/blockSvgs/repeat4.svg",
+        repeat5: "media/blockSvgs/repeat5.svg",
+        repeat9: "media/blockSvgs/repeat9.svg",
+        go: "media/goButton.png",
+        rotateCW: "media/rotateCWButton.png",
+        rotateCCW: "media/rotateCCWButton.png",
+        learn: "media/learnButton.png",
+        workshop: "media/workshopButton.png",
+        clear: "media/clearSandboxButton.png",
+        speedSlider: "media/speedSlider.png"
+    }
+
+    var uiIdMap = {
+        go: "btn-run",
+        rotateCW: "camera-rotate-right",
+        rotateCCW: "camera-rotate-left",
+        learn: "btn-modules",
+        workshop: "btn-workshop",
+        clear: "button_header_clear_sandbox",
+        speedSlider: "slider-container"
+    }
+
+    function makeImgHtml(file, uiId) {
+        var html = "<object class=\"instructions-img\" data=\"" + file + "\" style=\"vertical-align:middle\"";
+        if (uiId) {
+            html += " data-uiId=\"#" + uiId + "\"";
+        } 
+        html += "></object>";
+        return html;
+    }
+
+    // replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
+    function processTemplate(str) {
+        return str.replace(/{(\w+)}/g, function(match, id) {
+            return typeof imgFileMap[id] != 'undefined'
+                ? makeImgHtml(imgFileMap[id], uiIdMap[id]) 
+                : match
+            ;
+        });
+    }
+
+    // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element 
+    // when the image is clicked
+    function makeImgOnClick() {
+        $(".instructions-img").each(function() {
+            if ($(this).attr("data-uiId")) {
+                var uiElem = $($(this).attr("data-uiId"));
+                $(this).on('click', function (ev) {
+                    ev.stopPropagation();
+                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiId")) {
+                        arrowTarget = $(this).attr("data-uiId");
+                        var arrow = $("#attention-arrow");
+                        arrow.css("display", "block");
+                        module.Arrow.positionLeftOf(uiElem);
+                        arrow.stop().animate({opacity: '100'});
+                        arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
+                    }
+                });
+            }
+        });
+    }
 
     function setOnExpandAnimationDone(f) {
         setTimeout(f, 1000);
@@ -215,7 +288,7 @@ module.Instructions = (function() {
 
             function onDone() {
                 if (isLarge === doMakeLarge) {
-                    $("#instructions-reminder").html(isLarge ? "(Click to hide)" : "(Click to show more)");
+                    $("#instructions-reminder").html(isLarge ? "(Shrink)" : "(Expand)");
                     container.onclick = clickCallback ? clickCallback : setSize(!doMakeLarge, null, true);
                 }
             }
@@ -234,11 +307,30 @@ module.Instructions = (function() {
 
     self.show = function(instructions, cb, doStartLarge) {
         if (instructions) {
-            $('#instructions-goal').html(instructions.summary);
-            $('#instructions-detail').html(instructions.detail);
+            $('#instructions-goal').html(processTemplate(instructions.summary));
+            $('#instructions-detail').html(processTemplate(instructions.detail));
         }
         $('#instructions-container').css('visibility', 'visible');
         setSize(doStartLarge, cb, false)();
+        makeImgOnClick();
+    }
+
+    return self;
+}());
+
+module.Arrow = (function() {
+    var self = {};
+
+    self.positionLeftOf = function(uiElem) {
+        var arrow = $("#attention-arrow");
+        arrow.css("top", (uiElem.offset().top - arrow.height()/2 + uiElem.outerHeight()/2) + 'px')
+        arrow.css("left", (uiElem.offset().left - arrow.width()) + 'px');
+    }
+
+    self.positionAt = function(top, left, height) {
+        var arrow = $("#attention-arrow");
+        arrow.css("top", (top - arrow.height()/2 + height/2) + 'px')
+        arrow.css("left", (left - arrow.width()) + 'px');
     }
 
     return self;
@@ -297,17 +389,36 @@ module.CameraControls = (function() {
 
     self.setVisible = function(components) {
         var isRotate = _.contains(components, 'camera_rotate');
+        var isTilt = _.contains(components, 'camera_tilt');
         $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
+        $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
     }
 
     return self;
 }());
 
-module.SpeedSlider = (function() {
+function Slider(selector, labels) {
     var self = {};
+    var container;
+    var slider;
 
     self.initialize = function(onChangeCallback) {
-        $( "#slider" ).slider({
+        container = $(selector);
+
+        container.addClass('slider-container');
+
+        container.append(
+            '<div class="slider-labels">' +
+                '<span style="text-align: left;">' + labels[0] + '</span>' +
+                '<span style="text-align: center;">' + labels[1] + '</span>' +
+                '<span style="text-align: right;">' + labels[2] + '</span>' +
+            '</div>');
+
+        slider = $('<div/>');
+
+        container.append(slider);
+
+        slider.slider({
             value: 0.22,
             min: 0.0,
             max: 1.0,
@@ -316,28 +427,26 @@ module.SpeedSlider = (function() {
                 onChangeCallback(ui.value);
             }
         });
-        // start invisible
-        self.setVisible(false);
     };
 
     self.setVisible = function(isVisible) {
-        $('#sliderContainer').css('visibility', isVisible ? 'visible' : 'hidden');
-    }
+        container.css('visibility', isVisible ? 'visible' : 'hidden');
+    };
 
     self.value = function() {
-        return $('#slider').slider("option", "value");
+        return slider.slider("option", "value");
     };
 
     return self;
-}());
+}
+
+module.SpeedSlider = Slider('#speed-slider', ['Slow', 'Medium', 'Fast']);
 
 module.CubeCounter = (function() {
     var self = {};
 
-    self.setVisible = function(goals) {
-        var isVisible = goals ? goals.some(function(g) {
-            return g.type === "cube_count";
-        }) : false;
+    self.setVisible = function(isVisible) {
+        console.log('setting to ' + isVisible.toString());
         $('#cube-counter').css('display', isVisible ? 'block' : 'none');
         var n = 0;
         $('#cube-counter').html(n.toString() + " cubes placed.");

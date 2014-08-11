@@ -1,9 +1,9 @@
 /// Implemntation of the different "robots".
 /// Robots support a set of commands, and, given a command list produced by a program, change the world state.
 /// See Ast.fs, Grid.fs
-namespace Hackcraft.Robot
+namespace Ruthefjord.Robot
 
-open Hackcraft
+open Ruthefjord
 
 [<AllowNullLiteral>]
 type Command(t,a) =

@@ -33,27 +33,32 @@
     <script src="js/logging.js"></script>
     <script src="js/blockly/customBlocks.js"></script>
     <script src="js/blockly/common.js"></script>
-    <script src="js/blockly/hackcraft.js"></script>
+    <script src="js/blockly/ruthefjord.js"></script>
     <!-- endbuild -->
   </head>
   <body>
     <header id="header">
-      <h1>Hackcraft!</h1>
-      <div class="sandboxModeUI">
-        <p>You are in sandbox mode!</p>
-        <button id="btn-modules">Learn more code</button>
-        <button id="button_header_clear_sandbox">Clear sandbox save data</button>
+      <h1>Ruthefjord!</h1>
+      <div>
+        <p class="sandboxModeUI">You are in sandbox mode!</p>
+        <button id="btn-modules" class="sandboxModeUI">Learn more code</button>
+        <button id="button_header_clear_sandbox" class="sandboxModeUI">Clear cubes and code</button>
+        <button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button>
+        <button id="btn-back-selector-module" class="puzzleModeUI puzzleSelector hideTutorial">Try a different module</button>
+        <button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector moduleSelector hideTutorial">Go back to sandbox mode</button>
       </div>
       <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
       <div>
         <!-- @ifdef DEV -->
-        <button id="button_header_levelSelect">Go to puzzle select</button>
-        <button id="button_header_sandbox">Go to sandbox</button>
-        <button onclick="devmode()">Activate Devloper Mode</button>
+        <select id="dev-select-module">
+          <option>- Jump to Module -</option>
+        </select>
+        <button id="button_header_sandbox">Sandbox</button>
+        <button onclick="devmode()">Dev Mode</button>
         <!-- @endif -->
       </div>
     </header>
-    <div id="selector-puzzle" class="levelSelector">
+    <div id="selector-puzzle" class="puzzleSelector">
       <svg width=1400 height=350>
         <g transform="translate(20,20)"/>
       </svg>
@@ -65,26 +70,21 @@
     <div id="main">
       <div id="main-view-game">
         <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
-          <div class="game-control codeEditor">
+          <div class="game-control">
             <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>
             <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
             <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
             <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
             <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
+            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i></button>
+            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i></button>
           </div>
           <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop Mode</button>
         </div>
         <div id="unity-player"></div>
         <div id="game-controls-bar-bottom" class="game-controls-bar puzzleModeUI sandboxModeUI">
-          <div id="sliderContainer" class="codeEditor">
-            <div id="sliderSteps">
-              <span class="tick" >Slow</span>
-              <span class="tick" style="left: 30%;">Medium</span>
-              <span class="tick" style="left: 60%;">Fast</span>
-            </div>
-            <div id="slider"></div>
-          </div>
-          <p id="cube-counter" class="game-control puzzleModeUI">X</p>
+          <div id="speed-slider"></div>
+          <!--<p id="cube-counter" class="game-control">X</p>-->
         </div>
       </div>
       <div id="main-view-code" class="codeEditor">
@@ -101,14 +101,14 @@
         <div id="code-area">
           <iframe id="blockly" src="frame.html"></iframe>
           <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">
-            <button id="btn-run" class="game-control-btn-playback codeEditor">X</button>
-            <button id="btn-pause" class="game-control-btn-playback puzzleModeUI sandboxModeUI">X</button>
+            <button id="btn-run" class="game-control-btn-playback">X</button>
+            <button id="btn-pause" class="game-control-btn-playback">X</button>
           </div>
           <button id="btn-undo" style="display: none;">Undo</button>
           <p id="statement-counter"></p>
-          <img id="trash-arrow" src="media/arrow.png"/>
         </div>
       </div>
     </div>
+    <img id="attention-arrow" src="media/arrow.png"/>
   </body>
 </html>

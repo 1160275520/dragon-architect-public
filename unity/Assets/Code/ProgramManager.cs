@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-using Hackcraft;
-using Hackcraft.Ast;
+using Ruthefjord;
+using Ruthefjord.Ast;
 
 public class ProgramManager : MonoBehaviour {
 
@@ -30,9 +30,11 @@ public class ProgramManager : MonoBehaviour {
             RunState = RunState.Stopped;
 
             if (value.IsWorkshop) {
-                // if switching to workshop mode, backup all cells
+                // if switching to workshop mode, backup all cells and clear old states
                 var grid = GetComponent<Grid>();
                 initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
+                States = null;
+
             }
             editMode = value;
             GetComponent<ExternalAPI>().NotifyPS_EditMode(value);
@@ -91,7 +93,7 @@ public class ProgramManager : MonoBehaviour {
         robot = FindObjectOfType<RobotController>();
 
         runState = RunState.Stopped;
-        editMode = EditMode.Workshop;
+        editMode = EditMode.Persistent;
         initialCells = new KeyValuePair<IntVec3, int>[] { };
     }
     
@@ -113,16 +115,6 @@ public class ProgramManager : MonoBehaviour {
             lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
             EvalEntireProgram();
-            setGameStateToIndex(0, 0.0f);
-        }
-    }
-
-    public void TogglePauseExecution() {
-    }
-
-    public void ResetExecution() {
-        RunState = RunState.Stopped;
-        if (EditMode.IsWorkshop) {
             setGameStateToIndex(0, 0.0f);
         }
     }
@@ -149,11 +141,8 @@ public class ProgramManager : MonoBehaviour {
             robot.SetRobot(state.Robot, state.Command, transitionTimeSeconds);
             grid.SetGrid(state.Grid);
             lastExecuted = state.LastExecuted;
-
-            if (state.LastExecuted.IsEmpty) {
-                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
-            } else {
-                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(state.LastExecuted.Head.Meta.Id);
+            if (!state.LastExecuted.IsEmpty) {
+                GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(this.LastExecuted.First());
             }
         }
         Profiler.EndSample();
@@ -177,7 +166,7 @@ public class ProgramManager : MonoBehaviour {
 #endif
 
     public void LoadProgram(string resourceName) {
-        Manipulator.Program = Hackcraft.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
+        Manipulator.Program = Ruthefjord.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
     }
     
     private void EvalEntireProgram() {
@@ -227,6 +216,7 @@ public class ProgramManager : MonoBehaviour {
                 Profiler.EndSample();
                 if (lazyProgramRunner.IsDone) {
                     RunState = RunState.Stopped;
+                    GetComponent<ExternalAPI>().NotifyPS_CurrentBlock(null);
                 } else {
                     Profiler.BeginSample("ProgramManager.Update.ProgramStep");
                     var state = lazyProgramRunner.UpdateOneStep(grid);

@@ -15,7 +15,7 @@ gulp.task('clean', function(cb) {
     rimraf(BUILD_DIR, cb);
 });
 
-gulp.task('usemin', ['clean'], function() {
+gulp.task('usemin_index', ['clean'], function() {
     return gulp.src('index.html')
         .pipe(preprocess({context: {}}))
         .pipe(usemin({
@@ -26,8 +26,14 @@ gulp.task('usemin', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR));
 });
 
-gulp.task('copy_frame', ['clean'], function() {
+gulp.task('usemin_frame', ['clean'], function() {
     return gulp.src(['frame.html'])
+        .pipe(preprocess({context: {}}))
+        .pipe(usemin({
+            css: [minifyCss(), 'concat'],
+            html: [minifyHtml({empty: true})],
+            js: [uglify()]
+        }))
         .pipe(gulp.dest(BUILD_DIR));
 });
 
@@ -51,7 +57,7 @@ gulp.task('copy_fonts', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 });
 
-gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_content', 'copy_fonts', 'copy_frame']);
+gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_content', 'copy_fonts']);
 
-gulp.task('default', ['usemin', 'copy_static']);
+gulp.task('default', ['usemin_index', 'usemin_frame', 'copy_static']);
 

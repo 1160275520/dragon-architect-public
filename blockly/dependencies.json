@@ -1,9 +1,9 @@
 [
 {
-	"local":"blockly-hackcraft",
+	"local":"blockly-ruthefjord",
 	"engine":"hg",
-	"remote":"ssh://bicycle.cs.washington.edu//homes/gws/edbutler/repos/blockly-hackcraft",
-	"revision":"8ee88dece4fa"
+	"remote":"ssh://bicycle.cs.washington.edu//homes/gws/edbutler/repos/blockly-ruthefjord",
+	"revision":"0925ea813da2"
 },
 {
 	"local":"closure-library-read-only",

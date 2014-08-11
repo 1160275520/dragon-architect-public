@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Hackcraft", "Hackcraft\Hackcraft.fsproj", "{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ruthefjord", "Ruthefjord\Ruthefjord.fsproj", "{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

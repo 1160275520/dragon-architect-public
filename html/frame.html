@@ -2,10 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
     <script type="text/javascript" src="generated/blockly_compressed.js"></script>
     <script type="text/javascript" src="generated/blocks_compressed.js"></script>
+    <!-- build:js code/frame.js -->
+    <script src="lib/jquery/jquery.js"></script>
+    <!-- endbuild -->
     <style>
       html, body {
+        font-family: "Open Sans";
         background-color: #fff;
         margin: 0;
         padding: 0;
@@ -33,11 +38,26 @@
           trashcan: true,
           toolbox: document.getElementById('toolbox')
         });
+        document.addEventListener("toolboxUpdated", makeLabels);
         return Blockly;
+      }
+      function makeLabels() {
+        var toolboxWidth = Blockly.mainWorkspace.flyout_.getMetrics_().viewWidth;
+        if (toolboxWidth < 100) { // hide when toolbox is empty
+          $("#blocklyLabels").css("display", "none");
+        } else {
+          $("#blocklyLabels").css("display", "flex");
+          $("#libraryLabel").width(toolboxWidth - 1); // viewWidth is 1 pixel too large for some reason when event fires
+          $("#codeLabel").width(Blockly.mainWorkspace.getMetrics().viewWidth - $("#libraryLabel").width());
+        }
       }
     </script>
   </head>
   <body onload="init()">
+    <div id="blocklyLabels" style='display: none; font-family: "Open Sans"; text-align: center;'>
+      <div id="libraryLabel" style='box-sizing: border-box; border-right-style: solid; border-width: 2px;'>Code Blocks</div>
+      <div id="codeLabel">Drag code blocks here to create a program</div>
+    </div>
     <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
     <xml id="toolbox" style="display: none">
       <block type="controls_repeat"></block>

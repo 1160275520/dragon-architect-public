@@ -1,5 +1,5 @@
 /// Types and parsing/serialization functions for the JSON data structures that represent puzzles and modules.
-module Hackcraft.Scene
+module Ruthefjord.Scene
 
 module J = Json
 
@@ -13,17 +13,20 @@ let inline private nullOrToJson o = match o with Some x -> toJson x | None -> J.
 type Library = {
     RequiredTools: Set<string>;
     GrantedTools: Set<string>;
+    RestrictedCategories: Set<string>;
 } with
     member x.ToJson () =
         J.JsonValue.ObjectOf [
             "required", jsonOfSet x.RequiredTools;
             "granted", jsonOfSet x.GrantedTools;
+            "restricted", jsonOfSet x.RestrictedCategories;
         ]
 
     static member Parse j =
         {
             RequiredTools = jload j "required" setOfJson;
             GrantedTools = jload j "granted" setOfJson;
+            RestrictedCategories = defaultArg (tryJload j "restricted" setOfJson) Set.empty;
         }
 
 type Instructions = {

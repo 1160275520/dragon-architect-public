@@ -2,8 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hackcraft;
-using Hackcraft.Ast;
+using Ruthefjord;
+using Ruthefjord.Ast;
 using Microsoft.FSharp.Core;
 
 public class PuzzleHelper : MonoBehaviour
@@ -33,7 +33,7 @@ public class PuzzleHelper : MonoBehaviour
         var worldOp = global.CurrentPuzzle.WorldData;
         if (OptionModule.IsSome(worldOp)) {
             var world = worldOp.Value;
-            var blocks = Hackcraft.ImmArr.ofArray(world.Blocks);
+            var blocks = Ruthefjord.ImmArr.ofArray(world.Blocks);
             // only set world if there are a non-zero number of blocks,
             // since puzzles may be using this to set the robot but setting their own blocks in a component
             // if not, then the blocks default to empty anyway.
@@ -42,9 +42,12 @@ public class PuzzleHelper : MonoBehaviour
             }
             if (world.Robots.Length > 0) {
                 var d = world.Robots[0];
-                FindObjectOfType<RobotController>().SetRobot(new Hackcraft.Robot.BasicImperativeRobot(d.Position, d.Direction), null, 0.0f);
+                FindObjectOfType<RobotController>().SetRobot(new Ruthefjord.Robot.BasicImperativeRobot(d.Position, d.Direction), null, 0.0f);
             }
         }
+
+        // set the edit more to workshop to save any initial world state
+        GetComponent<ProgramManager>().EditMode = EditMode.Workshop;
     }
 
     public void SetInstructions(string summary, string detail) {

@@ -48,8 +48,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hackcraft\Hackcraft.fsproj">
-      <Name>Hackcraft</Name>
+    <ProjectReference Include="..\Ruthefjord\Ruthefjord.fsproj">
+      <Name>Ruthefjord</Name>
       <Project>{8ac42bfa-8d32-4b3d-a51f-8ed54ed67a5a}</Project>
       <Private>True</Private>
     </ProjectReference>

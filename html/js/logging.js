@@ -1,5 +1,5 @@
 
-var HackcraftLogging = (function(){ "use strict";
+var RuthefjordLogging = (function(){ "use strict";
 
 var user;
 var is_initialized = false;
@@ -7,14 +7,14 @@ var self = {};
 
 self.initialize = function(uid) {
 
-    var skey = HACKCRAFT_CONFIG.logging.game.skey;
+    var skey = RUTHEFJORD_CONFIG.logging.game.skey;
     var skeyHash = cgs.server.logging.GameServerData.UUID_SKEY_HASH;
-    var serverTag = cgs.server.CGSServerProps[HACKCRAFT_CONFIG.logging.server_tag];
+    var serverTag = cgs.server.CGSServerProps[RUTHEFJORD_CONFIG.logging.server_tag];
     console.info(serverTag);
-    var gameName = HACKCRAFT_CONFIG.logging.game.name;
-    var gameId = HACKCRAFT_CONFIG.logging.game.id;
+    var gameName = RUTHEFJORD_CONFIG.logging.game.name;
+    var gameId = RUTHEFJORD_CONFIG.logging.game.id;
     var versionId = 1;
-    var categoryId = HACKCRAFT_CONFIG.logging.category_id;
+    var categoryId = RUTHEFJORD_CONFIG.logging.category_id;
 
     if (!serverTag || !gameName || !gameId || !versionId || (!categoryId && categoryId !== 0)) {
         console.warn('invalid logging configuration!');
@@ -36,9 +36,9 @@ self.initialize = function(uid) {
         props.setForceUid(uid);
     }
 
-    if (HACKCRAFT_CONFIG.logging.proxy_url) {
+    if (RUTHEFJORD_CONFIG.logging.proxy_url) {
         props.setUseProxy(true);
-        props.setProxyUrl(HACKCRAFT_CONFIG.game_server.url + HACKCRAFT_CONFIG.logging.proxy_url);
+        props.setProxyUrl(RUTHEFJORD_CONFIG.game_server.url + RUTHEFJORD_CONFIG.logging.proxy_url);
     }
 
     //Wait to save data until everything has been loaded.
@@ -71,14 +71,39 @@ self.startQuest = function(qid, checksum) {
         console.info('logging quest start for qid ' + qid);
     }
 
-    var questLogger = {};
+    var ql = {};
+
+    /*
+     * Two kinds of log events: user actions and state change events.
+     * User actions are logs of any user-initiated actions: e.g., clicking a button in the UI.
+     * State change events log any game state changes: e.g., program execution started, edit mode changed.
+     * State changes are often (but not always) the result of user actions.
+     * However, we separate the two so we can easily separate what the user is doing from what the system is doing.
+     *
+     * All action ids that are user events are in the 20000 - 29999, and state changes are 10000 - 19999.
+     * Actions that go together are usually given the same last 4 digits.
+     * Event ids, by convention, start with On<Blah>, and user events start with Do<Blah>
+     */
 
     var AID = {
-        PuzzleExecuted: 1001,
-        PuzzleSolved: 1002,
-        ProgramExecutionStarted: 2001,
-        ProgramExecutionReset: 2002,
-        ProgramExecutionSpeedAdjusted: 2005
+        // state changes
+
+        OnPuzzleSolved: 10001,
+        OnProgramExecuted: 10011,
+        OnProgramStopped: 10012,
+        OnProgramPaused: 10013,
+        OnProgramFinished: 10014,
+        OnEditModeChanged: 10021,
+
+        // user actions
+
+        DoProgramExecute: 20011,
+        DoProgramStop: 20012,
+        DoProgramPause: 20013,
+        DoProgramFinish: 20014,
+        DoEditModeChange: 20021,
+
+        Unused: 0 // to prevent comma sadness
     };
 
     function log(actionId, actionDetail) {
@@ -91,19 +116,53 @@ self.startQuest = function(qid, checksum) {
         user.logQuestAction(questAction);
     }
 
-    questLogger.logProgramExecutionStarted = function(program) {
-        log(AID.ProgramExecutionStarted, {program:program});
+    ql.logOnPuzzledCompleted = function() {
+        log(AID.OnPuzzleSolved, {});
     };
 
-    questLogger.logProgramExecutionReset = function() {
-        log(AID.ProgramExecutionReset, {});
+    ql.logOnProgramRunStateChanged = function(runState, program) {
+        switch (runState) {
+            case "stopped":
+                log(AID.OnProgramStopped, {});
+                break;
+            case "executing":
+                log(AID.OnProgramExecuted, {program:program});
+                break;
+            case "paused":
+                log(AID.OnProgramPaused, {});
+                break;
+            case "finished":
+                log(AID.OnProgramFinished, {});
+                break;
+        }
     };
 
-    questLogger.logPuzzledCompleted = function() {
-        log(AID.PuzzleSolved, {});
+    ql.logDoProgramRunStateChange = function(runState) {
+        switch (runState) {
+            case "stopped":
+                log(AID.DoProgramStop, {});
+                break;
+            case "executing":
+                log(AID.DoProgramExecute, {});
+                break;
+            case "paused":
+                log(AID.DoProgramPause, {});
+                break;
+            case "finished":
+                log(AID.DoProgramFinish, {});
+                break;
+        }
     };
 
-    questLogger.logQuestEnd = function() {
+    ql.logOnEditModeChanged = function(newMode) {
+        log(AID.OnEditModeChanged, {mode: newMode});
+    };
+
+    ql.logDoEditModeChange = function(newMode) {
+        log(AID.DoEditModeChange, {mode: newMode});
+    };
+
+    ql.logQuestEnd = function() {
         if (!is_initialized) return;
 
         var questEndDetail = {test:"test"};
@@ -116,7 +175,7 @@ self.startQuest = function(qid, checksum) {
     if (is_initialized) {
         start();
     }
-    return questLogger;
+    return ql;
 };
 
 self.logRandomAction = function() {

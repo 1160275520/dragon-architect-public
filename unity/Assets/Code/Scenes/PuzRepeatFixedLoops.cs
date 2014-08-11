@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Hackcraft;
-using Hackcraft.Ast;
+using Ruthefjord;
+using Ruthefjord.Ast;
 
 public class PuzRepeatFixedLoops : MonoBehaviour {
     
@@ -11,15 +11,7 @@ public class PuzRepeatFixedLoops : MonoBehaviour {
     
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-        
-        var forward = "<object data=\"media/blockSvgs/forward.svg\" style=\"vertical-align:middle\"></object>";
-        var right = "<object data=\"media/blockSvgs/right.svg\" style=\"vertical-align:middle\"></object>";
-        var rep = "<object data=\"media/blockSvgs/repeat.svg\" style=\"vertical-align:middle\"></object>";
-        lh.SetInstructions(
-            String.Format("Help me fill in the blueprint by adding a {0} and a {1} to my program!", forward, right),
-            String.Format("Try adding those blocks inside {0}.", rep)
-        );
-        
+
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.repeat.repeat_fixedLoops");
         lh.SetIsFrozenBlocks("MAIN", true);

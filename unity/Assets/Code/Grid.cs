@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hackcraft;
+using Ruthefjord;
 
 public class Grid : MonoBehaviour {
 
@@ -48,13 +48,12 @@ public class Grid : MonoBehaviour {
     void Awake() {
         robot = FindObjectOfType<RobotController>();
         marker = FindObjectOfType<GridMarker>();
-    }
-
-	// Use this for initialization
-	void Start() {
         grid = new Dictionary<IntVec3, GameObject>();
         state = ImmArr.empty<KeyValuePair<IntVec3,int>>();
         offset = new IntVec3(GRID_SIZE / 2, GRID_SIZE / 2, GRID_SIZE / 2);
+    }
+
+	void Start() {
 	}
 
     public KeyValuePair<IntVec3,int>[] AllCells {

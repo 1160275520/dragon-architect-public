@@ -136,7 +136,7 @@
     }
 }
 
-.speechBubble {
+.speech-bubble {
     -webkit-animation-name: speechBubble;
     animation-name: speechBubble;
     -webkit-animation-duration: 1.2s;

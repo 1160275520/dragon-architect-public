@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Hackcraft;
+using Ruthefjord;
 
 public class PuzWhatIsUp : MonoBehaviour
 {
@@ -10,10 +10,7 @@ public class PuzWhatIsUp : MonoBehaviour
 
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-        lh.SetInstructions(
-            "Help me get to the pink box!",
-            "Use two <object data=\"media/blockSvgs/up.svg\" style=\"vertical-align:middle\"></object> to complete my program."
-        );
+
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle.up.what_is_up");
         var target = new IntVec3(3,5,0);

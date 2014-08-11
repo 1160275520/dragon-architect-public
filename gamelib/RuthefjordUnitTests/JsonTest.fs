@@ -4,7 +4,7 @@ open Xunit
 open Xunit.Extensions
 open FsUnit.Xunit
 
-module J = Hackcraft.Json
+module J = Ruthefjord.Json
 
 // basic parsing tests
 

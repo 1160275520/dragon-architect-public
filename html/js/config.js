@@ -1,6 +1,7 @@
 
-var HACKCRAFT_CONFIG = {
+var RUTHEFJORD_CONFIG = {
     game_server: {url: 'http://localhost:5000/api/'},
+    //are_logins: true,
     logging: {
         //server_tag: 'PRODUCTION_SERVER',
         //server_tag: 'DEVELOPMENT_SERVER',

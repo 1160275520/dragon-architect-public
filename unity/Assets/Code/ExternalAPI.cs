@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Hackcraft;
+using Ruthefjord;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 
 public class ExternalAPI : MonoBehaviour
 {
-    public const string ExternalApiFunc = "onHackcraftEvent";
+    public const string ExternalApiFunc = "onRuthefjordEvent";
     public const string OnSystemStart = "onSystemStart";
     public const string OnPuzzleChange = "onPuzzleChange";
     public const string OnProgramStateChange = "onProgramStateChange";
@@ -148,6 +148,8 @@ public class ExternalAPI : MonoBehaviour
             case "zoomout": camera.Zoom(2.0f); break;
             case "rotateleft": camera.Rotate(90); break;
             case "rotateright": camera.Rotate(-90); break;
+            case "tiltup": camera.Tilt(10); break;
+            case "tiltdown": camera.Tilt(-10); break;
         }
     }
 

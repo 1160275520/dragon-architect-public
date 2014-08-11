@@ -1,5 +1,5 @@
 /// Some basic linear algebra types needed for the block simulation.
-namespace Hackcraft
+namespace Ruthefjord
 
 [<StructuralEquality;NoComparison>]
 type IntVec2 = struct

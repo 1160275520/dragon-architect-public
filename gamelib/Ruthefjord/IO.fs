@@ -3,7 +3,7 @@
 /// <summary>
 /// Basic types used for parsing and serialization.
 /// </summary>
-namespace Hackcraft
+namespace Ruthefjord
 
 /// A position in a text document (e.g., source code). Contains line and column, both zero-indexed.
 [<Struct;StructuralEquality;NoComparison>]

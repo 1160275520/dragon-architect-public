@@ -11,7 +11,7 @@ def check(code):
 
 system = platform.system()
 
-slnfile = "gamelib/HackcraftNoUnitTest.sln"
+slnfile = "gamelib/RuthefjordNoUnitTest.sln"
 
 if len(sys.argv) > 1:
     modearg = sys.argv[1]

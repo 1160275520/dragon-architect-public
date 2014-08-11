@@ -1,5 +1,5 @@
 using UnityEngine;
-using Hackcraft;
+using Ruthefjord;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ public class Global : MonoBehaviour {
     }
 
     void OnEnable() {
-        Hackcraft.Logger.logAction = Debug.Log;
+        Ruthefjord.Logger.logAction = Debug.Log;
 
         Application.RegisterLogCallbackThreaded(handleLog);
 
