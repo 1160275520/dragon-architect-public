@@ -59,6 +59,10 @@ module.Call = (function() {
         send_message("System", "EAPI_SetProgramExecutionSpeed", parameter.toString());
     }
 
+    self.set_program_execution_time = function(parameter) {
+        send_message("System", "EAPI_SetProgramExecutionTime", parameter.toString());
+    }
+
     self.set_program = function(prog) {
         var s = JSON.stringify(prog);
         console.log(s);

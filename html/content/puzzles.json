@@ -2,6 +2,7 @@
     "dummy": {
         "library": {
             "granted": [
+                "time_slider",
                 "camera_tilt"
             ]
         }

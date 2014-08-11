@@ -282,6 +282,8 @@ function setState_sandbox() {
 }
 
 function onProgramEdit() {
+    RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
+
     if (current_scene === 'sandbox') {
         var prog = RuthefjordBlockly.getXML();
         storage.save('sandbox_program', prog);
@@ -367,7 +369,6 @@ $(function() {
     ////////////////////////////////////////////////////////////////////////////////
 
     $('#btn-run').on('click', function() {
-        RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
         var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
         if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
         RuthefjordUnity.Call.set_program_state({run_state: newRS});
@@ -404,6 +405,7 @@ $(function() {
     RuthefjordUI.Instructions.hide();
 
     RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
+    RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
 
     // wait for all systems to start up, then go!
     promise_all.done(function() {
@@ -460,6 +462,7 @@ function start_editor(info) {
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
         RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
+        RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
         RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
 
@@ -485,7 +488,8 @@ function start_editor(info) {
                 RuthefjordBlockly.setProgram(program);
                 break;
             case "preserve":
-                // want to leave the old program, so do nothing!
+                // want to leave the old program, so do nothing (except tell the system)!
+                onProgramEdit();
                 break;
             case "xml":
                 RuthefjordBlockly.clearProgram();
@@ -541,16 +545,18 @@ handler.onProgramStateChange = function(data) {
 
     if ('edit_mode' in json) {
         console.log('on edit mode change');
-        program_state.edit_mode = json.edit_mode;
-        RuthefjordUI.ModeButton.update(program_state.edit_mode === 'workshop');
+        var em = json.edit_mode;
+        program_state.edit_mode = em;
+        RuthefjordUI.ModeButton.update(em === 'workshop');
+        RuthefjordUI.TimeSlider.setEnabled(em === 'workshop');
         if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
     }
 
     if ('run_state' in json) {
-        console.log('on run state change');
         var rs = json.run_state;
+        console.log('on run state change: ' + rs);
         program_state.run_state = rs;
-        RuthefjordUI.PauseButton.update(rs !== 'stopped', rs === 'paused');
+        RuthefjordUI.PauseButton.update(rs !== 'stopped' && rs !== 'finished', rs === 'paused');
         RuthefjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
         if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }
@@ -561,14 +567,23 @@ handler.onProgramStateChange = function(data) {
 
     }
 
-    if ('current_block' in json) {
-        var id = json.current_block;
-        if (id !== null) {
-            Blockly.mainWorkspace.traceOn(true);
-            Blockly.mainWorkspace.highlightBlock(id.toString());
-        } else if (Blockly.selected) {
-            Blockly.selected.unselect();
+    if ('current_state' in json) {
+        var s = json.current_state;
+
+        // highlight current block
+
+        if (program_state.run_state === 'executing' && Blockly.Block.dragMode_ === 0) {
+            if (s.current_code_elements.length > 0) {
+                Blockly.mainWorkspace.traceOn(true);
+                Blockly.mainWorkspace.highlightBlock(s.current_code_elements[0].toString());
+            } else if (Blockly.selected) {
+                Blockly.selected.unselect();
+            }
         }
+
+        // set time slider position
+
+        RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
 }
 

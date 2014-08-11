@@ -59,6 +59,19 @@ type WorldData = {
     Robots: RobotData [];
 }
 
+type StateData = {
+    CurrentCodeElements: int[];
+    ExecutionProgress: float;
+    NumBlocks: int;
+}
+with
+    member x.ToJson () =
+        J.JsonValue.ObjectOf [
+            "current_code_elements", J.JsonValue.ArrayOf (Array.map J.Int x.CurrentCodeElements);
+            "execution_progress", J.String (string x.ExecutionProgress);
+            "num_blocks", J.Int x.NumBlocks;
+        ]
+
 module World =
     let dataOfRobot (r:Robot.IRobot) =
         {Position=r.Position; Direction=r.Direction}
