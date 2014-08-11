@@ -10,11 +10,10 @@
 
 #instructions-display {
     padding: 10px;
-    background: #333;
-    opacity: 0.95;
+    background: rgba(59,54,36,0.94);
     border-radius:10px;
     width: 100%;
-    color:#fff;
+    color: white;
     font-family: "Ubuntu Mono";
 }
 
@@ -47,7 +46,7 @@
 
 #instructions-reminder {
     float: right;
-    color: #ffcc99;
+    color: #bbb;
     cursor: pointer;
 }
 
