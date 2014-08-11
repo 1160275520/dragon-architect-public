@@ -12,10 +12,15 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
+        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
+
+    self.goToLoading = function() {
+        hideAll();
+        $('.view-loading').show();
+    }
 
     self.goToTitle = function(cb) {
         current_state = 'title';
