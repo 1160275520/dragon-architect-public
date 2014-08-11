@@ -12,10 +12,15 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
+        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
+
+    self.goToLoading = function() {
+        hideAll();
+        $('.view-loading').show();
+    }
 
     self.goToTitle = function(cb) {
         current_state = 'title';
@@ -422,7 +427,7 @@ function Slider(selector, labels) {
             value: 0.22,
             min: 0.0,
             max: 1.0,
-            step: 0.05,
+            step: 0.01,
             slide: function( event, ui ) {
                 onChangeCallback(ui.value);
             }
@@ -433,14 +438,25 @@ function Slider(selector, labels) {
         container.css('visibility', isVisible ? 'visible' : 'hidden');
     };
 
-    self.value = function() {
-        return slider.slider("option", "value");
+    self.setEnabled = function(isEnabled) {
+        slider.slider("option", "disabled", !isEnabled);
+        container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
+    }
+
+    self.value = function(x) {
+        if (x === undefined) {
+            return slider.slider("option", "value");
+        } else {
+            slider.slider("value", x);
+        }
     };
 
     return self;
 }
 
 module.SpeedSlider = Slider('#speed-slider', ['Slow', 'Medium', 'Fast']);
+
+module.TimeSlider = Slider('#time-slider', ['Beginning', 'Middle', 'End']);
 
 module.CubeCounter = (function() {
     var self = {};
