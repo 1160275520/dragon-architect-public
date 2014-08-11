@@ -53,6 +53,22 @@ header > h1 {
     flex-grow: 0;
 }
 
+/* loading pane */
+/************************************************************/
+
+.view-loading {
+    display: flex;
+    margin: 40px auto;
+    padding: 60px;
+    align-items: center;
+    justify-content: center;
+    background: white;
+}
+
+.view-loading > p {
+    font-size: 40pt;
+}
+
 /* main area and two main vertical divs */
 /************************************************************/
 

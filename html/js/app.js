@@ -290,6 +290,8 @@ function onProgramEdit() {
 
 // startup
 $(function() {
+    RuthefjordUI.State.goToLoading();
+
     function initialize_unity() {
         var d = Q.defer();
         handler.onSystemStart = function() {
