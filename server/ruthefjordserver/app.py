@@ -6,7 +6,7 @@ import flask.ext.restless
 from flask import request
 
 app = flask.Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ruthefjord'
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
 @app.after_request

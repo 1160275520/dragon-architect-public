@@ -6,19 +6,20 @@ import gevent.monkey
 from gevent.wsgi import WSGIServer
 from . import app
 
-PORT=5000
+DEV_PORT=5000
+PRD_PORT=27246
 
 def _go(args):
     app.setup()
 
     if args.mode == 'dev':
-        print("Starting development server...")
+        print("Starting development server on port %d..." % DEV_PORT)
         app.app.config['DEBUG'] = True
-        app.app.run(port=PORT)
+        app.app.run(port=DEV_PORT)
     elif args.mode == 'prd':
-        print("Starting production server...")
+        print("Starting production server on port %d..." % PRD_PORT)
         gevent.monkey.patch_all()
-        http_server = WSGIServer(('', PORT), app.app)
+        http_server = WSGIServer(('', PRD_PORT), app.app)
         http_server.serve_forever()
     else:
         sys.stderr.write("Invalid mode %s, aborting.\n" % args.mode)
