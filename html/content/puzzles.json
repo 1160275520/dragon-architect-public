@@ -1,4 +1,11 @@
 {
+    "dummy": {
+        "library": {
+            "granted": [
+                "camera_tilt"
+            ]
+        }
+    },
     "tutorial.movement2d_part1": {
         "name": "2D Movement part 1",
         "component": "PuzMovement2D_1",

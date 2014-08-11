@@ -50,7 +50,9 @@
       <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
       <div>
         <!-- @ifdef DEV -->
-        <button id="button_header_levelSelect">Test Puz Slct</button>
+        <select id="dev-select-module">
+          <option>- Jump to Module -</option>
+        </select>
         <button id="button_header_sandbox">Sandbox</button>
         <button onclick="devmode()">Dev Mode</button>
         <!-- @endif -->
@@ -74,6 +76,8 @@
             <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
             <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
             <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
+            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i></button>
+            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i></button>
           </div>
           <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop Mode</button>
         </div>
