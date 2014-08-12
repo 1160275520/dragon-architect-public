@@ -43,6 +43,7 @@ public class ProgramManager : MonoBehaviour {
     void Awake() {
         // HACK need max proc length for historical purposes, but doesn't actually do anything
         Manipulator = new ImperativeAstManipulator(100);
+        Manipulator.CreateProcedure("MAIN");
         TicksPerStep = 30;
 
         robot = FindObjectOfType<RobotController>();

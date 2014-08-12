@@ -2,7 +2,8 @@ var onRuthefjordEvent = (function(){ "use strict";
 
 var program_state = {
     run_state: null,
-    edit_mode: null
+    edit_mode: null,
+    last_program_sent: undefined
 };
 
 var questLogger;
@@ -282,11 +283,17 @@ function setState_sandbox() {
 }
 
 function onProgramEdit() {
-    RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
+    var p = JSON.stringify(RuthefjordBlockly.getProgram());
 
-    if (current_scene === 'sandbox') {
-        var prog = RuthefjordBlockly.getXML();
-        storage.save('sandbox_program', prog);
+    if (p !== program_state.last_program_sent) {
+        RuthefjordUnity.Call.set_program(p);
+
+        if (current_scene === 'sandbox') {
+            var prog = RuthefjordBlockly.getXML();
+            storage.save('sandbox_program', prog);
+        }
+
+        program_state.last_program_sent = p;
     }
 }
 
@@ -450,6 +457,9 @@ function start_editor(info) {
         console.error("Invalid puzzle info version '" + info.puzzle.version + "'!");
         return;
     }
+
+    // reset program dirty bit so we always send the new program to unity
+    program_state.last_program_sent = undefined;
 
     if (info.is_starting) {
         var library = {

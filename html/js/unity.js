@@ -64,9 +64,8 @@ module.Call = (function() {
     }
 
     self.set_program = function(prog) {
-        var s = JSON.stringify(prog);
-        console.log(s);
-        send_message("System", "EAPI_SetProgramFromJson", s);
+        console.log(prog);
+        send_message("System", "EAPI_SetProgramFromJson", prog);
     }
 
     self.request_start_puzzle = function(puzzle_info) {
