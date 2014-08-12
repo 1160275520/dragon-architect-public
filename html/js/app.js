@@ -601,7 +601,7 @@ handler.onSetColors = function(json) {
     console.info('on set colors!');
     var colors = JSON.parse(json);
     Blockly.FieldColour.COLOURS = colors;
-    Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
+    Blockly.FieldColour.COLUMNS = Math.min(colors.length, 8);
 };
 
 // sent the moment they "win" a puzzle

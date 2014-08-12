@@ -15,28 +15,27 @@ public class ExternalAPI : MonoBehaviour
     public const string OnProgramStateChange = "onProgramStateChange";
     public const string OnStatementHighlight = "onStatementHighlight";
 
-    private bool isFirstUpdate;
+    private bool isFirstUpdate = true;
 
     void Start() {
         var global = FindObjectOfType<Global>();
-        // if we're not in a puzzle, don't send any of the stuff on the first update
-        if (global != null && global.CurrentPuzzle != null) {
-            isFirstUpdate = true;
-        }
     }
 
     void Update() {
         if (isFirstUpdate) {
             try {
                 SendColors();
+                // if we're not in a puzzle, don't send any of the stuff on the first update
                 var global = FindObjectOfType<Global>();
-                var puzzle = global.CurrentPuzzle;
-                // only update program from ProgramManager if the json file didn't specify anything
-                if (OptionModule.IsNone(puzzle.StartingProgram)) {
-                    var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
-                    puzzle = puzzle.UpdateStartingProgram(Json.Serialize(prog));
+                if (global != null && global.CurrentPuzzle != null) {
+                    var puzzle = global.CurrentPuzzle;
+                    // only update program from ProgramManager if the json file didn't specify anything
+                    if (OptionModule.IsNone(puzzle.StartingProgram)) {
+                        var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
+                        puzzle = puzzle.UpdateStartingProgram(Json.Serialize(prog));
+                    }
+                    NotifyOfPuzzle(global.CurrentSceneId, puzzle, true);
                 }
-                NotifyOfPuzzle(global.CurrentSceneId, puzzle, true);
             } catch (Exception e) {
                 Debug.LogException(e);
             }
@@ -64,6 +63,7 @@ public class ExternalAPI : MonoBehaviour
 
     public void SendColors() {
         Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Serialize(Json.fromObject(CubeTextures.AvailableColors)));
+        Debug.Log("SendColors");
     }
 
     public void SendPuzzleComplete() {
