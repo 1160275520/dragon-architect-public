@@ -97,6 +97,11 @@ public class RobotController : MonoBehaviour {
                     anim.Play("bite");
                     anim.PlayQueued("idle", QueueMode.CompleteOthers);
                     break;
+                case "remove":
+                    anim["get_hit_front"].speed = anim["get_hit_front"].length / secondsPerCommand;
+                    anim.Play("get_hit_front");
+                    anim.PlayQueued("idle", QueueMode.CompleteOthers);
+                    break;
                 case "forward":
                     StartCoroutine(moveRobot(Robot.Direction.AsVector3(), secondsPerCommand, counter));
                     break;

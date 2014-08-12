@@ -43,6 +43,7 @@ ModelImporter:
     7400000: Take 001
     7400002: idle
     7400004: bite
+    7400006: get_hit_front
     9500000: //RootNode
     13700000: micro_dragon
     13700002: micro_dragon_clean_eyes
@@ -188,6 +189,66 @@ ModelImporter:
       takeName: Take 001
       firstFrame: 61
       lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: micro_dragon
+        weight: 1
+      - path: micro_dragon_clean_eyes
+        weight: 1
+      - path: micro_dragon_clean_root_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_head_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_head_drag/micro_dragon_clean_brows_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_head_drag/micro_dragon_clean_eyes_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_head_drag/micro_dragon_clean_left_wing_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_head_drag/micro_dragon_clean_right_wing_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_head_drag/micro_dragon_clean_snout_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_left_shoulder_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_left_shoulder_drag/micro_dragon_clean_left_arm_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_right_shoulder_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_right_shoulder_drag/micro_dragon_clean_right_arm_drag
+        weight: 1
+      - path: micro_dragon_clean_root_drag/micro_dragon_clean_body_drag/micro_dragon_clean_tail_drag
+        weight: 1
+      - path: micro_dragon_clean_tongue
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: get_hit_front
+      takeName: Take 001
+      firstFrame: 81
+      lastFrame: 100
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
