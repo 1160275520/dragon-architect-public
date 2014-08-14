@@ -12,7 +12,7 @@ public class PuzPlacement : MonoBehaviour
         var lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle.tutorial.placement");
+        progman.LoadProgram("puzzle/tutorial.placement");
         var template = new IntVec3[] {
             new IntVec3(0,0,3),
             new IntVec3(0,0,4),

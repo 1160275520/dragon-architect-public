@@ -13,7 +13,7 @@ public class PuzRepeatFixedLoops : MonoBehaviour {
         var lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle.repeat.repeat_fixedLoops");
+        progman.LoadProgram("puzzle/repeat.repeat_fixedLoops");
         lh.SetIsFrozenBlocks("MAIN", true);
         lh.SetIsFrozenArguments("MAIN", true);
         

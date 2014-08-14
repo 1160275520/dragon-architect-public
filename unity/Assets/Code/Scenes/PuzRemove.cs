@@ -12,7 +12,7 @@ public class PuzRemove : MonoBehaviour
         var lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle.remove.remove_blocks");
+        progman.LoadProgram("puzzle/remove.remove_blocks");
         var template = new IntVec3[] {};
         
         FindObjectOfType<MyCamera>().Rotate(-90);
