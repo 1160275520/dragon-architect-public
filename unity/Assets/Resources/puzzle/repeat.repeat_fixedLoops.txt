@@ -1,3 +1,4 @@
+#lang imperative:1.0
 @FrozenBlocks=true
 @FrozenArgs=true
 Forward(1)
