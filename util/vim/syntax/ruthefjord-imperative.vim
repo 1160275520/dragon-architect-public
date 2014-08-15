@@ -24,5 +24,5 @@ highlight link ruthefjordIComment Comment
 highlight link ruthefjordIAttribute Macro
 
 
-let b:current_syntax = "jonquil"
+let b:current_syntax = "ruthefjord-imperative"
 
