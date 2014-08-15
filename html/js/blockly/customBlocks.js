@@ -124,7 +124,7 @@ Blockly.Blocks['PlaceBlock'] = {
         this.setColour(35);
         this.appendDummyInput()
             .appendField("place block")
-            .appendField(new Blockly.FieldColour('#5cab32'), 'VALUE');
+            .appendField(new Blockly.FieldColour('#1ca84f'), 'VALUE');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }

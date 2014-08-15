@@ -2,7 +2,8 @@ var onRuthefjordEvent = (function(){ "use strict";
 
 var program_state = {
     run_state: null,
-    edit_mode: null
+    edit_mode: null,
+    last_program_sent: undefined
 };
 
 var questLogger;
@@ -282,12 +283,17 @@ function setState_sandbox() {
 }
 
 function onProgramEdit() {
-    RuthefjordUnity.Call.set_program(RuthefjordBlockly.getProgram());
+    var p = JSON.stringify(RuthefjordBlockly.getProgram());
 
-    if (current_scene === 'sandbox') {
-        var prog = RuthefjordBlockly.getXML();
-        console.info(prog);
-        storage.save('sandbox_program', prog);
+    if (p !== program_state.last_program_sent) {
+        RuthefjordUnity.Call.set_program(p);
+
+        if (current_scene === 'sandbox') {
+            var prog = RuthefjordBlockly.getXML();
+            storage.save('sandbox_program', prog);
+        }
+
+        program_state.last_program_sent = p;
     }
 }
 
@@ -452,6 +458,9 @@ function start_editor(info) {
         return;
     }
 
+    // reset program dirty bit so we always send the new program to unity
+    program_state.last_program_sent = undefined;
+
     if (info.is_starting) {
         var library = {
             current: progress.get_library(),
@@ -592,7 +601,7 @@ handler.onSetColors = function(json) {
     console.info('on set colors!');
     var colors = JSON.parse(json);
     Blockly.FieldColour.COLOURS = colors;
-    Blockly.FieldColour.COLUMNS = Math.min(colors.length, 7);
+    Blockly.FieldColour.COLUMNS = Math.min(colors.length, 8);
 };
 
 // sent the moment they "win" a puzzle
