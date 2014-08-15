@@ -118,17 +118,14 @@ RuthefjordBlockly.setProgram = function(program) {
     RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
     RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
 
-    _.each(program.procedures, function(proc, name) {
+    // HACK this isn't very robust but works for everything with have (for now)
+    _.each(program.body, function(stmt) {
         var attr;
-        if (proc.meta) { attr = proc.meta.attributes; }
-        if (attr && attr['frozen_blocks']) {
-            var doFreezeArgs = Boolean(attr['frozen_args']);
-            if (name === 'MAIN') {
-                var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
-                _.each(blocks, function(b) { RuthefjordBlockly.freezeBody(b, doFreezeArgs); });
-            } else {
-                RuthefjordBlockly.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
-            }
+        if (stmt.meta) { attr = stmt.meta.attributes; }
+        if (attr && attr['FrozenBlocks']) {
+            var doFreezeArgs = Boolean(attr['FrozenArgs']);
+            var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
+            _.each(blocks, function(b) { RuthefjordBlockly.freezeBody(b, doFreezeArgs); });
         }
     });
 

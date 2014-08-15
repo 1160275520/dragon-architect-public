@@ -188,6 +188,7 @@ Blockly.UnityJSON.bodyToXML = function (body, program) {
     return xml;
 }
 
+// HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.UnityJSON.stmtToXML = function (stmt, program) {
     if (stmt) {
         if (stmt.type === "call") {

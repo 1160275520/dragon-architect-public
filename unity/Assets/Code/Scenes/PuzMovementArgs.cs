@@ -13,7 +13,6 @@ public class PuzMovementArgs : MonoBehaviour
 
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle/tutorial.arguments");
-        lh.SetIsFrozenBlocks("MAIN", true);
 
         var template = new IntVec3[] {
                 new IntVec3(0,0,3),

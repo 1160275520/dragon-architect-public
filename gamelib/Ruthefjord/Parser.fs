@@ -65,7 +65,7 @@ let lex (program, filename) =
 
     let symbols =
         Set.ofArray [|
-            '('; ')'; ',';
+            '('; ')'; ','; '@'; '=';
         |]
 
     // parser state
@@ -224,6 +224,11 @@ let private parse tokens =
         let n = next ()
         if n <> t then syntaxError ErrorCode.UnexpectedToken (sprintf "Expected token %A, found %A" t n)
 
+    let matchLiteral () =
+        match next () with
+        | Literal x -> x
+        | t -> syntaxError ErrorCode.UnexpectedToken (sprintf "Expected literal, found %A" t)
+
     let matchIdent () =
         match next () with
         | Ident i -> i
@@ -254,10 +259,17 @@ let private parse tokens =
     let matchUntil condFn matchFn =
         [ while not (condFn ()) do match matchFn () with Some x -> yield x | None -> () ]
 
+    let matchAnnotation () =
+        let name = matchIdent ()
+        matchToken (Symbol '=')
+        let value = matchLiteral ()
+        matchToken Newline
+        (name, value)
+
     let rec matchBlock () =
         matchToken Newline
         matchToken Indent
-        let body = matchUntil (fun () -> peekIs Dedent) matchStatement
+        let body = matchUntil (fun () -> peekIs Dedent) (fun () -> matchStatement [])
         next () |> ignore // read the dedent
         body
 
@@ -292,18 +304,30 @@ let private parse tokens =
         matchToken Newline
         newStmt (Call {Identifier=name; Arguments=args})
 
-    and matchStatement () : Statement option =
+    and matchStatement attributes : Statement option =
         match next () with
-        | Keyword "pass" -> matchToken Newline; None
-        | Keyword "define" -> Some (matchProcedure ())
-        | Keyword "if" -> Some (matchConditional ())
-        | Keyword "repeat" -> Some (matchRepeat ())
-        | Keyword "command" -> Some (matchCommand ())
-        | Ident x -> Some (matchCall x)
-        | t -> syntaxError ErrorCode.InvalidStatement (sprintf "Expected a statement, which must start with define, if, repeat, command, or an identifier, found %A" t)
+        | Symbol '@' -> matchStatement (matchAnnotation () :: attributes)
+        | t ->
+            let s =
+                match t with
+                | Keyword "pass" -> matchToken Newline; None
+                | Keyword "define" -> Some (matchProcedure ())
+                | Keyword "if" -> Some (matchConditional ())
+                | Keyword "repeat" -> Some (matchRepeat ())
+                | Keyword "command" -> Some (matchCommand ())
+                | Ident x -> Some (matchCall x)
+                | _ -> syntaxError ErrorCode.InvalidStatement (sprintf "Expected a statement, which must start with define, if, repeat, command, or an identifier, found %A" t)
+
+            if attributes.IsEmpty then
+                s
+            else
+                s |> Option.map (fun s ->
+                    let attrs = attributes |> Map.ofList |> Json.fromObject
+                    {s with Meta={s.Meta with Attributes=attrs}}
+                )
 
     let matchProgram () =
-        let body = matchUntil iseof matchStatement
+        let body = matchUntil iseof (fun () -> matchStatement [])
         {Body=body}
 
     matchProgram ()

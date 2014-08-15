@@ -1,3 +1,4 @@
+@FrozenBlocks=true
 Forward(3)
 PlaceBlock(1)
 Forward(1)

@@ -1,3 +1,5 @@
+@FrozenBlocks=true
+@FrozenArgs=true
 repeat 5 times
     repeat 4 times
         repeat 20 times
