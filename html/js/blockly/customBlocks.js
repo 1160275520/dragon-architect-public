@@ -124,14 +124,14 @@ Blockly.Blocks['PlaceBlock'] = {
         this.setColour(35);
         this.appendDummyInput()
             .appendField("place block")
-            .appendField(new Blockly.FieldColour('#1ca84f'), 'VALUE');
+            .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
 
 Blockly.UnityJSON['PlaceBlock'] = function(block) {
-    return newCall1("PlaceBlock", block.id, block.getFieldValue("VALUE"));
+    return newCall1("PlaceBlock", block.id, Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1);
 };
 
 // REMOVEBLOCK
@@ -172,8 +172,6 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     var insertIndex = main.indexOf(">", main.indexOf("block"));
     main = main.substring(0, insertIndex) + pos + main.substring(insertIndex);
     xml += main;
-    console.info('converted json to xml');
-    console.info(xml);
     return xml + "</xml>";
 }
 
@@ -202,6 +200,8 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
                 }
                 */
                 return '<block type="' + stmt.ident + '">';
+            } else if (stmt.ident === 'PlaceBlock') {
+                return '<block type="' + stmt.ident + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
             } else {
                 return '<block type="' + stmt.ident + '"><field name="VALUE">' + stmt.args[0].value + '</field>';
             }
