@@ -14,8 +14,6 @@ public class PuzRemove : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle/remove.remove_blocks");
         var template = new IntVec3[] {};
-        
-        FindObjectOfType<MyCamera>().Rotate(-90);
 
         lh.CreateBlueprint(template);
         winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });

@@ -9,7 +9,7 @@ public class PuzMovement2D_2 : MonoBehaviour {
 
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
-		var target = new IntVec3(0,0,2);
+		var target = new IntVec3(2,0,0);
         lh.CreateRobotTarget(target);
         var global = FindObjectOfType<Global>();
         global.CurrentPuzzle = global.CurrentPuzzle.UpdateStartingProgramToPreserve;

@@ -15,9 +15,9 @@ public class PuzMovementArgs : MonoBehaviour
         progman.LoadProgram("puzzle/tutorial.arguments");
 
         var template = new IntVec3[] {
-                new IntVec3(0,0,3),
-                new IntVec3(0,0,6),
-                new IntVec3(2,0,6),
+                new IntVec3(3,0,0),
+                new IntVec3(6,0,0),
+                new IntVec3(6,0,-2),
             };
 
         lh.CreateBlueprint(template);
