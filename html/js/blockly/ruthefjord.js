@@ -118,17 +118,14 @@ RuthefjordBlockly.setProgram = function(program) {
     RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
     RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
 
-    _.each(program.procedures, function(proc, name) {
+    // HACK this isn't very robust but works for everything with have (for now)
+    _.each(program.body, function(stmt) {
         var attr;
-        if (proc.meta) { attr = proc.meta.attributes; }
-        if (attr && attr['frozen_blocks']) {
-            var doFreezeArgs = Boolean(attr['frozen_args']);
-            if (name === 'MAIN') {
-                var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
-                _.each(blocks, function(b) { RuthefjordBlockly.freezeBody(b, doFreezeArgs); });
-            } else {
-                RuthefjordBlockly.freezeBody(Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.getFieldValue("NAME") === name; })[0], doFreezeArgs);
-            }
+        if (stmt.meta) { attr = stmt.meta.attributes; }
+        if (attr && attr['FrozenBlocks']) {
+            var doFreezeArgs = Boolean(attr['FrozenArgs']);
+            var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
+            _.each(blocks, function(b) { RuthefjordBlockly.freezeBody(b, doFreezeArgs); });
         }
     });
 
@@ -187,30 +184,27 @@ RuthefjordBlockly.setLevel = function(scene_info, library) {
 RuthefjordBlockly.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
     Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id);}));
-    var procedures = {};
-    procedures["MAIN"] = {};
-    var main = procedures["MAIN"];
-    main['params'] = [];
-    main['body'] = [];
-    // iterate over top-level blocks
-    for (var i = 0; i < topBlocks.length; i++) {
-        var block = topBlocks[i];
-        // process each procedure
+
+    var defines = [];
+    var other = [];
+
+    // iterate over top-level blocks, putting all defines first and everything else second
+    _.each(topBlocks, function(block) {
         if (block.type === "procedures_defnoreturn") {
-            procedures[block.getFieldValue("NAME")] = {};
-            var fn = procedures[block.getFieldValue("NAME")];
-            fn['params'] = [];
-            fn['body'] = Blockly.UnityJSON.processStructure(block);
-        } else { // everything else is part of MAIN
-            main['body'] = main['body'].concat(Blockly.UnityJSON.processStructure(block));
+            var name = block.getFieldValue("NAME");
+            var params = [];
+            var body = Blockly.UnityJSON.processStructure(block);
+            defines.push({type:"define", name:name, params:params, body:body});
+        } else {
+            other = other.concat(Blockly.UnityJSON.processStructure(block));
         }
-    }
+    });
     return {
         meta: {
-            language: 'imperative_v01',
-            version: {major: 0, minor: 2}
+            language: 'imperative_v02',
+            version: {major: 1, minor: 0}
         },
-        procedures: procedures,
+        body: defines.concat(other)
     };
 };
 

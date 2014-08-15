@@ -1,0 +1,26 @@
+#lang imperative:1.0
+
+define Forward(x)
+    repeat x times
+        command forward()
+
+define Left()
+    command left()
+
+define Right()
+    command right()
+
+define Up(x)
+    repeat x times
+        command up()
+
+define Down(x)
+    repeat x times
+        command down()
+
+define PlaceBlock(color)
+    command block(color)
+
+define RemoveBlock()
+    command remove()
+

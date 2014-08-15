@@ -70,10 +70,12 @@ public class AllTheGUI : MonoBehaviour
         if (isFirstUpdate) {
             isFirstUpdate = false;
             var manipulator = GetComponent<ProgramManager>().Manipulator;
+            /*
             var allIds = manipulator.Program.AllIds;
             if (allIds.Count > 0) {
                 astIdCounter = allIds.Max();
             }
+            */
         }
 
         if (currentlyDragged != null && currentlyDragged.Delay > 0) {
@@ -106,6 +108,7 @@ public class AllTheGUI : MonoBehaviour
 
     Imperative.Statement makeStatement(string name)
     {
+        /*
         var lastProc = PROCS.Last();
 
         switch (name.ToLower()) {
@@ -132,6 +135,8 @@ public class AllTheGUI : MonoBehaviour
             default:
                 throw new ArgumentException(name + " is not a recognized instruction name.");
         }
+        */
+        throw new NotImplementedException();
     }
 
     void OnGUI()
@@ -193,6 +198,7 @@ public class AllTheGUI : MonoBehaviour
             };
 
             GUILayout.Label("Click to\nadd to\nprogram", GUILayout.Width(BUTTON_COLUMN_WIDTH), GUILayout.Height(BUTTON_HEIGHT * 2.5f));
+            /*
             makeButton("Forward", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("forward")), true);
             makeButton("Left", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("left")), true);
             makeButton("Right", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("right")), true);
@@ -203,12 +209,14 @@ public class AllTheGUI : MonoBehaviour
             makeButton("Line", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("line")), true);
             makeButton("Call", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("call")), true);
             makeButton("Repeat", options, () => manipulator.AppendStatement(procedures[curProc], makeStatement("repeat")), true);
+            */
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }
 
         if (IsActiveMainControls && !IsActiveBlockly) {
+#if false
             area = new Rect(SPACING, SPACING, BUTTON_COLUMN_WIDTH + 30, Screen.height - SPACING * 1.5f);
             GUILayout.BeginArea(area);
             GUILayout.BeginVertical("ButtonBackground");
@@ -267,6 +275,7 @@ public class AllTheGUI : MonoBehaviour
                     GUI.Box(currentlyDragged.DragRect, "Repeat", "Dragged");
                 }
             }
+#endif
         }
 
         // time slider
@@ -306,6 +315,7 @@ public class AllTheGUI : MonoBehaviour
 
     private void makeProc(string procName)
     {
+#if false
         var progman = GetComponent<ProgramManager>();
         Imperative.Procedure proc;
         try {
@@ -353,10 +363,12 @@ public class AllTheGUI : MonoBehaviour
         if (!progman.RunState.IsExecuting && Event.current.type == EventType.Repaint) {
             procRects.Add(procName, getLastRect());
         }
+#endif
     }
 
     private Imperative.Statement makeCall(Imperative.Statement statement, GUIStyleType highlight)
     {
+#if false
         GUILayout.BeginHorizontal();
         var call = statement.Stmt.AsCall;
         var procName = call.Proc;
@@ -389,11 +401,13 @@ public class AllTheGUI : MonoBehaviour
         } else {
             return Imperative.NewCall(NextId(), newProcName, newArg1 == null ? new Imperative.Expression[] {} : new Imperative.Expression[] { Imperative.Expression.NewLiteral(newArg1) });
         }
-        
+#endif
+        throw new NotImplementedException();
     }
 
     private Imperative.Statement makeRepeat(Imperative.Statement statement, GUIStyleType highlight)
     {
+#if false
         var repeat = statement.Stmt.AsRepeat;
         var procName = repeat.Stmt.Stmt.AsCall.Proc;
         var numTimes = repeat.NumTimes.AsLiteral as string;
@@ -416,6 +430,8 @@ public class AllTheGUI : MonoBehaviour
         } else {
             return Imperative.NewRepeat(NextId(), Imperative.NewCall0(0, newProcName), Imperative.Expression.NewLiteral(newNumTimes));
         }
+#endif
+        throw new NotImplementedException();
     }
 
     private const float updateInterval = 0.5F;
@@ -478,6 +494,7 @@ public class AllTheGUI : MonoBehaviour
 
     private void dragDropFunctionOfDoom(string[] procedures)
     {
+#if false
         var progman = GetComponent<ProgramManager>();
         var mousePosition = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y); // bottom left is (0, 0)
         // generate rects for statements
@@ -567,5 +584,6 @@ public class AllTheGUI : MonoBehaviour
             currentlyDragged = null;
             progman.IsCheckingForProgramChanges = true;
         } 
+#endif
     }
 }

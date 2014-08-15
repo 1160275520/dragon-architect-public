@@ -10,7 +10,7 @@ public class PuzMovement2D_1 : MonoBehaviour {
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle.tutorial.movement2d");
+        progman.LoadProgram("puzzle/tutorial.movement2d");
         winPredicate = lh.GameIsRunningButDoneExecuting;
     }
 

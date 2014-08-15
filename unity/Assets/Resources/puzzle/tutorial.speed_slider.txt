@@ -1,0 +1,10 @@
+@FrozenBlocks=true
+@FrozenArgs=true
+repeat 5 times
+    repeat 4 times
+        repeat 20 times
+            Forward(1)
+            PlaceBlock(1)
+        Left()
+    Up(1)
+

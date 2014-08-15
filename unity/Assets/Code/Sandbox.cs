@@ -5,9 +5,8 @@ public class Sandbox : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        // add a dummy program to the program manager to make it shut up
         var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.CreateProcedure("MAIN");
+
         GetComponent<ExternalAPI>().NotifyOfSandbox();
 
         // if we don't do this, the program manager will just clear the grid immediately

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,9 +13,7 @@ public class PuzRepeatFixedLoops : MonoBehaviour {
         var lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle.repeat.repeat_fixedLoops");
-        lh.SetIsFrozenBlocks("MAIN", true);
-        lh.SetIsFrozenArguments("MAIN", true);
+        progman.LoadProgram("puzzle/repeat.repeat_fixedLoops");
         
         var template = new List<IntVec3>();
         const int size = 10;

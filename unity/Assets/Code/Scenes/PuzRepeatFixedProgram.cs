@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ public class PuzRepeatFixedProgram : MonoBehaviour {
         var lh = GetComponent<PuzzleHelper>();
         
         var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle.repeat.repeat_fixedProgram");
+        progman.LoadProgram("puzzle/repeat.repeat_fixedProgram");
         
         var template = new List<IntVec3>();
         const int size = 10;

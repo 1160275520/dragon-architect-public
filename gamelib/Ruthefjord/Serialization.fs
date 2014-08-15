@@ -6,12 +6,12 @@ open Ruthefjord.Ast.Imperative
 
 module J = Ruthefjord.Json
 
-let LANGUAGE_NAME = "imperative_v01"
-let CURR_MAJOR_VERSION = 0
-let CURR_MINOR_VERSION = 2
+let LANGUAGE_NAME = "imperative_v02"
+let CURR_MAJOR_VERSION = 1
+let CURR_MINOR_VERSION = 0
 
 let JsonOfProgram (program:Program) =
-    let jarrmap f x = ImmArr.toArray x |> Array.map f |> J.arrayOfArray
+    let jarrmap f x = List.map f x |> J.arrayOfList
 
     let jsonOfObj (o:obj) =
         match o with
@@ -26,41 +26,27 @@ let JsonOfProgram (program:Program) =
         ] |> List.choose (fun x -> x) |> J.JsonValue.ObjectOf
 
     let jsonOfExpr (expr:Expression) =
-        match expr with
-        | Literal o -> [("type", J.String "literal"); ("value", jsonOfObj o)] |> J.JsonValue.ObjectOf
-        | Argument a -> [("type", J.String "argument"); ("name", J.String a)] |> J.JsonValue.ObjectOf
+        let fields =
+            match expr.Expr with
+            | Literal x -> [("type", J.String "literal"); ("value", jsonOfObj x)]
+            | Identifier x -> [("type", J.String "ident"); ("name", J.String x)]
+        J.JsonValue.ObjectOf (("meta", jsonOfMeta expr.Meta) :: fields)
 
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
             match stmt.Stmt with
-            | Block b -> [("type", J.String "block"); ("body", jarrmap jsonOfStmt b)]
-            | Call c -> [("type", J.String "call"); ("proc", J.String c.Proc); ("args", jarrmap jsonOfExpr c.Args)]
-            | Repeat r -> [("type", J.String "repeat"); ("stmt", jsonOfStmt r.Stmt); ("numtimes", jsonOfExpr r.NumTimes)]
-            | Command (c, a) -> [("type", J.String "command"); ("command", J.String c); ("args", jarrmap jsonOfExpr a)]
+            | Repeat r -> [("type", J.String "repeat"); ("body", jarrmap jsonOfStmt r.Body); ("numtimes", jsonOfExpr r.NumTimes)]
+            | Define p -> [("type", J.String "define"); ("name", J.String p.Name); ("params", J.JsonValue.ArrayOf (Seq.map J.String p.Parameters)); ("body", jarrmap jsonOfStmt p.Body)]
+            | Call c -> [("type", J.String "call"); ("ident", J.String c.Identifier); ("args", jarrmap jsonOfExpr c.Arguments)]
+            | Command c -> [("type", J.String "command"); ("name", J.String c.Name); ("args", jarrmap jsonOfExpr c.Arguments)]
         J.JsonValue.ObjectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
-    let jsonOfProc (name:string) (proc:Procedure) =
-        let meta = jsonOfMeta proc.Meta
-        [
-            Some ("params", J.JsonValue.ArrayOf (Seq.map J.String proc.Parameters));
-            Some ("body", jarrmap jsonOfStmt proc.Body);
-            (if meta = J.emptyObject then None else Some ("meta", meta));
-        ] |> List.choose (fun x -> x) |> J.JsonValue.ObjectOf
-
-    let rec jsonOfModule (name:string) (module':Program) =
-        let mutable lst = ["procedures", J.JsonValue.ObjectOf (Map.map jsonOfProc module'.Procedures)]
-        if not module'.Modules.IsEmpty then
-            lst <- ("modules", J.JsonValue.ObjectOf (Map.map jsonOfModule module'.Modules)) :: lst
-        J.JsonValue.ObjectOf lst
-
-    let mainModule = jsonOfModule "" program |> J.objectToMap
     let meta = 
         J.JsonValue.ObjectOf [
             "language", J.String LANGUAGE_NAME;
             "version", J.JsonValue.ObjectOf ["major", J.Int CURR_MAJOR_VERSION; "minor", J.Int CURR_MINOR_VERSION];
-        ];
-
-    J.JsonValue.ObjectOf (mainModule.Add ("meta", meta))
+        ]
+    J.JsonValue.ObjectOf (["meta", meta; "body", jarrmap jsonOfStmt program.Body])
 
 type SerializationErrorCode =
 | InternalError = 2001
@@ -71,8 +57,8 @@ type SerializationErrorCode =
 | InvalidStatementType = 2013
 
 let ProgramOfJson (json: J.JsonValue) =
-
     let jload obj key fn = fn (Json.getField obj key)
+    let jloadarr obj key fn = jload obj key J.arrayToList |> List.map fn
     let tryJload obj key fn = Json.tryGetField obj key |> Option.map fn
 
     let syntaxError j (c:SerializationErrorCode) m = raise (J.JsonException (int c, j, m, null))
@@ -89,32 +75,25 @@ let ProgramOfJson (json: J.JsonValue) =
             Attributes = defaultArg (J.tryGetField j "attributes") J.emptyObject;
         }
 
+    let emptyMeta = {Id=0; Attributes=J.Null}
+
     let parseExpr j =
-        match jload j "type" J.asString with
-        | "literal" -> Literal (jload j "value" parseObject)
-        | "argument" -> Argument (jload j "name" J.asString)
-        | t -> syntaxError j SerializationErrorCode.InvalidExpressionType ("invalid expression type " + t)
+        let expr =
+            match jload j "type" J.asString with
+            | "literal" -> Literal (jload j "value" parseObject)
+            | "ident" -> Identifier (jload j "name" J.asString)
+            | t -> syntaxError j SerializationErrorCode.InvalidExpressionType ("invalid expression type " + t)
+        {Meta=defaultArg (tryJload j "meta" parseMeta) emptyMeta; Expr=expr}
 
     let rec parseStmt j =
         let stmt =
             match jload j "type" J.asString with
-            | "block" -> Block (ImmArr.ofSeq (jload j "body" J.arrayToSeq |> Seq.map parseStmt))
-            | "call" -> Call {Proc=jload j "proc" J.asString; Args=ImmArr.ofSeq (jload j "args" J.arrayToSeq |> Seq.map parseExpr)}
-            | "repeat" -> Repeat {Stmt=jload j "stmt" parseStmt; NumTimes=jload j "numtimes" parseExpr}
-            | "command" -> Command (jload j "command" J.asString, ImmArr.ofSeq (jload j "args" J.arrayToSeq |> Seq.map parseExpr))
+            | "repeat" -> Repeat {Body=jloadarr j "body" parseStmt; NumTimes=jload j "numtimes" parseExpr}
+            | "define" -> Define {Name=jload j "name" J.asString; Parameters=jloadarr j "params" J.asString; Body=jloadarr j "body" parseStmt}
+            | "call" -> Call {Identifier=jload j "ident" J.asString; Arguments=jloadarr j "args" parseExpr}
+            | "command" -> Command {Name=jload j "name" J.asString; Arguments=jloadarr j "args" parseExpr}
             | t -> syntaxError j SerializationErrorCode.InvalidStatementType ("invalid statement type " + t)
-        {Meta=jload j "meta" parseMeta; Stmt=stmt}
-
-    let parseProc n j =
-        let body = Array.map parseStmt (jload j "body" J.arrayToArray)
-        let meta = tryJload j "meta" parseMeta
-        let param = jload j "params" J.arrayToArray |> Array.map J.asString
-        {Meta=defaultArg meta (NewMeta 0); Parameters=ImmArr.ofArray param; Body=ImmArr.ofSeq body}
-
-    let rec parseModule n j =
-        let procs = jload j "procedures" J.objectToMap
-        let modules = tryJload j "modules" (fun o -> J.objectToMap o |> Map.map parseModule)
-        {Procedures=Map.map parseProc procs; Modules=defaultArg modules Map.empty}
+        {Meta=defaultArg (tryJload j "meta" parseMeta) emptyMeta; Stmt=stmt}
 
     try
         let meta = J.getField json "meta"
@@ -123,7 +102,7 @@ let ProgramOfJson (json: J.JsonValue) =
         if language <> LANGUAGE_NAME || major_version <> CURR_MAJOR_VERSION || minor_version <> CURR_MINOR_VERSION then
             syntaxError json SerializationErrorCode.InvalidVersion (sprintf "Invalid language/version: %s %d.%d" language major_version minor_version)
 
-        parseModule "" json
+        {Body=jloadarr json "body" parseStmt}
     with
     | :? J.JsonException -> reraise ()
     | e -> raise (CodeException (SerializationError (int SerializationErrorCode.InternalError, -1, "Internal serializer error.", e)))

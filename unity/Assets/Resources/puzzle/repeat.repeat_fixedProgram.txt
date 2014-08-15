@@ -1,0 +1,9 @@
+Forward(1)
+Right()
+Forward(1)
+PlaceBlock(1)
+Forward(1)
+Left()
+Forward(1)
+PlaceBlock(1)
+
