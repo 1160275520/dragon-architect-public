@@ -1,4 +1,7 @@
-{"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
-"procedures":
-{"MAIN":{"params":[],"body":[{"args":[{"type":"literal", "value":"1"}],"meta":{"id":80},"proc":"Forward","type":"call"},{"args":[{"type":"literal", "value":"1"}],"meta":{"id":82},"proc":"Forward","type":"call"},{"args":[{"type":"literal", "value":"1"}],"meta":{"id":84},"proc":"Forward","type":"call"},{"args":[{"type":"literal", "value":"1"}],"meta":{"id":88},"proc":"Up","type":"call"},{"args":[{"type":"literal", "value":"1"}],"meta":{"id":90},"proc":"Up","type":"call"},{"args":[{"type":"literal", "value":"1"}],"meta":{"id":92},"proc":"Up","type":"call"}]}}
-}
+Forward(1)
+Forward(1)
+Forward(1)
+Up(1)
+Up(1)
+Up(1)
+

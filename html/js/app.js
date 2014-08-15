@@ -286,6 +286,7 @@ function onProgramEdit() {
 
     if (current_scene === 'sandbox') {
         var prog = RuthefjordBlockly.getXML();
+        console.info(prog);
         storage.save('sandbox_program', prog);
     }
 }

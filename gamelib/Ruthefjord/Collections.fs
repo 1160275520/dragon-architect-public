@@ -39,3 +39,8 @@ module ImmArr =
 module MyList =
     let rec skip n (list:'a list) =
         if n <= 0 then list else skip (n - 1) list.Tail
+
+module MyMap =
+    /// combine two maps, where any conflicting keys are overriden by the second map
+    let merge m1 m2 =
+        m2 |> Map.fold (fun acc k v -> Map.add k v acc) m1

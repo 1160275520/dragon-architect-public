@@ -4,21 +4,19 @@ module Ruthefjord.Simulator
 
 open Ruthefjord
 open Ruthefjord.Ast.Imperative
-open Ruthefjord.Ast.Library
 open System.Collections.Generic
 
-type RuntimeErrorCode =
+type ErrorCode =
 | InternalError = 4001
-| UnknownProcedure = 4101
-| UnableToConvertToInteger = 4102
-| IncorrectNumberOfArguments = 4103
+| UnknownIdentifier = 4101
+| TypeError = 4102
+| UnableToConvertToInteger = 4301
 
-let private runtimeError (meta:Ast.Imperative.Meta) (code: RuntimeErrorCode) msg =
+let private runtimeError (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
     raise (CodeException (RuntimeError (int code, meta.Id, msg, null)))
 
-type CallStackState = {
-    Args: Map<string,obj>;
-    Program: Program;
+type private CallStackState = {
+    Values: Map<string,obj>;
     mutable ToExecute: Statement list;
 }
 
@@ -26,35 +24,27 @@ type private State = {
     mutable CallStack: CallStackState list;
     mutable LastExecuted: Statement list;
 }
+with
+    member x.Push css = x.CallStack <- css :: x.CallStack
 
-let private getProc (program:Program, procname:string) =
-    match program.Procedures.TryFind procname with
-    | None ->
-        match program.Modules.TryFind procname with
-        | None ->
-            match Builtins.TryFind procname with
-            | None -> runtimeError (Ast.Imperative.NewMeta 0) RuntimeErrorCode.UnknownProcedure (sprintf "procedure '%s' does not exist" procname)
-            | Some x -> (program, x.Parameters, List.ofSeq x.Body)
-        | Some m -> (m, ImmArr.empty, [Ast.Imperative.NewCall0 0 "MAIN"])
-    | Some x -> (program, x.Parameters, List.ofSeq x.Body)
-
-let private exprAsInt meta (o:obj) =
+let private valueAsInt meta (o:obj) =
     match o with
     | :? int as x -> x
     | :? string as s ->
         try System.Int32.Parse(s)
-        with _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger (sprintf "cannot convert '%s' to integer" s)
-    | _ -> runtimeError meta RuntimeErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
+        with _ -> runtimeError meta ErrorCode.UnableToConvertToInteger (sprintf "cannot convert '%s' to integer" s)
+    | _ -> runtimeError meta ErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
-let private CreateState program mainProcName =
-    {CallStack=[{Args=Map.empty; Program=program; ToExecute=[Ast.Imperative.NewCall0 0 mainProcName];}]; LastExecuted=[];}
+let private createState (program:Program) builtInValues =
+    {CallStack=[{Values=builtInValues; ToExecute=program.Body}]; LastExecuted=[];}
 
-let private Evaluate (state:State) meta expression =
-    match expression with
+let private evaluate (csstate: CallStackState) (expr: Expression) =
+    match expr.Expr with
     | Literal x -> x
-    | Argument name ->
-        try state.CallStack.Head.Args.[name]
-        with :? System.IndexOutOfRangeException as e -> runtimeError meta RuntimeErrorCode.IncorrectNumberOfArguments (sprintf "Invalid argument %s." name)
+    | Identifier name ->
+        try csstate.Values.[name]
+        with :? System.Collections.Generic.KeyNotFoundException ->
+            runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
 
 let private step (state:State) =
     match state.CallStack with
@@ -74,26 +64,32 @@ let private step (state:State) =
                 state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
 
             match stmt.Stmt with
-            | Block b ->
-                state.CallStack <- {head with Args=head.Args; ToExecute=List.ofSeq b} :: state.CallStack
+            | Repeat {Body=body; NumTimes=ntimesExpr} ->
+                let ntimes = evaluate head ntimesExpr |> valueAsInt stmt.Meta
+                let toAdd = List.concat (List.init ntimes (fun _ -> body))
+                state.Push {head with ToExecute=toAdd}
                 None
-            | Call {Proc=procname; Args=args} ->
-                let args = ImmArr.map (Evaluate state stmt.Meta) args
-                let prog, param, toexec = getProc (head.Program, procname)
-                let argsName = Seq.zip param args |> Map.ofSeq
-                state.CallStack <- {head with Args=argsName; Program=prog; ToExecute=toexec} :: state.CallStack
+            | Define proc ->
+                state.CallStack <- {head with Values=head.Values.Add (proc.Name, proc)} :: tail
                 None
-            | Repeat {Stmt=stmt; NumTimes=ntimesExpr} ->
-                let ntimes = Evaluate state stmt.Meta ntimesExpr |> exprAsInt stmt.Meta
-                let toAdd = List.init ntimes (fun _ -> stmt)
-                state.CallStack <- {head with ToExecute=toAdd} :: state.CallStack
+            | Call {Identifier=name; Arguments=args} ->
+                let args = List.map (evaluate head) args
+                try
+                    let proc = head.Values.[name] :?> Procedure
+                    let args = Seq.zip proc.Parameters args |> Map.ofSeq
+                    let newVals = MyMap.merge head.Values args
+                    state.Push {head with Values=newVals; ToExecute=proc.Body}
+                with
+                | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+                | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
                 None
-            | Command (cmd, args) ->
-                let args = ImmArr.map (Evaluate state stmt.Meta) args
-                Some (Robot.Command (cmd, args))
+            | Command {Name=cmd; Arguments=args} ->
+                let args = List.map (evaluate head) args
+                Some (Robot.Command (cmd, ImmArr.ofSeq args))
 
 let private internalError e = 
-    raise (CodeException (RuntimeError (int RuntimeErrorCode.InternalError, -1, "Internal runtime error.", e)))
+    raise (CodeException (RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)))
+    
 
 /// Executes a single line of the program, returning a robot command, if any.
 let private ExecuteStep state =
@@ -130,8 +126,8 @@ type LazyStepState = {
     LastExecuted: Statement list;
 }
 
-type LazySimulator (program) =
-    let state = CreateState program "MAIN"
+type LazySimulator (program, builtIns) =
+    let state = createState program builtIns
 
     member x.IsDone = IsDone state
 
@@ -139,8 +135,8 @@ type LazySimulator (program) =
         let cmd = ExecuteUntilCommand state
         {Command=cmd; LastExecuted=state.LastExecuted}
 
-let ExecuteProgramLazily program =
-    let state = CreateState program "MAIN"
+let ExecuteProgramLazily (program, builtIns)  =
+    let state = createState program builtIns
     seq {
         yield {Command=null; LastExecuted=[]}
         while not (IsDone state) do
@@ -168,10 +164,10 @@ let SimultateWorld (grid:IGrid) (robots: (Robot.IRobot * LazyStepState[])[]) =
 
     grid
 
-let ExecuteFullProgram program (grid:GridStateTracker) (robot:Robot.IRobot) =
+let ExecuteFullProgram program builtIns (grid:GridStateTracker) (robot:Robot.IRobot) =
     try
         let MAX_ITER = 10000
-        let state = CreateState program "MAIN"
+        let state = createState program builtIns
         let mutable steps = [{Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}]
         let mutable isDone = false
         let mutable numSteps = 0
@@ -184,6 +180,19 @@ let ExecuteFullProgram program (grid:GridStateTracker) (robot:Robot.IRobot) =
             else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
 
         ImmArr.ofSeq (List.rev steps)
+    with
+    | :? CodeException -> reraise ()
+    | e -> internalError e
+
+// given a program, executes it, returning the map of names and values generated by the program
+let import program =
+    try
+        let state = createState program Map.empty
+        let mutable vals = Map.empty
+        while not (IsDone state) do
+            vals <- state.CallStack.Head.Values
+            step state |> ignore
+        vals
     with
     | :? CodeException -> reraise ()
     | e -> internalError e

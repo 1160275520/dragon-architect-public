@@ -7,6 +7,7 @@ let programText = """
 {"meta":{"language":"imperative_v01","version":{"major":0,"minor":1}},"procedures":{"MAIN":{"arity":0,"body":[{"numtimes":{"type":"literal","value":"250"},"meta":{"id":9},"stmt":{"meta":{"id":16},"body":[{"numtimes":{"type":"literal","value":"4"},"meta":{"id":50},"stmt":{"meta":{"id":17},"body":[{"numtimes":{"type":"literal","value":"10"},"meta":{"id":11},"stmt":{"meta":{"id":18},"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":13},"proc":"PlaceBlock","type":"call"}],"type":"block"},"type":"repeat"},{"args":[],"meta":{"id":14},"proc":"Left","type":"call"}],"type":"block"},"type":"repeat"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":15},"proc":"Up","type":"call"}],"type":"block"},"type":"repeat"}]}}}
 """
 
+(*
 let runBigProgram () =
     let prog = Serialization.Load programText
     let grid = ref (GridStateTracker Seq.empty)
@@ -17,6 +18,17 @@ let runBigProgram () =
             let state = sim.UpdateOneStep !grid
             grid := GridStateTracker state.Grid
         printfn "Num blocks: %d" (!grid).CurrentState.Length
+*)
+
+let parseTest () =
+    let text = System.IO.File.ReadAllText "../../../RuthefjordUnitTests/content/langtest.txt"
+
+    try
+        let ast = Parser.Parse (text, "foo")
+        printf "%A\n" ast
+    with e -> printf "%A\n" e.Message
+
+    ()
 
 let runTest f =
     let sw = Stopwatch ()
@@ -28,8 +40,10 @@ let runTest f =
 [<EntryPoint>]
 let main argv =
 
-    let time = runTest (runBigProgram ())
-    printfn "Elapsed time: %f" time.TotalSeconds
+    parseTest ()
+
+    //let time = runTest (runBigProgram ())
+    //printfn "Elapsed time: %f" time.TotalSeconds
 
     // always run the same one for now
 

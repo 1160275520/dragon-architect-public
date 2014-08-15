@@ -40,6 +40,7 @@
     <None Include="app.config" />
     <Compile Include="JsonTest.fs" />
     <Compile Include="ProgramSerializationTest.fs" />
+    <Compile Include="ProgramParsingTest.fs" />
     <Compile Include="ImperativeSimulatorTest.fs" />
     <Compile Include="WorldPuzzleSerializationTest.fs" />
   </ItemGroup>

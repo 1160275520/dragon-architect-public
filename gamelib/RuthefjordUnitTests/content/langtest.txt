@@ -1,0 +1,30 @@
+#lang imperative:0.2
+
+define up(x)
+    repeat x times
+        command up()
+
+define helper(arg1, arg2)
+    forward(arg1)
+    var var1 is 234
+    set var1 to 546
+    repeat arg2 times
+        up(4)
+
+if 4
+    forward(3)
+else if x
+    up(10)
+    if asdf
+        down(fds)
+    forward(14)
+else
+    backward(3)
+
+forward(1)
+forward(2)
+up(3)
+place(43, 893425)
+repeat 5 times
+    forward(5)
+

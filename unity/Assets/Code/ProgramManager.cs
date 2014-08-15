@@ -37,6 +37,8 @@ public class ProgramManager : MonoBehaviour {
     private LazyProgramRunner lazyProgramRunner;
     private Simulator.StepState currentState;
 
+    private Microsoft.FSharp.Collections.FSharpMap<string, object> builtIns;
+
     // cached component references
     private RobotController robot;
 
@@ -44,6 +46,9 @@ public class ProgramManager : MonoBehaviour {
         // HACK need max proc length for historical purposes, but doesn't actually do anything
         Manipulator = new ImperativeAstManipulator(100);
         TicksPerStep = 30;
+
+        var stdlibText = Resources.Load<TextAsset>("stdlib.imperative").text;
+        builtIns = Simulator.import(Parser.Parse(stdlibText, "stdlib"));
 
         robot = FindObjectOfType<RobotController>();
 
@@ -127,7 +132,7 @@ public class ProgramManager : MonoBehaviour {
             // use the current grid as the initial state
             var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
             // just use wherever the robot current is as the initial state
-            lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, grid, robot.Robot);
+            lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, builtIns, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
             evalEntireProgram();
             setGameStateToIndex(0, 0.0f);
@@ -185,7 +190,7 @@ public class ProgramManager : MonoBehaviour {
     }
 
     public void LoadProgram(string resourceName) {
-        Manipulator.Program = Ruthefjord.Serialization.Load(Resources.Load<TextAsset>(resourceName).text);
+        Manipulator.Program = Ruthefjord.Parser.Parse(Resources.Load<TextAsset>(resourceName).text, resourceName);
     }
     
     private void evalEntireProgram() {
@@ -198,7 +203,7 @@ public class ProgramManager : MonoBehaviour {
             var grid = new GridStateTracker(initialCells);
             var initialRobotState = States != null ? States[0].Robot : robot.Robot;
 
-            States = Simulator.ExecuteFullProgram(Manipulator.Program, grid, initialRobotState.Clone);
+            States = Simulator.ExecuteFullProgram(Manipulator.Program, builtIns, grid, initialRobotState.Clone);
 
             if (isOldIndexAtEnd) {
                 currentStateIndex = States.Length;

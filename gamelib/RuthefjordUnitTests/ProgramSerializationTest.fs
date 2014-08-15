@@ -12,8 +12,8 @@ module A = Ruthefjord.Ast.Imperative
 
 let emptyTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
-"procedures":{}
+"meta":{"language":"imperative_v02","version":{"major":1, "minor":0}},
+"body":[]
 }
 """
 
@@ -21,147 +21,27 @@ let emptyTestProgram = """
 let ``Serialization empty test`` () =
     let json = J.Parse emptyTestProgram
     let prog = S.ProgramOfJson json
-    prog.Procedures.Count |> should equal 0
-
-    S.ProgramOfJson json |> should equal prog
-    S.JsonOfProgram prog |> should equal json
-
-let nopTestProgram = """
-{
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
-"procedures":{
-    "MAIN":{"params":[],"body":[]}
-}
-}
-"""
-
-[<Fact>]
-let ``Serialization nop test`` () =
-    let json = J.Parse nopTestProgram
-    let prog = S.ProgramOfJson json
-    prog.Procedures.Count |> should equal 1
-    prog.Procedures.ContainsKey "MAIN" |> should equal true
-
-    let main = prog.Procedures.["MAIN"]
-    main.Arity |> should equal 0
-    main.Body.Length |> should equal 0
-
-    S.ProgramOfJson json |> should equal prog
-    S.JsonOfProgram prog |> should equal json
+    S.ProgramOfJson (S.JsonOfProgram prog) |> should equal prog
 
 let simpleTestProgram = """
 {
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
-"procedures":{
-    "F1":{"params":[],"body":[
-        {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
-        {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
+"meta":{"language":"imperative_v02","version":{"major":1, "minor":0}},
+"body":[
+    {"type":"define", "name":"F1", "params":[],"body":[
+        {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"ident":"Up","type":"call"},
+        {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"ident":"PlaceBlock","type":"call"}
     ]},
-    "F2":{"params":[],"body":[]},
-    "MAIN":{"params":[],"body":[
-        {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
-        {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
-            {"meta":{"id":27},"body":[
-                {"args":[],"meta":{"id":22},"proc":"F1","type":"call"},
-                {"args":[],"meta":{"id":23},"proc":"Left","type":"call"}
-            ],"type":"block"},"type":"repeat"}]}
-}
-}
+    {"type":"define", "name":"F2", "params":[],"body":[]},
+    {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"ident":"Forward","type":"call"},
+    {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"body":[
+        {"args":[],"meta":{"id":22},"ident":"F1","type":"call"},
+        {"args":[],"meta":{"id":23},"ident":"Left","type":"call"}
+    ],"type":"repeat"}
+]}
 """
 
 [<Fact>]
 let ``Serialization simple test`` () =
     let json = J.Parse simpleTestProgram
     let prog = S.ProgramOfJson json
-    prog.Procedures.Count |> should equal 3
-    prog.Procedures.ContainsKey "MAIN" |> should equal true
-    prog.Procedures.ContainsKey "F1" |> should equal true
-    prog.Procedures.ContainsKey "F2" |> should equal true
-
-    let main = prog.Procedures.["MAIN"]
-    main.Arity |> should equal 0
-    main.Body.Length |> should equal 2
-
-    A.NewCall 21 "Forward" [A.Literal "5"] |> should equal main.Body.[0]
-    main.Body.[0] |> should equal main.Body.[0]
-
-    S.ProgramOfJson json |> should equal prog
-    S.JsonOfProgram prog |> should equal json
-
-let moduleTestProgram = """
-{
-"meta":{"language":"imperative_v01","version":{"major":0, "minor":2}},
-"modules":{
-    "foo":{
-        "procedures":{
-            "F1":{"params":[],"body":[
-                {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
-                {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
-            ]},
-            "F2":{"params":[],"body":[]},
-            "MAIN":{"params":[],"body":[
-                {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
-                {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
-                    {"meta":{"id":27},"body":[
-                        {"args":[],"meta":{"id":22},"proc":"F1","type":"call"},
-                        {"args":[],"meta":{"id":23},"proc":"Left","type":"call"}
-                    ],"type":"block"},"type":"repeat"}]}
-        }
-    }
-},
-"procedures":{
-    "F1":{"params":[],"body":[
-        {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"proc":"Up","type":"call"},
-        {"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":26},"proc":"PlaceBlock","type":"call"}
-    ]},
-    "F2":{"params":[],"body":[]},
-    "MAIN":{"params":[],"body":[
-        {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"proc":"Forward","type":"call"},
-        {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"stmt":
-            {"meta":{"id":27},"body":[
-                {"args":[],"meta":{"id":22},"proc":"F1","type":"call"},
-                {"args":[],"meta":{"id":23},"proc":"Left","type":"call"}
-            ],"type":"block"},"type":"repeat"}]}
-}
-}
-"""
-
-[<Fact>]
-let ``Serialization module test`` () =
-    let json = J.Parse moduleTestProgram
-    let prog = S.ProgramOfJson json
-    prog.Modules.Count |> should equal 1
-    prog.Modules.ContainsKey "foo" |> should equal true
-    prog.Procedures.ContainsKey "F1" |> should equal true
-    prog.Procedures.ContainsKey "F2" |> should equal true
-
-    let foo = prog.Modules.["foo"]
-    let main = foo.Procedures.["MAIN"]
-    main.Arity |> should equal 0
-    main.Body.Length |> should equal 2
-
-    A.NewCall 21 "Forward" [A.Literal "5"] |> should equal main.Body.[0]
-    main.Body.[0] |> should equal main.Body.[0]
-
-    S.ProgramOfJson json |> should equal prog
-    S.JsonOfProgram prog |> should equal json
-
-let runSerializeFromFileTest filename =
-    let json = File.ReadAllText filename |> J.Parse
-    let prog = S.ProgramOfJson json
     S.ProgramOfJson (S.JsonOfProgram prog) |> should equal prog
-
-let stageSerializationTests = [
-    "puzzle.tutorial.call_1.txt";
-    "puzzle.tutorial.repeat_1.txt";
-    "puzzle.tutorial.movement2d.txt";
-    "puzzle.tutorial.movement3d.txt";
-    "puzzle.tutorial.arguments.txt";
-    "puzzle.tutorial.placement.txt";
-]
-let stageSerializationTestsSeq = stageSerializationTests |> Seq.map (fun s -> [|s :> obj|])
-
-[<Theory>]
-[<PropertyData("stageSerializationTestsSeq")>]
-let ``Serialization stage test`` (filename:string) =
-    runSerializeFromFileTest ("../../../../unity/Assets/Resources/" + filename)

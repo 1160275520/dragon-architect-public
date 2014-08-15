@@ -122,23 +122,25 @@ public class PuzzleHelper : MonoBehaviour
     }
 
     public bool IsFrozenBlocks(string procName) {
-        var proc = Manipulator.Program.Procedures[procName];
-        return proc.Meta.Attributes.TryLoadOrElse("frozen_blocks", Json.asBool, false);
+        //var proc = Manipulator.Program.Procedures[procName];
+        //return proc.Meta.Attributes.TryLoadOrElse("frozen_blocks", Json.asBool, false);
+        return false;
     }
 
     public bool IsFrozenArguments(string procName) {
-        var proc = Manipulator.Program.Procedures[procName];
-        return proc.Meta.Attributes.TryLoadOrElse("frozen_args", Json.asBool, false);
+        //var proc = Manipulator.Program.Procedures[procName];
+        //return proc.Meta.Attributes.TryLoadOrElse("frozen_args", Json.asBool, false);
+        return false;
     }
 
     public void SetIsFrozenBlocks(string procName, bool isFrozen) {
-        var proc = Manipulator.Program.Procedures[procName];
-        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_blocks", Json.JsonValue.NewBool(isFrozen)));
+        //var proc = Manipulator.Program.Procedures[procName];
+        //Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_blocks", Json.JsonValue.NewBool(isFrozen)));
     }
 
     public void SetIsFrozenArguments(string procName, bool isFrozen) {
-        var proc = Manipulator.Program.Procedures[procName];
-        Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_args", Json.JsonValue.NewBool(isFrozen)));
+        //var proc = Manipulator.Program.Procedures[procName];
+        //Manipulator.UpdateProcedureAttributes(procName, proc.Meta.Attributes.SetField("frozen_args", Json.JsonValue.NewBool(isFrozen)));
     }
 
     void Update() {

@@ -24,6 +24,18 @@ type CodeError (subtype: string, code: int, location: int, errorMessage: string,
 type SerializationError(c,p,m,i) = inherit CodeError("serialization",c,p,m,i)
 type RuntimeError(c,p,m,i) = inherit CodeError("runtime",c,p,m,i)
 
+type ParseError (code: int, location: TextLocation, errorMessage: string, exn: System.Exception) =
+    member x.Code = code
+    member x.Location = location
+    member x.ErrorMessage = errorMessage
+    member x.Exception = exn
+
+    member x.FullMessage = sprintf "at %O: Syntax Error %d: %s" x.Location x.Code x.ErrorMessage
+
+type ParseException(e: ParseError) =
+    inherit Exception (e.FullMessage, e.Exception)
+    member x.Error = e
+
 type CodeException (e: CodeError) =
     inherit System.Exception(e.FullMessage, e.Exception)
     member x.Error = e

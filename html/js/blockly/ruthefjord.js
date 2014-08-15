@@ -187,30 +187,27 @@ RuthefjordBlockly.setLevel = function(scene_info, library) {
 RuthefjordBlockly.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
     Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id);}));
-    var procedures = {};
-    procedures["MAIN"] = {};
-    var main = procedures["MAIN"];
-    main['params'] = [];
-    main['body'] = [];
-    // iterate over top-level blocks
-    for (var i = 0; i < topBlocks.length; i++) {
-        var block = topBlocks[i];
-        // process each procedure
+
+    var defines = [];
+    var other = [];
+
+    // iterate over top-level blocks, putting all defines first and everything else second
+    _.each(topBlocks, function(block) {
         if (block.type === "procedures_defnoreturn") {
-            procedures[block.getFieldValue("NAME")] = {};
-            var fn = procedures[block.getFieldValue("NAME")];
-            fn['params'] = [];
-            fn['body'] = Blockly.UnityJSON.processStructure(block);
-        } else { // everything else is part of MAIN
-            main['body'] = main['body'].concat(Blockly.UnityJSON.processStructure(block));
+            var name = block.getFieldValue("NAME");
+            var params = [];
+            var body = Blockly.UnityJSON.processStructure(block);
+            defines.push({type:"define", name:name, params:params, body:body});
+        } else {
+            other = other.concat(Blockly.UnityJSON.processStructure(block));
         }
-    }
+    });
     return {
         meta: {
-            language: 'imperative_v01',
-            version: {major: 0, minor: 2}
+            language: 'imperative_v02',
+            version: {major: 1, minor: 0}
         },
-        procedures: procedures,
+        body: defines.concat(other)
     };
 };
 

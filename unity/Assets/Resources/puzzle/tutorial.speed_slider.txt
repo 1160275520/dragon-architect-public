@@ -1,1 +1,8 @@
-{"meta":{"language":"imperative_v01","version":{"major":0,"minor":2}},"procedures":{"MAIN":{"params":[],"body":[{"numtimes":{"type":"literal","value":"5"},"meta":{"id":10},"stmt":{"meta":{"id":19},"body":[{"numtimes":{"type":"literal","value":"4"},"meta":{"id":12},"stmt":{"meta":{"id":20},"body":[{"numtimes":{"type":"literal","value":"20"},"meta":{"id":15},"stmt":{"meta":{"id":21},"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":11},"proc":"Forward","type":"call"},{"args":[{"type":"literal","value":"#5cab32"}],"meta":{"id":14},"proc":"PlaceBlock","type":"call"}],"type":"block"},"type":"repeat"},{"args":[],"meta":{"id":13},"proc":"Left","type":"call"}],"type":"block"},"type":"repeat"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":16},"proc":"Up","type":"call"},{"args":[],"meta":{"id":17},"proc":"Right","type":"call"},{"args":[],"meta":{"id":18},"proc":"Left","type":"call"}],"type":"block"},"type":"repeat"}]}}}
+repeat 5 times
+    repeat 4 times
+        repeat 20 times
+            Forward(1)
+            PlaceBlock(1)
+        Left()
+    Up(1)
+
