@@ -18,7 +18,7 @@ let loadBuiltIns () =
 let ``builtins import`` () =
     let lib = loadBuiltIns ()
 
-    lib.Count |> should equal 7
+    lib.Count |> should equal 8
     lib.ContainsKey "Forward" |> should equal true
 
 [<Fact>]

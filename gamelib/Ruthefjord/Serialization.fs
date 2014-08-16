@@ -36,8 +36,8 @@ let JsonOfProgram (program:Program) =
         let fields =
             match stmt.Stmt with
             | Repeat r -> [("type", J.String "repeat"); ("body", jarrmap jsonOfStmt r.Body); ("numtimes", jsonOfExpr r.NumTimes)]
-            | Define p -> [("type", J.String "define"); ("name", J.String p.Name); ("params", J.JsonValue.ArrayOf (Seq.map J.String p.Parameters)); ("body", jarrmap jsonOfStmt p.Body)]
-            | Call c -> [("type", J.String "call"); ("ident", J.String c.Identifier); ("args", jarrmap jsonOfExpr c.Arguments)]
+            | Procedure p -> [("type", J.String "define"); ("name", J.String p.Name); ("params", J.JsonValue.ArrayOf (Seq.map J.String p.Parameters)); ("body", jarrmap jsonOfStmt p.Body)]
+            | Execute c -> [("type", J.String "call"); ("ident", J.String c.Identifier); ("args", jarrmap jsonOfExpr c.Arguments)]
             | Command c -> [("type", J.String "command"); ("name", J.String c.Name); ("args", jarrmap jsonOfExpr c.Arguments)]
         J.JsonValue.ObjectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
@@ -89,8 +89,8 @@ let ProgramOfJson (json: J.JsonValue) =
         let stmt =
             match jload j "type" J.asString with
             | "repeat" -> Repeat {Body=jloadarr j "body" parseStmt; NumTimes=jload j "numtimes" parseExpr}
-            | "define" -> Define {Name=jload j "name" J.asString; Parameters=jloadarr j "params" J.asString; Body=jloadarr j "body" parseStmt}
-            | "call" -> Call {Identifier=jload j "ident" J.asString; Arguments=jloadarr j "args" parseExpr}
+            | "define" -> Procedure {Name=jload j "name" J.asString; Parameters=jloadarr j "params" J.asString; Body=jloadarr j "body" parseStmt}
+            | "call" -> Execute {Identifier=jload j "ident" J.asString; Arguments=jloadarr j "args" parseExpr}
             | "command" -> Command {Name=jload j "name" J.asString; Arguments=jloadarr j "args" parseExpr}
             | t -> syntaxError j SerializationErrorCode.InvalidStatementType ("invalid statement type " + t)
         {Meta=defaultArg (tryJload j "meta" parseMeta) emptyMeta; Stmt=stmt}

@@ -17,16 +17,37 @@ module Imperative =
     type ExpressionT =
     | Literal of obj
     | Identifier of string
-    type Expression = {
+    | Evaluate of Evaluate
+    | Query of Query
+    and Expression = {
         Meta: Meta;
         Expr: ExpressionT;
     }
+    with
+        override x.ToString() = sprintf "%O: %O" x.Meta x.Expr
+    and Evaluate = {
+        Identifier: string;
+        Arguments: Expression list;
+    }
+    and Query = {
+        Name: string;
+        Arguments: Expression list;
+    }
+
+    type Function = {
+        Name: string;
+        Parameters: string list;
+        Body: Expression;
+    }
+    with
+        member x.Arity = x.Parameters.Length
 
     type StatementT =
     | Conditional of Conditional
     | Repeat of Repeat
-    | Define of Procedure
-    | Call of Call
+    | Function of Function
+    | Procedure of Procedure
+    | Execute of Execute
     | Command of Command
     and Statement = {
         Stmt: StatementT;
@@ -43,10 +64,6 @@ module Imperative =
         NumTimes: Expression;
         Body: Statement list;
     }
-    and Call = {
-        Identifier: string;
-        Arguments: Expression list;
-    }
     and Procedure = {
         Name: string;
         Parameters: string list;
@@ -54,6 +71,10 @@ module Imperative =
     }
     with
         member x.Arity = x.Parameters.Length
+    and Execute = {
+        Identifier: string;
+        Arguments: Expression list;
+    }
     and Command = {
         Name: string;
         Arguments: Expression list;

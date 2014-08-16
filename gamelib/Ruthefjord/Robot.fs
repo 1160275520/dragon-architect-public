@@ -10,13 +10,17 @@ type Command(t,a) =
     member x.Type: string = t
     member x.Args: ImmArr<obj> = a
 
+type Query = {
+    Type: string;
+    Args: obj list;
+}
+
 type IRobot =
     abstract member Position : IntVec3
     /// The unit vector pointing in the robots direction
     abstract member Direction : IntVec3
-
     abstract member Execute : grid:IGrid -> command:Command -> unit
-
+    abstract member Query : grid:IGrid -> query:Query -> obj
     abstract member Clone : IRobot
 
 
@@ -43,4 +47,8 @@ type BasicImperativeRobot(aPos, aDir) =
                 | "remove" -> grid.RemoveObject pos
                 | _ -> ()
             else ()
+        member x.Query (grid:IGrid) query =
+            match query.Type with
+            | "isblockatpos" -> upcast ((grid.GetObject pos).IsSome)
+            | _ -> upcast ()
         member x.Clone = upcast BasicImperativeRobot (pos, dir)

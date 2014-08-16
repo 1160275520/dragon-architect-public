@@ -7,7 +7,8 @@ type LazyProgramRunner (program, builtIns, initialGrid:GridStateTracker, initial
     let MAX_ITER = 20000
 
     let robot = initialRobot.Clone
-    let simulator = Simulator.LazySimulator (program, builtIns)
+    // XXX TODO wrong! can't use initialGrid here! need to refactor robot
+    let simulator = Simulator.LazySimulator (program, builtIns, initialGrid, robot)
     let initialState : Simulator.StepState = {Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=initialGrid.CurrentState}
     let mutable lastStep = initialState
     let mutable numSteps = 0

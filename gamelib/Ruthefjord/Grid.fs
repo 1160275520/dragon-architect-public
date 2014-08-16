@@ -13,6 +13,7 @@ type IGrid =
     // duplicate keys replaces old value
     abstract member OverwriteObject : idx:IntVec3 -> block:Block -> unit
     abstract member RemoveObject : idx:IntVec3 -> unit
+    abstract member GetObject : idx:IntVec3 -> Block option
 
 type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
 
@@ -31,3 +32,6 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
         member x.AddObject idx block = if cells.Count < MAX_BLOCKS && not (cells.ContainsKey idx) then cells.Add (idx, block)
         member x.OverwriteObject idx block = cells.[idx] <- block
         member x.RemoveObject idx = cells.Remove idx |> ignore
+        member x.GetObject idx =
+            let v = ref 0
+            if cells.TryGetValue (idx, v) then Some !v else None
