@@ -8,7 +8,7 @@ open System.IO
 open Ruthefjord
 open Ruthefjord.Scene
 
-let newRobot () = Robot.BasicImperativeRobot (IntVec3.Zero, IntVec3.UnitZ)
+let newRobot () = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 let newBlock (pos, block) = KeyValuePair<IntVec3, int> (pos, block)
 
 [<Fact>]
@@ -44,9 +44,10 @@ let ``World serialization simple test`` () =
 let ``World serialization repeat program test`` () =
     let prog = Parser.Parse (ImperativeSimulatorTest.repeatTestProg, "prog")
     let lib = ImperativeSimulatorTest.loadBuiltIns ()
-    let states = Simulator.ExecuteFullProgram prog lib (GridStateTracker []) (newRobot ())
-    let blocks = states.[states.Length - 1].Grid.ToArray()
-    let robots = [| World.dataOfRobot states.[states.Length - 1].Robot |]
+    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
+    let states = Simulator.SimulateWithRobot prog lib robot
+    let blocks = (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.ToArray()
+    let robots = [| (states.[states.Length - 1].WorldState :?> BasicWorldState).Robot |]
     let world = {Blocks=blocks; Robots=robots}
 
     let encoded = World.encodeToString world 

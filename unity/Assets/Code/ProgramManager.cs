@@ -158,8 +158,9 @@ public class ProgramManager : MonoBehaviour {
         if (!state.Equals(currentState)) {
             currentState = state;
             var grid = GetComponent<Grid>();
-            robot.SetRobot(state.Robot, state.Command, transitionTimeSeconds);
-            grid.SetGrid(state.Grid);
+            var ws = state.WorldState as BasicWorldState;
+            robot.SetRobot(ws.Robot, state.Command, transitionTimeSeconds);
+            grid.SetGrid(ws.Grid);
             lastExecuted = state.LastExecuted;
             GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
         }
@@ -201,9 +202,9 @@ public class ProgramManager : MonoBehaviour {
             var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
 
             var grid = new GridStateTracker(initialCells);
-            var initialRobotState = States != null ? States[0].Robot : robot.Robot;
-
-            States = Simulator.ExecuteFullProgram(Manipulator.Program, builtIns, grid, initialRobotState.Clone);
+            var initialRobotState = States != null ? ((BasicWorldState)States[0].WorldState).Robot : robot.Robot;
+            var runner = new BasicImperativeRobotSimulator(initialRobotState, grid);
+            States = Simulator.SimulateWithRobot(Manipulator.Program, builtIns, runner);
 
             if (isOldIndexAtEnd) {
                 currentStateIndex = States.Length;

@@ -167,9 +167,9 @@ public class ExternalAPI : MonoBehaviour
     public void EAPI_RequestWorldState(string ignored) {
         var blocks = GetComponent<Grid>().AllCells;
         var robot = FindObjectOfType<RobotController>().Robot;
-        var robots = new List<RobotData>();
+        var robots = new List<BasicRobot>();
         if (robot != null) {
-            robots.Add(World.dataOfRobot(robot));
+            robots.Add(robot);
         }
         var world = new WorldData(blocks, robots.ToArray());
 
