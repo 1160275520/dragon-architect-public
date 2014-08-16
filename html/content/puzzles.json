@@ -15,6 +15,9 @@
             "required": [],
             "granted": ["move2"]
         },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
         "logging_id": 21,
         "instructions": {
             "summary": "Click {go} to have me run my program!",
@@ -31,6 +34,9 @@
         },
         "tutorial": {
             "highlighted": ["Forward"]
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "logging_id": 31,
         "instructions": {
@@ -49,6 +55,9 @@
         "tutorial": {
             "highlighted": ["Right"]
         },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
         "logging_id": 32,
         "instructions": {
             "summary": "The pink box has moved. Change my program to help me get there!",
@@ -64,11 +73,11 @@
             "granted": ["place"]
         },
         "tutorial": {
-            "highlighted": ["PlaceBlock"]
+            "highlighted": ["PlaceBlock", "Forward"]
         },
         "instructions": {
-            "summary": "I need to place some blocks in the blue boxes, but my program skips one!",
-            "detail": "Use one {placeblock} to fix my program."
+            "summary": "I want to place some cubes. Help me place more than 3!",
+            "detail": "Use several {forward} and {placeblock} together to place a bunch of cubes."
         },
         "logging_id": 23
     },
@@ -84,11 +93,13 @@
         },
         "world": {
             "blocks": {"type":"json", "data":[
-                {"pos": [0,0,3], "blk": 0},
-                {"pos": [0,0,4], "blk": 0},
-                {"pos": [0,0,5], "blk": 0}
-            ]}
+                {"pos": [3,0,0], "blk": 0},
+                {"pos": [4,0,0], "blk": 0},
+                {"pos": [5,0,0], "blk": 0}
+            ]},
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+
         "instructions": {
             "summary": "Help me remove those three cubes!",
             "detail": "Add one more {removeblock} to fix my program."
@@ -158,7 +169,7 @@
         },
         "instructions": {
             "summary": "Solve the challenge by filling in the blueprint!",
-            "detail": "It's hard to see where the blocks should go from this angle! When you need a better view, use the {rotateCW} and {rotateCCW} buttons to rotate your view."
+            "detail": "It's hard to see where the cubes should go from this angle! When you need a better view, use the {rotateCW} and {rotateCCW} buttons to rotate your view."
         },
         "logging_id": 35
     },
@@ -171,8 +182,11 @@
             "granted": []
         },
         "instructions": {
-            "summary":  "Help me put blocks on the blue boxes!",
+            "summary":  "Help me put cubes on the blue boxes!",
             "detail": "The number in each {forward} tells me how many spaces to move. Change the numbers to complete my program."
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "logging_id": 24
     },
@@ -217,7 +231,7 @@
         },
         "instructions": {
             "summary": "Help me fill in the blueprint by adding a {forward} and a {placeblock} to my program!",
-            "detail": "Try adding those blocks inside {repeat9}."
+            "detail": "Try adding those code blocks inside {repeat9}."
         },
         "logging_id": 27
     },

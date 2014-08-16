@@ -9,7 +9,7 @@ var preprocess = require('gulp-preprocess');
 var rev = require('gulp-rev');
 var rimraf = require('rimraf');
 
-var BUILD_DIR = __dirname + '/../build/';
+var BUILD_DIR = __dirname + '/../dist/';
 
 gulp.task('clean', function(cb) {
     rimraf(BUILD_DIR, cb);

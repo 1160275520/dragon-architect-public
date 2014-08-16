@@ -13,16 +13,8 @@ public class PuzPlacement : MonoBehaviour
 
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle/tutorial.placement");
-        var template = new IntVec3[] {
-            new IntVec3(0,0,3),
-            new IntVec3(0,0,4),
-            new IntVec3(0,0,5),
-        };
 
-        FindObjectOfType<MyCamera>().Rotate(-90);
-
-        lh.CreateBlueprint(template);
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(4) });
     }
 
     void Update() {

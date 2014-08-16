@@ -62,18 +62,21 @@ var storage = (function() {
         if (typeof key !== "string") throw new TypeError("keys must be strings!");
         if (value !== null && typeof value !== "string") throw new TypeError("can only save string values!");
 
-        var o = {};
-        o[key] = value;
+        // only save if the current value is different or non-existent
+        if (remote_data && remote_data[key] !== value) {
+            var o = {};
+            o[key] = value;
 
-        if (remote_data) {
-            $.ajax(base_url + 'player/' + remote_data.id, {
-                data: JSON.stringify(o),
-                contentType: 'application/json',
-                type: 'PUT'
-            });
-            remote_data[key] = value;
-        } else {
-            sessionStorage.setItem(key, value);
+            if (remote_data) {
+                $.ajax(base_url + 'player/' + remote_data.id, {
+                    data: JSON.stringify(o),
+                    contentType: 'application/json',
+                    type: 'PUT'
+                });
+                remote_data[key] = value;
+            } else {
+                sessionStorage.setItem(key, value);
+            }
         }
     }
 
@@ -286,14 +289,15 @@ function onProgramEdit() {
     var p = JSON.stringify(RuthefjordBlockly.getProgram());
 
     if (p !== program_state.last_program_sent) {
-        RuthefjordUnity.Call.set_program(p);
+        if (program_state.run_state === 'stopped') {
+            RuthefjordUnity.Call.set_program(p);
+            program_state.last_program_sent = p;
+        }
 
         if (current_scene === 'sandbox') {
             var prog = RuthefjordBlockly.getXML();
             storage.save('sandbox_program', prog);
         }
-
-        program_state.last_program_sent = p;
     }
 }
 
@@ -575,6 +579,10 @@ handler.onProgramStateChange = function(data) {
             RuthefjordUnity.Call.request_world_state();
         }
 
+        // flush program edits on stop
+        if (rs === 'stopped') {
+            onProgramEdit();
+        }
     }
 
     if ('current_state' in json) {
