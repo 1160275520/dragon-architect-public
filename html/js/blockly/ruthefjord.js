@@ -185,16 +185,16 @@ RuthefjordBlockly.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
     Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id);}));
 
-    var defines = [];
+    var procs = [];
     var other = [];
 
-    // iterate over top-level blocks, putting all defines first and everything else second
+    // iterate over top-level blocks, putting all function/procedure definitions first and everything else second
     _.each(topBlocks, function(block) {
         if (block.type === "procedures_defnoreturn") {
             var name = block.getFieldValue("NAME");
             var params = [];
             var body = Blockly.UnityJSON.processStructure(block);
-            defines.push({type:"define", name:name, params:params, body:body});
+            procs.push({type:"proc", name:name, params:params, body:body});
         } else {
             other = other.concat(Blockly.UnityJSON.processStructure(block));
         }
@@ -204,7 +204,7 @@ RuthefjordBlockly.getProgram = function() {
             language: 'imperative_v02',
             version: {major: 1, minor: 0}
         },
-        body: defines.concat(other)
+        body: procs.concat(other)
     };
 };
 

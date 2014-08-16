@@ -152,11 +152,6 @@ type StepState = {
     WorldState: obj;
 }
 
-type LazyStepState = {
-    Command: Robot.Command;
-    LastExecuted: Statement list;
-}
-
 type LazySimulator (program, builtIns, robot) =
     let state = createState program builtIns (Some robot)
     let initialState = {Command=null; LastExecuted=[]; WorldState=robot.CurrentState}
@@ -183,7 +178,7 @@ let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
                 robot.Execute cmd
                 steps <- {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState} :: steps
                 numSteps <- numSteps + 1
-            else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
+            else System.Diagnostics.Debug.Assert(IsDone state, "ExecuteUntilCommand returned a null command when program was not done!")
 
         ImmArr.ofSeq (List.rev steps)
     with

@@ -27,11 +27,11 @@ let simpleTestProgram = """
 {
 "meta":{"language":"imperative_v02","version":{"major":1, "minor":0}},
 "body":[
-    {"type":"define", "name":"F1", "params":[],"body":[
+    {"type":"proc", "name":"F1", "params":[],"body":[
         {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"ident":"Up","type":"call"},
         {"args":[{"type":"literal","value":1}],"meta":{"id":26},"ident":"PlaceBlock","type":"call"}
     ]},
-    {"type":"define", "name":"F2", "params":[],"body":[]},
+    {"type":"proc", "name":"F2", "params":[],"body":[]},
     {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"ident":"Forward","type":"call"},
     {"numtimes":{"type":"literal","value":"10"},"meta":{"id":24},"body":[
         {"args":[],"meta":{"id":22},"ident":"F1","type":"call"},
