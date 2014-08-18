@@ -210,7 +210,7 @@
         "library": {
             "restricted": ["blocks"],
             "required": [],
-            "granted": ["repeat"]
+            "granted": []
         },
         "tutorial": {
             "highlighted": ["controls_repeat"]
@@ -239,8 +239,8 @@
         "name": "101 Cubes",
         "component": "PuzRepeat101Blocks",
         "library": {
-            "required": ["move2", "place", "repeat"],
-            "granted": []
+            "required": ["move2", "place"],
+            "granted": ["repeat"]
         },
         "goals": [{
             "type": "cube_count",

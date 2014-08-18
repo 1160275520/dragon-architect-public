@@ -38,7 +38,7 @@ gulp.task('usemin_frame', ['clean'], function() {
 });
 
 gulp.task('copy_generated', ['clean'], function() {
-    return gulp.src(['generated/**', '!generated/README*'])
+    return gulp.src(['generated/*.js', 'generated/*.unity3d'])
         .pipe(gulp.dest(BUILD_DIR + 'generated/'));
 });
 
