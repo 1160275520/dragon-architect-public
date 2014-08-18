@@ -17,8 +17,8 @@ public class PuzRepeatFixedProgram : MonoBehaviour {
         
         var template = new List<IntVec3>();
         const int size = 10;
-        for (int x = 0; x < size; x++) {
-            template.Add(new IntVec3(x+1, 0, x+1));
+        for (int x = 2; x < size; x += 2) {
+            template.Add(new IntVec3(x, 0, x));
         }
         
         lh.CreateBlueprint(template);

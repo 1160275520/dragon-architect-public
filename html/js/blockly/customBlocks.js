@@ -5,13 +5,6 @@ function RuthefjordBlocklyCustomInit() {
 
 Blockly.UnityJSON = {};
 
-Blockly.UnityJSON.idCounter_ = 0;
-
-Blockly.UnityJSON.nextId = function () {
-    Blockly.UnityJSON.idCounter_ += 1;
-    return Blockly.UnityJSON.idCounter_;
-};
-
 Blockly.UnityJSON.convertCallback = function (obj) {
     return Blockly.UnityJSON[obj.block.type](obj.block, obj.children); 
 };
@@ -200,14 +193,14 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
                     return '<block type="' + stmt['proc'] + '">';
                 }
                 */
-                return '<block type="' + stmt.ident + '">';
+                return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '">';
             } else if (stmt.ident === 'PlaceBlock') {
-                return '<block type="' + stmt.ident + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
+                return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
             } else {
-                return '<block type="' + stmt.ident + '"><field name="VALUE">' + stmt.args[0].value + '</field>';
+                return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><field name="VALUE">' + stmt.args[0].value + '</field>';
             }
         } else if (stmt.type === "repeat") {
-            return '<block type="controls_repeat"><field name="TIMES">' + stmt.numtimes.value + '</field><statement name="DO">' + Blockly.UnityJSON.bodyToXML(stmt.body, program) + '</statement>';
+            return '<block type="controls_repeat" id="' + stmt.meta.id + '"><field name="TIMES">' + stmt.numtimes.value + '</field><statement name="DO">' + Blockly.UnityJSON.bodyToXML(stmt.body, program) + '</statement>';
         }
     }
     return '';

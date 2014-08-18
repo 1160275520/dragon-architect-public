@@ -118,16 +118,26 @@ RuthefjordBlockly.setProgram = function(program) {
     RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
     RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
 
-    // HACK this isn't very robust but works for everything with have (for now)
-    _.each(program.body, function(stmt) {
+    var checkStmt = function(stmt) {
         var attr;
         if (stmt.meta) { attr = stmt.meta.attributes; }
         if (attr && attr['FrozenBlocks']) {
             var doFreezeArgs = Boolean(attr['FrozenArgs']);
-            var blocks = Blockly.mainWorkspace.getTopBlocks().filter(function (x) { return x.type !== "procedures_defnoreturn" });
-            _.each(blocks, function(b) { RuthefjordBlockly.freezeBody(b, doFreezeArgs); });
+            var block = Blockly.mainWorkspace.getBlockById(stmt.meta.id);
+            // console.log(stmt);
+            // console.log(block);
+            RuthefjordBlockly.freezeBody(block, doFreezeArgs);
         }
-    });
+        if (stmt.body) { // recursively process children (e.g. blocks inside a repeat)
+            _.each(stmt.body, checkStmt);
+        }
+    };
+
+    // HACK this isn't very robust but works for everything with have (for now)
+    _.each(program.body, checkStmt);
+
+    // update block colors
+    _.each(Blockly.mainWorkspace.getAllBlocks(), function (b) { b.svg_.updateColour(); });
 
     // set maximum blocks to 15 per function
     // Blockly.mainWorkspace.maxBlocks = Object.keys(program.procedures).length * 15;
@@ -138,14 +148,13 @@ RuthefjordBlockly.setProgram = function(program) {
  */
 RuthefjordBlockly.loadBlocks = function (blocksXML) {
     BlocklyApps.loadBlocks(blocksXML);
-    var blocks = Blockly.mainWorkspace.getTopBlocks();
 };
 
 /**
  * prevent procedure from being modifed in any way
  */
 RuthefjordBlockly.freezeBody = function(block, doFreezeArgs) {
-    block.forEach(function(b) {
+    block.forEach(function(b) { // forEach processes blocks that are successors of block
         b.freeze({doFreezeArgs:doFreezeArgs});
     })
 };
@@ -183,7 +192,6 @@ RuthefjordBlockly.setLevel = function(scene_info, library) {
  */
 RuthefjordBlockly.getProgram = function() {
     var topBlocks = Blockly.mainWorkspace.getTopBlocks(true);
-    Blockly.UnityJSON.idCounter_ = Math.max.apply(null, Blockly.mainWorkspace.getAllBlocks().map(function (x, i, a) {return Number(x.id);}));
 
     var defines = [];
     var other = [];

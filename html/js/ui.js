@@ -225,7 +225,7 @@ module.Instructions = (function() {
         learn: "btn-modules",
         workshop: "btn-workshop",
         clear: "button_header_clear_sandbox",
-        speedSlider: "slider-container"
+        speedSlider: "speed-slider"
     }
 
     function makeImgHtml(file, uiId) {
