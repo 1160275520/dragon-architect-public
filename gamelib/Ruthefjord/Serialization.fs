@@ -25,19 +25,23 @@ let JsonOfProgram (program:Program) =
             (if meta.Id = 0 then None else Some ("id", J.Int meta.Id));
         ] |> List.choose (fun x -> x) |> J.JsonValue.ObjectOf
 
-    let jsonOfExpr (expr:Expression) =
+    let rec jsonOfExpr (expr:Expression) =
         let fields =
             match expr.Expr with
             | Literal x -> [("type", J.String "literal"); ("value", jsonOfObj x)]
             | Identifier x -> [("type", J.String "ident"); ("name", J.String x)]
+            | Evaluate e -> [("type", J.String "eval"); ("ident", J.String e.Identifier); ("args", jarrmap jsonOfExpr e.Arguments)]
+            | Query q -> [("type", J.String "query"); ("name", J.String q.Name); ("args", jarrmap jsonOfExpr q.Arguments)]
         J.JsonValue.ObjectOf (("meta", jsonOfMeta expr.Meta) :: fields)
 
     let rec jsonOfStmt (stmt:Statement) =
         let fields =
             match stmt.Stmt with
+            | Conditional c -> [("type", J.String "ifelse"); ("cond", jsonOfExpr c.Condition); ("then", jarrmap jsonOfStmt c.Then); ("else", jarrmap jsonOfStmt c.Else)]
             | Repeat r -> [("type", J.String "repeat"); ("body", jarrmap jsonOfStmt r.Body); ("numtimes", jsonOfExpr r.NumTimes)]
-            | Define p -> [("type", J.String "define"); ("name", J.String p.Name); ("params", J.JsonValue.ArrayOf (Seq.map J.String p.Parameters)); ("body", jarrmap jsonOfStmt p.Body)]
-            | Call c -> [("type", J.String "call"); ("ident", J.String c.Identifier); ("args", jarrmap jsonOfExpr c.Arguments)]
+            | Function f -> [("type", J.String "func"); ("name", J.String f.Name); ("params", J.JsonValue.ArrayOf (Seq.map J.String f.Parameters)); ("body", jsonOfExpr f.Body)]
+            | Procedure p -> [("type", J.String "proc"); ("name", J.String p.Name); ("params", J.JsonValue.ArrayOf (Seq.map J.String p.Parameters)); ("body", jarrmap jsonOfStmt p.Body)]
+            | Execute c -> [("type", J.String "call"); ("ident", J.String c.Identifier); ("args", jarrmap jsonOfExpr c.Arguments)]
             | Command c -> [("type", J.String "command"); ("name", J.String c.Name); ("args", jarrmap jsonOfExpr c.Arguments)]
         J.JsonValue.ObjectOf (("meta", jsonOfMeta stmt.Meta) :: fields)
 
@@ -77,20 +81,24 @@ let ProgramOfJson (json: J.JsonValue) =
 
     let emptyMeta = {Id=0; Attributes=J.Null}
 
-    let parseExpr j =
+    let rec parseExpr j =
         let expr =
             match jload j "type" J.asString with
             | "literal" -> Literal (jload j "value" parseObject)
             | "ident" -> Identifier (jload j "name" J.asString)
+            | "eval" -> Evaluate {Identifier=jload j "ident" J.asString; Arguments=jloadarr j "args" parseExpr}
+            | "query" -> Query {Name=jload j "name" J.asString; Arguments=jloadarr j "args" parseExpr}
             | t -> syntaxError j SerializationErrorCode.InvalidExpressionType ("invalid expression type " + t)
         {Meta=defaultArg (tryJload j "meta" parseMeta) emptyMeta; Expr=expr}
 
     let rec parseStmt j =
         let stmt =
             match jload j "type" J.asString with
+            | "ifelse" -> Conditional {Condition=jload j "cond" parseExpr; Then=jloadarr j "then" parseStmt; Else=jloadarr j "else" parseStmt}
             | "repeat" -> Repeat {Body=jloadarr j "body" parseStmt; NumTimes=jload j "numtimes" parseExpr}
-            | "define" -> Define {Name=jload j "name" J.asString; Parameters=jloadarr j "params" J.asString; Body=jloadarr j "body" parseStmt}
-            | "call" -> Call {Identifier=jload j "ident" J.asString; Arguments=jloadarr j "args" parseExpr}
+            | "func" -> Function {Name=jload j "name" J.asString; Parameters=jloadarr j "params" J.asString; Body=jload j "body" parseExpr}
+            | "proc" -> Procedure {Name=jload j "name" J.asString; Parameters=jloadarr j "params" J.asString; Body=jloadarr j "body" parseStmt}
+            | "call" -> Execute {Identifier=jload j "ident" J.asString; Arguments=jloadarr j "args" parseExpr}
             | "command" -> Command {Name=jload j "name" J.asString; Arguments=jloadarr j "args" parseExpr}
             | t -> syntaxError j SerializationErrorCode.InvalidStatementType ("invalid statement type " + t)
         {Meta=defaultArg (tryJload j "meta" parseMeta) emptyMeta; Stmt=stmt}

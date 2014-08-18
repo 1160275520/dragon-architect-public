@@ -1,5 +1,7 @@
 #lang imperative:1.0
 
+function IsBlock() query isblockatpos()
+
 define Forward(x)
     repeat x times
         command forward()

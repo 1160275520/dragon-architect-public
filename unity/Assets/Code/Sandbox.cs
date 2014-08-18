@@ -20,7 +20,7 @@ public class Sandbox : MonoBehaviour {
             GetComponent<Grid>().SetGrid(blocks);
             if (world.Robots.Length > 0) {
                 var d = world.Robots[0];
-                FindObjectOfType<RobotController>().SetRobot(new Ruthefjord.Robot.BasicImperativeRobot(d.Position, d.Direction), null, 0.0f);
+                FindObjectOfType<RobotController>().SetRobot(new Ruthefjord.BasicRobot(d.Position, d.Direction), null, 0.0f);
             }
         }
 	}

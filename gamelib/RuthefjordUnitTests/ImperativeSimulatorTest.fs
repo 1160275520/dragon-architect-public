@@ -7,7 +7,7 @@ open System.Collections.Generic
 open System.IO
 open Ruthefjord
 
-let newRobot () = Robot.BasicImperativeRobot (IntVec3.Zero, IntVec3.UnitZ)
+let newRobot () = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 
 let loadBuiltIns () =
     let builtInsFilename = "../../../../unity/Assets/Resources/stdlib.imperative.txt"
@@ -18,17 +18,18 @@ let loadBuiltIns () =
 let ``builtins import`` () =
     let lib = loadBuiltIns ()
 
-    lib.Count |> should equal 7
+    lib.Count |> should equal 8
     lib.ContainsKey "Forward" |> should equal true
 
 [<Fact>]
 let ``Simulator nop deserialized`` () =
     let prog = Serialization.Load ProgramSerializationTest.emptyTestProgram
     let lib = loadBuiltIns ()
-    let states = Simulator.ExecuteFullProgram prog lib (GridStateTracker []) (newRobot ())
+    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
+    let states = Simulator.SimulateWithRobot prog lib robot
 
     states.Length |> should equal 1
-    states.[0].Grid.Length |> should equal 0
+    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
 
 [<Fact>]
 let ``Simulator nop parsed`` () =
@@ -39,10 +40,11 @@ define foo()
     """
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
-    let states = Simulator.ExecuteFullProgram prog lib (GridStateTracker []) (newRobot ())
+    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
+    let states = Simulator.SimulateWithRobot prog lib robot
 
     states.Length |> should equal 1
-    states.[0].Grid.Length |> should equal 0
+    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
 
 [<Fact>]
 let ``Simulator simple deserialized`` () =
@@ -50,13 +52,14 @@ let ``Simulator simple deserialized`` () =
 
     let prog = Serialization.Load ProgramSerializationTest.simpleTestProgram
     let lib = loadBuiltIns ()
-    let states = Simulator.ExecuteFullProgram prog lib (GridStateTracker []) (newRobot ())
+    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
+    let states = Simulator.SimulateWithRobot prog lib robot
 
-    states.[0].Grid.Length |> should equal 0
-    states.[states.Length - 1].Grid.Length |> should equal 10
+    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
+    (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.Length |> should equal 10
 
     let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
-    blocks.SetEquals (states.[states.Length - 1].Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    blocks.SetEquals ((states.[states.Length - 1].WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
 [<Fact>]
 let ``Simulator simple parsed`` () =
@@ -72,13 +75,14 @@ repeat 10 times
     """
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
-    let states = Simulator.ExecuteFullProgram prog lib (GridStateTracker []) (newRobot ())
+    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
+    let states = Simulator.SimulateWithRobot prog lib robot
 
-    states.[0].Grid.Length |> should equal 0
-    states.[states.Length - 1].Grid.Length |> should equal 10
+    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
+    (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.Length |> should equal 10
 
     let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
-    blocks.SetEquals (states.[states.Length - 1].Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    blocks.SetEquals ((states.[states.Length - 1].WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
 let repeatTestProg = """
 repeat 10 times
@@ -96,10 +100,11 @@ repeat 10 times
 let ``Simulator repeat`` () =
     let prog = Parser.Parse (repeatTestProg, "prog")
     let lib = loadBuiltIns ()
-    let states = Simulator.ExecuteFullProgram prog lib (GridStateTracker []) (newRobot ())
+    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
+    let states = Simulator.SimulateWithRobot prog lib robot
 
     states.Length |> should equal 81
-    states.[states.Length - 1].Grid.Length |> should equal 20
+    (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.Length |> should equal 20
 
     let blocks = HashSet([for i in 1 .. 20 -> IntVec3 (i,0,i)])
-    blocks.SetEquals (states.[states.Length - 1].Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    blocks.SetEquals ((states.[states.Length - 1].WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true

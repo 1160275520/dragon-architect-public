@@ -7,7 +7,7 @@ using Ruthefjord.Robot;
 
 public class RobotController : MonoBehaviour {
 
-    public IRobot Robot { get; private set; }
+    public BasicRobot Robot { get; private set; }
     public GameObject HeldPrefab;
 
     // if animation would take longer than this, take this time and then just sit idle
@@ -35,7 +35,7 @@ public class RobotController : MonoBehaviour {
     }
 
     public void Reset() {
-        SetRobot(new BasicImperativeRobot(IntVec3.Zero, IntVec3.UnitZ), null, 0.0f);
+        SetRobot(new BasicRobot(IntVec3.Zero, IntVec3.UnitZ), null, 0.0f);
     }
 
 	private IEnumerator<object> moveRobot(Vector3 deltaPos, float time, long id) {
@@ -72,7 +72,7 @@ public class RobotController : MonoBehaviour {
         yield break;
     }
 
-    public void SetRobot(IRobot robot, Command com, float secondsPerCommand) {
+    public void SetRobot(BasicRobot robot, Command com, float secondsPerCommand) {
         Profiler.BeginSample("RobotController.SetRobot");
         // increment the counter to kill off the other coroutines
         counter++;
@@ -91,7 +91,7 @@ public class RobotController : MonoBehaviour {
             Profiler.BeginSample("RobotController.SetRobot.setAnim");
             // if time is large enough, animmate the robot going to the new position
             var anim = transform.FindChild("dragon_improved").gameObject.animation;
-            switch (com.Type) {
+            switch (com.Name) {
                 case "block":
                     anim["bite"].speed = anim["bite"].length / secondsPerCommand;
                     anim.Play("bite");

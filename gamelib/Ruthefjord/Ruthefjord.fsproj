@@ -67,12 +67,11 @@
     <Compile Include="Parser.fs" />
     <Compile Include="AstManipulator.fs" />
     <Compile Include="Serialization.fs" />
-    <Compile Include="Grid.fs" />
-    <Compile Include="Robot.fs" />
+    <Compile Include="IRobot.fs" />
     <Compile Include="Simulator.fs" />
+    <Compile Include="Robots.fs" />
     <Compile Include="World.fs" />
     <Compile Include="Scene.fs" />
-    <Compile Include="Runner.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

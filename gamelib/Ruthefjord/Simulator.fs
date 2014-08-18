@@ -4,20 +4,24 @@ module Ruthefjord.Simulator
 
 open Ruthefjord
 open Ruthefjord.Ast.Imperative
-open System.Collections.Generic
 
 type ErrorCode =
 | InternalError = 4001
 | UnknownIdentifier = 4101
 | TypeError = 4102
+| RobotUnavailable = 4201
+| QueryError = 4203
 | UnableToConvertToInteger = 4301
 
 let private runtimeError (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
     raise (CodeException (RuntimeError (int code, meta.Id, msg, null)))
+let private runtimeErrorWE exn (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
+    raise (CodeException (RuntimeError (int code, meta.Id, msg, exn)))
 
 type private CallStackState = {
     Values: Map<string,obj>;
     mutable ToExecute: Statement list;
+    Robot: Robot.IRobotSimulator option
 }
 
 type private State = {
@@ -35,16 +39,34 @@ let private valueAsInt meta (o:obj) =
         with _ -> runtimeError meta ErrorCode.UnableToConvertToInteger (sprintf "cannot convert '%s' to integer" s)
     | _ -> runtimeError meta ErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
-let private createState (program:Program) builtInValues =
-    {CallStack=[{Values=builtInValues; ToExecute=program.Body}]; LastExecuted=[];}
+let private createState (program:Program) builtInValues robot =
+    {CallStack=[{Values=builtInValues; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}
 
-let private evaluate (csstate: CallStackState) (expr: Expression) =
+let rec private evaluate (csstate: CallStackState) (expr: Expression) =
     match expr.Expr with
     | Literal x -> x
+    // HACK this should probably make sure it's not a function or procedure...
     | Identifier name ->
         try csstate.Values.[name]
         with :? System.Collections.Generic.KeyNotFoundException ->
             runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+    | Evaluate {Identifier=name; Arguments=argExpr} ->
+        let argVals = List.map (evaluate csstate) argExpr
+        try
+            let func = csstate.Values.[name] :?> Function
+            let args = Seq.zip func.Parameters argVals |> Map.ofSeq
+            let newVals = MyMap.merge csstate.Values args
+            evaluate {csstate with Values=newVals} func.Body
+        with
+        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+        | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
+    | Query query ->
+        match csstate.Robot with
+        | None -> runtimeError expr.Meta ErrorCode.RobotUnavailable "Queries not allowed; robot not available"
+        | Some robot ->
+            let args = List.map (evaluate csstate) query.Arguments
+            try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
+            with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
 
 let private step (state:State) =
     match state.CallStack with
@@ -64,19 +86,28 @@ let private step (state:State) =
                 state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
 
             match stmt.Stmt with
+            | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
+                let b =
+                    try evaluate head cond :?> bool
+                    with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
+                state.Push {head with ToExecute=if b then thenb else elseb}
+                None
             | Repeat {Body=body; NumTimes=ntimesExpr} ->
                 let ntimes = evaluate head ntimesExpr |> valueAsInt stmt.Meta
                 let toAdd = List.concat (List.init ntimes (fun _ -> body))
                 state.Push {head with ToExecute=toAdd}
                 None
-            | Define proc ->
+            | Function func ->
+                state.CallStack <- {head with Values=head.Values.Add (func.Name, func)} :: tail
+                None
+            | Procedure proc ->
                 state.CallStack <- {head with Values=head.Values.Add (proc.Name, proc)} :: tail
                 None
-            | Call {Identifier=name; Arguments=args} ->
-                let args = List.map (evaluate head) args
+            | Execute {Identifier=name; Arguments=argExpr} ->
+                let argVals = List.map (evaluate head) argExpr
                 try
                     let proc = head.Values.[name] :?> Procedure
-                    let args = Seq.zip proc.Parameters args |> Map.ofSeq
+                    let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
                     let newVals = MyMap.merge head.Values args
                     state.Push {head with Values=newVals; ToExecute=proc.Body}
                 with
@@ -84,6 +115,7 @@ let private step (state:State) =
                 | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
                 None
             | Command {Name=cmd; Arguments=args} ->
+                if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
                 let args = List.map (evaluate head) args
                 Some (Robot.Command (cmd, ImmArr.ofSeq args))
 
@@ -117,67 +149,36 @@ let inline private IsDone (state:State) = state.CallStack.IsEmpty
 type StepState = {
     Command: Robot.Command;
     LastExecuted: Statement list;
-    Robot: Robot.IRobot;
-    Grid: ImmArr<KeyValuePair<IntVec3,Block>>;
+    WorldState: obj;
 }
 
-type LazyStepState = {
-    Command: Robot.Command;
-    LastExecuted: Statement list;
-}
-
-type LazySimulator (program, builtIns) =
-    let state = createState program builtIns
+type LazySimulator (program, builtIns, robot) =
+    let state = createState program builtIns (Some robot)
+    let initialState = {Command=null; LastExecuted=[]; WorldState=robot.CurrentState}
 
     member x.IsDone = IsDone state
 
+    member x.InitialState = initialState
+
     member x.Step () =
         let cmd = ExecuteUntilCommand state
-        {Command=cmd; LastExecuted=state.LastExecuted}
+        robot.Execute cmd
+        {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState}
 
-let ExecuteProgramLazily (program, builtIns)  =
-    let state = createState program builtIns
-    seq {
-        yield {Command=null; LastExecuted=[]}
-        while not (IsDone state) do
-            let cmd = ExecuteUntilCommand state
-            if cmd <> null then
-                yield {Command=cmd; LastExecuted=state.LastExecuted}
-            else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
-    }
-
-let SimultateWorld (grid:IGrid) (robots: (Robot.IRobot * LazyStepState[])[]) =
-
-    let bots = Array.map fst robots
-    let steps = robots |> Array.map (fun (_,arr) -> arr |> Array.map (fun s -> s.Command))
-
-    let commands = Array2D.create (Array.maxBy Array.length steps).Length bots.Length null
-
-    for botIdx = 0 to steps.Length - 1 do
-        let arr = steps.[botIdx]
-        for stepIdx = 0 to arr.Length - 1 do
-            commands.[stepIdx,botIdx] <- arr.[stepIdx]
-
-    for stepIdx = 0 to (commands.GetLength 0) - 1 do
-        for botIdx = 0 to bots.Length - 1 do
-            bots.[botIdx].Execute grid commands.[stepIdx,botIdx]
-
-    grid
-
-let ExecuteFullProgram program builtIns (grid:GridStateTracker) (robot:Robot.IRobot) =
+let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
     try
         let MAX_ITER = 10000
-        let state = createState program builtIns
-        let mutable steps = [{Command=null; LastExecuted=[]; Robot=robot.Clone; Grid=grid.CurrentState}]
+        let state = createState program builtIns (Some robot)
+        let mutable steps = [{Command=null; LastExecuted=[]; WorldState=robot.CurrentState}]
         let mutable isDone = false
         let mutable numSteps = 0
         while not (IsDone state) && numSteps < MAX_ITER do
             let cmd = ExecuteUntilCommand state
             if cmd <> null then
-                robot.Execute grid cmd
-                steps <- {Command=cmd; LastExecuted=state.LastExecuted; Robot=robot.Clone; Grid=grid.CurrentState} :: steps
+                robot.Execute cmd
+                steps <- {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState} :: steps
                 numSteps <- numSteps + 1
-            else System.Diagnostics.Debug.Assert(IsDone state, "execute until command returned a null command when program was not done!")
+            else System.Diagnostics.Debug.Assert(IsDone state, "ExecuteUntilCommand returned a null command when program was not done!")
 
         ImmArr.ofSeq (List.rev steps)
     with
@@ -187,7 +188,7 @@ let ExecuteFullProgram program builtIns (grid:GridStateTracker) (robot:Robot.IRo
 // given a program, executes it, returning the map of names and values generated by the program
 let import program =
     try
-        let state = createState program Map.empty
+        let state = createState program Map.empty None
         let mutable vals = Map.empty
         while not (IsDone state) do
             vals <- state.CallStack.Head.Values

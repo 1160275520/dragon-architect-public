@@ -1,11 +1,11 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Ruthefjord.Robot;
+using Ruthefjord;
 
 public class CubeTextures : MonoBehaviour {
 
-    public static readonly string[] AvailableColors = BasicImperativeRobot.Colors;
+    public static readonly string[] AvailableColors = BasicImperativeRobotSimulator.Colors;
     public Texture StandardTexture;
 
     [HideInInspector]

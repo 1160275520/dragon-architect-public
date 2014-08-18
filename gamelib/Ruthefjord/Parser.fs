@@ -55,12 +55,13 @@ let lex (program, filename) =
 
     let keywords =
         Set.ofArray [|
-            "define"; "set"; "var"; "let"; "mutable"; "to"; "in"; 
+            "define"; "function";
+            "set"; "var"; "let"; "mutable"; "to"; "in"; 
             "if"; "elif"; "else"; "end"; "then";
             "repeat"; "times"; "pass";
             "choice"; "match"; "case"; "of";
             "and"; "or"; "null"; "true"; "false";
-            "command";
+            "command"; "query";
         |]
 
     let symbols =
@@ -245,10 +246,26 @@ let private parse tokens =
         elems
 
     let rec matchExpression () =
-        match next () with
-        | Ident x -> newExpr (ExpressionT.Identifier x)
-        | Literal x -> newExpr (ExpressionT.Literal x)
-        | t -> syntaxError ErrorCode.InvalidExpression (sprintf "Expected an expression which must start with an identifer or a literal, found %A" t)
+        let expr =
+            match next () with
+            | Keyword "query" ->
+                let name = matchIdent ()
+                let args = matchParenList matchExpression
+                Query {Name=name; Arguments=args}
+            | Ident x when peekIs (Symbol '(') ->
+                let args = matchParenList matchExpression
+                Evaluate {Identifier=x; Arguments=args}
+            | Ident x -> ExpressionT.Identifier x
+            | Literal x -> ExpressionT.Literal x
+            | t -> syntaxError ErrorCode.InvalidExpression (sprintf "Expected an expression which must start with an identifer or a literal, found %A" t)
+        newExpr expr
+
+    let matchFunction () =
+        let name = matchIdent ()
+        let param = matchParenList matchIdent
+        let body = matchExpression ()
+        matchToken Newline
+        newStmt (Function {Name=name; Parameters=param; Body=body})
 
     let matchCommand () =
         let name = matchIdent ()
@@ -277,7 +294,7 @@ let private parse tokens =
         let name = matchIdent ()
         let param = matchParenList matchIdent
         let body = matchBlock ()
-        newStmt (Define {Name=name; Parameters=param; Body=body})
+        newStmt (Procedure {Name=name; Parameters=param; Body=body})
 
     and matchConditional () =
         let cond = matchExpression ()
@@ -302,7 +319,7 @@ let private parse tokens =
     and matchCall name =
         let args = matchParenList matchExpression
         matchToken Newline
-        newStmt (Call {Identifier=name; Arguments=args})
+        newStmt (Execute {Identifier=name; Arguments=args})
 
     and matchStatement attributes : Statement option =
         match next () with
@@ -311,6 +328,7 @@ let private parse tokens =
             let s =
                 match t with
                 | Keyword "pass" -> matchToken Newline; None
+                | Keyword "function" -> Some (matchFunction ())
                 | Keyword "define" -> Some (matchProcedure ())
                 | Keyword "if" -> Some (matchConditional ())
                 | Keyword "repeat" -> Some (matchRepeat ())

@@ -49,14 +49,9 @@ with
 
 type BlockData = KeyValuePair<IntVec3, Block> []
 
-type RobotData = {
-    Position: IntVec3;
-    Direction: IntVec3;
-}
-
 type WorldData = {
     Blocks: BlockData;
-    Robots: RobotData [];
+    Robots: BasicRobot[];
 }
 
 type StateData = {
@@ -73,9 +68,6 @@ with
         ]
 
 module World =
-    let dataOfRobot (r:Robot.IRobot) =
-        {Position=r.Position; Direction=r.Direction}
-
     let private ENCODE_VERSION = 1
     let private ENCODE_TYPE = "world"
     let private encoding = System.Text.Encoding.UTF8
@@ -144,7 +136,7 @@ module World =
         // TODO throw a better error here
         | s -> invalidArg "json" (sprintf "invalid block encoding type '%s'" s)
 
-    let private encodeRobot (robot: RobotData) =
+    let private encodeRobot (robot: BasicRobot) =
         J.JsonValue.ObjectOf [
             "pos", encodeVec robot.Position;
             "dir", encodeVec robot.Direction;
