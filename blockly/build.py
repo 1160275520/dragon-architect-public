@@ -72,7 +72,7 @@ def checkout(dep):
 
 def get_checked_out_revision(dep):
     if dep['engine'] == 'hg':
-        return getcmdout(['hg', 'id', '-i'], dep).strip()
+        return getcmdout(['hg', 'id', '-i', '--debug'], dep).strip()
     elif dep['engine'] == 'git':
         return getcmdout(['git', 'rev-parse', '--verify', 'HEAD'], dep).strip()
     else:
@@ -95,12 +95,20 @@ def build(deps):
     blockly = deps[0]
     assert(blockly['local'] == 'blockly-ruthefjord')
     runcmd(['python', 'build.py'], blockly)
-    tocopy = ['blockly_compressed.js', 'blocks_compressed.js']
+    tocopy = ['blockly_compressed.js', 'blocks_compressed.js', 'blockly_compressed.js.map', 'blocks_compressed.js.map']
 
-    src = os.path.join(ROOT_DIR, os.path.join(blockly['local'], 'build'))
+    blocklyroot = os.path.join(ROOT_DIR, blockly['local'])
+    src = os.path.join(ROOT_DIR, os.path.join(blockly['local'], 'dist'))
     dst = os.path.join(THIS_DIR, '../html/generated')
     for fname in tocopy:
         shutil.copyfile(os.path.join(src,fname),os.path.join(dst,fname))
+
+    for dirn in ['core', 'blocks']:
+        dstdir = os.path.join(dst, dirn)
+        shutil.rmtree(dstdir, ignore_errors=True)
+        shutil.copytree(os.path.join(blocklyroot, dirn), dstdir)
+
+    # also copy core and blocks folders so source maps work
 
 def save_deps(deps):
     print('Saving dependency file...')
