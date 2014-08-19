@@ -296,6 +296,12 @@ module.Instructions = (function() {
                     $("#instructions-reminder").html(isLarge ? "(Shrink)" : "(Expand)");
                     container.onclick = clickCallback ? clickCallback : setSize(!doMakeLarge, null, true);
                 }
+                // iframes can't use click handlers, so we put ours on the body inside
+                if (isLarge && !clickCallback) {
+                    $('#blockly').contents().find("body").on('click', setSize(false, null, true));
+                } else {
+                    $('#blockly').contents().find("body").off('click');
+                }
             }
 
             if (doAnimate) {
