@@ -215,7 +215,8 @@ RuthefjordBlockly.getProgram = function() {
     // iterate over top-level blocks, putting all function/procedure definitions first and everything else second
     _.each(topBlocks, function(block) {
         if (block.type === "procedures_defnoreturn") {
-            var name = block.getFieldValue("NAME");
+            // prepend a symbol to avoid clashes with builtins
+            var name = '$' + block.getFieldValue("NAME");
             var params = [];
             var body = Blockly.UnityJSON.processStructure(block);
             procs.push({type:"proc", name:name, params:params, body:body});

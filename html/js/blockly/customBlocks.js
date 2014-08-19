@@ -168,7 +168,7 @@ Blockly.UnityJSON['controls_repeat'] = function(block, children) {
 
 // CALL
 Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
-    return {args:[],meta:{id:Number(block.id)},ident:block.getFieldValue("NAME"),type:"call"};
+    return {args:[],meta:{id:Number(block.id)},ident:'$' + block.getFieldValue("NAME"),type:"call"};
 }
 
 Blockly.UnityJSON.XMLOfJSON = function(program) {
