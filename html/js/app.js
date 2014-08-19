@@ -67,16 +67,14 @@ var storage = (function() {
             var o = {};
             o[key] = value;
 
-            if (remote_data) {
-                $.ajax(base_url + 'player/' + remote_data.id, {
-                    data: JSON.stringify(o),
-                    contentType: 'application/json',
-                    type: 'PUT'
-                });
-                remote_data[key] = value;
-            } else {
-                sessionStorage.setItem(key, value);
-            }
+            $.ajax(base_url + 'player/' + remote_data.id, {
+                data: JSON.stringify(o),
+                contentType: 'application/json',
+                type: 'PUT'
+            });
+            remote_data[key] = value;
+        } else {
+            sessionStorage.setItem(key, value);
         }
     }
 

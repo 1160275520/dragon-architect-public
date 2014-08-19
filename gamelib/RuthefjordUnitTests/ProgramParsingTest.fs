@@ -1,4 +1,4 @@
-﻿module Ruthefjord.UnitTest.ProgramParseTest
+module Ruthefjord.UnitTest.ProgramParseTest
 
 open Xunit
 open Xunit.Extensions
@@ -14,6 +14,13 @@ let runParseFromFileTest filename =
     let text = File.ReadAllText filename
     let prog = P.Parse (text, filename)
     S.ProgramOfJson (S.JsonOfProgram prog) |> should equal prog
+
+let runPrettyPrintFromFileTest filename =
+    let text = File.ReadAllText filename
+    let prog = P.Parse (text, filename)
+    use w = new StringWriter ()
+    P.PrettyPrintTo w prog
+    P.Parse (w.ToString (), filename) |> should equal prog
 
 let stageParsingTests = [
     "stdlib.imperative.txt";
@@ -33,3 +40,7 @@ let stageParsingTestsSeq = stageParsingTests |> Seq.map (fun s -> [|s :> obj|])
 let ``Puzzle code parsing/serialization`` (filename:string) =
     runParseFromFileTest ("../../../../unity/Assets/Resources/" + filename)
 
+[<Theory>]
+[<PropertyData("stageParsingTestsSeq")>]
+let ``Puzzle code pretty printing`` (filename:string) =
+    runPrettyPrintFromFileTest ("../../../../unity/Assets/Resources/" + filename)
