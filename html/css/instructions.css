@@ -56,8 +56,12 @@
     font-size: 18pt;
     text-align: center;
     padding: 15px;
-    margin: 10px auto;
+    margin: 40px auto;
     border-radius: 8px;
+}
+
+#btn-instructions-hide {
+    margin: 10px auto;
 }
 
 #instructions-icon {

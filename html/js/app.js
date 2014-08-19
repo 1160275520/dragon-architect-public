@@ -271,6 +271,7 @@ function setState_intro() {
         }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
         }, true);
+        $('.notTitle').hide(); // hide instructions elements that aren't supposed to be on the title screen (e.g. click to hide button)
     });
 }
 
