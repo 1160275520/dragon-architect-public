@@ -37,14 +37,18 @@ var old_rename_func = Blockly.Procedures.rename;
 
 // monkey patch procedure renaming to change valid names, and also update library
 Blockly.Procedures.rename = function(text) {
-    // why is 'this' bound to an object for some arbitrary function? Who knows! But make sure to preserve it.
-    var newName = old_rename_func.call(this, text);
-    // blockly friggin explodes if the toolbox is updated while something is being dragged
-    if (!Blockly.mainWorkspace.dragMode) {
-        console.info('asdf');
-        RuthefjordBlockly.updateToolbox();
+    if (this.sourceBlock_.isInFlyout) {
+        // don't allow renaming of something in toolbox, this breaks everything...
+        return this.sourceBlock_.getProcedureDef()[0];
+    } else {
+        // why is 'this' bound to an object for some arbitrary function? Who knows! But make sure to preserve it.
+        var newName = old_rename_func.call(this, text);
+        // blockly friggin explodes if the toolbox is updated while something is being dragged
+        if (!Blockly.mainWorkspace.dragMode) {
+            RuthefjordBlockly.updateToolbox();
+        }
+        return newName;
     }
-    return newName;
 };
 
 function newCall0(name, id) {
