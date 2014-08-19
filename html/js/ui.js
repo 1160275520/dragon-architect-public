@@ -262,6 +262,9 @@ module.Instructions = (function() {
                         module.Arrow.positionLeftOf(uiElem);
                         arrow.stop().animate({opacity: '100'});
                         arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
+                    } else {
+                        // shrink instructions in response to multiple clicks on same element
+                        setSize(false, null, true)(); 
                     }
                 });
             }
@@ -287,14 +290,22 @@ module.Instructions = (function() {
 
             if (doMakeLarge) {
                 $("#instructions-display").addClass("expanded");
+                $("#btn-instructions-hide").show();
             } else {
                 $("#instructions-display").removeClass("expanded");
+                $("#btn-instructions-hide").hide();
             }
 
             function onDone() {
                 if (isLarge === doMakeLarge) {
                     $("#instructions-reminder").html(isLarge ? "(Shrink)" : "(Expand)");
                     container.onclick = clickCallback ? clickCallback : setSize(!doMakeLarge, null, true);
+                }
+                // iframes can't use click handlers, so we put ours on the body inside
+                if (isLarge && !clickCallback) {
+                    $('#blockly').contents().find("body").on('click', setSize(false, null, true));
+                } else {
+                    $('#blockly').contents().find("body").off('click');
                 }
             }
 

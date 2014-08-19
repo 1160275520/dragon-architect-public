@@ -95,7 +95,7 @@ def build(deps):
     blockly = deps[0]
     assert(blockly['local'] == 'blockly-ruthefjord')
     runcmd(['python', 'build.py'], blockly)
-    tocopy = ['blockly_compressed.js', 'blocks_compressed.js', 'blockly_compressed.js.map', 'blocks_compressed.js.map']
+    tocopy = ['blockly.js', 'blockly.js.map']
 
     blocklyroot = os.path.join(ROOT_DIR, blockly['local'])
     src = os.path.join(ROOT_DIR, os.path.join(blockly['local'], 'dist'))
