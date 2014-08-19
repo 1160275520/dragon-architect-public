@@ -5,6 +5,8 @@ var Blockly;
 var RuthefjordBlockly = (function(){
 'use strict';
 
+var current_tools = [];
+
 /**
  * Create a namespace for the application.
  */
@@ -43,15 +45,16 @@ document.write('<script type="text/javascript" src="generated/' +
  */
 
 // dictionary of custom block xml
-RuthefjordBlockly.Commands = {"move2" :  '<block type="Forward"></block> \
-                                  <block type="Left"></block> \
-                                  <block type="Right"></block>',
-                      "up" :  '<block type="Up"></block>',
-                      "down":  '<block type="Down"></block>',
-                      "place" :  '<block type="PlaceBlock"></block>',
-                      "remove" : '<block type="RemoveBlock"></block>',
-                      "line" :   '<block type="Line"></block>',
-                      "repeat" : '<block type="controls_repeat"></block>'};
+RuthefjordBlockly.Commands = {
+    move2:  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>',
+    up:  '<block type="Up"></block>',
+    down:  '<block type="Down"></block>',
+    place:  '<block type="PlaceBlock"></block>',
+    remove: '<block type="RemoveBlock"></block>',
+    line:   '<block type="Line"></block>',
+    repeat: '<block type="controls_repeat"></block>',
+    defproc: '<block type="procedures_defnoreturn"></block>'
+};
 
 RuthefjordBlockly.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.remainingCapacity();
@@ -159,24 +162,37 @@ RuthefjordBlockly.freezeBody = function(block, doFreezeArgs) {
     })
 };
 
+RuthefjordBlockly.updateToolbox = function() {
+    var toolXML = '<xml id="toolbox" style="display: none">';
+    _.each(current_tools, function(command) {
+        if (RuthefjordBlockly.Commands[command]) {
+            toolXML += RuthefjordBlockly.Commands[command];
+        }
+    });
+
+    // add call for each defined procedure
+    //
+    var procs = Blockly.Procedures.allProcedures()[0];
+    _.each(procs, function(proc) {
+        var name = proc[0];
+        toolXML += '<block type="procedures_callnoreturn"><mutation name="' + name + '"></mutation></block>';
+    });
+
+    toolXML += '</xml>';
+    //console.log(toolXML);
+    Blockly.updateToolbox(toolXML);
+};
+
 /**
  * set which blocks are available
  * @param scene_info The PuzzleInfo object sent from unity.
  * @param library The tools that should be active.
  */
 RuthefjordBlockly.setLevel = function(scene_info, library) {
-    var toolXML = '<xml id="toolbox" style="display: none">';
-
     // ignore scene_info.library, trust only the library parameter
-    var lib = _.contains(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
-    _.each(lib, function(command) {
-        if (RuthefjordBlockly.Commands[command]) {
-            toolXML += RuthefjordBlockly.Commands[command];
-        }
-    });
-    toolXML += '</xml>';
-    //console.log(toolXML);
-    Blockly.updateToolbox(toolXML);
+    current_tools = _.contains(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
+
+    RuthefjordBlockly.updateToolbox();
 
     if (scene_info && scene_info.tutorial && scene_info.tutorial.highlighted) {
         Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
