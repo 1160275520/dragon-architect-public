@@ -3,6 +3,7 @@
         "library": {
             "granted": [
                 "time_slider",
+                "defproc",
                 "camera_tilt"
             ]
         }
