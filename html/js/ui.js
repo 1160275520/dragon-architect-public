@@ -262,6 +262,9 @@ module.Instructions = (function() {
                         module.Arrow.positionLeftOf(uiElem);
                         arrow.stop().animate({opacity: '100'});
                         arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
+                    } else {
+                        // shrink instructions in response to multiple clicks on same element
+                        setSize(false, null, true)(); 
                     }
                 });
             }
@@ -287,8 +290,10 @@ module.Instructions = (function() {
 
             if (doMakeLarge) {
                 $("#instructions-display").addClass("expanded");
+                $("#btn-instructions-hide").show();
             } else {
                 $("#instructions-display").removeClass("expanded");
+                $("#btn-instructions-hide").hide();
             }
 
             function onDone() {
