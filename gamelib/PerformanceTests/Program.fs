@@ -1,6 +1,7 @@
 
 open System
 open System.Diagnostics
+open System.IO
 open Ruthefjord
 
 let programText = """
@@ -30,6 +31,18 @@ let parseTest () =
 
     ()
 
+let printTest () =
+    let filename = "../../../../unity/Assets/Resources/stdlib.imperative.txt"
+
+    let text = File.ReadAllText filename
+    let prog = Parser.Parse (text, filename)
+    use w = new StringWriter ()
+    printf "ORIG:\n"
+    printf "%s" text
+    Parser.PrettyPrintTo w prog
+    printf "\nNEW:\n"
+    printf "%s" (w.ToString ())
+
 let runTest f =
     let sw = Stopwatch ()
     sw.Start ()
@@ -40,7 +53,7 @@ let runTest f =
 [<EntryPoint>]
 let main argv =
 
-    parseTest ()
+    printTest ()
 
     //let time = runTest (runBigProgram ())
     //printfn "Elapsed time: %f" time.TotalSeconds

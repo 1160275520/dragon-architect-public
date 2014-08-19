@@ -1,4 +1,4 @@
-﻿module Ruthefjord.Parser
+module Ruthefjord.Parser
 
 open System
 open System.Text
@@ -175,7 +175,6 @@ type private TokenStream (tokenSeq: Token seq) =
     let mutable index = 0
 
     do
-        printf "%A\n" ((Seq.toList tokens) |> List.map (fun t -> t.Token))
         if tokens.Length = 0 then raise (ParseException (ParseError (int ErrorCode.EmptyFile, TextLocation.Empty, "Empty file!", null)))
 
     let get idx =
@@ -357,3 +356,87 @@ let Parse (text, filename) =
     with
     | :? ParseException -> reraise ()
     | e -> raise (ParseException (ParseError (int ErrorCode.InternalError, TextLocation.Empty, "Internal parser error", e)))
+
+let PrettyPrintTo (w:System.IO.TextWriter) (program:Program) =
+
+    let curIndent = ref 0
+    let startNewLine () = for i = 1 to !curIndent do w.Write("    ")
+
+    let printList printFn list =
+        w.Write '('
+        match list with
+        | [] -> ()
+        | hd :: tl ->
+            printFn hd
+            for x in tl do
+                w.Write " ,"
+                printFn x
+        w.Write ')'
+
+    let rec printExpr (e:Expression) =
+        match e.Expr with
+        | ExpressionT.Literal x -> w.Write x
+        | ExpressionT.Identifier x -> w.Write x
+        | Evaluate e ->
+            w.Write e.Identifier
+            printList printExpr e.Arguments
+        | Query q ->
+            w.Write "query "
+            w.Write q.Name
+            printList printExpr q.Arguments
+
+    let rec printStmt (s:Statement) =
+        let attr = s.Meta.Attributes
+        match attr with
+        | Json.Object _ ->
+            for (k,v) in Json.objectToSeq attr do
+                startNewLine ()
+                w.Write '@'
+                w.Write k
+                w.Write '='
+                w.Write v
+                w.Write '\n'
+        | _ -> ()
+
+        startNewLine ()
+        match s.Stmt with
+        | Conditional c -> raise (System.NotImplementedException ())
+        | Repeat r ->
+            w.Write "repeat "
+            printExpr r.NumTimes
+            w.Write " times\n"
+            printBody r.Body
+        | Function f ->
+            w.Write "function "
+            w.Write f.Name
+            f.Parameters |> printList w.Write 
+            w.Write ' '
+            printExpr f.Body
+            w.Write "\n\n"
+        | Procedure p ->
+            w.Write "define "
+            w.Write p.Name
+            p.Parameters |> printList w.Write 
+            w.Write '\n'
+            printBody p.Body
+            w.Write '\n'
+        | Execute e ->
+            w.Write e.Identifier
+            printList printExpr e.Arguments
+            w.Write '\n'
+        | Command c ->
+            w.Write "command "
+            w.Write c.Name
+            printList printExpr c.Arguments
+            w.Write '\n'
+
+    and printBody stmts =
+        curIndent := !curIndent + 1
+        match stmts with
+        | [] ->
+            startNewLine ()
+            w.Write "pass\n"
+        | _ -> List.iter printStmt stmts
+        curIndent := !curIndent - 1
+
+    List.iter printStmt program.Body
