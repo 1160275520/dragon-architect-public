@@ -44,17 +44,17 @@ document.write('<script type="text/javascript" src="generated/' +
                BlocklyApps.LANG + '.js"></script>\n');
  */
 
-// dictionary of custom block xml
-RuthefjordBlockly.Commands = {
-    move2:  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>',
-    up:  '<block type="Up"></block>',
-    down:  '<block type="Down"></block>',
-    place:  '<block type="PlaceBlock"></block>',
-    remove: '<block type="RemoveBlock"></block>',
-    line:   '<block type="Line"></block>',
-    repeat: '<block type="controls_repeat"></block>',
-    defproc: '<block type="procedures_defnoreturn"></block>'
-};
+// list of custom block xml, in the order they should appear in the library
+RuthefjordBlockly.Commands = [
+    ['move2',  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>'],
+    ['up',  '<block type="Up"></block>'],
+    ['down',  '<block type="Down"></block>'],
+    ['place',  '<block type="PlaceBlock"></block>'],
+    ['remove', '<block type="RemoveBlock"></block>'],
+    ['line',   '<block type="Line"></block>'],
+    ['repeat', '<block type="controls_repeat"></block>'],
+    ['defproc', '<block type="procedures_defnoreturn"></block>']
+]
 
 RuthefjordBlockly.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.remainingCapacity();
@@ -164,14 +164,13 @@ RuthefjordBlockly.freezeBody = function(block, doFreezeArgs) {
 
 RuthefjordBlockly.updateToolbox = function() {
     var toolXML = '<xml id="toolbox" style="display: none">';
-    _.each(current_tools, function(command) {
-        if (RuthefjordBlockly.Commands[command]) {
-            toolXML += RuthefjordBlockly.Commands[command];
+    _.each(RuthefjordBlockly.Commands, function(pair) {
+        if (_.contains(current_tools, pair[0])) {
+            toolXML += pair[1];
         }
     });
 
     // add call for each defined procedure
-    //
     var procs = Blockly.Procedures.allProcedures()[0];
     _.each(procs, function(proc) {
         var name = proc[0];
@@ -179,7 +178,6 @@ RuthefjordBlockly.updateToolbox = function() {
     });
 
     toolXML += '</xml>';
-    //console.log(toolXML);
     Blockly.updateToolbox(toolXML);
 };
 
