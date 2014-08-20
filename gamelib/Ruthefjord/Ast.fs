@@ -83,3 +83,34 @@ module Imperative =
     type Program = {
         Body: Statement list;
     }
+
+    let mapMeta f (prog:Program) =
+        
+        let rec mapExpr (expr:Expression) =
+            let newE =
+                match expr.Expr with
+                | Evaluate e ->
+                    Evaluate {e with Arguments=List.map mapExpr e.Arguments}
+                | Query q ->
+                    Query {q with Arguments=List.map mapExpr q.Arguments}
+                | x -> x
+            {Expr=newE; Meta=f expr.Meta}
+
+        let rec mapStmt (stmt:Statement) =
+            let newS =
+                match stmt.Stmt with
+                | Conditional c ->
+                    Conditional {Condition=mapExpr c.Condition; Then=List.map mapStmt c.Then; Else=List.map mapStmt c.Else}
+                | Repeat r ->
+                    Repeat {NumTimes=mapExpr r.NumTimes; Body=List.map mapStmt r.Body}
+                | Function f ->
+                    Function {f with Body=mapExpr f.Body}
+                | Procedure p ->
+                    Procedure {p with Body=List.map mapStmt p.Body}
+                | Execute e ->
+                    Execute {e with Arguments=List.map mapExpr e.Arguments}
+                | Command c -> 
+                    Command {c with Arguments=List.map mapExpr c.Arguments}
+            {Stmt=newS; Meta=f stmt.Meta}
+
+        {Body=List.map mapStmt prog.Body}
