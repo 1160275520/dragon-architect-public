@@ -94,7 +94,7 @@ def build(deps):
     # HACK assumes this is blockly
     blockly = deps[0]
     assert(blockly['local'] == 'blockly-ruthefjord')
-    runcmd(['python', 'build.py'], blockly)
+    runcmd(['python', 'mybuild.py'], blockly)
     tocopy = ['blockly.js', 'blockly.js.map']
 
     blocklyroot = os.path.join(ROOT_DIR, blockly['local'])
