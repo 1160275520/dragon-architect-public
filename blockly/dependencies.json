@@ -9,6 +9,6 @@
 	"local":"closure-library-read-only",
 	"engine":"git",
 	"remote":"https://github.com/google/closure-library",
-	"revision":"78f1318e57df539ef37e9da88359d23c90063a46"
+	"revision":"946a7d39d4ffe08676c755b21d901e71d9904a3b"
 }
 ]
