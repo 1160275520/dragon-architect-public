@@ -589,7 +589,7 @@ handler.onProgramStateChange = function(data) {
 
         // highlight current block
 
-        if (program_state.run_state === 'executing' && Blockly.Block.dragMode_ === 0) {
+        if (program_state.run_state === 'executing' && !Blockly.mainWorkspace.dragMode) {
             if (s.current_code_elements.length > 0) {
                 Blockly.mainWorkspace.traceOn(true);
                 Blockly.mainWorkspace.highlightBlock(s.current_code_elements[0].toString());

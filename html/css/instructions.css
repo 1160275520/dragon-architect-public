@@ -60,7 +60,7 @@
     border-radius: 8px;
 }
 
-#btn-instructions-hide {
+#btn-instructions-hide.notTitle {
     margin: 10px auto;
 }
 

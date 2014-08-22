@@ -3,8 +3,7 @@
         "library": {
             "granted": [
                 "time_slider",
-                "defproc",
-                "camera_tilt"
+                "defproc"
             ]
         }
     },
@@ -77,7 +76,7 @@
             "highlighted": ["PlaceBlock", "Forward"]
         },
         "instructions": {
-            "summary": "I want to place some cubes. Help me place more than 3!",
+            "summary": "I want to place some cubes. Help me place 4 of them!",
             "detail": "Use several {forward} and {placeblock} together to place a bunch of cubes."
         },
         "logging_id": 23
@@ -166,11 +165,11 @@
         "component": "PuzRotate",
         "library": {
             "required": ["move2", "place", "up", "down"],
-            "granted": ["camera_rotate"]
+            "granted": ["camera_rotate", "camera_tilt"]
         },
         "instructions": {
             "summary": "Solve the challenge by filling in the blueprint!",
-            "detail": "It's hard to see where the cubes should go from this angle! When you need a better view, use the {rotateCW} and {rotateCCW} buttons to rotate your view."
+            "detail": "It's hard to see where the cubes should go from this angle! Play with {camera} to get a better view."
         },
         "logging_id": 35
     },
