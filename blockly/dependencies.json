@@ -3,12 +3,12 @@
 	"local":"blockly-ruthefjord",
 	"engine":"hg",
 	"remote":"ssh://bicycle.cs.washington.edu//homes/gws/edbutler/repos/blockly-ruthefjord",
-	"revision":"bc83cc62f21030b4ca94ae390c1bdd324e773dcf"
+	"revision":"1d3da04527a139f66ea1c5598080a434cc388c46"
 },
 {
 	"local":"closure-library-read-only",
 	"engine":"git",
 	"remote":"https://github.com/google/closure-library",
-	"revision":"946a7d39d4ffe08676c755b21d901e71d9904a3b"
+	"revision":"78f1318e57df539ef37e9da88359d23c90063a46"
 }
 ]
