@@ -3,6 +3,17 @@ function RuthefjordBlocklyCustomInit() {
 
 // Extensions to Blockly's language and JavaScript generator.
 
+var COLOR_MOVE_1 = '#0075A6';
+var COLOR_MOVE_2 = '#B84B26';
+var COLOR_BLOCK = '#978B63';
+var COLOR_LOOPS = '#00711C';
+var COLOR_PROCS = '#7C478B';
+var COLOR_UNUSED_1 = '#B63551';
+var COLOR_UNUSED_2 = '#A88217';
+
+Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
+Blockly.Blocks.procedures.COLOR = COLOR_PROCS;
+
 Blockly.UnityJSON = {};
 
 Blockly.UnityJSON.convertCallback = function (obj) {
@@ -25,7 +36,7 @@ Blockly.UnityJSON.processStructure = function (block) {
 // LEFT
 Blockly.Blocks['Left'] = {
     init: function() {
-        this.setColour(160);
+        this.setFullColor(COLOR_MOVE_1);
         this.appendDummyInput()
             .appendField("turn left")
         this.setPreviousStatement(true);
@@ -73,7 +84,7 @@ Blockly.UnityJSON['Left'] = function(block) {
 // RIGHT
 Blockly.Blocks['Right'] = {
     init: function() {
-        this.setColour(160);
+        this.setFullColor(COLOR_MOVE_1);
         this.appendDummyInput()
             .appendField("turn right")
         this.setPreviousStatement(true);
@@ -88,7 +99,7 @@ Blockly.UnityJSON['Right'] = function(block) {
 // FORWARD
 Blockly.Blocks['Forward'] = {
     init: function() {
-        this.setColour(160);
+        this.setFullColor(COLOR_MOVE_1);
         this.appendDummyInput()
             .appendField("forward by")
             .appendField(new Blockly.FieldTextInput('1',
@@ -105,7 +116,7 @@ Blockly.UnityJSON['Forward'] = function(block) {
 // UP
 Blockly.Blocks['Up'] = {
     init: function() {
-        this.setColour(220);
+        this.setFullColor(COLOR_MOVE_2);
         this.appendDummyInput()
             .appendField("up by")
             .appendField(new Blockly.FieldTextInput('1',
@@ -122,7 +133,7 @@ Blockly.UnityJSON['Up'] = function(block) {
 // DOWN
 Blockly.Blocks['Down'] = {
     init: function() {
-        this.setColour(220);
+        this.setFullColor(COLOR_MOVE_2);
         this.appendDummyInput()
             .appendField("down by")
             .appendField(new Blockly.FieldTextInput('1',
@@ -139,7 +150,7 @@ Blockly.UnityJSON['Down'] = function(block) {
 // PLACEBLOCK
 Blockly.Blocks['PlaceBlock'] = {
     init: function() {
-        this.setColour(35);
+        this.setFullColor(COLOR_BLOCK);
         this.appendDummyInput()
             .appendField("place block")
             .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
@@ -155,7 +166,7 @@ Blockly.UnityJSON['PlaceBlock'] = function(block) {
 // REMOVEBLOCK
 Blockly.Blocks['RemoveBlock'] = {
     init: function() {
-        this.setColour(35);
+        this.setFullColor(COLOR_BLOCK);
         this.appendDummyInput()
             .appendField("remove block")
         this.setPreviousStatement(true);
