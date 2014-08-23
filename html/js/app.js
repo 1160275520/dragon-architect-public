@@ -436,6 +436,15 @@ $(function() {
                 setState_title();
             }
         });
+       
+        // SAMPLE POPUP DIALOG CODE
+        // var dialogContent = document.createElement('span');
+        // dialogContent.appendChild(document.createTextNode("This is a test of the popup dialog system."));
+        // console.log(dialogContent);
+        // var style = {width: '370px', top: '120px'};
+        // style['left'] = '215px';
+        // RuthefjordUI.Dialog.show(dialogContent, style); 
+
     });
 });
 

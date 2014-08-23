@@ -488,6 +488,29 @@ module.CubeCounter = (function() {
     return self;
 }());
 
+module.Dialog = (function() {
+    self = {};
+
+    self.show = function(content, style) {
+        var dialog = document.getElementById('dialog');
+
+        // Copy all the specified styles to the dialog.
+        for (var name in style) {
+          dialog.style[name] = style[name];
+        }
+        dialog.appendChild(content);
+        dialog.style.visibility = 'visible';
+        dialog.style.zIndex = 1;
+    }
+
+    self.hide = function () {
+        var dialog = document.getElementById('dialog');
+        dialog.style.visibility = 'hidden';
+    }
+
+    return self;
+}());
+
 return module;
 }());
 
