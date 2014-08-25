@@ -28,12 +28,12 @@ public class ExternalAPI : MonoBehaviour
                 // if we're not in a puzzle, don't send any of the stuff on the first update
                 var global = FindObjectOfType<Global>();
                 if (global != null && global.CurrentPuzzle != null) {
+                    var progman = GetComponent<ProgramManager>();
                     var puzzle = global.CurrentPuzzle;
-                    // only update program from ProgramManager if the json file didn't specify anything
-                    if (OptionModule.IsNone(puzzle.StartingProgram)) {
-                        var prog = Serialization.JsonOfProgram(GetComponent<ProgramManager>().Manipulator.Program);
-                        puzzle = puzzle.UpdateStartingProgram(Json.Serialize(prog));
-                    }
+                    puzzle = puzzle.LoadStartingProgram(
+                        progman.LoadProgram,
+                        () => Json.Serialize(Serialization.JsonOfProgram(progman.Manipulator.Program))
+                    );
                     NotifyOfPuzzle(global.CurrentSceneId, puzzle, true);
                 }
             } catch (Exception e) {

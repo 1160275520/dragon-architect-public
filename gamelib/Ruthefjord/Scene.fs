@@ -1,6 +1,7 @@
 /// Types and parsing/serialization functions for the JSON data structures that represent puzzles and modules.
 module Ruthefjord.Scene
 
+open System
 module J = Json
 
 let private jload obj key fn = fn (Json.getField obj key)
@@ -123,8 +124,22 @@ type PuzzleInfo = {
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}
-    member x.UpdateStartingProgram program = {x with StartingProgram=Some (Text program);}
     member x.UpdateStartingProgramToPreserve = {x with StartingProgram=Some Preserve;}
+
+    /// Load or set the starting program based on its current value
+    /// If None, will fetch using getProgramFn.
+    /// If Some Resource, will load using loadResourceFn, then fetch using getProgramFn.
+    member x.LoadStartingProgram (loadResourceFn:Action<string>) (getProgramFn:Func<string>) =
+        match x.StartingProgram with
+        | Some (Resource r) -> loadResourceFn.Invoke r
+        | _ -> ()
+
+        let newVal =
+            match x.StartingProgram with
+            | None | Some (Resource _) -> Some (Text (getProgramFn.Invoke ()))
+            | p -> p
+
+        {x with StartingProgram=newVal}
 
     /// Compute a checksum of this level info (for logging).
     member x.Checksum () =
