@@ -122,26 +122,22 @@ let private step (state:State) =
 let private internalError e = 
     raise (CodeException (RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)))
     
-
-/// Executes a single line of the program, returning a robot command, if any.
-let private ExecuteStep state =
-    try step state
-    with
-    | :? CodeException -> reraise ()
-    | e -> internalError e
+let inline private IsDone (state:State) = state.CallStack.IsEmpty
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
 let private ExecuteUntilCommand state =
     try
+        // HACK should check to make sure this a reasonable value
+        let MAX_ITER = 20
+        let mutable numSteps = 0
         let mutable cmd = None
-        while cmd.IsNone && not state.CallStack.IsEmpty do
+        while cmd.IsNone && not (IsDone state) && numSteps < MAX_ITER do
             cmd <- step state
+            numSteps <- numSteps + 1
         match cmd with Some c -> c | None -> null
     with
     | :? CodeException -> reraise ()
     | e -> internalError e
-
-let inline private IsDone (state:State) = state.CallStack.IsEmpty
 
 // NOTE: just use reference equality, and be careful to always send the exact object
 // structural equality would simply be too expensive to usefully evaluate
@@ -169,18 +165,20 @@ let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
     try
         let MAX_ITER = 10000
         let state = createState program builtIns (Some robot)
-        let mutable steps = [{Command=null; LastExecuted=[]; WorldState=robot.CurrentState}]
+        let steps = System.Collections.Generic.List ()
+        // add "start" state
+        steps.Add {Command=null; LastExecuted=[]; WorldState=robot.CurrentState}
         let mutable isDone = false
         let mutable numSteps = 0
         while not (IsDone state) && numSteps < MAX_ITER do
-            let cmd = ExecuteUntilCommand state
-            if cmd <> null then
+            match step state with
+            | Some cmd ->
                 robot.Execute cmd
-                steps <- {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState} :: steps
-                numSteps <- numSteps + 1
-            else System.Diagnostics.Debug.Assert(IsDone state, "ExecuteUntilCommand returned a null command when program was not done!")
+                steps.Add {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState}
+            | None -> ()
+            numSteps <- numSteps + 1
 
-        ImmArr.ofSeq (List.rev steps)
+        ImmArr.ofArray (steps.ToArray ())
     with
     | :? CodeException -> reraise ()
     | e -> internalError e
