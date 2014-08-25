@@ -252,6 +252,19 @@
             "detail": "It may be helpful to use {repeat}."
         },
         "logging_id": 28
+    },
+    "procedures.procedures01": {
+        "name": "Procedures 101",
+        "library": {
+            "required": [],
+            "granted": ["defproc"]
+        },
+        "instructions": {
+            "summary": "Woo procedures",
+            "detail": ""
+        },
+        "program": {"type":"resource", "value":"puzzle/procedures.procedures01"},
+        "logging_id": 36
     }
 }
 

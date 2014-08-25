@@ -50,6 +50,12 @@
     ],
     "name": "Meaty Beaty Big and Bouncy",
     "learn": ["Use arguments","Repeat code many times","Control program speed"]
+},
+"procedures":{
+    "nodes": ["procedures.procedures01"],
+    "edge": [],
+    "name": "Procedures",
+    "learn": ["asdf"]
 }
 }
 

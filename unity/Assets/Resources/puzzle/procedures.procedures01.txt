@@ -1,0 +1,15 @@
+#lang imperative:1.0
+
+Forward(1)
+
+define Foo()
+    Left()
+    Left()
+    Left()
+    PlaceBlock(1)
+
+Forward(1)
+Foo()
+Forward(1)
+RemoveBlock()
+
