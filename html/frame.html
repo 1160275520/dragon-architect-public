@@ -25,6 +25,12 @@
       .blocklyFlyoutBackground {
         fill: #ccebff !important;
       }
+      #blocklyLabels {
+        text-align: center;
+      }
+      #libraryLabel {
+        background-color: #ccebff;
+      }
     </style>
     <script>
       function init() {
@@ -46,15 +52,15 @@
           $("#blocklyLabels").css("display", "none");
         } else {
           $("#blocklyLabels").css("display", "flex");
-          $("#libraryLabel").width(toolboxWidth - 1); // viewWidth is 1 pixel too large for some reason when event fires
+          $("#libraryLabel").width(toolboxWidth + 1); // viewWidth is 1 pixel too small for some reason when event fires
           $("#codeLabel").width(Blockly.mainWorkspace.getMetrics().viewWidth - $("#libraryLabel").width());
         }
       }
     </script>
   </head>
   <body onload="init()">
-    <div id="blocklyLabels" style='display: none; font-family: "Open Sans"; text-align: center;'>
-      <div id="libraryLabel" style='box-sizing: border-box; border-right-style: solid; border-width: 2px;'>Code Blocks</div>
+    <div id="blocklyLabels">
+      <div id="libraryLabel">Code Blocks</div>
       <div id="codeLabel">Drag code blocks here to create a program</div>
     </div>
     <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
