@@ -217,7 +217,7 @@ RuthefjordBlockly.getProgram = function() {
             var name = '$' + block.getFieldValue("NAME");
             var params = [];
             var body = Blockly.UnityJSON.processStructure(block);
-            procs.push({type:"proc", name:name, params:params, body:body});
+            procs.push({type:"proc", meta:{id:Number(block.id)}, name:name, params:params, body:body});
         } else {
             other = other.concat(Blockly.UnityJSON.processStructure(block));
         }

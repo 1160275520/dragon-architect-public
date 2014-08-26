@@ -29,8 +29,9 @@ Blockly.UnityJSON.processStructure = function (block) {
     if (block.type === "procedures_defnoreturn") {
         // procedures have no connection, so no siblings exist and we can assume the object we want is the first and only element
         return structure[0].children.map(Blockly.UnityJSON.convertCallback);
+    } else {
+        return structure.map(Blockly.UnityJSON.convertCallback);
     }
-    return structure.map(Blockly.UnityJSON.convertCallback);
 };
 
 // LEFT
