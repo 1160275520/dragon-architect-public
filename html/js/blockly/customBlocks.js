@@ -223,6 +223,8 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
 }
 
 Blockly.UnityJSON.bodyToXML = function (body, program) {
+    if (!body) return "";
+
     var xml = Blockly.UnityJSON.stmtToXML(body[0], program);
     for (var i = 1; i < body.length; i++) {
         var stmt = body[i];
