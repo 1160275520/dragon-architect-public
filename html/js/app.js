@@ -593,6 +593,12 @@ handler.onProgramStateChange = function(data) {
         }
     }
 
+    // clear current highlights when not paused or currently unpausing
+    var highlights = $(".blocklyHighlighted", $("#blockly").contents());
+    if (highlights.length > 0 && program_state.run_state !== 'paused' && json.run_state !== 'executing') {
+        highlights.attr('class', highlights.attr('class').replace(" blocklyHighlighted", ""));
+    }
+
     if ('current_state' in json) {
         var s = json.current_state;
 
@@ -600,10 +606,17 @@ handler.onProgramStateChange = function(data) {
 
         if (program_state.run_state === 'executing' && !Blockly.mainWorkspace.dragMode) {
             if (s.current_code_elements.length > 0) {
-                Blockly.mainWorkspace.traceOn(true);
-                Blockly.mainWorkspace.highlightBlock(s.current_code_elements[0].toString());
-            } else if (Blockly.selected) {
-                Blockly.selected.unselect();
+                // add new highlights for currently executing block and all surrounding blocks
+                var block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[0].toString());
+                block.svg_.addHighlight();
+                while(block.getSurroundParent()) {
+                    block.getSurroundParent().svg_.addHighlight();
+                    block = block.getSurroundParent();
+                }
+            } else {
+                // clear final highlights 
+                var highlights = $(".blocklyHighlighted", $("#blockly").contents());
+                highlights.attr('class', highlights.attr('class').replace(" blocklyHighlighted", ""));
             }
         }
 
