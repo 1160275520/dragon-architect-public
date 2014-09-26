@@ -18,9 +18,31 @@ let private runtimeError (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
 let private runtimeErrorWE exn (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
     raise (CodeException (RuntimeError (int code, meta.Id, msg, exn)))
 
+type ValueMap = Map<string,obj>
+
+type private Environment = {
+    Globals: ValueMap;
+    Locals: ValueMap;
+}
+with
+    member x.Item key =
+        match x.Locals.TryFind key with
+        | None -> x.Globals.[key]
+        | Some v -> v
+
+    member x.AddLocal ((key, value) as kvp) =
+        {x with Locals=x.Locals.Add kvp}
+
+    member x.AddGlobal ((key, value) as kvp) =
+        {x with Globals=x.Globals.Add kvp}
+
+    member x.PushScope locals =
+        // disregard locals from parent scope, only inherit globals
+        {x with Locals=locals}
+
 type private CallStackState = {
-    Values: Map<string,obj>;
     mutable ToExecute: Statement list;
+    Environment: Environment;
     Robot: Robot.IRobotSimulator option
 }
 
@@ -40,23 +62,24 @@ let private valueAsInt meta (o:obj) =
     | _ -> runtimeError meta ErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
 
 let private createState (program:Program) builtInValues robot =
-    {CallStack=[{Values=builtInValues; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}
+    let env = {Globals=builtInValues; Locals=Map.empty}
+    {CallStack=[{Environment=env; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}
 
 let rec private evaluate (csstate: CallStackState) (expr: Expression) =
     match expr.Expr with
     | Literal x -> x
     // HACK this should probably make sure it's not a function or procedure...
     | Identifier name ->
-        try csstate.Values.[name]
+        try csstate.Environment.[name]
         with :? System.Collections.Generic.KeyNotFoundException ->
             runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
     | Evaluate {Identifier=name; Arguments=argExpr} ->
         let argVals = List.map (evaluate csstate) argExpr
         try
-            let func = csstate.Values.[name] :?> Function
+            let func = csstate.Environment.[name] :?> Function
             let args = Seq.zip func.Parameters argVals |> Map.ofSeq
-            let newVals = MyMap.merge csstate.Values args
-            evaluate {csstate with Values=newVals} func.Body
+            let env = csstate.Environment.PushScope args
+            evaluate {csstate with Environment=env} func.Body
         with
         | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
         | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
@@ -98,18 +121,18 @@ let private step (state:State) =
                 state.Push {head with ToExecute=toAdd}
                 None
             | Function func ->
-                state.CallStack <- {head with Values=head.Values.Add (func.Name, func)} :: tail
+                state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: tail
                 None
             | Procedure proc ->
-                state.CallStack <- {head with Values=head.Values.Add (proc.Name, proc)} :: tail
+                state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: tail
                 None
             | Execute {Identifier=name; Arguments=argExpr} ->
                 let argVals = List.map (evaluate head) argExpr
                 try
-                    let proc = head.Values.[name] :?> Procedure
+                    let proc = head.Environment.[name] :?> Procedure
                     let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
-                    let newVals = MyMap.merge head.Values args
-                    state.Push {head with Values=newVals; ToExecute=proc.Body}
+                    let env = head.Environment.PushScope args
+                    state.Push {head with Environment=env; ToExecute=proc.Body}
                 with
                 | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
                 | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
@@ -192,7 +215,7 @@ let import program =
         let state = createState program Map.empty None
         let mutable vals = Map.empty
         while not (IsDone state) do
-            vals <- state.CallStack.Head.Values
+            vals <- state.CallStack.Head.Environment.Globals
             step state |> ignore
         vals
     with
