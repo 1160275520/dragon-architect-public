@@ -26,10 +26,10 @@ let ``Simulator nop deserialized`` () =
     let prog = Serialization.Load ProgramSerializationTest.emptyTestProgram
     let lib = loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = Simulator.SimulateWithRobot prog lib robot
+    let states = (Simulator.SimulateWithRobot prog lib robot).States
 
     states.Length |> should equal 1
-    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
+    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
 
 [<Fact>]
 let ``Simulator nop parsed`` () =
@@ -41,10 +41,10 @@ define foo()
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = Simulator.SimulateWithRobot prog lib robot
+    let states = (Simulator.SimulateWithRobot prog lib robot).States
 
     states.Length |> should equal 1
-    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
+    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
 
 [<Fact>]
 let ``Simulator simple deserialized`` () =
@@ -53,13 +53,13 @@ let ``Simulator simple deserialized`` () =
     let prog = Serialization.Load ProgramSerializationTest.simpleTestProgram
     let lib = loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = Simulator.SimulateWithRobot prog lib robot
+    let states = (Simulator.SimulateWithRobot prog lib robot).States
 
-    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
-    (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.Length |> should equal 10
+    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
+    (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 10
 
     let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
-    blocks.SetEquals ((states.[states.Length - 1].WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
 [<Fact>]
 let ``Simulator simple parsed`` () =
@@ -76,13 +76,13 @@ repeat 10 times
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = Simulator.SimulateWithRobot prog lib robot
+    let states = (Simulator.SimulateWithRobot prog lib robot).States
 
-    (states.[0].WorldState :?> BasicWorldState).Grid.Length |> should equal 0
-    (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.Length |> should equal 10
+    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
+    (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 10
 
     let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
-    blocks.SetEquals ((states.[states.Length - 1].WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
 let repeatTestProg = """
 repeat 10 times
@@ -101,10 +101,10 @@ let ``Simulator repeat`` () =
     let prog = Parser.Parse (repeatTestProg, "prog")
     let lib = loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = Simulator.SimulateWithRobot prog lib robot
+    let states = (Simulator.SimulateWithRobot prog lib robot).States
 
     states.Length |> should equal 81
-    (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.Length |> should equal 20
+    (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 20
 
     let blocks = HashSet([for i in 1 .. 20 -> IntVec3 (i,0,i)])
-    blocks.SetEquals ((states.[states.Length - 1].WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true

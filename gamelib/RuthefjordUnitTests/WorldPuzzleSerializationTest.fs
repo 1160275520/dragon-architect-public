@@ -45,9 +45,9 @@ let ``World serialization repeat program test`` () =
     let prog = Parser.Parse (ImperativeSimulatorTest.repeatTestProg, "prog")
     let lib = ImperativeSimulatorTest.loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = Simulator.SimulateWithRobot prog lib robot
-    let blocks = (states.[states.Length - 1].WorldState :?> BasicWorldState).Grid.ToArray()
-    let robots = [| (states.[states.Length - 1].WorldState :?> BasicWorldState).Robot |]
+    let states = (Simulator.SimulateWithRobot prog lib robot).States
+    let blocks = (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.ToArray()
+    let robots = [| (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Robot |]
     let world = {Blocks=blocks; Robots=robots}
 
     let encoded = World.encodeToString world 

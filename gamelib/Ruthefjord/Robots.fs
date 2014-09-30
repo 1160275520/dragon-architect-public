@@ -85,7 +85,7 @@ type LazyProgramRunner (program, builtIns, initialGrid:GridStateTracker, initial
 
     member x.IsDone = simulator.IsDone || numSteps >= MAX_ITER
 
-    member x.UpdateOneStep (grid:GridStateTracker) : Simulator.StepState =
+    member x.UpdateOneStep (grid:GridStateTracker) =
         runner.Grid <- grid
         numSteps <- numSteps + 1
-        simulator.Step ()
+        simulator.StepUntilSomething ()

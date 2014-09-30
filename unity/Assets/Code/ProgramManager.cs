@@ -12,7 +12,8 @@ public class ProgramManager : MonoBehaviour {
     public const float TicksPerSecond = 60.0f;
 
     public ImperativeAstManipulator Manipulator { get; private set; }
-    private ImmArr<Simulator.StepState> States;
+
+    private Simulator.FullSimulationResult result;
 
     // never access these directly, even for private code!
     private RunState runState;
@@ -35,7 +36,7 @@ public class ProgramManager : MonoBehaviour {
 
     private IEnumerable<Imperative.Statement> lastExecuted;
     private LazyProgramRunner lazyProgramRunner;
-    private Simulator.StepState currentState;
+    private Simulator.StateResult currentState;
 
     private Microsoft.FSharp.Collections.FSharpMap<string, object> builtIns;
 
@@ -83,8 +84,7 @@ public class ProgramManager : MonoBehaviour {
                 // if switching to workshop mode, backup all cells and clear old states
                 var grid = GetComponent<Grid>();
                 initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
-                States = null;
-
+                result = null;
             }
 
             setEditMode(value);
@@ -148,20 +148,21 @@ public class ProgramManager : MonoBehaviour {
 
     private void setGameStateToIndex(int index, float transitionTimeSeconds) {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
-        index = index < States.Length ? index : States.Length - 1;
+        index = index < result.States.Length ? index : result.States.Length - 1;
         currentStateIndex = index;
-        setGameState(States[index], transitionTimeSeconds);
+        var state = result.States[index];
+        setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
     }
 
-    private void setGameState(Simulator.StepState state, float transitionTimeSeconds) {
+    private void setGameState(Simulator.StateResult state, IEnumerable<Imperative.Statement> stack, float transitionTimeSeconds) {
         Profiler.BeginSample("ProgramManager.setGameState");
-        if (!state.Equals(currentState)) {
+        if (state != currentState) {
             currentState = state;
             var grid = GetComponent<Grid>();
             var ws = state.WorldState as BasicWorldState;
             robot.SetRobot(ws.Robot, state.Command, transitionTimeSeconds);
             grid.SetGrid(ws.Grid);
-            lastExecuted = state.LastExecuted;
+            lastExecuted = stack;
             GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
         }
         Profiler.EndSample();
@@ -173,9 +174,9 @@ public class ProgramManager : MonoBehaviour {
             evalEntireProgram();
 
             // sometimes evaling entire program fails, so check again anyway
-            if (States != null) {
+            if (result != null) {
                 setRunState(RunState.Paused);
-                var newIndex = (int)Math.Floor(States.Length * slider);
+                var newIndex = (int)Math.Floor(result.States.Length * slider);
                 if (currentStateIndex != newIndex) {
                     setGameStateToIndex(newIndex, 0.0f);
                 }
@@ -185,8 +186,8 @@ public class ProgramManager : MonoBehaviour {
 
     public float SliderPosition {
         get {
-            if (States == null) return 0.0f;
-            else return (float)currentStateIndex / States.Length;
+            if (result == null) return 0.0f;
+            else return (float)currentStateIndex / result.States.Length;
         }
     }
 
@@ -196,18 +197,18 @@ public class ProgramManager : MonoBehaviour {
     
     private void evalEntireProgram() {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only call this in workshop mode!");
-        if (Manipulator.IsDirty || States == null) {
+        if (Manipulator.IsDirty || result == null) {
             Manipulator.ClearDirtyBit();
 
-            var isOldIndexAtEnd = States != null && currentStateIndex == States.Length;
+            var isOldIndexAtEnd = result != null && currentStateIndex == result.States.Length;
 
             var grid = new GridStateTracker(initialCells);
-            var initialRobotState = States != null ? ((BasicWorldState)States[0].WorldState).Robot : robot.Robot;
+            var initialRobotState = result != null ? ((BasicWorldState)result.States[0].Data.WorldState).Robot : robot.Robot;
             var runner = new BasicImperativeRobotSimulator(initialRobotState, grid);
-            States = Simulator.SimulateWithRobot(Manipulator.Program, builtIns, runner);
+            result = Simulator.SimulateWithRobot(Manipulator.Program, builtIns, runner);
 
             if (isOldIndexAtEnd) {
-                currentStateIndex = States.Length;
+                currentStateIndex = result.States.Length;
             }
 
             setGameStateToIndex(currentStateIndex, 0.0f);
@@ -244,9 +245,9 @@ public class ProgramManager : MonoBehaviour {
                     GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
                 } else {
                     Profiler.BeginSample("ProgramManager.Update.ProgramStep");
-                    var state = lazyProgramRunner.UpdateOneStep(grid);
+                    var tuple = lazyProgramRunner.UpdateOneStep(grid);
                     Profiler.EndSample();
-                    setGameState(state, dt);
+                    setGameState(tuple.Item2, tuple.Item1, dt);
                 }
             }
         }
@@ -256,7 +257,7 @@ public class ProgramManager : MonoBehaviour {
 
             if (RunState.IsExecuting) {
                 currentStateIndex += stepsPassed;
-                if (currentStateIndex >= States.Length) {
+                if (currentStateIndex >= result.States.Length) {
                     // use the private var, the public setter will throw if you try to set to finished manually
                     setRunState(RunState.Finished);
                     GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));

@@ -100,6 +100,7 @@ let private step (state:State) =
             state.CallStack <- tail
             None
         | stmt :: next ->
+            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
             head.ToExecute <- next
 
             // update last executed
@@ -142,9 +143,22 @@ let private step (state:State) =
                 let args = List.map (evaluate head) args
                 Some (Robot.Command (cmd, ImmArr.ofSeq args))
 
+let private makeInternalError e =
+    RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)
+
 let private internalError e = 
-    raise (CodeException (RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)))
+    raise (CodeException (makeInternalError e))
     
+/// Step the simulation a single statement.
+/// Will modify the passed-in state, and return either Some command or None on success, or the RuntimeError if one occurred.
+/// Guaranteed to not throw an exception.
+let private tryStep state =
+    try Choice1Of2 (step state)
+    with
+    // TODO should really not need a dynamic cast here...
+    | :? CodeException as e -> Choice2Of2 (e.Error :?> RuntimeError)
+    | e -> Choice2Of2 (makeInternalError e)
+
 let inline private IsDone (state:State) = state.CallStack.IsEmpty
 
 /// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
@@ -162,49 +176,94 @@ let private ExecuteUntilCommand state =
     | :? CodeException -> reraise ()
     | e -> internalError e
 
-// NOTE: just use reference equality, and be careful to always send the exact object
-// structural equality would simply be too expensive to usefully evaluate
+(*
+    The different result types of the simulation
+    Come in 3 parts:
+    StepResult: The state of the stack after every statement is executed
+    StateResult: The world state after every command is executed
+    ErrorResult: runtime errors from executing statements
+
+    The last two occur a subset of the time that the first does, so they are
+    returned as separate arrays paired with pointers to the index into the StepResult array.
+*)
+
+type StackResult = Statement list
+
+type Result<'a> = {
+    StepIndex: int;
+    Data: 'a;
+}
+
 [<ReferenceEquality;NoComparison>]
-type StepState = {
+type StateResult = {
     Command: Robot.Command;
-    LastExecuted: Statement list;
     WorldState: obj;
 }
 
+type ErrorResult = {
+    Error: RuntimeError;
+}
+
+type FullSimulationResult = {
+    /// All steps
+    Steps: StackResult [];
+    /// World state updates, with pointers to corresponding step
+    States: Result<StateResult>[];
+    /// Errors, with pointers to corresponding step
+    Errors: Result<ErrorResult>[];
+}
+
+[<RequireQualifiedAccess>]
+type LazyStepResultType =
+| State of StateResult
+| Error of ErrorResult
+
+type LazyStepResult = {
+    Stack: StackResult;
+    Result: LazyStepResultType option;
+}
+
+type private MutableList<'a> = System.Collections.Generic.List<'a>
+
+let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
+    let MAX_ITER = 10000
+    let simstate = createState program builtIns (Some robot)
+
+    let steps = MutableList ()
+    let states = MutableList ()
+    let errors = MutableList ()
+
+    steps.Add simstate.LastExecuted
+    states.Add {StepIndex=0; Data={Command=null; WorldState=robot.CurrentState}}
+
+    let mutable numSteps = 0
+    while not (IsDone simstate) && numSteps < MAX_ITER do
+        numSteps <- numSteps + 1
+        match tryStep simstate with
+        | Choice1Of2 None -> ()
+        | Choice1Of2 (Some cmd) ->
+            robot.Execute cmd
+            states.Add {StepIndex=steps.Count; Data={Command=cmd; WorldState=robot.CurrentState}}
+        | Choice2Of2 error ->
+            errors.Add {StepIndex=steps.Count; Data={Error=error}}
+
+        steps.Add simstate.LastExecuted
+
+    {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}
+
 type LazySimulator (program, builtIns, robot) =
     let state = createState program builtIns (Some robot)
-    let initialState = {Command=null; LastExecuted=[]; WorldState=robot.CurrentState}
+    let initialState = {Stack=[]; Result=Some (LazyStepResultType.State {Command=null; WorldState=robot.CurrentState})}
 
     member x.IsDone = IsDone state
 
     member x.InitialState = initialState
 
-    member x.Step () =
+    /// Step the simulation until either a state change or an error.
+    member x.StepUntilSomething () =
         let cmd = ExecuteUntilCommand state
         robot.Execute cmd
-        {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState}
-
-let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
-    try
-        let MAX_ITER = 10000
-        let state = createState program builtIns (Some robot)
-        let steps = System.Collections.Generic.List ()
-        // add "start" state
-        steps.Add {Command=null; LastExecuted=[]; WorldState=robot.CurrentState}
-        let mutable isDone = false
-        let mutable numSteps = 0
-        while not (IsDone state) && numSteps < MAX_ITER do
-            match step state with
-            | Some cmd ->
-                robot.Execute cmd
-                steps.Add {Command=cmd; LastExecuted=state.LastExecuted; WorldState=robot.CurrentState}
-            | None -> ()
-            numSteps <- numSteps + 1
-
-        ImmArr.ofArray (steps.ToArray ())
-    with
-    | :? CodeException -> reraise ()
-    | e -> internalError e
+        (state.LastExecuted, {Command=cmd; WorldState=robot.CurrentState})
 
 // given a program, executes it, returning the map of names and values generated by the program
 let import program =
