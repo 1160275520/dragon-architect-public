@@ -10,7 +10,7 @@ syntax: glob
 *.dll.meta
 *.pdb
 *.pdb.meta
-gamelib/packages/
+packages/
 bin/
 obj/
 unity/UnityGenerated/
@@ -18,6 +18,7 @@ unity/Library/
 unity/ExportedObj/
 unity/Temp/
 unity/ProjectSettings/Physics2DSettings.asset
+unity/Assets/UnityVS*
 unity/*.sln
 unity/*.unityproj
 unity/*.csproj
