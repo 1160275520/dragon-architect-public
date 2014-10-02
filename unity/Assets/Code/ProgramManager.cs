@@ -6,6 +6,12 @@ using System;
 using Ruthefjord;
 using Ruthefjord.Ast;
 
+public enum ProgramStepType
+{
+    Statement,
+    Command,
+}
+
 public class ProgramManager : MonoBehaviour {
 
     public int TicksPerStep;
@@ -148,7 +154,7 @@ public class ProgramManager : MonoBehaviour {
 
     private void setGameStateToIndex(int index, float transitionTimeSeconds) {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
-        index = index < result.States.Length ? index : result.States.Length - 1;
+        index = Util.clamp(0, result.States.Length - 1, index);
         currentStateIndex = index;
         var state = result.States[index];
         setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
@@ -166,6 +172,19 @@ public class ProgramManager : MonoBehaviour {
             GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
         }
         Profiler.EndSample();
+    }
+
+    public void StepProgramState(ProgramStepType type, int distance) {
+        if (EditMode.IsPersistent) {
+            switch (type) {
+                case ProgramStepType.Command:
+                    setGameStateToIndex(currentStateIndex + distance, 0);
+                    break;
+                case ProgramStepType.Statement:
+                    // TODO
+                    break;
+            }
+        }
     }
 
     public void SetProgramStateBySlider(float slider) {
@@ -247,7 +266,7 @@ public class ProgramManager : MonoBehaviour {
                     Profiler.BeginSample("ProgramManager.Update.ProgramStep");
                     var tuple = lazyProgramRunner.UpdateOneStep(grid);
                     Profiler.EndSample();
-                    setGameState(tuple.Item2, tuple.Item1, dt);
+                    setGameState(tuple.State, tuple.Stack, dt);
                 }
             }
         }

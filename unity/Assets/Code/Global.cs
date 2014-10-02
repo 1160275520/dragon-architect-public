@@ -62,7 +62,7 @@ public class Global : MonoBehaviour {
         var data = Json.Parse(json);
         CurrentSceneId = data.GetField("id").AsString;
         CurrentPuzzle = Scene.PuzzleInfo.Parse(data.GetField("puzzle"));
-        PuzzleFinish = (PuzzleFinishType)System.Enum.Parse(typeof(PuzzleFinishType), data.GetField("finish").AsString);
+        PuzzleFinish = Util.parseEnum<PuzzleFinishType>(data.GetField("finish").AsString);
 
         Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
         Application.LoadLevel("puzzle");

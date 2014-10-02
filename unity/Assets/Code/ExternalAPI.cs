@@ -186,4 +186,11 @@ public class ExternalAPI : MonoBehaviour
         var x = float.Parse(parameter);
         GetComponent<ProgramManager>().SetProgramStateBySlider(x);
     }
+
+    public void EAPI_StepProgramExecution(string data) {
+        var json = Json.Parse(data);
+        var type = Util.parseEnum<ProgramStepType>(json.GetField("type").AsString);
+        var dist = json.GetField("distance").AsInt;
+        GetComponent<ProgramManager>().StepProgramState(type, dist);
+    }
 }

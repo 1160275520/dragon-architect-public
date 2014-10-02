@@ -52,6 +52,10 @@ module Logger =
     #endif
 
 module Util =
+    let parseEnum<'a> s = Enum.Parse (typeof<'a>, s) :?> 'a
+
+    let clamp lb ub x = min (max lb x) ub
+
     let binaryToHex (bytes:byte[]) =
         let sb = System.Text.StringBuilder ()
         for b in bytes do
