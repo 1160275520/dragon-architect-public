@@ -34,7 +34,17 @@ public class ProgramManager : MonoBehaviour {
     /// set this to false when the gui is changing the program state
     public bool IsCheckingForProgramChanges { get; set; }
 
-    private int currentStateIndex = 0;
+    private int currentStepIndex = 0;
+
+    private int currentStateIndex {
+        get { return result == null ? 0 : result.StateOf(currentStepIndex); }
+        set {
+            currentStepIndex = result == null
+                ? 0
+                : value == result.States.Length ? result.Steps.Length : result.States[value].StepIndex;
+        }
+    }
+
     // the absolute time when a step was last advanced
     private float lastStatementExecutionTime = 0.0f;
     // how many ticks have passed since the last step was advanced
@@ -111,7 +121,7 @@ public class ProgramManager : MonoBehaviour {
 
             if (value.IsStopped) {
                 if (EditMode.IsWorkshop) {
-                    setGameStateToIndex(0, 0.0f);
+                    setGameStateToStateIndex(0, 0.0f);
                 }
             } else if (value.IsExecuting) {
                 if (runState.IsStopped) {
@@ -141,7 +151,7 @@ public class ProgramManager : MonoBehaviour {
             lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, builtIns, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
             evalEntireProgram();
-            setGameStateToIndex(0, 0.0f);
+            setGameStateToStateIndex(0, 0.0f);
         }
     }
 
@@ -152,11 +162,21 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
-    private void setGameStateToIndex(int index, float transitionTimeSeconds) {
+    private void setGameStateToStateIndex(int index, float transitionTimeSeconds) {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
         index = Util.clamp(0, result.States.Length - 1, index);
         currentStateIndex = index;
         var state = result.States[index];
+        setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
+    }
+
+    private void setGameStateToStepIndex(int index) {
+        var transitionTimeSeconds = 0.0f;
+        if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
+        index = Util.clamp(0, result.Steps.Length - 1, index);
+        this.currentStepIndex = index;
+        // currentStateIndex will update after we set currentStepIndex
+        var state = result.States[this.currentStateIndex];
         setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
     }
 
@@ -175,13 +195,13 @@ public class ProgramManager : MonoBehaviour {
     }
 
     public void StepProgramState(ProgramStepType type, int distance) {
-        if (EditMode.IsPersistent) {
+        if (EditMode.IsWorkshop) {
             switch (type) {
                 case ProgramStepType.Command:
-                    setGameStateToIndex(currentStateIndex + distance, 0);
+                    setGameStateToStateIndex(currentStateIndex + distance, 0);
                     break;
                 case ProgramStepType.Statement:
-                    // TODO
+                    setGameStateToStepIndex(currentStepIndex + distance);
                     break;
             }
         }
@@ -197,7 +217,7 @@ public class ProgramManager : MonoBehaviour {
                 setRunState(RunState.Paused);
                 var newIndex = (int)Math.Floor(result.States.Length * slider);
                 if (currentStateIndex != newIndex) {
-                    setGameStateToIndex(newIndex, 0.0f);
+                    setGameStateToStateIndex(newIndex, 0.0f);
                 }
             }
         }
@@ -230,7 +250,7 @@ public class ProgramManager : MonoBehaviour {
                 currentStateIndex = result.States.Length;
             }
 
-            setGameStateToIndex(currentStateIndex, 0.0f);
+            setGameStateToStateIndex(currentStateIndex, 0.0f);
         }
     }
 
@@ -281,7 +301,7 @@ public class ProgramManager : MonoBehaviour {
                     setRunState(RunState.Finished);
                     GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
                 } else {
-                    setGameStateToIndex(currentStateIndex, dt);
+                    setGameStateToStateIndex(currentStateIndex, dt);
                 }
             }
         }

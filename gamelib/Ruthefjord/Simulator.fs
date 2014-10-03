@@ -210,12 +210,21 @@ type FullSimulationResult = {
     /// Errors, with pointers to corresponding step
     Errors: Result<ErrorResult>[];
 }
+with
+    /// Returns the index into the state array of the state that is active during stepIndex.
+    member x.StateOf stepIndex =
+        if stepIndex >= x.Steps.Length
+        then
+            x.States.Length
+        else
+            let onePast = x.States |> Array.tryFindIndex (fun s -> s.StepIndex > stepIndex)
+            (defaultArg onePast x.States.Length) - 1
 
 type LazyStepResult = {
     Stack: StackResult;
     State: StateResult;
     Errors: RuntimeError[];
-}
+}        
 
 type private MutableList<'a> = System.Collections.Generic.List<'a>
 
