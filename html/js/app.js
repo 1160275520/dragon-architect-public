@@ -400,6 +400,10 @@ $(function() {
         }
     });
 
+    $('#btn-step').on('click', function() {
+        RuthefjordUnity.Call.step_program("Statement", 1);
+    });
+
     // camera
     $('#camera-zoom-in').click(function(){RuthefjordUnity.Call.control_camera('zoomin');});
     $('#camera-zoom-out').click(function(){RuthefjordUnity.Call.control_camera('zoomout');});
@@ -416,6 +420,13 @@ $(function() {
 
     RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
     RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
+
+    $("#btn-time-slider-back").on('click', function() { 
+        RuthefjordUnity.Call.step_program("Command", -1)
+    });
+    $("#btn-time-slider-forward").on('click', function() { 
+        RuthefjordUnity.Call.step_program("Command", 1)
+    });
 
     // wait for all systems to start up, then go!
     promise_all.done(function() {
@@ -578,6 +589,7 @@ handler.onProgramStateChange = function(data) {
         var rs = json.run_state;
         console.log('on run state change: ' + rs);
         program_state.run_state = rs;
+        RuthefjordUI.StepButton.update(rs === 'paused' && rs !== 'finished');
         RuthefjordUI.PauseButton.update(rs !== 'stopped' && rs !== 'finished', rs === 'paused');
         RuthefjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
@@ -607,6 +619,7 @@ handler.onProgramStateChange = function(data) {
         if (program_state.run_state === 'executing' && !Blockly.mainWorkspace.dragMode) {
             if (s.current_code_elements.length > 0) {
                 // add new highlights for currently executing block and all surrounding blocks
+                console.info(s.current_code_elements[0].toString());
                 var block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[0].toString());
                 block.svg_.addHighlight();
                 while(block.getSurroundParent()) {

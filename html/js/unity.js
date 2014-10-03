@@ -68,6 +68,14 @@ module.Call = (function() {
         send_message("System", "EAPI_SetProgramFromJson", prog);
     }
 
+    self.step_program = function(step_type, step_distance) {
+        var params = {
+            type: step_type, 
+            distance: step_distance
+        };
+        send_message("System", "EAPI_StepProgramExecution", JSON.stringify(params));
+    }
+
     self.request_start_puzzle = function(puzzle_info) {
         send_message("Global", "EAPI_RequestStartPuzzle", JSON.stringify(puzzle_info));
     }

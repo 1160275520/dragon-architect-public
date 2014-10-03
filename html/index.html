@@ -87,7 +87,11 @@
         <div id="unity-player"></div>
         <div id="game-controls-bar-bottom" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <div id="speed-slider"></div>
-          <div id="time-slider"></div>
+          <div id="time-controls">
+            <button id="btn-time-slider-back" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-left"></i></button>
+            <div id="time-slider"></div>
+            <button id="btn-time-slider-forward" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-right"></i></button>
+          </div>
           <!--<p id="cube-counter" class="game-control">X</p>-->
         </div>
       </div>
@@ -108,6 +112,7 @@
           <iframe id="blockly" src="frame.html"></iframe>
           <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">
             <button id="btn-run" class="game-control-btn-playback">X</button>
+            <button id="btn-step" class="game-control-btn-playback">X</button>
             <button id="btn-pause" class="game-control-btn-playback">X</button>
           </div>
           <button id="btn-undo" style="display: none;">Undo</button>

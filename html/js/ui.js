@@ -402,6 +402,16 @@ module.PauseButton = (function() {
     return self;
 }());
 
+module.StepButton = (function() {
+    var self = {};
+
+    self.update = function(isEnabled) {
+        update_button('#btn-step', isEnabled, false, "One Step", "One Step");
+    };
+
+    return self;
+}());
+
 module.CameraControls = (function() {
     var self = {};
 
