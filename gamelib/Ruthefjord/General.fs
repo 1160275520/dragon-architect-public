@@ -57,7 +57,7 @@ module Util =
     let clamp lb ub x = min (max lb x) ub
 
     let binaryToHex (bytes:byte[]) =
-        let sb = System.Text.StringBuilder ()
+        let sb = System.Text.StringBuilder (bytes.Length * 2)
         for b in bytes do
             sb.Append (b.ToString "x2") |> ignore
         sb.ToString ()
