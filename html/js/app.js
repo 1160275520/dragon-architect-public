@@ -608,7 +608,15 @@ handler.onProgramStateChange = function(data) {
     // clear current highlights when not paused or currently unpausing
     var highlights = $(".blocklyHighlighted", $("#blockly").contents());
     if (highlights.length > 0 && program_state.run_state !== 'paused' && json.run_state !== 'executing') {
-        highlights.attr('class', highlights.attr('class').replace(" blocklyHighlighted", ""));
+        for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+            highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
+        };
+        var highlights = $(".primaryHighlight", $("#blockly").contents());
+        if (highlights.length > 0) {
+            for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+                highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
+            };
+        }
     }
 
     if ('current_state' in json) {
@@ -619,9 +627,8 @@ handler.onProgramStateChange = function(data) {
         if (program_state.run_state === 'executing' && !Blockly.mainWorkspace.dragMode) {
             if (s.current_code_elements.length > 0) {
                 // add new highlights for currently executing block and all surrounding blocks
-                console.info(s.current_code_elements[0].toString());
                 var block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[0].toString());
-                block.svg_.addHighlight();
+                block.svg_.addHighlight(true);
                 while(block.getSurroundParent()) {
                     block.getSurroundParent().svg_.addHighlight();
                     block = block.getSurroundParent();
@@ -629,7 +636,15 @@ handler.onProgramStateChange = function(data) {
             } else {
                 // clear final highlights 
                 var highlights = $(".blocklyHighlighted", $("#blockly").contents());
-                highlights.attr('class', highlights.attr('class').replace(" blocklyHighlighted", ""));
+                for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+                    highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
+                };
+                var highlights = $(".primaryHighlight", $("#blockly").contents());
+                if (highlights.length > 0) {
+                    for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+                        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
+                    };
+                }
             }
         }
 
