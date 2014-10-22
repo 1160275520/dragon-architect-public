@@ -146,6 +146,14 @@ public class ExternalAPI : MonoBehaviour
             case "rotateright": camera.Rotate(-90); break;
             case "tiltup": camera.Tilt(10); break;
             case "tiltdown": camera.Tilt(-10); break;
+            case "gamemode":
+                GameObject.Find("Camera").camera.enabled = true;
+                GameObject.Find("Viewer").camera.enabled = false;
+                break; 
+            case "viewmode": 
+                GameObject.Find("Camera").camera.enabled = false;
+                GameObject.Find("Viewer").camera.enabled = true;
+                break;
         }
     }
 

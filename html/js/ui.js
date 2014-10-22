@@ -415,11 +415,21 @@ module.StepButton = (function() {
 module.CameraControls = (function() {
     var self = {};
 
+    self.cameraMode = "gamemode";
+
     self.setVisible = function(components) {
         var isRotate = _.contains(components, 'camera_rotate');
         var isTilt = _.contains(components, 'camera_tilt');
         $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
         $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
+    }
+
+    self.toggleMode = function() {
+        if (self.cameraMode === "gamemode") {
+            self.cameraMode = "viewmode";
+        } else {
+            self.cameraMode = "gamemode";
+        }
     }
 
     return self;

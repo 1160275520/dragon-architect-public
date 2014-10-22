@@ -411,6 +411,10 @@ $(function() {
     $('#camera-rotate-right').click(function(){RuthefjordUnity.Call.control_camera('rotateright');});
     $('#camera-tilt-up').click(function(){RuthefjordUnity.Call.control_camera('tiltup');});
     $('#camera-tilt-down').click(function(){RuthefjordUnity.Call.control_camera('tiltdown');});
+    $('#camera-mode-toggle').click(function(){
+        RuthefjordUI.CameraControls.toggleMode();
+        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+    });
 
     // undo button
     // TODO shouldn't this be in blockly/ruthefjord.js?

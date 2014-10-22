@@ -86,6 +86,11 @@ public class AllTheGUI : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.L)) {
             Application.LoadLevel("loader");
         }
+
+        if (Input.GetKey(KeyCode.V)) {
+            GameObject.Find("Camera").camera.enabled = false;
+            GameObject.Find("Viewer").camera.enabled = true;
+        }
     }
 
     Rect getLastRect()
