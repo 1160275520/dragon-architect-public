@@ -4,6 +4,7 @@ import flask
 import flask.ext.sqlalchemy
 import flask.ext.restless
 from flask import request
+from sqlalchemy.dialects.postgresql import UUID
 
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ruthefjord'
@@ -20,10 +21,26 @@ def add_cors_header(response):
 
 class Player(db.Model):
     __tablename__ = 'player'
-    id = db.Column(db.Unicode, primary_key=True) # username
+    id = db.Column(UUID, primary_key=True)
     puzzles_completed = db.Column(db.Unicode)
     sandbox_program = db.Column(db.Unicode)
     sandbox_world_data = db.Column(db.Unicode)
+
+class UploadedProject(db.Model):
+    __tablename__ = 'uploaded_project'
+    id = db.Column(UUID, primary_key=True)
+    author = db.Column(UUID)
+    name = db.Column(db.Unicode)
+    time = db.Column(db.DateTime)
+    program = db.Column(db.Unicode)
+    # the initial world data (before program is run)
+    world_data = db.Column(db.Unicode)
+
+class ProjectScreenCapture(db.Model):
+    __tablename__ = 'project_screen_capture'
+    id = db.Column(UUID, primary_key=True)
+    project_id = db.Column(UUID, db.ForeignKey(UploadedProject.id), nullable=False)
+    data = db.Column(db.Unicode)
 
 def setup():
     # Create the database tables.
