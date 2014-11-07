@@ -16,10 +16,10 @@ public class Viewer : MonoBehaviour {
         var forward = new Vector3(transform.forward.x, 0, transform.forward.z);
         transform.position += forward * Input.GetAxis("Vertical") * speed;
         transform.position += new Vector3(-transform.forward.z, 0, transform.forward.x) * -Input.GetAxis("Horizontal") * speed;
-        if (Input.GetKey(KeyCode.Space)) {
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Q)) {
             transform.position = transform.position + (Vector3.up * speed);
         }
-        if (Input.GetKey(KeyCode.LeftShift)) {
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.E)) {
             transform.position = transform.position + (Vector3.down * speed);;
         }
 	}

@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector').hide();
+        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector, .gallerySelector, .viewerModeUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -76,6 +76,78 @@ module.State = (function(){ "use strict";
         hideAll();
         $('.moduleSelector').show();
         cb();
+    }
+
+    self.goToGallery = function(cb) {
+        hideAll();
+        $('.gallerySelector').show();
+        cb();
+    }
+
+    self.goToViewer = function(cb) {
+        hideAll();
+        $('.viewerModeUI').show();
+        RuthefjordUnity.Player.show();
+        RuthefjordUI.CameraControls.viewMode();
+        $('#main-view-game').css('width', '800px').css('margin', '0 auto');
+        cb();
+    }
+
+    return self;
+}());
+
+module.Gallery = (function() {
+    var self = {};
+
+    function renderThumb(item, thumbId) {
+        RuthefjordUnity.Call.render_final_frame({id:thumbId, prog:item.prog});
+    }
+
+    function makeItem(item) {
+        var span = document.createElement("span");
+        span.id = 'item_' + item.name;
+        $(span).addClass('galleryItem');
+        var title = document.createElement("p");
+        title.innerHTML = item.name;
+        var div = document.createElement("div");
+        $(span).append(title);
+        $(span).append(div);
+
+
+        var content = document.createElement("div");
+        var thumb = document.createElement("img");
+        thumb.id = span.id + '_thumb';
+        renderThumb(item, thumb.id);
+        $(content).append(thumb);
+        
+        var controls = document.createElement("div");
+        var viewBtn = document.createElement("button");
+        viewBtn.innerHTML = "View";
+        $(viewBtn).addClass("control-btn galleryButton");
+        var codeBtn = document.createElement("button");
+        codeBtn.innerHTML = "Get Code";
+        $(codeBtn).addClass("control-btn galleryButton");
+        $(controls).append(viewBtn);
+        $(controls).append(codeBtn);
+        $(controls).css("flex-direction", "");
+        
+        $(div).append(content);
+        $(div).append(controls);
+        return span;
+    }
+
+    self.create = function(items) {
+        var selector = $(".galleryItems");
+        selector.empty();
+        _.each(items, function(item) {
+            if (item.name) {
+                var i = makeItem(item);
+                // $(i).on('click', function () {
+                //     onSelectCallback(module); 
+                // });
+                selector.append(i);
+            }
+        });
     }
 
     return self;
@@ -430,6 +502,16 @@ module.CameraControls = (function() {
         } else {
             self.cameraMode = "gamemode";
         }
+    }
+
+    self.viewMode = function() {
+        self.cameraMode = "viewmode";
+        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+    }
+
+    self.gameMode = function() {
+        self.cameraMode = "gamemode";
+        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
     }
 
     return self;

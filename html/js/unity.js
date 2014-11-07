@@ -92,6 +92,10 @@ module.Call = (function() {
         send_message("System", "EAPI_RequestWorldState", "");
     }
 
+    self.render_final_frame = function(data) {
+        send_message("System", "EAPI_RenderFinal", JSON.stringify(data));
+    }
+
     return self;
 }());
 

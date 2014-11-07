@@ -88,8 +88,7 @@ public class AllTheGUI : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.V)) {
-            GameObject.Find("Camera").camera.enabled = false;
-            GameObject.Find("Viewer").camera.enabled = true;
+
         }
     }
 

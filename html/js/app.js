@@ -361,6 +361,17 @@ $(function() {
     $('#btn-modules').on('click', goToModules);
     $('#btn-back-selector-module').on('click', goToModules);
 
+    function goToGallery() {
+        RuthefjordUI.Gallery.create([{name:'myCastle0', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},{"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'}]);//,{name:'myCastle1'},{name:'myCastle2'},{name:'myCastle3'},{name:'myCastle4'},{name:'myCastle5'}]);
+        setTimeout(function() {RuthefjordUI.State.goToGallery(function () {
+            
+        })}, 10);
+    }
+
+    $('#btn-gallery').on('click', goToGallery);
+
+    $('#btn-back-gallery').on('click', function () {RuthefjordUI.State.goToGallery(function () {})});
+
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -701,6 +712,11 @@ handler.onUnlockDevMode = function() {
 
 handler.onCubeCount = function(count) {
     RuthefjordUI.CubeCounter.update(count);
+}
+
+handler.onRenderFinal = function(data) {
+    var json = JSON.parse(data);
+    document.getElementById(json.id).src = "data:image/png;base64," + json.src;
 }
 
 return onRuthefjordEvent;

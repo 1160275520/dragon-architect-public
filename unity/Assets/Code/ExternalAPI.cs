@@ -6,6 +6,7 @@ using System.Linq;
 using Ruthefjord;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
+using System.Text;
 
 public class ExternalAPI : MonoBehaviour
 {
@@ -200,5 +201,47 @@ public class ExternalAPI : MonoBehaviour
         var type = Util.parseEnum<ProgramStepType>(json.GetField("type").AsString);
         var dist = json.GetField("distance").AsInt;
         GetComponent<ProgramManager>().StepProgramState(type, dist);
+    }
+
+    public System.Collections.IEnumerator EAPI_RenderFinal(string json) {
+        var data = Json.Parse(json);
+
+        // switch main camera to render to texture
+        var rt = new RenderTexture (Screen.width, Screen.height, 24);
+        rt.Create();
+        Graphics.SetRenderTarget(rt);
+        RenderTexture.active = rt;
+        var cullingMask = Camera.main.cullingMask;
+        var clearFlags = Camera.main.clearFlags;
+        Camera.main.cullingMask = 0;
+        Camera.main.clearFlags = CameraClearFlags.Nothing;
+
+        // set up game state
+        EAPI_SetProgramFromJson(data.GetField("prog").AsString);
+        var progman = GetComponent<ProgramManager>();
+        progman.EditMode = EditMode.Workshop;
+        progman.SetProgramStateBySlider(1.0f);
+
+        // render to texture
+        yield return new WaitForEndOfFrame();
+        int width = Screen.width;
+        int height = Screen.height;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        tex.Apply();
+        byte[] bytes = tex.EncodeToPNG();
+
+        // cleanup 
+        Destroy(tex);
+        RenderTexture.active = null;
+        Camera.main.cullingMask = cullingMask;
+        Camera.main.clearFlags = clearFlags;
+
+        // encode and ship data
+        var dict = new Dictionary<string, Json.JsonValue>();
+        dict.Add("id", Json.JsonValue.NewString(data.GetField("id").AsString));
+        dict.Add("src", Json.JsonValue.NewString(Convert.ToBase64String(bytes)));
+        Application.ExternalCall(ExternalApiFunc, "onRenderFinal", Json.Serialize(Json.JsonValue.ObjectOf(dict)));
+        yield return null;
     }
 }
