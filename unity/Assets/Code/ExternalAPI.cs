@@ -141,20 +141,32 @@ public class ExternalAPI : MonoBehaviour
     public void EAPI_ControlCamera(string action) {
         var camera = FindObjectOfType<MyCamera>();
         switch (action) {
-            case "zoomin": camera.Zoom(0.5f); break;
-            case "zoomout": camera.Zoom(2.0f); break;
-            case "rotateleft": camera.Rotate(90); break;
-            case "rotateright": camera.Rotate(-90); break;
-            case "tiltup": camera.Tilt(10); break;
-            case "tiltdown": camera.Tilt(-10); break;
-            case "gamemode":
-                GameObject.Find("Camera").camera.enabled = true;
-                GameObject.Find("Viewer").camera.enabled = false;
-                break; 
-            case "viewmode": 
-                GameObject.Find("Camera").camera.enabled = false;
-                GameObject.Find("Viewer").camera.enabled = true;
-                break;
+        case "zoomin":
+            camera.Zoom(0.5f);
+            break;
+        case "zoomout":
+            camera.Zoom(2.0f);
+            break;
+        case "rotateleft":
+            camera.Rotate(90);
+            break;
+        case "rotateright":
+            camera.Rotate(-90);
+            break;
+        case "tiltup":
+            camera.Tilt(10);
+            break;
+        case "tiltdown":
+            camera.Tilt(-10);
+            break;
+        case "gamemode":
+            GameObject.Find("Camera").tag = "MainCamera";
+            GameObject.Find("Viewer").tag = "";
+            break; 
+        case "viewmode": 
+            GameObject.Find("Camera").tag = "";
+            GameObject.Find("Viewer").tag = "MainCamera";
+            break;
         }
     }
 
@@ -210,11 +222,10 @@ public class ExternalAPI : MonoBehaviour
         var rt = new RenderTexture (Screen.width, Screen.height, 24);
         rt.Create();
         Graphics.SetRenderTarget(rt);
-        RenderTexture.active = rt;
         var cullingMask = Camera.main.cullingMask;
         var clearFlags = Camera.main.clearFlags;
-        Camera.main.cullingMask = 0;
         Camera.main.clearFlags = CameraClearFlags.Nothing;
+        Camera.main.cullingMask = 0;
 
         // set up game state
         EAPI_SetProgramFromJson(data.GetField("prog").AsString);
@@ -233,7 +244,6 @@ public class ExternalAPI : MonoBehaviour
 
         // cleanup 
         Destroy(tex);
-        RenderTexture.active = null;
         Camera.main.cullingMask = cullingMask;
         Camera.main.clearFlags = clearFlags;
 

@@ -18,6 +18,12 @@ var world_data;
 
 var current_scene = "title";
 
+// flag for when unity is rendering gallery thumbnails
+var galleryRender = false; 
+
+// flag and data for when code from a gallery item is added to the sandbox
+var sandboxProgAddon = ""; 
+
 var storage = (function() {
     var self = {};
     var base_url = RUTHEFJORD_CONFIG.game_server.url;
@@ -362,10 +368,40 @@ $(function() {
     $('#btn-back-selector-module').on('click', goToModules);
 
     function goToGallery() {
-        RuthefjordUI.Gallery.create([{name:'myCastle0', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},"body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},{"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal","value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'}]);//,{name:'myCastle1'},{name:'myCastle2'},{name:'myCastle3'},{name:'myCastle4'},{name:'myCastle5'}]);
-        setTimeout(function() {RuthefjordUI.State.goToGallery(function () {
-            
-        })}, 10);
+        function sandboxCallback(item) {
+            current_scene = 'transition';
+            RuthefjordUI.State.goToSandbox(function() {
+                storage.load('sandbox_world_data', function(wd) {
+                    RuthefjordUnity.Call.request_start_sandbox(wd);
+                });
+                sandboxProgAddon = item.prog;
+            });
+        }
+        RuthefjordUI.Gallery.create([{name:'myCastle0', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
+                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
+                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
+                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
+                                    {name:'myCastle1', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
+                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
+                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
+                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
+                                    {name:'myCastle2', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
+                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
+                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
+                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
+                                    {name:'myCastle3', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
+                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
+                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
+                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
+                                    {name:'myCastle4', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
+                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
+                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
+                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
+                                    {name:'myCastle5', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
+                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
+                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
+                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'}], sandboxCallback);
+        galleryRender = true;
     }
 
     $('#btn-gallery').on('click', goToGallery);
@@ -580,6 +616,11 @@ handler.onSandboxStart = function() {
 
         start_editor(info);
     });
+
+    if (sandboxProgAddon) {
+        RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(JSON.parse(sandboxProgAddon)));
+        sandboxProgAddon = "";
+    }
 }
 
 handler.onPuzzleChange = function(json) {
@@ -717,6 +758,13 @@ handler.onCubeCount = function(count) {
 handler.onRenderFinal = function(data) {
     var json = JSON.parse(data);
     document.getElementById(json.id).src = "data:image/png;base64," + json.src;
+    if (galleryRender) {
+        RuthefjordUI.Gallery.thumbsToRender.splice(RuthefjordUI.Gallery.thumbsToRender.indexOf(json.id), 1);
+        if (RuthefjordUI.Gallery.thumbsToRender.length == 0) {
+            RuthefjordUI.State.goToGallery(function () {});
+            galleryRender = false;
+        }
+    }
 }
 
 return onRuthefjordEvent;

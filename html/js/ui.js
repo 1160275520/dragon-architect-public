@@ -99,11 +99,14 @@ module.State = (function(){ "use strict";
 module.Gallery = (function() {
     var self = {};
 
+    self.thumbsToRender = [];
+
     function renderThumb(item, thumbId) {
+        self.thumbsToRender.push(thumbId);
         RuthefjordUnity.Call.render_final_frame({id:thumbId, prog:item.prog});
     }
 
-    function makeItem(item) {
+    function makeItem(item, sandboxCallback) {
         var span = document.createElement("span");
         span.id = 'item_' + item.name;
         $(span).addClass('galleryItem');
@@ -112,7 +115,6 @@ module.Gallery = (function() {
         var div = document.createElement("div");
         $(span).append(title);
         $(span).append(div);
-
 
         var content = document.createElement("div");
         var thumb = document.createElement("img");
@@ -124,9 +126,19 @@ module.Gallery = (function() {
         var viewBtn = document.createElement("button");
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
+        function viewItem() {
+            RuthefjordUnity.Call.set_program(item.prog);
+            RuthefjordUnity.Call.set_program_execution_time(1);
+            RuthefjordUI.State.goToViewer(function () {});
+        }
+        $(viewBtn).on('click', viewItem);
         var codeBtn = document.createElement("button");
         codeBtn.innerHTML = "Get Code";
         $(codeBtn).addClass("control-btn galleryButton");
+        function getCode() {
+            sandboxCallback(item);
+        }
+        $(codeBtn).on('click', getCode);
         $(controls).append(viewBtn);
         $(controls).append(codeBtn);
         $(controls).css("flex-direction", "");
@@ -136,15 +148,12 @@ module.Gallery = (function() {
         return span;
     }
 
-    self.create = function(items) {
+    self.create = function(items, sandboxCallback) {
         var selector = $(".galleryItems");
         selector.empty();
         _.each(items, function(item) {
             if (item.name) {
-                var i = makeItem(item);
-                // $(i).on('click', function () {
-                //     onSelectCallback(module); 
-                // });
+                var i = makeItem(item, sandboxCallback);
                 selector.append(i);
             }
         });
