@@ -408,6 +408,10 @@ $(function() {
 
     $('#btn-back-gallery').on('click', function () {RuthefjordUI.State.goToGallery(function () {})});
 
+    $('#btn-share').on('click', function () {
+        RuthefjordUI.Share.create();
+    });
+
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -458,10 +462,6 @@ $(function() {
     $('#camera-rotate-right').click(function(){RuthefjordUnity.Call.control_camera('rotateright');});
     $('#camera-tilt-up').click(function(){RuthefjordUnity.Call.control_camera('tiltup');});
     $('#camera-tilt-down').click(function(){RuthefjordUnity.Call.control_camera('tiltdown');});
-    $('#camera-mode-toggle').click(function(){
-        RuthefjordUI.CameraControls.toggleMode();
-        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
-    });
 
     // undo button
     // TODO shouldn't this be in blockly/ruthefjord.js?
@@ -764,6 +764,8 @@ handler.onRenderFinal = function(data) {
             RuthefjordUI.State.goToGallery(function () {});
             galleryRender = false;
         }
+    } else {
+        RuthefjordUI.State.goToShare(function () {});
     }
 }
 

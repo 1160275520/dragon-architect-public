@@ -51,4 +51,6 @@ def setup():
 
     # Create API endpoints, which will be available at /api/<tablename> by default.
     manager.create_api(Player, methods=['GET', 'POST', 'PUT'])
+    manager.create_api(UploadedProject, methods=['GET', 'POST', 'PUT'])
+    manager.create_api(ProjectScreenCapture, methods=['GET', 'POST', 'PUT'])
 

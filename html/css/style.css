@@ -23,6 +23,8 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
     min-width: 1200px;
 }
 
@@ -31,17 +33,23 @@ body {
 
 header {
     display: flex;
+    display: -webkit-flex;
     justify-content: space-between;
+    -webkit-justify-content: space-between;
     align-items: center;
+    -webkit-align-items: center;
     height: 60px;
-    flex: none;
+    -webkit-flex: none;
     background: #4aaae3;
 }
 
 header > div {
     flex-grow: 0;
+    -webkit-flex-grow: 0;
     display: flex;
+    display: -webkit-flex;
     align-items: center;
+    -webkit-align-items: center;
 }
 
 header > div * {
@@ -51,6 +59,7 @@ header > div * {
 header > h1 {
     margin: 0 10px;
     flex-grow: 0;
+    -webkit-flex-grow: 0;
 }
 
 /* loading pane */
@@ -58,10 +67,13 @@ header > h1 {
 
 .view-loading {
     display: flex;
+    display: -webkit-flex;
     margin: 40px auto;
     padding: 60px;
     align-items: center;
+    -webkit-align-items: center;
     justify-content: center;
+    -webkit-justify-content: center;
     background: white;
 }
 
@@ -74,15 +86,19 @@ header > h1 {
 
 #main {
     display: flex;
+    display: -webkit-flex;
     align-items: stretch;
+    -webkit-align-items: stretch;
     width: 100%;
     margin: 10px 0;
     flex-grow: 1;
+    -webkit-flex-grow: 1;
     min-height: 630px;
 }
 
 #main-view-game {
     order: 1;
+    -webkit-order: 1;
     width: 40%;
     margin-left: 25px;
     margin-right: 25px;
@@ -93,23 +109,31 @@ header > h1 {
 #main-view-code {
     position: relative;
     order: 0;
+    -webkit-order: 0;
     width: 60%;
     margin-left: 25px;
     display: flex;
     flex-direction: column;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
     align-items: stretch;
+    -webkit-align-items: stretch;
 }
 
 #code-area {
     position: relative;
     display: flex;
+    display: -webkit-flex;
     align-items: stretch;
+    -webkit-align-items: stretch;
     flex-grow: 1;
+    -webkit-flex-grow: 1;
 }
 
 #blockly {
     border: none;
     flex-grow: 1;
+    -webkit-flex-grow: 1;
 }
 
 /* Game controls, buttons and sliders */
@@ -117,8 +141,11 @@ header > h1 {
 
 .game-controls-bar {
     display: flex;
+    display: -webkit-flex;
     align-items: center;
+    -webkit-align-items: center;
     justify-content: space-between;
+    -webkit-justify-content: space-between;
     height: 75px;
     padding: 5px 0;
 }
@@ -136,7 +163,9 @@ p.game-control {
 
 div.game-control {
     display: flex;
+    display: -webkit-flex;
     align-items: center;
+    -webkit-align-items: center;
     padding: 5px;
 }
 
@@ -159,12 +188,15 @@ header button, .control-btn, .control-icon-btn {
 
 #game-controls-bar-bottom {
     flex-direction: column;
+    -webkit-flex-direction: column;
     height: 130px;
 }
 
 #time-controls {
     display: flex;
+    display: -webkit-flex;
     flex-direction: row;
+    -webkit-flex-direction: row;
 }
 
 .btn-time-slider {
@@ -178,6 +210,8 @@ header button, .control-btn, .control-icon-btn {
 #game-control-bar-playback {
     display: flex;
     flex-direction: column;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
     position: absolute;
     right: 10px;
     top: 30px;
@@ -307,11 +341,13 @@ header button, .control-btn, .control-icon-btn {
 
 .slider-labels {
     display: flex;
+    display: -webkit-flex;
     width: auto;
 }
 
 .slider-labels > span {
     flex-grow: 1;
+    -webkit-flex-grow: 1;
     font-family: "Ubuntu Mono";
     font-weight: bold;
 }
@@ -370,15 +406,20 @@ header button, .control-btn, .control-icon-btn {
 #selector-module {
     display: flex;
     flex-direction: column;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
     background-color: #fff;
     align-items: center;
+    -webkit-align-items: center;
     z-index: 1;
     min-height: 400px;
 }
 
 .moduleOptions {
     display: flex;
+    display: -webkit-flex;
     justify-content: center;
+    -webkit-justify-content: center;
 }
 
 .moduleOption {
@@ -392,21 +433,30 @@ header button, .control-btn, .control-icon-btn {
 
 #selector-gallery {
     display: flex;
+    display: -webkit-flex;
     justify-content: center;
+    -webkit-justify-content: center;
     background-color: #fff;
     z-index: 1;
-    min-height: 400px;
+    min-height: 800px;
+    height: 100%;
 }
 
 .galleryItems {
     display: flex;
+    display: -webkit-flex;
     justify-content: center;
+    -webkit-justify-content: center;
     flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    min-height: 100%;
 }
 
 .galleryItem {
     display: flex;
     flex-direction: column;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
     height: 285px;
     padding: 25px;
     margin: 10px;
@@ -423,7 +473,9 @@ header button, .control-btn, .control-icon-btn {
 
 .galleryItem>div {
     display: flex;
+    display: -webkit-flex;
     justify-content: center;
+    -webkit-justify-content: center;
 }
 
 .galleryItem * img {
@@ -435,6 +487,25 @@ header button, .control-btn, .control-icon-btn {
     margin-top: 25px;
     margin-bottom: 25px;
     width: 100px;
+}
+
+#share-container {
+    display: flex;
+    flex-direction: column;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+    align-items: center;
+    -webkit-align-items: center;
+    background-color: antiquewhite;
+    border-style: solid;
+    border-width: 2px;
+    min-height: 500px;
+}
+
+#share-message {
+    padding-top: 20px;
+    font-style: bold;
+    font-size: 24pt;
 }
 
 /* dialogs */

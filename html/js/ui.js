@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector, .gallerySelector, .viewerModeUI').hide();
+        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector, .gallerySelector, .viewerModeUI, .shareModeUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -91,6 +91,49 @@ module.State = (function(){ "use strict";
         RuthefjordUI.CameraControls.viewMode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
         cb();
+    }
+
+    self.goToShare = function(cb) {
+        hideAll();
+        $('.shareModeUI').show();
+        cb();
+    }
+
+    return self;
+}());
+
+module.Share = (function() {
+    var self = {};
+
+    self.title = "";
+    var site = fermata.json("http://localhost:5000/api");
+
+    var submit = function () {
+        var message = $("#share-message");
+        if (self.title) {
+            // from http://stackoverflow.com/a/2117523
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
+            var upload = {id: uuid, author: "00000000-0000-0000-0000-000000000000", name: self.title, time: Date(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
+            site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {console.log(e,d);});
+        } else {
+            // message.html("Please enter a title");
+            // message.show();
+            // message.stop().animate({opacity: '100'});
+            // message.fadeOut(2000, "easeInExpo", function () {message.html("");});
+            alert("Please enter a title");
+        }
+    }
+
+    self.create = function () {
+        $("#share-edit-title").editInPlace({
+            callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
+            show_buttons: false,
+        });
+        RuthefjordUnity.Call.render_final_frame({id:"share-thumb", prog:JSON.stringify(RuthefjordBlockly.getProgram())});
+        $("#btn-share-submit").on('click', submit);
     }
 
     return self;

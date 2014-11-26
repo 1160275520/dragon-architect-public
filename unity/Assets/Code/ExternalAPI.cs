@@ -218,15 +218,6 @@ public class ExternalAPI : MonoBehaviour
     public System.Collections.IEnumerator EAPI_RenderFinal(string json) {
         var data = Json.Parse(json);
 
-        // switch main camera to render to texture
-        var rt = new RenderTexture (Screen.width, Screen.height, 24);
-        rt.Create();
-        Graphics.SetRenderTarget(rt);
-        var cullingMask = Camera.main.cullingMask;
-        var clearFlags = Camera.main.clearFlags;
-        Camera.main.clearFlags = CameraClearFlags.Nothing;
-        Camera.main.cullingMask = 0;
-
         // set up game state
         EAPI_SetProgramFromJson(data.GetField("prog").AsString);
         var progman = GetComponent<ProgramManager>();
@@ -244,8 +235,6 @@ public class ExternalAPI : MonoBehaviour
 
         // cleanup 
         Destroy(tex);
-        Camera.main.cullingMask = cullingMask;
-        Camera.main.clearFlags = clearFlags;
 
         // encode and ship data
         var dict = new Dictionary<string, Json.JsonValue>();

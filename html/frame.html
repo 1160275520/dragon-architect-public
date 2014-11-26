@@ -40,6 +40,8 @@
       }
       #blocklyLabels {
         text-align: center;
+        display: flex;
+        display: -webkit-flex;
       }
       #libraryLabel {
         background-color: #ccebff;
@@ -62,9 +64,9 @@
       function makeLabels() {
         var toolboxWidth = Blockly.mainWorkspace.flyout_.getMetrics_().viewWidth;
         if (toolboxWidth < 100) { // hide when toolbox is empty
-          $("#blocklyLabels").css("display", "none");
+          $("#blocklyLabels").hide();
         } else {
-          $("#blocklyLabels").css("display", "flex");
+          $("#blocklyLabels").show()
           $("#libraryLabel").width(toolboxWidth + 1); // viewWidth is 1 pixel too small for some reason when event fires
           $("#codeLabel").width(Blockly.mainWorkspace.getMetrics().viewWidth - $("#libraryLabel").width());
         }
