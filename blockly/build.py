@@ -1,6 +1,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
 import sys, os, subprocess, argparse, json, shutil
 
+PY2 = sys.version_info[0] == 2
+
 THIS_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.abspath(os.path.join(THIS_DIR,'../..'))
 
@@ -14,7 +16,11 @@ def invalid_engine(dep):
     abort('ABORT: uknown VCS engine "%s"' % dep['engine'])
 
 def getcmdout(args, dep):
-    return subprocess.check_output(args, cwd=os.path.join(ROOT_DIR, dep['local']))
+    result = subprocess.check_output(args, cwd=os.path.join(ROOT_DIR, dep['local']))
+    if PY2:
+        return result
+    else:
+        return result.decode('utf-8')
 
 def runcmd(args, dep):
     subprocess.check_call(args, cwd=os.path.join(ROOT_DIR, dep['local']))

@@ -3,7 +3,7 @@
 	"local":"blockly-ruthefjord",
 	"engine":"hg",
 	"remote":"ssh://bicycle.cs.washington.edu//homes/gws/edbutler/repos/blockly-ruthefjord",
-	"revision":"78921aabdb46f5799607c7d1e9df4f7996fbb46c"
+	"revision":"a82656243276689eee3108de23ae1db213e9849f"
 },
 {
 	"local":"closure-library-read-only",
