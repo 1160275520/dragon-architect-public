@@ -118,7 +118,9 @@ def build(deps):
 
 def save_deps(deps):
     print('Saving dependency file...')
-    with open(os.path.join(THIS_DIR,'dependencies.json'), 'wb') as f:
+    # w uses wrong line endings on python 2 with windows but wb doesn't allow unicode with python 3 X(
+    openmode = 'wb' if PY2 else 'w'
+    with open(os.path.join(THIS_DIR,'dependencies.json'), openmode) as f:
         f.write("[")
         for i, dep in enumerate(deps):
             if i != 0:
