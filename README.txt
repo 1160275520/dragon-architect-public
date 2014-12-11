@@ -16,6 +16,13 @@ Dependencies:
 - python 2.7+ (does NOT work with 3.X)
 - nodejs + npm + gulp
 
+The project also depends on some other repositories, but it will clone
+them during the build process. Beware: these will be cloned into the
+parent directory of this project! If the remote URLs for these
+dependencies have rotted away, you can override the remote URLs by
+creating a dependency_override.json in this directory. See tools/depman.py
+for information about how to do this.
+
 Assuming all the dependencies are installed and python/node are on the PATH,
 run `python build.py` from the project root. This will build everything,
 and dump the deployble web code in build/.
