@@ -71,7 +71,7 @@ let ``Puzzle simple load test`` () =
             "detail": "Here is how"
         },
         "world": {
-            "blocks": {"type":"json", "data":[
+            "cubes": {"type":"json", "data":[
                 {"pos": [4,5,6], "blk": 76},
                 {"pos": [3,2,1], "blk": 44}
             ]},
