@@ -20,9 +20,9 @@ define Down(x)
     repeat x times
         command down()
 
-define PlaceBlock(color)
-    command block(color)
+define PlaceCube(color)
+    command cube(color)
 
-define RemoveBlock()
+define RemoveCube()
     command remove()
 

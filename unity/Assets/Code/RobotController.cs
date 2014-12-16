@@ -92,7 +92,7 @@ public class RobotController : MonoBehaviour {
             // if time is large enough, animmate the robot going to the new position
             var anim = transform.FindChild("dragon_improved").gameObject.animation;
             switch (com.Name) {
-                case "block":
+                case "cube":
                     anim["bite"].speed = anim["bite"].length / secondsPerCommand;
                     anim.Play("bite");
                     anim.PlayQueued("idle", QueueMode.CompleteOthers);

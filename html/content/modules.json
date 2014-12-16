@@ -4,16 +4,16 @@
         "tutorial.movement2d_part1",
         "tutorial.movement2d_part2",
         "tutorial.movement2d_part3",
-        "tutorial.place_blocks"
+        "tutorial.place_cubes"
     ],
     "edges": [
         ["tutorial.movement2d_part1", "tutorial.movement2d_part2"],
         ["tutorial.movement2d_part2", "tutorial.movement2d_part3"],
-        ["tutorial.movement2d_part3", "tutorial.place_blocks"]
+        ["tutorial.movement2d_part3", "tutorial.place_cubes"]
     ]
 },
 "remove":{
-    "nodes": ["remove.remove_blocks"],
+    "nodes": ["remove.remove_cubes"],
     "edge": [],
     "name": "To Err is Dragon",
     "learn": ["Remove cubes"]
@@ -38,15 +38,15 @@
         "repeat.arguments",
         "repeat.repeat_fixedProgram",
         "repeat.repeat_fixedLoops",
-        "repeat.repeat_101Blocks",
+        "repeat.repeat_101Cubes",
         "repeat.speed_slider"
     ],
     "edges": [
         ["repeat.arguments", "repeat.repeat_fixedProgram"],
         ["repeat.arguments", "repeat.repeat_fixedLoops"],
-        ["repeat.repeat_fixedProgram", "repeat.repeat_101Blocks"],
-        ["repeat.repeat_fixedLoops", "repeat.repeat_101Blocks"],
-        ["repeat.repeat_101Blocks", "repeat.speed_slider"]
+        ["repeat.repeat_fixedProgram", "repeat.repeat_101Cubes"],
+        ["repeat.repeat_fixedLoops", "repeat.repeat_101Cubes"],
+        ["repeat.repeat_101Cubes", "repeat.speed_slider"]
     ],
     "name": "Meaty Beaty Big and Bouncy",
     "learn": ["Use arguments","Repeat code many times","Control program speed"]

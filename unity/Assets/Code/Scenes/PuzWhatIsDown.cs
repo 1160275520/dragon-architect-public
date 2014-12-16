@@ -11,7 +11,6 @@ public class PuzWhatIsDown : MonoBehaviour
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
 
-        var progman = GetComponent<ProgramManager>();
         var target = new IntVec3(0,0,0);
         
         lh.CreateRobotTarget(target);

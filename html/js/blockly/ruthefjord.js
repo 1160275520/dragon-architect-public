@@ -49,8 +49,8 @@ RuthefjordBlockly.Commands = [
     ['move2',  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>'],
     ['up',  '<block type="Up"></block>'],
     ['down',  '<block type="Down"></block>'],
-    ['place',  '<block type="PlaceBlock"></block>'],
-    ['remove', '<block type="RemoveBlock"></block>'],
+    ['place',  '<block type="PlaceCube"></block>'],
+    ['remove', '<block type="RemoveCube"></block>'],
     ['line',   '<block type="Line"></block>'],
     ['repeat', '<block type="controls_repeat"></block>'],
     ['defproc', '<block type="procedures_defnoreturn"></block>']

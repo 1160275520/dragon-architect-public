@@ -1,10 +1,10 @@
 #lang imperative:1.0
 @FrozenBlocks=true
 Forward(3)
-PlaceBlock(1)
+PlaceCube(1)
 Forward(1)
-PlaceBlock(1)
+PlaceCube(1)
 Right()
 Forward(1)
-PlaceBlock(1)
+PlaceCube(1)
 

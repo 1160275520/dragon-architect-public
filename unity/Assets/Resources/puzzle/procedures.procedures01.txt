@@ -6,10 +6,10 @@ define Foo()
     Left()
     Left()
     Left()
-    PlaceBlock(1)
+    PlaceCube(1)
 
 Forward(1)
 Foo()
 Forward(1)
-RemoveBlock()
+RemoveCube()
 

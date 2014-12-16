@@ -38,6 +38,7 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part2"},
         "logging_id": 31,
         "instructions": {
             "summary": "I need to get to the pink box, and my program doesn't move me far enough.",
@@ -58,13 +59,14 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part3"},
         "logging_id": 32,
         "instructions": {
             "summary": "The pink box has moved. Change my program to help me get there!",
             "detail": "Add a {right} to my program and click {go}."
         }
     },
-    "tutorial.place_blocks": {
+    "tutorial.place_cubes": {
         "name": "Placing Cubes",
         "component": "PuzPlacement",
         "library": {
@@ -73,15 +75,16 @@
             "granted": ["place"]
         },
         "tutorial": {
-            "highlighted": ["PlaceBlock", "Forward"]
+            "highlighted": ["PlaceCube", "Forward"]
         },
+        "program": {"type":"resource", "value":"puzzle/tutorial.placement"},
         "instructions": {
             "summary": "I want to place some cubes. Help me place 4 of them!",
-            "detail": "Use several {forward} and {placeblock} together to place a bunch of cubes."
+            "detail": "Use several {forward} and {placecube} together to place a bunch of cubes."
         },
         "logging_id": 23
     },
-    "remove.remove_blocks":{
+    "remove.remove_cubes":{
         "name": "Removing Cubes",
         "component": "PuzRemove",
         "library": {
@@ -89,10 +92,10 @@
             "granted": ["remove"]
         },
         "tutorial": {
-            "highlighted": ["RemoveBlock"]
+            "highlighted": ["RemoveCube"]
         },
         "world": {
-            "blocks": {"type":"json", "data":[
+            "cubes": {"type":"json", "data":[
                 {"pos": [3,0,0], "blk": 0},
                 {"pos": [4,0,0], "blk": 0},
                 {"pos": [5,0,0], "blk": 0}
@@ -230,14 +233,14 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Help me fill in the blueprint by adding a {forward} and a {placeblock} to my program!",
+            "summary": "Help me fill in the blueprint by adding a {forward} and a {placecube} to my program!",
             "detail": "Try adding those code blocks inside {repeat9}."
         },
         "logging_id": 27
     },
-    "repeat.repeat_101Blocks": {
+    "repeat.repeat_101Cubes": {
         "name": "101 Cubes",
-        "component": "PuzRepeat101Blocks",
+        "component": "PuzRepeat101Cubes",
         "library": {
             "required": ["move2", "place"],
             "granted": ["repeat"]

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Ruthefjord;
 using Ruthefjord.Ast;
 
-public class PuzRepeat101Blocks : MonoBehaviour {
+public class PuzRepeat101Cubes : MonoBehaviour {
     
     Func<bool> winPredicate;
     
@@ -15,7 +15,7 @@ public class PuzRepeat101Blocks : MonoBehaviour {
         var progman = GetComponent<ProgramManager>();
         progman.TicksPerStep = 10; // make execution a little faster, as there's no speed slider yet and the programs will need to place lots of blocks
 
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(101) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinCubeCountPredicate(101) });
 	}
 	
 	// Update is called once per frame

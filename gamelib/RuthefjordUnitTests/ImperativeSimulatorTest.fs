@@ -48,7 +48,7 @@ define foo()
 
 [<Fact>]
 let ``Simulator simple deserialized`` () =
-    // tests Forward, Call F1, Up, PlaceBlock
+    // tests Forward, Call F1, Up, PlaceCube
 
     let prog = Serialization.Load ProgramSerializationTest.simpleTestProgram
     let lib = loadBuiltIns ()
@@ -66,7 +66,7 @@ let ``Simulator simple parsed`` () =
     let text = """
 define Foo()
     Up(1)
-    PlaceBlock(1)
+    PlaceCube(1)
 
 Forward(5)
 repeat 10 times
@@ -89,11 +89,11 @@ repeat 10 times
     Forward(1)
     Right()
     Forward(1)
-    PlaceBlock(1)
+    PlaceCube(1)
     Forward(1)
     Left()
     Forward(1)
-    PlaceBlock(1)
+    PlaceCube(1)
 """
 
 [<Fact>]

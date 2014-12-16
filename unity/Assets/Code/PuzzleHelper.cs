@@ -33,7 +33,7 @@ public class PuzzleHelper : MonoBehaviour
         var worldOp = global.CurrentPuzzle.WorldData;
         if (OptionModule.IsSome(worldOp)) {
             var world = worldOp.Value;
-            var blocks = Ruthefjord.ImmArr.ofArray(world.Blocks);
+            var blocks = Ruthefjord.ImmArr.ofArray(world.Cubes);
             // only set world if there are a non-zero number of blocks,
             // since puzzles may be using this to set the robot but setting their own blocks in a component
             // if not, then the blocks default to empty anyway.
@@ -96,7 +96,7 @@ public class PuzzleHelper : MonoBehaviour
     }
 
     /// Creates a function that checks the current state of the grid and returns true iff there are at least numBlocks.
-    public Func<bool> CreateMinBlockCountPredicate(int numBlocks) {
+    public Func<bool> CreateMinCubeCountPredicate(int numBlocks) {
         return () => {
             var grid = GetComponent<Grid>();
             return grid.AllCells.Count() >= numBlocks;

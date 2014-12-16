@@ -29,7 +29,7 @@ let simpleTestProgram = """
 "body":[
     {"type":"proc", "name":"F1", "params":[],"body":[
         {"args":[{"type":"literal","value":"1"}],"meta":{"id":25},"ident":"Up","type":"call"},
-        {"args":[{"type":"literal","value":1}],"meta":{"id":26},"ident":"PlaceBlock","type":"call"}
+        {"args":[{"type":"literal","value":1}],"meta":{"id":26},"ident":"PlaceCube","type":"call"}
     ]},
     {"type":"proc", "name":"F2", "params":[],"body":[]},
     {"args":[{"type":"literal","value":"5"}],"meta":{"id":21},"ident":"Forward","type":"call"},

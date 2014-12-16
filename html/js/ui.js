@@ -285,7 +285,7 @@ module.LevelSelect = (function() {
         renderer.layout(layout).run(graph, d3.select(".puzzleSelector svg g"));
 
         // color rectangles
-        var nodes = d3.selectAll(".puzzleSelector .node")[0];
+        var nodes = $(".puzzleSelector .node");
 
         // setup onclick behavior
         var SANDBOX_LEVEL_ID = 'tutorial.sandbox';
@@ -296,18 +296,19 @@ module.LevelSelect = (function() {
             unavailable: "gray"
         };
 
-        nodes.forEach(function (x) { 
+        nodes.each(function (index) { 
+            var x = $(this)[0];
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback(x.id);
                 };
                 if (isSceneCompleted(x.id)) {
-                    x.children[0].style.fill = colors[COLOR_MAP.completed];
+                    x.childNodes[0].style.fill = colors[COLOR_MAP.completed];
                 } else {
-                    x.children[0].style.fill = colors[COLOR_MAP.available];
+                    x.childNodes[0].style.fill = colors[COLOR_MAP.available];
                 }
             } else {
-                x.children[0].style.fill = colors[COLOR_MAP.unavailable];
+                x.childNodes[0].style.fill = colors[COLOR_MAP.unavailable];
             }
         });
     };
@@ -325,7 +326,7 @@ module.Instructions = (function() {
         forward: "media/blockSvgs/forward.svg",
         left: "media/blockSvgs/left.svg",
         right: "media/blockSvgs/right.svg",
-        placeblock: "media/blockSvgs/placeblock.svg",
+        placecube: "media/blockSvgs/placecube.svg",
         removeblock: "media/blockSvgs/removeblock.svg",
         up: "media/blockSvgs/up.svg",
         down: "media/blockSvgs/down.svg",

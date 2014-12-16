@@ -11,10 +11,7 @@ public class PuzPlacement : MonoBehaviour
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
 
-        var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle/tutorial.placement");
-
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinBlockCountPredicate(4) });
+        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinCubeCountPredicate(4) });
     }
 
     void Update() {

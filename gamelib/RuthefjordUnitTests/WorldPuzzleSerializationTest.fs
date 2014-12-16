@@ -13,7 +13,7 @@ let newBlock (pos, block) = KeyValuePair<IntVec3, int> (pos, block)
 
 [<Fact>]
 let ``World serialization empty test`` () =
-    let world = {Blocks=[||]; Robots=[||]}
+    let world = {Cubes=[||]; Robots=[||]}
 
     let encoded = World.encodeToString world
     let decoded = World.decodeFromString encoded 
@@ -21,8 +21,8 @@ let ``World serialization empty test`` () =
 
     let empty = [
         """{"meta":{"version":1,"type":"world"}}""";
-        """{"meta":{"version":1,"type":"world"}, "blocks":{"type":"json", "data":[]}}""";
-        """{"meta":{"version":1,"type":"world"}, "blocks":{"type":"binary", "data":"", "little_endian":true}}""";
+        """{"meta":{"version":1,"type":"world"}, "cubes":{"type":"json", "data":[]}}""";
+        """{"meta":{"version":1,"type":"world"}, "cubes":{"type":"binary", "data":"", "little_endian":true}}""";
         """{"meta":{"version":1,"type":"world"}, "robots":[]}""";
     ]
     for text in empty do
@@ -32,9 +32,9 @@ let ``World serialization empty test`` () =
 let ``World serialization simple test`` () =
     let kvp (k, v) = KeyValuePair (k,v)
 
-    let blocks = [| IntVec3.UnitX, 1; IntVec3.UnitY, 2; IntVec3.UnitZ, 3; |] |> Array.map kvp
+    let cubes = [| IntVec3.UnitX, 1; IntVec3.UnitY, 2; IntVec3.UnitZ, 3; |] |> Array.map kvp
     let robots = [| {Position=IntVec3(2,3,4); Direction= -IntVec3.UnitZ} |]
-    let world = {Blocks=blocks; Robots=robots}
+    let world = {Cubes=cubes; Robots=robots}
 
     let encoded = World.encodeToString world
     let decoded = World.decodeFromString encoded 
@@ -46,9 +46,9 @@ let ``World serialization repeat program test`` () =
     let lib = ImperativeSimulatorTest.loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
     let states = (Simulator.SimulateWithRobot prog lib robot).States
-    let blocks = (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.ToArray()
+    let cubes = (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.ToArray()
     let robots = [| (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Robot |]
-    let world = {Blocks=blocks; Robots=robots}
+    let world = {Cubes=cubes; Robots=robots}
 
     let encoded = World.encodeToString world 
     let decoded = World.decodeFromString encoded 
@@ -90,7 +90,7 @@ let ``Puzzle simple load test`` () =
     puzzle.Instructions |> should equal (Some {Summary="Do a thing!"; Detail="Here is how"})
     puzzle.WorldData.IsSome |> should equal true
     let world = puzzle.WorldData.Value
-    world.Blocks |> should equal [| newBlock (IntVec3 (4,5,6), 76); newBlock (IntVec3(3,2,1), 44) |]
+    world.Cubes |> should equal [| newBlock (IntVec3 (4,5,6), 76); newBlock (IntVec3(3,2,1), 44) |]
     world.Robots |> should equal [| {Position=IntVec3(2,3,4); Direction= -IntVec3.UnitZ} |]
 
 [<Fact>]

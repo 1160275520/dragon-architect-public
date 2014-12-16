@@ -7,7 +7,7 @@ var RUTHEFJORD_CONFIG = {
         server_tag: 'DEVELOPMENT_SERVER',
         //proxy_url: 'logging_proxy',
         game: {name: 'hackcraft', id: 19, skey: "e00fc765bbcc46064b5eb57dbb02bdf2"},
-        category_id: 2
+        category_id: 4
     }
 };
 

@@ -148,20 +148,20 @@ Blockly.UnityJSON['Down'] = function(block) {
     return newCall1("Down", block.id, block.getFieldValue("VALUE"));
 };
 
-// PLACEBLOCK
-Blockly.Blocks['PlaceBlock'] = {
+// PlaceCube
+Blockly.Blocks['PlaceCube'] = {
     init: function() {
         this.setFullColor(COLOR_BLOCK);
         this.appendDummyInput()
-            .appendField("place block")
+            .appendField("place cube")
             .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
 
-Blockly.UnityJSON['PlaceBlock'] = function(block) {
-    return newCall1("PlaceBlock", block.id, Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1);
+Blockly.UnityJSON['PlaceCube'] = function(block) {
+    return newCall1("PlaceCube", block.id, Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1);
 };
 
 // REMOVEBLOCK
@@ -238,7 +238,7 @@ Blockly.UnityJSON.bodyToXML = function (body, program) {
     return xml;
 }
 
-var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceBlock', 'RemoveBlock', 'Up', 'Down']
+var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveBlock', 'Up', 'Down']
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.UnityJSON.stmtToXML = function (stmt, program) {
@@ -247,7 +247,7 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
             if (_.contains(BUILT_INS, stmt.ident)) {
                 if (stmt.args.length === 0) {
                     return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '">';
-                } else if (stmt.ident === 'PlaceBlock') {
+                } else if (stmt.ident === 'PlaceCube') {
                     return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
                 } else {
                     return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><field name="VALUE">' + stmt.args[0].value + '</field>';

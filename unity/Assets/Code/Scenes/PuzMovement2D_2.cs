@@ -11,8 +11,6 @@ public class PuzMovement2D_2 : MonoBehaviour {
         var lh = GetComponent<PuzzleHelper>();
 		var target = new IntVec3(2,0,0);
         lh.CreateRobotTarget(target);
-        var global = FindObjectOfType<Global>();
-        global.CurrentPuzzle = global.CurrentPuzzle.UpdateStartingProgramToPreserve;
 		winPredicate = PuzzleHelper.All( new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateTargetPredicate(target) });
 	}
 	

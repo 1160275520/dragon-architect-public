@@ -50,7 +50,7 @@ with
 type BlockData = KeyValuePair<IntVec3, Block> []
 
 type WorldData = {
-    Blocks: BlockData;
+    Cubes: BlockData;
     Robots: BasicRobot[];
 }
 
@@ -156,7 +156,7 @@ module World =
                     "version", J.Int ENCODE_VERSION;
                     "type", J.String ENCODE_TYPE;
                 ];
-            "blocks", encodeBlocks data.Blocks;
+            "cubes", encodeBlocks data.Cubes;
             "robots", Array.map encodeRobot data.Robots |> J.arrayOfArray;
         ]
 
@@ -164,7 +164,7 @@ module World =
 
     let decodeFromJsonNoMeta json =
         {
-            Blocks = defaultArg (tryJload json "blocks" decodeBlocks) Array.empty;
+            Cubes = defaultArg (tryJload json "cubes" decodeBlocks) Array.empty;
             Robots = defaultArg (tryJload json "robots" J.arrayToArray) Array.empty |> Array.map decodeRobot;
         }
 

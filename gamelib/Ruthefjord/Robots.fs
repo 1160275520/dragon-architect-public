@@ -9,7 +9,7 @@ type Block = int
 
 type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
 
-    let MAX_BLOCKS = 8000
+    let MAX_CUBES = 8000
 
     let mutable cells = Dictionary()
     do
@@ -20,8 +20,8 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
     member x.CurrentState =
         ImmArr.ofSeq cells
 
-    member x.AddObject idx block = if cells.Count < MAX_BLOCKS && not (cells.ContainsKey idx) then cells.Add (idx, block)
-    member x.OverwriteObject idx block = cells.[idx] <- block
+    member x.AddObject idx cube = if cells.Count < MAX_CUBES && not (cells.ContainsKey idx) then cells.Add (idx, cube)
+    member x.OverwriteObject idx cube = cells.[idx] <- cube
     member x.RemoveObject idx = cells.Remove idx |> ignore
     member x.GetObject idx =
         let v = ref 0
@@ -59,9 +59,9 @@ type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
                 | "down" -> if p.Y > 0 then robot <- {robot with Position=p - IntVec3.UnitY}
                 | "left" -> robot <- {robot with Direction=IntVec3 (-d.Z, 0, d.X)}
                 | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
-                | "block" ->
-                    let block = command.Args.[0] :?> int
-                    grid.AddObject p block
+                | "cube" ->
+                    let cube = command.Args.[0] :?> int
+                    grid.AddObject p cube
                 | "remove" -> grid.RemoveObject p
                 | _ -> ()
             else ()

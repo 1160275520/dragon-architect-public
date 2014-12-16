@@ -16,7 +16,7 @@ public class Sandbox : MonoBehaviour {
         var worldData = FindObjectOfType<Global>().SandboxWorldData;
         if (worldData != null) {
             var world = World.decodeFromString(worldData);
-            var blocks = Ruthefjord.ImmArr.ofArray(world.Blocks);
+            var blocks = Ruthefjord.ImmArr.ofArray(world.Cubes);
             GetComponent<Grid>().SetGrid(blocks);
             if (world.Robots.Length > 0) {
                 var d = world.Robots[0];
