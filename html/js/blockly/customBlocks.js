@@ -148,7 +148,7 @@ Blockly.UnityJSON['Down'] = function(block) {
     return newCall1("Down", block.id, block.getFieldValue("VALUE"));
 };
 
-// PlaceCube
+// PLACECUBE
 Blockly.Blocks['PlaceCube'] = {
     init: function() {
         this.setFullColor(COLOR_BLOCK);
@@ -164,19 +164,19 @@ Blockly.UnityJSON['PlaceCube'] = function(block) {
     return newCall1("PlaceCube", block.id, Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1);
 };
 
-// REMOVEBLOCK
-Blockly.Blocks['RemoveBlock'] = {
+// REMOVECUBE
+Blockly.Blocks['RemoveCube'] = {
     init: function() {
         this.setFullColor(COLOR_BLOCK);
         this.appendDummyInput()
-            .appendField("remove block")
+            .appendField("remove cube")
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
 };
 
-Blockly.UnityJSON['RemoveBlock'] = function(block) {
-    return newCall0("RemoveBlock", block.id);
+Blockly.UnityJSON['RemoveCube'] = function(block) {
+    return newCall0("RemoveCube", block.id);
 };
 
 // REPEAT
@@ -238,7 +238,7 @@ Blockly.UnityJSON.bodyToXML = function (body, program) {
     return xml;
 }
 
-var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveBlock', 'Up', 'Down']
+var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down']
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.UnityJSON.stmtToXML = function (stmt, program) {
