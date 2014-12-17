@@ -241,67 +241,6 @@ class GitEngine(object):
         return len(_getcmdout(['git', 'status', '--porcelain'], self)) == 0
 
 
-class Garbage():
-    def _init_repo(root, dep):
-        """Create an empty repository for the dependency and set the default remote."""
-        path = _path_of_dep(root, dep)
-        print("Creating folder '%s' for repository..." % path)
-        # intentionally want this to fail if the directory already exists to avoid blowing over some random directory
-        os.makedirs(path)
-
-        # TODO actually check return code to make sure this succeeded
-        if dep['engine'] == 'hg':
-            _getcmdcode(['hg', 'init'], root, dep)
-            with open(os.path.join(path, '.hg/hgrc'), 'w') as f:
-                f.write("[paths]\ndefault=%s\n" % dep['remote'])
-        elif dep['engine'] == 'git':
-            _getcmdcode(['git', 'init'], root, dep)
-            _getcmdcode(['git', 'remote', 'add', 'origin', dep['remote']], root, dep)
-        else:
-            _invalid_engine(dep)
-
-    def _checkout(root, dep):
-        """Update the dependency's working copy to the listed revision id."""
-        rev = dep['revision']
-        remote = dep['remote']
-
-        if dep['engine'] == 'hg':
-            try:
-                _getcmdcode(['hg', 'update', '-r', rev], root, dep)
-            except subprocess.CalledProcessError:
-                print("Don't have commit, pulling from remote '%s'..." % remote)
-                _getcmdcode(['hg', 'pull', '-r', rev, remote], root, dep)
-                _getcmdcode(['hg', 'update', '-r', rev], root, dep)
-        elif dep['engine'] == 'git':
-            try:
-                _getcmdcode(['git', 'checkout', rev], root, dep)
-            except subprocess.CalledProcessError:
-                print("Don't have commit, pulling from remote '%s'..." % remote)
-                _getcmdcode(['git', 'fetch', remote, rev], root, dep)
-                _getcmdcode(['git', 'checkout', rev], root, dep)
-        else:
-            _invalid_engine(dep)
-
-    def _get_checked_out_revision(root, dep):
-        """Return the (long) revision id of the dependency's working copy."""
-        if dep['engine'] == 'hg':
-            return _getcmdout(['hg', 'id', '-i', '--debug'], root, dep).strip()
-        elif dep['engine'] == 'git':
-            return _getcmdout(['git', 'rev-parse', '--verify', 'HEAD'], root, dep).strip()
-        else:
-            _invalid_engine(dep)
-
-    def _is_clean(root, dep):
-        """Return boolean indicated whether the dependency working copy is clean."""
-        local = dep['local']
-
-        if dep['engine'] == 'hg':
-            return len(_getcmdout(['hg', 'status'], root, dep)) == 0
-        elif dep['engine'] == 'git':
-            return len(_getcmdout(['git', 'status', '--porcelain'], root, dep)) == 0
-        else:
-            _invalid_engine(dep)
-
 def _main(args):
     depman = DependencyManager(args.depfile, args.override, is_verbose=True)
     if args.operation == 'checkout':
