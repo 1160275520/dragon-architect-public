@@ -6,14 +6,14 @@
 			"local":"blockly",
 			"engine":"git",
 			"remote":"https://github.com/edbutler/blockly.git",
-			"revision":"628f1f8ff530c98fecae7c36b42bdef856b70673"
+			"revision":"24422cc27d26837f5d7c7fa0fb624f484bea7a88"
 		},
 		{
 			"name":"closure-library",
 			"local":"closure-library",
 			"engine":"git",
 			"remote":"https://github.com/google/closure-library",
-			"revision":"946a7d39d4ffe08676c755b21d901e71d9904a3b"
+			"revision":"5b7a6ce1974c230dc169cb93ed5f9689e880aa50"
 		}
 	]
 }
