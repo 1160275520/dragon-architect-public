@@ -124,6 +124,7 @@ def _getcmdout(args, root, dep):
         return result.decode('utf-8')
 
 def _getcmdcode(args, root, dep):
+    print('executing "' + ' '.join(args) + '" in ' + _path_of_dep(root, dep))
     subprocess.check_call(args, cwd=_path_of_dep(root, dep))
 
 def _invalid_engine(dep):
@@ -181,7 +182,7 @@ def _checkout(root, dep):
             _getcmdcode(['git', 'checkout', rev], root, dep)
         except subprocess.CalledProcessError:
             print("Don't have commit, pulling from remote '%s'..." % remote)
-            _getcmdcode(['git', 'fetch', remote], root, dep)
+            _getcmdcode(['git', 'fetch', remote, rev], root, dep)
             _getcmdcode(['git', 'checkout', rev], root, dep)
     else:
         _invalid_engine(dep)

@@ -16,7 +16,7 @@ def abort(msg):
 def build(depmanager):
     print("\nbuilding...\n")
 
-    blockly = 'blockly-ruthefjord'
+    blockly = 'blockly'
     depmanager.run_command_in_dependency(blockly, ['python', 'mybuild.py'])
     tocopy = ['blockly.js', 'blockly.js.map']
 

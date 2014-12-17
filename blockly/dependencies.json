@@ -2,15 +2,15 @@
 	"root":"../..",
 	"dependencies":[
 		{
-			"name":"blockly-ruthefjord",
-			"local":"blockly-ruthefjord",
-			"engine":"hg",
-			"remote":"ssh://bicycle.cs.washington.edu//homes/gws/edbutler/repos/blockly-ruthefjord",
-			"revision":"aae352017c08f5ebbdc08710199908b475e9cad2"
+			"name":"blockly",
+			"local":"blockly",
+			"engine":"git",
+			"remote":"https://github.com/edbutler/blockly.git",
+			"revision":"628f1f8ff530c98fecae7c36b42bdef856b70673"
 		},
 		{
-			"name":"closure",
-			"local":"closure-library-read-only",
+			"name":"closure-library",
+			"local":"closure-library",
 			"engine":"git",
 			"remote":"https://github.com/google/closure-library",
 			"revision":"946a7d39d4ffe08676c755b21d901e71d9904a3b"
