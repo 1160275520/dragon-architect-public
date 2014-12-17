@@ -6,14 +6,16 @@
 			"local":"blockly",
 			"engine":"git",
 			"remote":"https://github.com/edbutler/blockly.git",
-			"revision":"24422cc27d26837f5d7c7fa0fb624f484bea7a88"
+			"revision":"acc6836fad9b213b82c74fa3f7751aa5a6c0a6d7",
+			"branch":"ruthefjord"
 		},
 		{
 			"name":"closure-library",
 			"local":"closure-library",
 			"engine":"git",
 			"remote":"https://github.com/google/closure-library",
-			"revision":"5b7a6ce1974c230dc169cb93ed5f9689e880aa50"
+			"revision":"5b7a6ce1974c230dc169cb93ed5f9689e880aa50",
+			"branch":"master"
 		}
 	]
 }

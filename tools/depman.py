@@ -20,6 +20,7 @@ class DependencyManager(object):
             # deep copy entries so that we have a prsitine version of original dep file for saving.
             self.deps = {d['name']: copy.copy(d) for d in self.deps_file['dependencies']}
             self.root_path = os.path.join(os.path.dirname(self.deps_path), self.deps_file['root'])
+            self.engines = {k: _engines[v['engine']](self.root_path, v) for k,v in self.deps.items()}
 
         # TODO validate file?
 
@@ -50,38 +51,33 @@ class DependencyManager(object):
         return _path_of_dep(self.root_path, self.deps[name])
 
     def run_command_in_dependency(self, name, args):
-        return _getcmdcode(args, self.root_path, self.deps[name])
+        return _getcmdcode(args, self.engines[name])
 
     def checkout_dependencies(self):
         """Update all dependencies to listed revisions.
         Fails if any local copies are unclean."""
-        r = self.root_path
-        # check that everything is clean first
-        for dep in self.deps.values():
-            if not _does_exist(r, dep):
-                _init_repo(r, dep)
-            if not _is_clean(r, dep):
-                raise RuntimeError("Dependency '%s' is not clean! Not checking out." % dep['name'])
-
-        # then do updates
-        for dep in self.deps.values():
-            _checkout(r, dep)
+        for name, eng in self.engines.items():
+            if eng.does_exist():
+                if not eng.is_clean():
+                    raise RuntimeError("Dependency '%s' is not clean! Not checking out." % name)
+                eng.go_to_revision()
+            else:
+                eng.create_repo()
 
     def set_dependencies(self):
         """Update the dependency map to the revisions of the current working copies.
         The caller must afterward invoke save_dependency_file to save these changes to disk!
         Fails if any local copies are non-existent unclean."""
-        r = self.root_path
         # check that everything is clean first
-        for dep in self.deps.values():
-            if not _does_exist(r, dep):
-                raise RuntimeError("Dependency '%s' does not exist! Not saving." % dep['name'])
-            if not _is_clean(r, dep):
-                raise RuntimeError("Dependency '%s' is not clean! Not saving." % dep['name'])
+        for name, eng in self.engines.items():
+            if not eng.does_exist():
+                raise RuntimeError("Dependency '%s' does not exist! Not saving." % name)
+            if not eng.is_clean():
+                raise RuntimeError("Dependency '%s' is not clean! Not saving." % name)
 
         # then do updates
-        for dep in self.deps.values():
-            dep['revision'] = _get_checked_out_revision(r, dep)
+        for name, eng in self.engines.items():
+            self.deps[name]['revision'] = eng.get_revision_id()
 
         # also update 'pristine' copy for saving
         for dep in self.deps_file['dependencies']:
@@ -90,10 +86,9 @@ class DependencyManager(object):
     def ensure_exist(self):
         """Checks to see if the dependencies' at least exist, but otherwise does nothing.
         Will throw an exception if any of the repositories do not exist."""
-        r = self.root_path
-        for dep in self.deps.values():
-            if not _does_exist(r, dep):
-                raise RuntimeError("Dependency '%s' does not exist!" % dep['name'])
+        for name, eng in self.engines.items():
+            if not eng.does_exist():
+                raise RuntimeError("Dependency '%s' does not exist! Not saving." % name)
 
     def save_dependency_file(self):
         # w uses wrong line endings on python 2 with windows but wb doesn't allow unicode strings with python 3 X(
@@ -104,10 +99,13 @@ class DependencyManager(object):
                 if i != 0:
                     f.write(",\n\t\t{\n")
 
-                for j, key in enumerate(['name', 'local', 'engine', 'remote', 'revision']):
-                    if j != 0:
-                        f.write(",\n")
-                    f.write('\t\t\t"%s":"%s"' % (key, dep[key]))
+                for j, key in enumerate(['name', 'local', 'engine', 'remote', 'revision', 'branch']):
+                    # this guard allows optional params, but it will totally mess up commas if 'name' is missing.
+                    # 'branch' is the only real optional parameter anyway, so this is not a big deal
+                    if key in dep:
+                        if j != 0:
+                            f.write(",\n")
+                        f.write('\t\t\t"%s":"%s"' % (key, dep[key]))
 
                 f.write("\n\t\t}")
             f.write("\n\t]\n}\n")
@@ -116,96 +114,193 @@ class DependencyManager(object):
 def _path_of_dep(root, dep):
     return os.path.abspath(os.path.join(root, dep['local']))
 
-def _getcmdout(args, root, dep):
-    result = subprocess.check_output(args, cwd=_path_of_dep(root, dep))
+def _getcmdout(args, engine):
+    cwd = _path_of_dep(engine.root, engine.dep)
+    print('executing "' + ' '.join(args) + '" in ' + cwd)
+    sys.stdout.flush()
+    result = subprocess.check_output(args, cwd=cwd)
     if PY2:
         return result
     else:
         return result.decode('utf-8')
 
-def _getcmdcode(args, root, dep):
-    print('executing "' + ' '.join(args) + '" in ' + _path_of_dep(root, dep))
-    subprocess.check_call(args, cwd=_path_of_dep(root, dep))
+def _getcmdcode(args, engine):
+    cwd = _path_of_dep(engine.root, engine.dep)
+    print('executing "' + ' '.join(args) + '" in ' + cwd)
+    sys.stdout.flush()
+    subprocess.check_call(args, cwd=cwd)
 
-def _invalid_engine(dep):
-    raise ValueError('Uknown VCS engine "%s"' % dep['engine'])
+def _execute(args, cwd):
+    print('executing "' + ' '.join(args) + '" in ' + cwd)
+    sys.stdout.flush()
+    subprocess.check_call(args, cwd=cwd)
 
-def _does_exist(root, dep):
-    "Returns boolean indicating whether the dependency currently locally exists."
-    local = dep['local']
+class MercurialEngine(object):
+    def __init__(self, root, dep):
+        self.root = root
+        self.dep = dep
 
-    if dep['engine'] == 'hg':
-        args = ['hg', 'status']
-    elif dep['engine'] == 'git':
-        args = ['git', 'status', '--porcelain']
-    else:
-        _invalid_engine(dep)
-
-    try:
-        _getcmdcode(args, root, dep)
-        return True
-    except:
-        return False
-
-def _init_repo(root, dep):
-    """Create an empty repository for the dependency and set the default remote."""
-    path = _path_of_dep(root, dep)
-    print("Creating folder '%s' for repository..." % path)
-    # intentionally want this to fail if the directory already exists to avoid blowing over some random directory
-    os.makedirs(path)
-
-    # TODO actually check return code to make sure this succeeded
-    if dep['engine'] == 'hg':
-        _getcmdcode(['hg', 'init'], root, dep)
-        with open(os.path.join(path, '.hg/hgrc'), 'w') as f:
-            f.write("[paths]\ndefault=%s\n" % dep['remote'])
-    elif dep['engine'] == 'git':
-        _getcmdcode(['git', 'init'], root, dep)
-        _getcmdcode(['git', 'remote', 'add', 'origin', dep['remote']], root, dep)
-    else:
-        _invalid_engine(dep)
-
-def _checkout(root, dep):
-    """Update the dependency's working copy to the listed revision id."""
-    rev = dep['revision']
-    remote = dep['remote']
-
-    if dep['engine'] == 'hg':
+    def does_exist(self):
+        """Returns boolean indicating whether the dependency currently locally exists."""
         try:
-            _getcmdcode(['hg', 'update', '-r', rev], root, dep)
+            _getcmdcode(['hg', 'id'], self)
+            return True
+        except subprocess.CalledProcessError:
+            return False
+        except NotADirectoryError:
+            return False
+
+    def create_repo(self):
+        """Create a repository, set the default remote, and set worknig copy to the specified revision."""
+        _execute(['hg', 'clone', '-r', self.dep['revision'], self.dep['remote'], self.dep['local']], self.root)
+
+    def go_to_revision(self):
+        """Update the dependency's working copy to the listed revision id."""
+        rev = self.dep['revision']
+        remote = self.dep['remote']
+
+        try:
+            _getcmdcode(['hg', 'update', '-r', rev], self)
         except subprocess.CalledProcessError:
             print("Don't have commit, pulling from remote '%s'..." % remote)
-            _getcmdcode(['hg', 'pull', '-r', rev, remote], root, dep)
-            _getcmdcode(['hg', 'update', '-r', rev], root, dep)
-    elif dep['engine'] == 'git':
+            _getcmdcode(['hg', 'pull', '-r', rev, remote], self)
+            _getcmdcode(['hg', 'update', '-r', rev], self)
+
+    def get_revision_id(self):
+        """Return the (long) revision id of the dependency's working copy."""
+        return _getcmdout(['hg', 'id', '-i', '--debug'], self).strip()
+
+    def is_clean(self):
+        """Return boolean indicated whether the dependency working copy is clean."""
+        return len(_getcmdout(['hg', 'status'], self)) == 0
+
+
+class GitEngine(object):
+    def __init__(self, root, dep):
+        self.root = root
+        self.dep = dep
+
+    def does_exist(self):
+        """Returns boolean indicating whether the dependency currently locally exists."""
         try:
-            _getcmdcode(['git', 'checkout', rev], root, dep)
+            _getcmdcode(['git', 'remote'], self)
+            return True
         except subprocess.CalledProcessError:
-            print("Don't have commit, pulling from remote '%s'..." % remote)
-            _getcmdcode(['git', 'fetch', remote, rev], root, dep)
-            _getcmdcode(['git', 'checkout', rev], root, dep)
-    else:
-        _invalid_engine(dep)
+            return False
+        except NotADirectoryError:
+            return False
 
-def _get_checked_out_revision(root, dep):
-    """Return the (long) revision id of the dependency's working copy."""
-    if dep['engine'] == 'hg':
-        return _getcmdout(['hg', 'id', '-i', '--debug'], root, dep).strip()
-    elif dep['engine'] == 'git':
-        return _getcmdout(['git', 'rev-parse', '--verify', 'HEAD'], root, dep).strip()
-    else:
-        _invalid_engine(dep)
+    def create_repo(self):
+        """Create a repository, set the default remote, and set worknig copy to the specified revision."""
+        # intentionally want this to fail if the directory already exists to avoid blowing over some random directory
+        os.makedirs(_path_of_dep(self.root, self.dep))
+        # not a great way to clone a git repo only up to a specific revision, so have to grab entire thing
+        _execute(['git', 'clone', self.dep['remote'], self.dep['local']], self.root)
+        # if a branch is listed, immediately do a checkout to force creation
+        if 'branch' in self.dep:
+            _getcmdcode(['git', 'checkout', self.dep['branch']], self)
+        self.go_to_revision()
 
-def _is_clean(root, dep):
-    """Return boolean indicated whether the dependency working copy is clean."""
-    local = dep['local']
+    def get_head_revision_of_branch(self):
+        if 'branch' not in self.dep:
+            return None
+        else:
+            res = _getcmdout(['git', 'show-ref', '--verify', 'refs/heads/' + self.dep['branch']], self).strip()
+            return res.split(' ')[0]
 
-    if dep['engine'] == 'hg':
-        return len(_getcmdout(['hg', 'status'], root, dep)) == 0
-    elif dep['engine'] == 'git':
-        return len(_getcmdout(['git', 'status', '--porcelain'], root, dep)) == 0
-    else:
-        _invalid_engine(dep)
+    def go_to_revision(self):
+        """Update the dependency's working copy to the listed revision id."""
+        rev = self.dep['revision']
+        remote = self.dep['remote']
+
+        # shortcut: if we're already at the revision, do nothing!
+        #if self.get_revision_id() != rev:
+        try:
+            # If we just checkout the revision directly git will detach the head.
+            # So first check if the listed branch's head is the revision we want, in which case checkout the branch instead.
+            branch_head = self.get_head_revision_of_branch()
+            if branch_head == self.dep['revision']:
+                _getcmdcode(['git', 'checkout', self.dep['branch']], self)
+            else:
+                _getcmdcode(['git', 'checkout', '-q', rev], self)
+        except subprocess.CalledProcessError:
+            print("Don't have commit, fetching from remote '%s'..." % remote)
+            # fetching only a specific changeset is a pain, so just fetch everything
+            _getcmdcode(['git', 'fetch', remote], self)
+            # branch head definitely doesn't point to something we just fetched, so we have to detach.
+            # we could reset the HEAD for them, but that seems like it could blow over some changes....
+            # TODO see if there is a way to determine if it's a fast-foward merge, and if so, move the HEAD for the branch?
+            _getcmdcode(['git', 'checkout', '-q', rev], self)
+
+    def get_revision_id(self):
+        """Return the (long) revision id of the dependency's working copy."""
+        return _getcmdout(['git', 'rev-parse', '--verify', 'HEAD'], self).strip()
+
+    def is_clean(self):
+        """Return boolean indicated whether the dependency working copy is clean."""
+        return len(_getcmdout(['git', 'status', '--porcelain'], self)) == 0
+
+
+class Garbage():
+    def _init_repo(root, dep):
+        """Create an empty repository for the dependency and set the default remote."""
+        path = _path_of_dep(root, dep)
+        print("Creating folder '%s' for repository..." % path)
+        # intentionally want this to fail if the directory already exists to avoid blowing over some random directory
+        os.makedirs(path)
+
+        # TODO actually check return code to make sure this succeeded
+        if dep['engine'] == 'hg':
+            _getcmdcode(['hg', 'init'], root, dep)
+            with open(os.path.join(path, '.hg/hgrc'), 'w') as f:
+                f.write("[paths]\ndefault=%s\n" % dep['remote'])
+        elif dep['engine'] == 'git':
+            _getcmdcode(['git', 'init'], root, dep)
+            _getcmdcode(['git', 'remote', 'add', 'origin', dep['remote']], root, dep)
+        else:
+            _invalid_engine(dep)
+
+    def _checkout(root, dep):
+        """Update the dependency's working copy to the listed revision id."""
+        rev = dep['revision']
+        remote = dep['remote']
+
+        if dep['engine'] == 'hg':
+            try:
+                _getcmdcode(['hg', 'update', '-r', rev], root, dep)
+            except subprocess.CalledProcessError:
+                print("Don't have commit, pulling from remote '%s'..." % remote)
+                _getcmdcode(['hg', 'pull', '-r', rev, remote], root, dep)
+                _getcmdcode(['hg', 'update', '-r', rev], root, dep)
+        elif dep['engine'] == 'git':
+            try:
+                _getcmdcode(['git', 'checkout', rev], root, dep)
+            except subprocess.CalledProcessError:
+                print("Don't have commit, pulling from remote '%s'..." % remote)
+                _getcmdcode(['git', 'fetch', remote, rev], root, dep)
+                _getcmdcode(['git', 'checkout', rev], root, dep)
+        else:
+            _invalid_engine(dep)
+
+    def _get_checked_out_revision(root, dep):
+        """Return the (long) revision id of the dependency's working copy."""
+        if dep['engine'] == 'hg':
+            return _getcmdout(['hg', 'id', '-i', '--debug'], root, dep).strip()
+        elif dep['engine'] == 'git':
+            return _getcmdout(['git', 'rev-parse', '--verify', 'HEAD'], root, dep).strip()
+        else:
+            _invalid_engine(dep)
+
+    def _is_clean(root, dep):
+        """Return boolean indicated whether the dependency working copy is clean."""
+        local = dep['local']
+
+        if dep['engine'] == 'hg':
+            return len(_getcmdout(['hg', 'status'], root, dep)) == 0
+        elif dep['engine'] == 'git':
+            return len(_getcmdout(['git', 'status', '--porcelain'], root, dep)) == 0
+        else:
+            _invalid_engine(dep)
 
 def _main(args):
     depman = DependencyManager(args.depfile, args.override, is_verbose=True)
@@ -228,4 +323,9 @@ if __name__ == '__main__':
         help="Path of the override depencies file. If given, any entries in this dependency file will take precedence. Setting revisions will still only affect the primary dependency file, however.")
 
     _main(parser.parse_args())
+
+_engines = {
+    'hg': MercurialEngine,
+    'git': GitEngine,
+}
 
