@@ -145,10 +145,11 @@ class MercurialEngine(object):
         try:
             _getcmdcode(['hg', 'id'], self)
             return True
-        except subprocess.CalledProcessError:
+        except:
             return False
-        except NotADirectoryError:
-            return False
+        #except: subprocess.CalledProcessError:
+        #except NotADirectoryError:
+        #    return False
 
     def create_repo(self):
         """Create a repository, set the default remote, and set worknig copy to the specified revision."""
@@ -183,12 +184,13 @@ class GitEngine(object):
     def does_exist(self):
         """Returns boolean indicating whether the dependency currently locally exists."""
         try:
-            _getcmdcode(['git', 'remote'], self)
+            _getcmdcode(['git', 'log', '-n', '0'], self)
             return True
-        except subprocess.CalledProcessError:
+        except:
             return False
-        except NotADirectoryError:
-            return False
+        #except: subprocess.CalledProcessError:
+        #except NotADirectoryError:
+        #    return False
 
     def create_repo(self):
         """Create a repository, set the default remote, and set worknig copy to the specified revision."""
@@ -201,11 +203,11 @@ class GitEngine(object):
             _getcmdcode(['git', 'checkout', self.dep['branch']], self)
         self.go_to_revision()
 
-    def get_head_revision_of_branch(self):
+    def get_head_revision_of_branch(self, branch):
         if 'branch' not in self.dep:
             return None
         else:
-            res = _getcmdout(['git', 'show-ref', '--verify', 'refs/heads/' + self.dep['branch']], self).strip()
+            res = _getcmdout(['git', 'show-ref', '--verify', branch], self).strip()
             return res.split(' ')[0]
 
     def go_to_revision(self):
@@ -218,8 +220,7 @@ class GitEngine(object):
         try:
             # If we just checkout the revision directly git will detach the head.
             # So first check if the listed branch's head is the revision we want, in which case checkout the branch instead.
-            branch_head = self.get_head_revision_of_branch()
-            if branch_head == self.dep['revision']:
+            if 'branch' in self.dep and self.get_head_revision_of_branch('refs/heads/' + self.dep['branch']) == self.dep['revision']:
                 _getcmdcode(['git', 'checkout', self.dep['branch']], self)
             else:
                 _getcmdcode(['git', 'checkout', '-q', rev], self)
@@ -227,10 +228,12 @@ class GitEngine(object):
             print("Don't have commit, fetching from remote '%s'..." % remote)
             # fetching only a specific changeset is a pain, so just fetch everything
             _getcmdcode(['git', 'fetch', remote], self)
-            # branch head definitely doesn't point to something we just fetched, so we have to detach.
-            # we could reset the HEAD for them, but that seems like it could blow over some changes....
-            # TODO see if there is a way to determine if it's a fast-foward merge, and if so, move the HEAD for the branch?
-            _getcmdcode(['git', 'checkout', '-q', rev], self)
+            # first attempt to ff-merge from the current branch
+            # failing that, just checkout the exact revision and detach ourselves
+            try:
+                _getcmdcode(['git', 'merge', '--ff-only', rev], self)
+            except subprocess.CalledProcessError:
+                _getcmdcode(['git', 'checkout', '-q', rev], self)
 
     def get_revision_id(self):
         """Return the (long) revision id of the dependency's working copy."""
