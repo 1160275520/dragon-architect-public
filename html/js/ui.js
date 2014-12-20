@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.view-loading, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector, .gallerySelector, .viewerModeUI, .shareModeUI').hide();
+        $('.view-loading, .player-consent, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector, .gallerySelector, .viewerModeUI, .shareModeUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -20,6 +20,11 @@ module.State = (function(){ "use strict";
     self.goToLoading = function() {
         hideAll();
         $('.view-loading').show();
+    }
+
+    self.goToConsent = function() {
+        hideAll();
+        $('.player-consent').show();
     }
 
     self.goToTitle = function(cb) {
@@ -351,7 +356,7 @@ module.Instructions = (function() {
         camera: "camera-controls",
         learn: "btn-modules",
         workshop: "btn-workshop",
-        clear: "button_header_clear_sandbox",
+        clear: "btn-header-clear-sandbox",
         speedSlider: "speed-slider"
     }
 

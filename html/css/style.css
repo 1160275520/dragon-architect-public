@@ -81,6 +81,14 @@ header > h1 {
     font-size: 40pt;
 }
 
+.player-consent {
+    display: inline-table; /* don't know why, but this gets it to size to content */
+    font-family: "Open Sans";
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
 /* main area and two main vertical divs */
 /************************************************************/
 

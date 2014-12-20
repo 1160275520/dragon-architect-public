@@ -338,7 +338,7 @@ $(function() {
         }
     });
 
-    $('#button_header_clear_sandbox').on('click', function() {
+    $('#btn-header-clear-sandbox').on('click', function() {
         storage.remove('sandbox_program');
         storage.remove('sandbox_world_data');
         // HACK if they're in the sandbox, just reload it to force a clear
@@ -347,7 +347,7 @@ $(function() {
         }
     });
 
-    $('#button_header_sandbox').on('click', setState_sandbox);
+    $('#btn-header-sandbox').on('click', setState_sandbox);
     $('#btn-back-sandbox').on('click', setState_sandbox);
 
     $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
@@ -495,7 +495,16 @@ $(function() {
             if (progress.is_module_completed(game_info.modules["tutorial"])) {
                 setState_sandbox();
             } else {
-                setState_title();
+                // setState_title();
+                RuthefjordUI.State.goToConsent();
+                $("#btn-consent-continue").on('click', function() {
+                    if($("#chkbox-consent")[0].checked) {
+
+                    } else {
+
+                    }
+                    setState_title();
+                });
             }
         });
        

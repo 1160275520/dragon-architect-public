@@ -46,7 +46,7 @@
         <p class="sandboxModeUI">You are in sandbox mode!</p>
         <button id="btn-modules" class="sandboxModeUI">Learn more code</button>
         <!-- <button id="btn-gallery" class="sandboxModeUI">Gallery</button> -->
-        <button id="button_header_clear_sandbox" class="sandboxModeUI">Clear cubes and code</button>
+        <button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear cubes and code</button>
         <!-- <button id="btn-share" class="sandboxModeUI">Share your code</button> -->
         <button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button>
         <button id="btn-back-selector-module" class="puzzleModeUI puzzleSelector hideTutorial">Try a different module</button>
@@ -59,13 +59,26 @@
         <select id="dev-select-module">
           <option>- Jump to Module -</option>
         </select>
-        <button id="button_header_sandbox">Sandbox</button>
-        <button onclick="devmode()">Dev Mode</button>
+        <button id="btn-header-sandbox">Sandbox</button>
+        <button id="btn-devmode" onclick="devmode()">Dev Mode</button>
         <!-- @endif -->
       </div>
     </header>
     <div class="view-loading">
       <p>Loading...</p>
+    </div>
+    <div class="player-consent">
+    <p>By playing this game you acknowledge that:</p>
+    <ul>
+      <li><b>We are recording logs of player decisions.</b> As you play this game, you are participating in a research study, and it is keeping a record of your decisions and pathways through the game so that the game's creators, researchers at the University of Washington*, can improve the game for future players, as well as see whether our games improve our abilities with in-game tasks over time. Your play log will be added to a dataset that shows up trends in player behavior. This data will be kept for 7 years. This logging is no different than the standard practice in the game industry aimed at improving player's experience.</li><br>
+
+      <li><b>This data may be published or shared with the academic community</b> for the purposes of presenting research findings and furthering the advancement of improving games and learning through games. The log data will be in the aggregate and collected form (not per individual), without the possibility for anyone to determine any personally identifiable information or even personally identifiable gameplay information.</li>
+    </ul>
+
+    <p>If you have any questions or concerns about the research or game, please feel free to contact us at cgs-feedback@cs.washington.edu or at (425) 312-3363. If you have questions about your rights as a research participant, you may contact a member of UW's Human Subjects Division at hsdinfo@uw.edu or at (206) 543-0098. Please note that emails are considered insecure and privacy is not guaranteed.</p><br>
+
+    <input id="chkbox-consent" type="checkbox" checked> By leaving this box checked I give permission for my data to be used for research purposes.<br><br>
+    <input id="btn-consent-continue" type="submit" value="Continue">
     </div>
     <div id="selector-puzzle" class="puzzleSelector">
       <svg width=1400 height=350>

@@ -229,7 +229,7 @@ type LazyStepResult = {
 type private MutableList<'a> = System.Collections.Generic.List<'a>
 
 let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
-    let MAX_ITER = 10000
+    let MAX_ITER = 100000
     let simstate = createState program builtIns (Some robot)
 
     let steps = MutableList ()
