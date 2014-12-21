@@ -498,16 +498,12 @@ $(function() {
                 // setState_title();
                 RuthefjordUI.State.goToConsent();
                 $("#btn-consent-continue").on('click', function() {
-                    if($("#chkbox-consent")[0].checked) {
-
-                    } else {
-
-                    }
+                    RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked);
                     setState_title();
                 });
             }
         });
-       
+
         // SAMPLE POPUP DIALOG CODE
         // var dialogContent = document.createElement('span');
         // dialogContent.appendChild(document.createTextNode("This is a test of the popup dialog system."));

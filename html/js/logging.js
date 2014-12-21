@@ -43,8 +43,7 @@ self.initialize = function(uid) {
 
     //Wait to save data until everything has been loaded.
     props.setCompleteCallback(function(response) {
-        console.log("Test save data is: " + user.getSave("test"));
-        user.setSave("test", Math.floor((Math.random() * 10) + 1));
+        // TODO nothing really to do in here...
     });
 
     //Initialize an anonymous user. TODO - Local cache still needs
@@ -52,6 +51,42 @@ self.initialize = function(uid) {
     user = api.initializeUser(props);
 
     is_initialized = true;
+};
+
+/*
+* Two kinds of log events: user actions and state change events.
+* User actions are logs of any user-initiated actions: e.g., clicking a button in the UI.
+* State change events log any game state changes: e.g., program execution started, edit mode changed.
+* State changes are often (but not always) the result of user actions.
+* However, we separate the two so we can easily separate what the user is doing from what the system is doing.
+*
+* All action ids that are user events are in the 20000 - 29999, and state changes are 10000 - 19999.
+* Actions that go together are usually given the same last 4 digits.
+* Event ids, by convention, start with On<Blah>, and user events start with Do<Blah>
+*/
+var AID = {
+    // meta stuff
+
+    PlayerConsented: 101,
+
+    // state changes
+
+    OnPuzzleSolved: 10001,
+    OnProgramExecuted: 10011,
+    OnProgramStopped: 10012,
+    OnProgramPaused: 10013,
+    OnProgramFinished: 10014,
+    OnEditModeChanged: 10021,
+
+    // user actions
+
+    DoProgramExecute: 20011,
+    DoProgramStop: 20012,
+    DoProgramPause: 20013,
+    DoProgramFinish: 20014,
+    DoEditModeChange: 20021,
+
+    Unused: 0 // to prevent comma sadness
 };
 
 self.startQuest = function(qid, checksum) {
@@ -72,39 +107,6 @@ self.startQuest = function(qid, checksum) {
     }
 
     var ql = {};
-
-    /*
-     * Two kinds of log events: user actions and state change events.
-     * User actions are logs of any user-initiated actions: e.g., clicking a button in the UI.
-     * State change events log any game state changes: e.g., program execution started, edit mode changed.
-     * State changes are often (but not always) the result of user actions.
-     * However, we separate the two so we can easily separate what the user is doing from what the system is doing.
-     *
-     * All action ids that are user events are in the 20000 - 29999, and state changes are 10000 - 19999.
-     * Actions that go together are usually given the same last 4 digits.
-     * Event ids, by convention, start with On<Blah>, and user events start with Do<Blah>
-     */
-
-    var AID = {
-        // state changes
-
-        OnPuzzleSolved: 10001,
-        OnProgramExecuted: 10011,
-        OnProgramStopped: 10012,
-        OnProgramPaused: 10013,
-        OnProgramFinished: 10014,
-        OnEditModeChanged: 10021,
-
-        // user actions
-
-        DoProgramExecute: 20011,
-        DoProgramStop: 20012,
-        DoProgramPause: 20013,
-        DoProgramFinish: 20014,
-        DoEditModeChange: 20021,
-
-        Unused: 0 // to prevent comma sadness
-    };
 
     function log(actionId, actionDetail) {
         if (!is_initialized) return;
@@ -178,10 +180,10 @@ self.startQuest = function(qid, checksum) {
     return ql;
 };
 
-self.logRandomAction = function() {
+self.logStudentConsented = function(didPlayerConsent) {
     //Action unrelated to a quest.
-    var actionId = 1;
-    var actionDetail = {test:"test"};
+    var actionId = AID.PlayerConsented;
+    var actionDetail = {did_consent:didPlayerConsent};
     var action = new cgs.UserAction(actionId, actionDetail);
     user.logAction(action);
 };

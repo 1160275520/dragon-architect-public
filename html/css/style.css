@@ -572,6 +572,17 @@ header button, .control-btn, .control-icon-btn {
   min-width: 4em;
 }
 
+/* Consent form */
+/************************************************************/
+
+#btn-consent-continue {
+    display: inline-block;
+    font-size: 130%;
+    font-weight: bold;
+    padding: 10px;
+    margin: 20px 0 0 200px;
+}
+
 /* misc */
 /************************************************************/
 
