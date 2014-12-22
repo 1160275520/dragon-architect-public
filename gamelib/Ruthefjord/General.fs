@@ -4,13 +4,6 @@ namespace Ruthefjord
 open System
 open System.Diagnostics
 
-[<AutoOpen>]
-module Global =
-    /// Debug print an object (using System.Diagnostics.Debug.WriteLine).
-    let inline dprint x = Debug.WriteLine (sprintf "%A" x)
-    /// Debug print a string (using System.Diagnostics.Debug.WriteLine).
-    let inline dprints x = Debug.WriteLine x
-
 /// An error from the compilation/execution of the in-game language.
 type CodeError (subtype: string, code: int, location: int, errorMessage: string, exn: System.Exception) =
     member x.Type = subtype
@@ -51,6 +44,13 @@ module Logger =
         ()
     #endif
 
+[<AutoOpen>]
+module Global =
+    /// Debug print an object (using System.Diagnostics.Debug.WriteLine).
+    let inline dprint x = Logger.log (sprintf "%A" x)
+    /// Debug print a string (using System.Diagnostics.Debug.WriteLine).
+    let inline dprints x = Logger.log x
+
 module Util =
     let parseEnum<'a> s = Enum.Parse (typeof<'a>, s) :?> 'a
 
@@ -65,7 +65,10 @@ module Util =
     /// Block copy an array of 'a to an array of bytes. Ignores endianess concerns.
     /// NOTE: this just up and fails with int16 on mono because sizeof<int16> = 4 (???). So watch out for that
     let arrayToBytes<'a when 'a : struct> (arr: 'a[]) =
+        dprints ("size of 'a: " + sizeof<'a>.ToString())
         let bytes : byte[] = Array.zeroCreate (arr.Length * sizeof<'a>)
+        dprints ("arr.Length: " + arr.Length.ToString())
+        dprints ("bytes.Length: " + bytes.Length.ToString())
         System.Buffer.BlockCopy (arr, 0, bytes, 0, bytes.Length)
         bytes
 
