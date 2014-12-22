@@ -142,6 +142,9 @@ RuthefjordBlockly.setProgram = function(program) {
     // update block colors
     _.each(Blockly.mainWorkspace.getAllBlocks(), function (b) { b.svg_.updateColour(); });
 
+    // update the toolbox in case the program contains any procedures
+    RuthefjordBlockly.updateToolbox();
+
     // set maximum blocks to 15 per function
     // Blockly.mainWorkspace.maxBlocks = Object.keys(program.procedures).length * 15;
 };
@@ -151,6 +154,9 @@ RuthefjordBlockly.setProgram = function(program) {
  */
 RuthefjordBlockly.loadBlocks = function (blocksXML) {
     BlocklyApps.loadBlocks(blocksXML);
+
+    // update the toolbox in case the program contains any procedures
+    RuthefjordBlockly.updateToolbox();
 };
 
 /**
