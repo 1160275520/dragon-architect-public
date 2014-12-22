@@ -141,7 +141,6 @@ var progress = (function(){
     var self = {};
 
     var puzzles_completed = [];
-    var modules_completed = [];
 
     self.initialize = function(cb) {
         // load the level progress from this session (if any)
@@ -160,11 +159,6 @@ var progress = (function(){
             puzzles_completed.push(id);
             storage.save("puzzles_completed", puzzles_completed.toString());
         }
-        game_info.modules.each(function (m) {
-            if (!_.contains(modules_completed, m.name) && self.is_module_completed(m)) {
-                modules_completed.push(m.name);
-            }
-        });
     }
 
     self.is_puzzle_completed = function(puzzle_id) {

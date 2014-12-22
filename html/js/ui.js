@@ -234,7 +234,7 @@ module.ModuleSelect = (function() {
         return span;
     }
 
-    self.create = function(modules, onSelectCallback, isModuleCompleted) {
+    self.create = function(modules, onSelectCallback) {
         var selector = $(".moduleOptions");
         selector.empty();
         _.each(modules, function(module) {
