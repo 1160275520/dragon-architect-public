@@ -234,7 +234,7 @@ module.ModuleSelect = (function() {
         return span;
     }
 
-    self.create = function(modules, onSelectCallback) {
+    self.create = function(modules, onSelectCallback, isModuleCompleted) {
         var selector = $(".moduleOptions");
         selector.empty();
         _.each(modules, function(module) {
@@ -332,13 +332,14 @@ module.Instructions = (function() {
         left: "media/blockSvgs/left.svg",
         right: "media/blockSvgs/right.svg",
         placecube: "media/blockSvgs/placecube.svg",
-        removeblock: "media/blockSvgs/removeblock.svg",
+        removecube: "media/blockSvgs/removecube.svg",
         up: "media/blockSvgs/up.svg",
         down: "media/blockSvgs/down.svg",
         repeat: "media/blockSvgs/repeat.svg",
         repeat4: "media/blockSvgs/repeat4.svg",
         repeat5: "media/blockSvgs/repeat5.svg",
         repeat9: "media/blockSvgs/repeat9.svg",
+        squareProc: "media/blockSvgs/squareProc.svg",
         go: "media/goButton.png",
         rotateCW: "media/rotateCWButton.png",
         rotateCCW: "media/rotateCCWButton.png",

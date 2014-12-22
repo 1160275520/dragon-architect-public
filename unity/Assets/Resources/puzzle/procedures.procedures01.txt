@@ -1,15 +1,12 @@
 #lang imperative:1.0
 
-Forward(1)
+define Square()
+    repeat 4 times
+        repeat 4 times
+            PlaceCube(1)
+            Forward(1)
+        Right()
 
-define Foo()
-    Left()
-    Left()
-    Left()
-    PlaceCube(1)
-
 Forward(1)
-Foo()
-Forward(1)
-RemoveCube()
-
+Square()
+Forward(8)

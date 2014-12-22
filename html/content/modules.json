@@ -14,7 +14,7 @@
 },
 "remove":{
     "nodes": ["remove.remove_cubes"],
-    "edge": [],
+    "edges": [],
     "name": "To Err is Dragon",
     "learn": ["Remove cubes"]
 },
@@ -52,10 +52,11 @@
     "learn": ["Use arguments","Repeat code many times","Control program speed"]
 },
 "procedures":{
+    "prereq": ["repeat"],
     "nodes": ["procedures.procedures01"],
-    "edge": [],
-    "name": "Procedures",
-    "learn": ["asdf"]
+    "edges": [],
+    "name": "Procedural Bliss",
+    "learn": ["Create custom blocks with procedures"]
 }
 }
 

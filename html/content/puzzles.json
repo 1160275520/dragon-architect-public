@@ -102,10 +102,10 @@
             ]},
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-
+        "program": {"type":"resource", "value":"puzzle/remove.remove_cubes"},
         "instructions": {
             "summary": "Help me remove those three cubes!",
-            "detail": "Add one more {removeblock} to fix my program."
+            "detail": "Add one more {removecube} to fix my program."
         },
         "logging_id": 29
     },
@@ -258,12 +258,13 @@
     },
     "procedures.procedures01": {
         "name": "Procedures 101",
+        "component": "PuzProcedures01",
         "library": {
-            "required": [],
+            "required": ["repeat"],
             "granted": ["defproc"]
         },
         "instructions": {
-            "summary": "Woo procedures",
+            "summary": "Help me fill in the blueprints by using two more {squareProc}.",
             "detail": ""
         },
         "program": {"type":"resource", "value":"puzzle/procedures.procedures01"},

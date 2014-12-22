@@ -2,8 +2,8 @@
 Forward(1)
 Forward(1)
 Forward(1)
-RemoveBlock()
+RemoveCube()
 Forward(1)
 Forward(1)
-RemoveBlock()
+RemoveCube()
 

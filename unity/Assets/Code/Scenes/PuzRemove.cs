@@ -11,8 +11,6 @@ public class PuzRemove : MonoBehaviour
     void Start() {
         var lh = GetComponent<PuzzleHelper>();
 
-        var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle/remove.remove_blocks");
         var template = new IntVec3[] {};
 
         lh.CreateBlueprint(template);
