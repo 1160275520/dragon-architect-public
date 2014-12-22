@@ -28,6 +28,10 @@ else:
 if system == 'Windows':
     command = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe"
     check(subprocess.call([command, slnfile, '/p:Configuration=' + configarg, "/t:Rebuild"]))
+    #command = "C:\\Program Files (x86)\\Xamarin Studio\\bin\\mdtool"
+    #config = "--configuration:" + configarg
+    #check(subprocess.call([command, "build", config, "--target:Clean", slnfile]))
+    #check(subprocess.call([command, "build", config, "--target:Build", slnfile]))
 elif system == 'Darwin':
     command = "/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"
     config = "--configuration:" + configarg

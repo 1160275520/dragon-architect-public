@@ -62,19 +62,29 @@ module Util =
             sb.Append (b.ToString "x2") |> ignore
         sb.ToString ()
 
-    /// Block copy an array of 'a to an array of bytes. Ignores endianess concerns.
-    /// NOTE: this just up and fails with int16 on mono because sizeof<int16> = 4 (???). So watch out for that
-    let arrayToBytes<'a when 'a : struct> (arr: 'a[]) =
-        dprints ("size of 'a: " + sizeof<'a>.ToString())
-        let bytes : byte[] = Array.zeroCreate (arr.Length * sizeof<'a>)
-        dprints ("arr.Length: " + arr.Length.ToString())
-        dprints ("bytes.Length: " + bytes.Length.ToString())
-        System.Buffer.BlockCopy (arr, 0, bytes, 0, bytes.Length)
+    // we have to roll this ourselves instead of using BlockCopy
+    // because mono decided ints should be different sizes on different platforms.
+    let intArrayToBytes (arr: int[]) =
+        let bytes : byte[] = Array.zeroCreate (arr.Length * 4)
+        for i = 0 to arr.Length - 1 do
+            let o = 4 * i
+            let x = arr.[i]
+            bytes.[o + 0] <- byte ((x >>> 0) &&& 0xff)
+            bytes.[o + 1] <- byte ((x >>> 8) &&& 0xff)
+            bytes.[o + 2] <- byte ((x >>> 16) &&& 0xff)
+            bytes.[o + 3] <- byte ((x >>> 24) &&& 0xff)
         bytes
 
-    let bytesToArray<'a when 'a : struct> (bytes: byte[]) =
-        if bytes.Length % sizeof<'a> <> 0 then
-            invalidArg "bytes" (sprintf "bytes.Length is not a multiple of the size of %s" typeof<'a>.Name)
-        let arr : 'a[] = Array.zeroCreate (bytes.Length / sizeof<'a>)
-        System.Buffer.BlockCopy (bytes, 0, arr, 0, bytes.Length)
+    let bytesToIntArray (bytes: byte[]) =
+        if bytes.Length % 4 <> 0 then
+            invalidArg "bytes" "bytes.Length is not a multiple of 4 (sizeof int)"
+        let arr : int[] = Array.zeroCreate (bytes.Length / 4)
+        for i = 0 to arr.Length - 1 do
+            let o = 4 * i
+            arr.[i] <-
+                ((int bytes.[o + 0]) <<< 0)
+                ||| ((int bytes.[o + 1]) <<< 8)
+                ||| ((int bytes.[o + 2]) <<< 16)
+                ||| ((int bytes.[o + 3]) <<< 24)
         arr
+

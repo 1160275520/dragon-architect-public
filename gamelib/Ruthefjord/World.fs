@@ -98,7 +98,7 @@ module World =
 
         // TODO gzip it
 
-        let toHexStr x = x |> Util.arrayToBytes |> Convert.ToBase64String |> J.String
+        let toHexStr x = x |> Util.intArrayToBytes |> Convert.ToBase64String |> J.String
 
         J.JsonValue.ObjectOf [
             "type", J.String "binary";
@@ -108,7 +108,7 @@ module World =
         ] 
 
     let private decodeBlocks json =
-        let fromHexStr x = x |> J.asString |> Convert.FromBase64String |> Util.bytesToArray
+        let fromHexStr x = x |> J.asString |> Convert.FromBase64String |> Util.bytesToIntArray
 
         match jload json "type" J.asString with
         | "binary" ->
