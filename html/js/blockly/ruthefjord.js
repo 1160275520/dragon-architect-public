@@ -153,6 +153,7 @@ RuthefjordBlockly.setProgram = function(program) {
  * loads new program and takes care of related adjustments
  */
 RuthefjordBlockly.loadBlocks = function (blocksXML) {
+    console.info(blocksXML);
     BlocklyApps.loadBlocks(blocksXML);
 
     // update the toolbox in case the program contains any procedures
