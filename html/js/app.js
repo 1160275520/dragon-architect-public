@@ -479,6 +479,10 @@ $(function() {
         RuthefjordUnity.Call.step_program("Command", 1)
     });
 
+    $("#btn-code-entry").on('click', function() {
+        RuthefjordUnity.Call.set_program_parse($("#code-entry-area").val());
+    })
+
     // wait for all systems to start up, then go!
     promise_all.done(function() {
         // HACK add blockly change listener for saving
@@ -779,6 +783,11 @@ handler.onRenderFinal = function(data) {
     } else {
         RuthefjordUI.State.goToShare(function () {});
     }
+}
+
+handler.onProgramParse = function(prog) {
+    var program = JSON.parse(prog);
+    RuthefjordBlockly.setProgram(program);
 }
 
 return onRuthefjordEvent;

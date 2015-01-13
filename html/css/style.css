@@ -590,3 +590,23 @@ header button, .control-btn, .control-icon-btn {
     transition: none !important;
 }
 
+/* code entry */
+/************************************************************/
+
+#code-entry {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#code-entry-area {
+    font-size: 8pt;
+    height: 100px;
+    flex-grow: 1;
+}
+
+#btn-code-entry {
+    margin: 10px;
+    height: 40px;
+
+}

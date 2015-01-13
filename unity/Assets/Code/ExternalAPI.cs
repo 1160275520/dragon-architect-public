@@ -90,6 +90,12 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    public void EAPI_SetProgramFromConcrete(string code) {
+        var progman = GetComponent<ProgramManager>();
+        progman.Manipulator.Program = Ruthefjord.Parser.Parse(code, "submitted text");
+        Application.ExternalCall(ExternalApiFunc, "onProgramParse", Json.Serialize(Serialization.JsonOfProgram(progman.Manipulator.Program)));
+    }
+
     private void notifyProgramStateChange(string name, Json.JsonValue value) {
         var arg = Json.JsonValue.ObjectOf(new[] { new KeyValuePair<string, Json.JsonValue>(name, value) });
         Application.ExternalCall(ExternalApiFunc, OnProgramStateChange, arg.Serialize());
