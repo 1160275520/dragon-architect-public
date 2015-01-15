@@ -479,9 +479,9 @@ $(function() {
         RuthefjordUnity.Call.step_program("Command", 1)
     });
 
-    $("#btn-code-entry").on('click', function() {
-        RuthefjordUnity.Call.set_program_parse($("#code-entry-area").val());
-    })
+    // $("#btn-code-entry").on('click', function() {
+    //     RuthefjordUnity.Call.set_program_parse($("#code-entry-area").val());
+    // })
 
     // wait for all systems to start up, then go!
     promise_all.done(function() {
@@ -790,6 +790,10 @@ handler.onProgramParse = function(prog) {
     RuthefjordBlockly.setProgram(program);
 }
 
+handler.onToSandbox = function() {
+    setState_sandbox();
+}
+
 return onRuthefjordEvent;
 }());
 
@@ -797,3 +801,6 @@ function devmode() {
     onRuthefjordEvent('onUnlockDevMode');
 }
 
+function toSandbox() {
+    onRuthefjordEvent('onToSandbox')
+}
