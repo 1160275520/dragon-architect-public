@@ -1,0 +1,55 @@
+#lang imperative:1.0
+
+define Wall()
+    repeat 6 times
+        repeat 6 times
+            PlaceCube(1)
+            Forward(1)
+        Up(1)
+        Right()
+        Right()
+        Forward(1)
+    Down(6)
+    Forward(6)
+
+define MoveIn()
+    Up(1)
+    Forward(1)
+    Left()
+    Forward(1)
+    Right()
+
+repeat 4 times
+    Wall()
+    Right()
+Up(6)
+Left()
+Forward(1)
+Left()
+Forward(1)
+Left()
+repeat 4 times
+    repeat 8 times
+        PlaceCube(2)
+        Forward(1)
+    Left()
+MoveIn()
+repeat 4 times
+    repeat 6 times
+        PlaceCube(3)
+        Forward(1)
+    Left()
+MoveIn()
+repeat 4 times
+    repeat 4 times
+        PlaceCube(4)
+        Forward(1)
+    Left()
+MoveIn()
+repeat 4 times
+    repeat 2 times
+        PlaceCube(5)
+        Forward(1)
+    Left()
+MoveIn()
+PlaceCube(6)
