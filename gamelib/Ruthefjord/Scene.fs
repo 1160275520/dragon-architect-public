@@ -16,8 +16,6 @@ type Program =
 | Resource of string
 | Json of string
 | Ast of Ast.Imperative.Program
-/// leave the old program around
-| Preserve
 with
     /// Automatically converts Ast to Json.
     member x.ToJson () =
@@ -26,7 +24,6 @@ with
             | Resource r -> ["type", J.String "resource"; "value", J.String r]
             | Json s -> ["type", J.String "json"; "value", J.String s]
             | Ast ast -> ["type", J.String "json"; "value", Serialization.JsonOfProgram ast |> J.Serialize |> J.String]
-            | Preserve -> ["type", J.String "preserve"]
         J.JsonValue.ObjectOf fields
 
     member x.Load (getResourceFn:Func<string,string>) =
@@ -43,7 +40,6 @@ with
         match jload j "type" J.asString with
         | "resource" -> Resource (jload j "value" J.asString)
         | "json" -> Json (jload j "value" J.asString)
-        | "preserve" -> Preserve
         | s -> raise (J.TypeMismatchException (j, "Program", sprintf "illegal program type %s" s, null))
 
 type CodeModule = {
@@ -144,7 +140,6 @@ type PuzzleInfo = {
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}
-    member x.UpdateStartingProgramToPreserve = {x with StartingProgram=Some Preserve;}
 
     /// Load all programs (starting and library imports) from Resources/Json into Ast.
     member x.LoadPrograms (getResourceFn:Func<string,string>) =
@@ -154,25 +149,6 @@ type PuzzleInfo = {
             StartingProgram = x.StartingProgram |> Option.map load;
             Library = {x.Library with AutoImportedModules = List.map load x.Library.AutoImportedModules};
         }
-
-    /// Load or set the starting program based on its current value
-    /// If None, will fetch using getProgramFn.
-    /// If Some Resource, will load using loadResourceFn, then fetch using getProgramFn.
-    member x.LoadStartingProgram (loadResourceFn:Action<string>) (getProgramFn:Func<string>) =
-        invalidOp ""
-
-        (*
-        match x.StartingProgram with
-        | Some (Resource r) -> loadResourceFn.Invoke r
-        | _ -> ()
-
-        let newVal =
-            match x.StartingProgram with
-            | None | Some (Resource _) -> Some (Text (getProgramFn.Invoke ()))
-            | p -> p
-
-        {x with StartingProgram=newVal}
-        *)
 
     /// Compute a checksum of this level info (for logging).
     member x.Checksum () =
