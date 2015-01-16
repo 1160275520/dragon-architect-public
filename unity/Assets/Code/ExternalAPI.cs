@@ -31,10 +31,13 @@ public class ExternalAPI : MonoBehaviour
                 if (global != null && global.CurrentPuzzle != null) {
                     var progman = GetComponent<ProgramManager>();
                     var puzzle = global.CurrentPuzzle;
-                    puzzle = puzzle.LoadStartingProgram(
-                        progman.LoadProgram,
-                        () => Json.Serialize(Serialization.JsonOfProgram(progman.Manipulator.Program))
-                    );
+                    puzzle = puzzle.LoadPrograms((r) => Resources.Load<TextAsset>(r).text);
+                    if (OptionModule.IsSome(puzzle.StartingProgram)) {
+                        progman.Manipulator.Program = puzzle.StartingProgram.Value.AsAst;
+                    }
+                    foreach (Scene.Program p in puzzle.Library.AutoImportedModules) {
+                        progman.AddImportedModule(p.AsAst);
+                    }
                     NotifyOfPuzzle(global.CurrentSceneId, puzzle, true);
                 }
             } catch (Exception e) {

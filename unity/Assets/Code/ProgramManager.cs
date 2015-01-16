@@ -54,7 +54,7 @@ public class ProgramManager : MonoBehaviour {
     private LazyProgramRunner lazyProgramRunner;
     private Simulator.StateResult currentState;
 
-    private Microsoft.FSharp.Collections.FSharpMap<string, object> builtIns;
+    private Microsoft.FSharp.Collections.FSharpMap<string, object> importedModules;
 
     // cached component references
     private RobotController robot;
@@ -64,8 +64,8 @@ public class ProgramManager : MonoBehaviour {
         Manipulator = new ImperativeAstManipulator(100);
         TicksPerStep = 30;
 
-        var stdlibText = Resources.Load<TextAsset>("stdlib.imperative").text;
-        builtIns = Simulator.import(Parser.Parse(stdlibText, "stdlib"));
+        // default to loading only stdlib, can be override by calling AddImportedModule
+        importedModules = Simulator.import(Parser.Parse(Resources.Load<TextAsset>("module/stdlib").text, "stdlib"));
 
         robot = FindObjectOfType<RobotController>();
 
@@ -79,6 +79,10 @@ public class ProgramManager : MonoBehaviour {
         eapi.NotifyPS_EditMode(EditMode);
         eapi.NotifyPS_RunState(RunState);
         eapi.NotifyPS_CurrentState(new StateData(new int[]{}, 0.0f, GetComponent<Grid>().CellsFilled));
+    }
+
+    public void AddImportedModule(Imperative.Program prog) {
+        importedModules = MyMap.merge(Simulator.import(prog), importedModules);
     }
 
     private void setEditMode(EditMode newEM) {
@@ -148,7 +152,7 @@ public class ProgramManager : MonoBehaviour {
             // use the current grid as the initial state
             var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
             // just use wherever the robot current is as the initial state
-            lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, builtIns, grid, robot.Robot);
+            lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, importedModules, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
             evalEntireProgram();
             setGameStateToStateIndex(0, 0.0f);
@@ -244,7 +248,7 @@ public class ProgramManager : MonoBehaviour {
             var grid = new GridStateTracker(initialCells);
             var initialRobotState = result != null ? ((BasicWorldState)result.States[0].Data.WorldState).Robot : robot.Robot;
             var runner = new BasicImperativeRobotSimulator(initialRobotState, grid);
-            result = Simulator.SimulateWithRobot(Manipulator.Program, builtIns, runner);
+            result = Simulator.SimulateWithRobot(Manipulator.Program, importedModules, runner);
 
             if (isOldIndexAtEnd) {
                 currentStateIndex = result.States.Length;

@@ -11,16 +11,58 @@ let private setOfJson j = J.arrayToArray j |> Array.map J.asString |> Set.ofArra
 let inline private toJson obj =  (^a : (member ToJson : unit -> J.JsonValue) obj)
 let inline private nullOrToJson o = match o with Some x -> toJson x | None -> J.Null
 
+type Program =
+/// resource name, will be loaded from file
+| Resource of string
+| Json of string
+| Ast of Ast.Imperative.Program
+/// leave the old program around
+| Preserve
+with
+    /// Automatically converts Ast to Json.
+    member x.ToJson () =
+        let fields =
+            match x with
+            | Resource r -> ["type", J.String "resource"; "value", J.String r]
+            | Json s -> ["type", J.String "json"; "value", J.String s]
+            | Ast ast -> ["type", J.String "json"; "value", Serialization.JsonOfProgram ast |> J.Serialize |> J.String]
+            | Preserve -> ["type", J.String "preserve"]
+        J.JsonValue.ObjectOf fields
+
+    member x.Load (getResourceFn:Func<string,string>) =
+        match x with
+        | Resource r -> Parser.Parse (getResourceFn.Invoke r, r)
+        | Json j -> Serialization.ProgramOfJson (J.Parse j)
+        | _ -> invalidOp (sprintf "loading program unsupported for %A!" x)
+
+    member x.LoadToAst getResourceFn = Ast (x.Load getResourceFn)
+
+    member x.AsAst = match x with Ast ast -> ast | _ -> invalidOp "not an ast"
+
+    static member Parse j =
+        match jload j "type" J.asString with
+        | "resource" -> Resource (jload j "value" J.asString)
+        | "json" -> Json (jload j "value" J.asString)
+        | "preserve" -> Preserve
+        | s -> raise (J.TypeMismatchException (j, "Program", sprintf "illegal program type %s" s, null))
+
+type CodeModule = {
+    Name: string;
+    Program: Program;
+}
+
 type Library = {
     RequiredTools: Set<string>;
     GrantedTools: Set<string>;
     RestrictedCategories: Set<string>;
+    AutoImportedModules: Program list;
 } with
     member x.ToJson () =
         J.JsonValue.ObjectOf [
             "required", jsonOfSet x.RequiredTools;
             "granted", jsonOfSet x.GrantedTools;
             "restricted", jsonOfSet x.RestrictedCategories;
+            "autoimports", x.AutoImportedModules |> List.map (fun p -> p.ToJson ()) |> Json.arrayOfList
         ]
 
     static member Parse j =
@@ -28,6 +70,7 @@ type Library = {
             RequiredTools = jload j "required" setOfJson;
             GrantedTools = jload j "granted" setOfJson;
             RestrictedCategories = defaultArg (tryJload j "restricted" setOfJson) Set.empty;
+            AutoImportedModules = defaultArg (tryJload j "autoimports" Json.arrayToList) [] |> List.map Program.Parse
         }
 
 type Instructions = {
@@ -58,29 +101,6 @@ type Tutorial = {
         {
             HighlightedBlocks = defaultArg (tryJload j "highlighted" setOfJson) Set.empty;
         }
-
-type Program =
-/// resource name, will be loaded from file
-| Resource of string
-/// inline program text
-| Text of string
-/// leave the old program around
-| Preserve
-with
-    member x.ToJson () =
-        let fields =
-            match x with
-            | Resource r -> ["type", J.String "resource"; "value", J.String r]
-            | Text t -> ["type", J.String "text"; "value", J.String t]
-            | Preserve -> ["type", J.String "preserve"]
-        J.JsonValue.ObjectOf fields
-
-    static member Parse j =
-        match jload j "type" J.asString with
-        | "resource" -> Resource (jload j "value" J.asString)
-        | "text" -> Text (jload j "value" J.asString)
-        | "preserve" -> Preserve
-        | s -> raise (J.TypeMismatchException (j, "Program", sprintf "illegal program type %s" s, null))
 
 let FORMAT_VERSION = 1
 
@@ -126,10 +146,22 @@ type PuzzleInfo = {
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}
     member x.UpdateStartingProgramToPreserve = {x with StartingProgram=Some Preserve;}
 
+    /// Load all programs (starting and library imports) from Resources/Json into Ast.
+    member x.LoadPrograms (getResourceFn:Func<string,string>) =
+        let load (p:Program) = p.LoadToAst getResourceFn
+
+        {x with
+            StartingProgram = x.StartingProgram |> Option.map load;
+            Library = {x.Library with AutoImportedModules = List.map load x.Library.AutoImportedModules};
+        }
+
     /// Load or set the starting program based on its current value
     /// If None, will fetch using getProgramFn.
     /// If Some Resource, will load using loadResourceFn, then fetch using getProgramFn.
     member x.LoadStartingProgram (loadResourceFn:Action<string>) (getProgramFn:Func<string>) =
+        invalidOp ""
+
+        (*
         match x.StartingProgram with
         | Some (Resource r) -> loadResourceFn.Invoke r
         | _ -> ()
@@ -140,6 +172,7 @@ type PuzzleInfo = {
             | p -> p
 
         {x with StartingProgram=newVal}
+        *)
 
     /// Compute a checksum of this level info (for logging).
     member x.Checksum () =

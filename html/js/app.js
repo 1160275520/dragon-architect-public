@@ -576,7 +576,7 @@ function start_editor(info) {
         questLogger = RuthefjordLogging.startQuest(info.puzzle.logging_id, info.checksum);
 
         switch (info.puzzle.program.type) {
-            case "text":
+            case "json":
                 var program = JSON.parse(info.puzzle.program.value);
                 RuthefjordBlockly.setProgram(program);
                 break;
