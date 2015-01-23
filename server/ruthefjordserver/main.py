@@ -37,7 +37,7 @@ def main():
         help="Run in development mode. Will use flask's built-in auto-reloading web server"
     )
     mut.add_argument('-p', action='store_const', dest='mode', const='prd',
-        help="Run in production mode. Will use an actual web server like tornado."
+        help="Run in production mode. Will use an actual web server (gevent)."
     )
 
     _go(parser.parse_args())
