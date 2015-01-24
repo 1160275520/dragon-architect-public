@@ -5,10 +5,10 @@ using Ruthefjord;
 
 public class PuzProcedures01 : MonoBehaviour
 {
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
 
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
 
         var template = new List<IntVec3>();
         int size = 5;
@@ -49,11 +49,11 @@ public class PuzProcedures01 : MonoBehaviour
         }
         lh.CreateBlueprint(template);
 
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        lh.WinPredicate =   PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
 
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

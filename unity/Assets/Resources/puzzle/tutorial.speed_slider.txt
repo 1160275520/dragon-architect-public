@@ -5,7 +5,6 @@ repeat 5 times
     repeat 4 times
         repeat 20 times
             Forward(1)
-            PlaceCube(1)
-        Left()
+        PuzzleHelper lh; Left()
     Up(1)
 

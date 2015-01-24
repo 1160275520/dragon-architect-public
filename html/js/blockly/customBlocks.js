@@ -39,7 +39,7 @@ Blockly.Blocks['Left'] = {
     init: function() {
         this.setFullColor(COLOR_MOVE_1);
         this.appendDummyInput()
-            .appendField("turn left")
+            .appendField("turn left");
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
@@ -78,6 +78,14 @@ function newCall1(name, id, arg0) {
     return {args:[{type:"literal", value:arg0}],meta:{id:Number(id)},ident:name,type:"call"};
 }
 
+function newCall(name, id, args) {
+    var json = {args:[],meta:{id:Number(id)},ident:name,type:"call"};
+    _.each(args, function(arg) {
+        json.args.push({type:"literal", value:arg});
+    });
+    return json;
+}
+
 Blockly.UnityJSON['Left'] = function(block) {
     return newCall0("Left", block.id);
 };
@@ -87,7 +95,7 @@ Blockly.Blocks['Right'] = {
     init: function() {
         this.setFullColor(COLOR_MOVE_1);
         this.appendDummyInput()
-            .appendField("turn right")
+            .appendField("turn right");
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
@@ -169,7 +177,7 @@ Blockly.Blocks['RemoveCube'] = {
     init: function() {
         this.setFullColor(COLOR_BLOCK);
         this.appendDummyInput()
-            .appendField("remove cube")
+            .appendField("remove cube");
         this.setPreviousStatement(true);
         this.setNextStatement(true);
     }
@@ -196,7 +204,7 @@ Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
 
 /// Transform a program from its serialized JSON representation to blockly XML representation.
 Blockly.UnityJSON.XMLOfJSON = function(program) {
-    var funcCount = 1;
+    var funcCount = 0;
     var xml = '<xml>';
 
     // pull out all top-level procedure definitions
@@ -206,16 +214,16 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
 
     // HACK NOTE: we don't deal with the prepended $ correctly yet but this sorta fixes itself when the program gets immediately sent to unity
     _.each(groups.proc, function(proc) {
-        var x = 50 + 200*(funcCount % 2);
+        var x = 10 + 200*(funcCount % 2);
         var y = 150 + 250*Math.floor(funcCount/2);
-        xml += '<block type="procedures_defnoreturn" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
+        xml += '<block type="procedures_defnoreturn" id="' + proc.meta.id + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
         xml += Blockly.UnityJSON.bodyToXML(proc.body, program);
         xml += '</statement></block>';
         funcCount += 1;
     });
 
     var main = Blockly.UnityJSON.bodyToXML(groups.other, program);
-    var pos = ' x="50" y="150"';
+    var pos = ' x="10" y="15"';
     var insertIndex = main.indexOf(">", main.indexOf("block"));
     main = main.substring(0, insertIndex) + pos + main.substring(insertIndex);
     xml += main;
@@ -244,7 +252,7 @@ var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'D
 Blockly.UnityJSON.stmtToXML = function (stmt, program) {
     if (stmt) {
         if (stmt.type === "call") {
-            if (_.contains(BUILT_INS, stmt.ident)) {
+            if (_.contains(BUILT_INS, stmt.ident)) { // built-in
                 if (stmt.args.length === 0) {
                     return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '">';
                 } else if (stmt.ident === 'PlaceCube') {
@@ -252,10 +260,12 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
                 } else {
                     return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><field name="VALUE">' + stmt.args[0].value + '</field>';
                 }
-            } else {
-                return '<block type="procedures_callnoreturn"><mutation name="' + stmt.ident + '"></mutation>';
+            } else if (Blockly.Blocks[stmt.ident]) { // block generated from library import, assumes no parameters
+                return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '">';
+            } else { // procedure call
+                return '<block type="procedures_callnoreturn" id="' + stmt.meta.id + '"><mutation name="' + stmt.ident + '"></mutation>';
             }
-        } else if (stmt.type === "repeat") {
+        } else if (stmt.type === "repeat") { // repeat
             return '<block type="controls_repeat" id="' + stmt.meta.id + '"><field name="TIMES">' + stmt.numtimes.value + '</field><statement name="DO">' + Blockly.UnityJSON.bodyToXML(stmt.body, program) + '</statement>';
         }
     }

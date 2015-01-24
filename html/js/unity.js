@@ -68,8 +68,12 @@ module.Call = (function() {
         send_message("System", "EAPI_SetProgramFromJson", prog);
     }
 
-    self.set_program_parse = function(prog) {
-        send_message("System", "EAPI_SetProgramFromConcrete", prog);
+    self.submit_solution = function() {
+        send_message("System", "EAPI_SubmitSolution", "");
+    }
+
+    self.parse_concrete_program = function(prog) {
+        send_message("System", "EAPI_ParseProgramFromConcrete", prog);
     }
 
     self.step_program = function(step_type, step_distance) {

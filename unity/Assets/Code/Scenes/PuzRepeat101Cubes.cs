@@ -7,20 +7,20 @@ using Ruthefjord.Ast;
 
 public class PuzRepeat101Cubes : MonoBehaviour {
     
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
     
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
         progman.TicksPerStep = 10; // make execution a little faster, as there's no speed slider yet and the programs will need to place lots of blocks
 
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinCubeCountPredicate(101) });
+        lh.WinPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinCubeCountPredicate(101) });
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
 	}

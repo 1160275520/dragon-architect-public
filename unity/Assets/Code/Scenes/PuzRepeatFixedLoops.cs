@@ -7,10 +7,10 @@ using Ruthefjord.Ast;
 
 public class PuzRepeatFixedLoops : MonoBehaviour {
     
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
     
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle/repeat.repeat_fixedLoops");
@@ -30,11 +30,11 @@ public class PuzRepeatFixedLoops : MonoBehaviour {
         }
         
         lh.CreateBlueprint(template);
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        lh.WinPredicate =  PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
     
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

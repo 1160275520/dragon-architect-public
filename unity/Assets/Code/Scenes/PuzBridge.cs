@@ -7,11 +7,10 @@ using Ruthefjord.Ast;
 
 public class PuzBridge : MonoBehaviour {
     
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
     
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
-        
+        lh = GetComponent<PuzzleHelper>();
         var template = new List<IntVec3>();
         template.Add(new IntVec3(1,0,0));
         template.Add(new IntVec3(2,0,0));
@@ -27,11 +26,11 @@ public class PuzBridge : MonoBehaviour {
         template.Add(new IntVec3(8,0,0));
         
         lh.CreateBlueprint(template);
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        lh.WinPredicate =  PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
     
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

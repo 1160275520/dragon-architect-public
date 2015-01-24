@@ -7,10 +7,10 @@ using System.Collections.Generic;
 
 public class PuzRotate: MonoBehaviour
 {
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
     
     void Start () {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
         
         var template = new List<IntVec3>();
         for (int x = 0; x < 4; x++) {
@@ -18,11 +18,11 @@ public class PuzRotate: MonoBehaviour
         }
         
         lh.CreateBlueprint(template);
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
+        lh.WinPredicate =  PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateBlueprintPredicate(template) });
     }
     
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

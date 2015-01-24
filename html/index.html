@@ -44,20 +44,20 @@
       <h1>Ruthefjord!</h1>
       <div>
         <p class="sandboxModeUI">You are in sandbox mode!</p>
-        <button id="btn-modules" class="sandboxModeUI">Learn more code</button>
+        <button id="btn-packs" class="sandboxModeUI">Learn more code</button>
         <!-- <button id="btn-gallery" class="sandboxModeUI">Gallery</button> -->
         <button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear cubes and code</button>
         <!-- <button id="btn-share" class="sandboxModeUI">Share your code</button> -->
         <button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button>
-        <button id="btn-back-selector-module" class="puzzleModeUI puzzleSelector hideTutorial">Try a different module</button>
-        <button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector moduleSelector gallerySelector viewerModeUI hideTutorial">Go back to sandbox mode</button>
+        <button id="btn-back-selector-pack" class="puzzleModeUI puzzleSelector hideTutorial">Try a different pack</button>
+        <button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector packSelector gallerySelector viewerModeUI hideTutorial">Go back to sandbox mode</button>
         <button id="btn-back-gallery" class="viewerModeUI">Go back to gallery</button>
       </div>
       <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
       <div>
         <!-- @ifdef DEV -->
-        <select id="dev-select-module">
-          <option>- Jump to Module -</option>
+        <select id="dev-select-pack">
+          <option>- Jump to Pack -</option>
         </select>
         <button id="btn-header-sandbox">Sandbox</button>
         <button id="btn-devmode" onclick="devmode()">Dev Mode</button>
@@ -85,9 +85,9 @@
         <g transform="translate(20,20)"/>
       </svg>
     </div>
-    <div id="selector-module" class="moduleSelector">
-      <p>Choose a module:</p>
-      <div class="moduleOptions"></div>
+    <div id="selector-pack" class="packSelector">
+      <p>Choose a pack:</p>
+      <div class="packOptions"></div>
     </div>
     <div id="selector-gallery" class="gallerySelector">
       <div class="galleryItems"></div>
@@ -124,12 +124,12 @@
             <div id="time-slider"></div>
             <!-- <button id="btn-time-slider-forward" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-right"></i></button> -->
           </div>
-          <!--<p id="cube-counter" class="game-control">X</p>-->
+          <!-- <p id="cube-counter" class="game-control">X</p> -->
         </div>
-<!--         <div id="code-entry" class="sandboxModeUI">
+        <div id="code-entry" class="sandboxModeUI">
           <textarea id="code-entry-area"></textarea>
           <button id="btn-code-entry">Submit</button>
-        </div> -->
+        </div>
       </div>
       <div id="dialog"></div>
       <div id="main-view-code" class="codeEditor">
@@ -141,6 +141,11 @@
               <p id="instructions-goal"></p>
             </div>
             <p id="instructions-detail"></p>
+            <div id="instructions-errors">
+              <p id="instructions-errors-title"></p>
+              <ul id="instructions-errors-list">
+              </ul>
+            </div>
             <button id="btn-instructions-hide" class="notTitle">Click to hide</button>
           </div>
         </div>
@@ -150,6 +155,7 @@
             <button id="btn-run" class="game-control-btn-playback">X</button>
             <button id="btn-step" class="game-control-btn-playback">X</button>
             <button id="btn-pause" class="game-control-btn-playback">X</button>
+            <button id="btn-done" class="submitUI game-control-btn-playback">I'm done</button>
           </div>
           <button id="btn-undo" style="display: none;">Undo</button>
           <p id="statement-counter"></p>

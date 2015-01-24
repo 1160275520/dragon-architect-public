@@ -56,6 +56,8 @@ RuthefjordBlockly.Commands = [
     ['defproc', '<block type="procedures_defnoreturn"></block>']
 ]
 
+RuthefjordBlockly.AddonCommands = [];
+
 RuthefjordBlockly.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.remainingCapacity();
     var counter = $("#statement-counter")[0];
@@ -124,12 +126,17 @@ RuthefjordBlockly.setProgram = function(program) {
     var checkStmt = function(stmt) {
         var attr;
         if (stmt.meta) { attr = stmt.meta.attributes; }
-        if (attr && attr['FrozenBlocks']) {
-            var doFreezeArgs = Boolean(attr['FrozenArgs']);
+        if (attr) {
             var block = Blockly.mainWorkspace.getBlockById(stmt.meta.id);
-            // console.log(stmt);
-            // console.log(block);
-            RuthefjordBlockly.freezeBody(block, doFreezeArgs);
+            console.log(stmt);
+            console.log(block);
+            if (attr['FrozenBlocks']) {
+                var doFreezeArgs = Boolean(attr['FrozenArgs']);
+                RuthefjordBlockly.freezeBody(block, doFreezeArgs);
+            }
+            if (attr['NoMove']) {
+                block.setMovable(false);
+            }
         }
         if (stmt.body) { // recursively process children (e.g. blocks inside a repeat)
             _.each(stmt.body, checkStmt);
@@ -171,7 +178,7 @@ RuthefjordBlockly.freezeBody = function(block, doFreezeArgs) {
 
 RuthefjordBlockly.updateToolbox = function() {
     var toolXML = '<xml id="toolbox" style="display: none">';
-    _.each(RuthefjordBlockly.Commands, function(pair) {
+    _.each(_.union(RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands), function(pair) {
         if (_.contains(current_tools, pair[0])) {
             toolXML += pair[1];
         }
@@ -195,7 +202,13 @@ RuthefjordBlockly.updateToolbox = function() {
  */
 RuthefjordBlockly.setLevel = function(scene_info, library) {
     // ignore scene_info.library, trust only the library parameter
+    console.log(scene_info);
     current_tools = _.contains(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
+
+    // filter out restricted blocks
+    current_tools = _.filter(current_tools, function(value, index, collection) {
+        return !_.contains(scene_info.library.restricted, value);
+    })
 
     RuthefjordBlockly.updateToolbox();
 
@@ -245,6 +258,32 @@ RuthefjordBlockly.getProgram = function() {
 RuthefjordBlockly.getXML = function() {
     return (new XMLSerializer()).serializeToString(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
 };
+
+
+/**
+ * Assembles a new block with the specified name, text and params
+ */
+RuthefjordBlockly.generateBlock = function(name, text, params) {
+    Blockly.Blocks[name] = {
+        init: function() {
+            this.setFullColor('#978B63');
+            this.appendDummyInput()
+                .appendField(text);
+            // assuming no parameters for now since necessary features don't exist yet
+            // for (var i = 0; i < params.length; i++) {
+            //     this.appendValueInput('ARG'+i)
+            //         .appendField(params[i]);
+            // };
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+            this.setInputsInline(true);
+        }
+    }
+    Blockly.UnityJSON[name] = function(block) {
+        return {args:[],meta:{id:Number(block.id)},ident:name,type:"call"};
+    };
+    RuthefjordBlockly.AddonCommands.push([name, '<block type="'+name+'"></block>']);
+}
 
 return RuthefjordBlockly;
 }());

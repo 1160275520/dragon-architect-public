@@ -6,16 +6,16 @@ using Ruthefjord;
 public class PuzPlacement : MonoBehaviour
 {
 
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
 
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
 
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinCubeCountPredicate(4) });
+        lh.WinPredicate =   PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateMinCubeCountPredicate(4) });
     }
 
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

@@ -1,0 +1,37 @@
+#lang imperative:1.0
+@NoMove=true
+define FixedCastle()
+    FixedWall()
+    FixedTower()
+    FixedWall()
+    FixedTower()
+    FixedWall()
+    FixedTower()
+    FixedWall()
+    FixedTower()
+
+@NoMove=true
+define FixedTower()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerLayer()
+    TowerTop()
+
+@NoMove=true
+define FixedWall()
+    pass
+
+@NoMove=true
+FixedCastle()

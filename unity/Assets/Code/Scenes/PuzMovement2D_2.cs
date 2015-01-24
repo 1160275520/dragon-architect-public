@@ -5,17 +5,17 @@ using Ruthefjord;
 
 public class PuzMovement2D_2 : MonoBehaviour {
 
-    private Func<bool> winPredicate;
+    PuzzleHelper lh;
 
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
 		var target = new IntVec3(2,0,0);
         lh.CreateRobotTarget(target);
-		winPredicate = PuzzleHelper.All( new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateTargetPredicate(target) });
+		lh.WinPredicate =  PuzzleHelper.All( new Func<bool>[] { lh.GameIsRunningButDoneExecuting, lh.CreateTargetPredicate(target) });
 	}
 	
 	void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

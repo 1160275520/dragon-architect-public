@@ -9,7 +9,7 @@ var program_state = {
 var questLogger;
 var handler = {};
 var isDevMode = false;
-// the modules/puzzles sent up on game start
+// the packs/puzzles sent up on game start
 var game_info;
 
 var current_puzzle_runner;
@@ -115,9 +115,9 @@ var content = (function() {
     self.initialize = function() {
         game_info = {};
 
-        var qm = Q($.get('content/modules.json'))
+        var qm = Q($.get('content/packs.json'))
             .then(function(json) {
-                game_info.modules = json;
+                game_info.packs = json;
             });
 
         var qs = Q($.get('content/puzzles.json'))
@@ -169,12 +169,12 @@ var progress = (function(){
         return _.filter(content.puzzles(), function(p) { return self.is_puzzle_completed(p.id); });
     }
 
-    self.is_module_completed = function(module) {
-        return module.nodes.every(self.is_puzzle_completed);
+    self.is_pack_completed = function(pack) {
+        return pack.nodes.every(self.is_puzzle_completed);
     }
 
-    self.puzzles_remaining = function(module) {
-        return _.filter(module.nodes, function(p) { return !self.is_puzzle_completed(p); }).length;
+    self.puzzles_remaining = function(pack) {
+        return _.filter(pack.nodes, function(p) { return !self.is_puzzle_completed(p); }).length;
     }
 
     self.get_library = function() {
@@ -186,17 +186,17 @@ var progress = (function(){
 }());
 
 /**
- * Starts a module.
+ * Starts a pack.
  * Returns an object with the function 'onPuzzleFinish' that should be called when puzzleCompleted is sent from unity.
- * @param module A module object (from game_info.modules).
- * @param sceneSelectType one of {"tutorial", "module"}.
+ * @param pack A pack object (from game_info.packs).
+ * @param sceneSelectType one of {"tutorial", "pack"}.
  * Controls whether you are shuttled through levels automatically or get the graph scene selctor.
  */
-function create_puzzle_runner(module, sceneSelectType) {
+function create_puzzle_runner(pack, sceneSelectType) {
     var self = {};
     var tutorialCounter = 0;
 
-    function onModuleComplete() {
+    function onPackComplete() {
         console.error("TODO make this do something!");
     }
 
@@ -213,12 +213,12 @@ function create_puzzle_runner(module, sceneSelectType) {
 
     self.onPuzzleFinish = function() {
         switch (sceneSelectType) {
-            case "module":
-                if (progress.puzzles_remaining(module) > 0 || isDevMode) {
+            case "pack":
+                if (progress.puzzles_remaining(pack) > 0 || isDevMode) {
                     // bring up the level select
                     RuthefjordUI.State.goToSceneSelect(function() {
-                        RuthefjordUI.LevelSelect.create(module, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                            if (progress.puzzles_remaining(module) === 1) {
+                        RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                            if (progress.puzzles_remaining(pack) === 1) {
                                 setState_puzzle(pid, "to_sandbox");
                             } else {
                                 setState_puzzle(pid, "to_puzzle_select");
@@ -226,16 +226,16 @@ function create_puzzle_runner(module, sceneSelectType) {
                         });
                     });
                 } else {
-                    // module has been completed, go to sandbox
+                    // pack has been completed, go to sandbox
                     setState_sandbox();
                 }
                 break;
 
             case "tutorial":
-                if (tutorialCounter < module.nodes.length) {
+                if (tutorialCounter < pack.nodes.length) {
                     // progress through tutorial using tutorialCounter
-                    var finishType = module.nodes.length - tutorialCounter === 1 ? "to_sandbox" : "to_next_puzzle";
-                    setState_puzzle(module.nodes[tutorialCounter++], finishType);
+                    var finishType = pack.nodes.length - tutorialCounter === 1 ? "to_sandbox" : "to_next_puzzle";
+                    setState_puzzle(pack.nodes[tutorialCounter++], finishType);
                 } else {
                     // tutorial has been completed, go to sandbox
                     setState_sandbox();
@@ -275,7 +275,7 @@ function setState_intro() {
             summary: 'Welcome to Ruthefjord!',
             detail: d
         }, function() {
-            current_puzzle_runner = create_puzzle_runner(game_info.modules["tutorial"], "tutorial");
+            current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
         }, true);
         $('.notTitle').hide(); // hide instructions elements that aren't supposed to be on the title screen (e.g. click to hide button)
     });
@@ -329,12 +329,12 @@ $(function() {
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
 
-    var devSelectModule = $('#dev-select-module');
-    devSelectModule.change(function() {
-        var val = devSelectModule.val();
+    var devSelectPack = $('#dev-select-pack');
+    devSelectPack.change(function() {
+        var val = devSelectPack.val();
         // HACK assumes opening line starts with '-'
         if (val[0] !== '-') {
-            current_puzzle_runner = create_puzzle_runner(game_info.modules[val], "module");
+            current_puzzle_runner = create_puzzle_runner(game_info.packs[val], "pack");
         }
     });
 
@@ -352,20 +352,20 @@ $(function() {
 
     $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
-    function goToModules() {
-        RuthefjordUI.State.goToModuleSelect(function () {
-            RuthefjordUI.ModuleSelect.create(_.filter(game_info.modules,
+    function goToPacks() {
+        RuthefjordUI.State.goToPackSelect(function () {
+            RuthefjordUI.PackSelect.create(_.filter(game_info.packs,
                 function(m) {
-                    return !progress.is_module_completed(m);
+                    return !progress.is_pack_completed(m);
                 }),
-                function(module) {
-                    current_puzzle_runner = create_puzzle_runner(module, "module");
+                function(pack) {
+                    current_puzzle_runner = create_puzzle_runner(pack, "pack");
                 });
         });
     }
 
-    $('#btn-modules').on('click', goToModules);
-    $('#btn-back-selector-module').on('click', goToModules);
+    $('#btn-packs').on('click', goToPacks);
+    $('#btn-back-selector-pack').on('click', goToPacks);
 
     function goToGallery() {
         function sandboxCallback(item) {
@@ -479,9 +479,13 @@ $(function() {
         RuthefjordUnity.Call.step_program("Command", 1)
     });
 
-    // $("#btn-code-entry").on('click', function() {
-    //     RuthefjordUnity.Call.set_program_parse($("#code-entry-area").val());
-    // })
+    $("#btn-code-entry").on('click', function() {
+        RuthefjordUnity.Call.parse_concrete_program($("#code-entry-area").val());
+    })
+
+    $("#btn-done").on('click', function() {
+        RuthefjordUnity.Call.submit_solution();
+    });
 
     // wait for all systems to start up, then go!
     promise_all.done(function() {
@@ -490,13 +494,13 @@ $(function() {
 
         console.info('EVERYTHING IS READY!');
 
-        // HACK this needs to wait for the modules to be loaded
-        _.each(game_info.modules, function(module, id) {
-            devSelectModule.append('<option value="' + id + '">' + id + '</option>');
+        // HACK this needs to wait for the packs to be loaded
+        _.each(game_info.packs, function(pack, id) {
+            devSelectPack.append('<option value="' + id + '">' + id + '</option>');
         });
 
         progress.initialize(function() {
-            if (progress.is_module_completed(game_info.modules["tutorial"])) {
+            if (progress.is_pack_completed(game_info.packs["tutorial"])) {
                 setState_sandbox();
             } else {
                 // setState_title();
@@ -558,6 +562,7 @@ function start_editor(info) {
         RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
         RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
+        RuthefjordUI.DoneButton.setVisible(goals.some(function(g) { return g.type === "submit";}));
 
         RuthefjordBlockly.history = [];
 
@@ -575,24 +580,38 @@ function start_editor(info) {
         // then start new quest logger if this is not an empty level
         questLogger = RuthefjordLogging.startQuest(info.puzzle.logging_id, info.checksum);
 
-        switch (info.puzzle.program.type) {
-            case "json":
-                var program = JSON.parse(info.puzzle.program.value);
-                RuthefjordBlockly.setProgram(program);
-                break;
-            case "preserve":
-                // want to leave the old program, so do nothing (except tell the system)!
-                onProgramEdit();
-                break;
-            case "xml":
-                RuthefjordBlockly.clearProgram();
-                if (info.puzzle.program.value) {
-                    RuthefjordBlockly.loadBlocks(info.puzzle.program.value);
-                }
-                break;
-            default:
-                console.error("Unknown program type '" + info.puzzle.program.type + "'!");
-                break;
+        // clear any existing addon blocks in the toolbox (so they don't get duplicated)
+        RuthefjordBlockly.AddonCommands = [];
+        if (info.puzzle.library.autoimports) {
+            _.each(info.puzzle.library.autoimports, function(module) {
+                _.each(JSON.parse(module.value).body, function(statement) {
+                    if (statement.type === "proc") {
+                        RuthefjordBlockly.generateBlock(statement.name, statement.name, statement.params)
+                    }
+                });
+            });
+            // get the imported blocks to show up in the toolbox
+            RuthefjordBlockly.updateToolbox();
+        }
+
+        if (info.puzzle.program) {
+            switch (info.puzzle.program.type) {
+                case "json":
+                    var program = JSON.parse(info.puzzle.program.value);
+                    RuthefjordBlockly.setProgram(program);
+                    break;
+                case "xml":
+                    RuthefjordBlockly.clearProgram();
+                    if (info.puzzle.program.value) {
+                        RuthefjordBlockly.loadBlocks(info.puzzle.program.value);
+                    }
+                    break;
+                default:
+                    console.error("Unknown program type '" + info.puzzle.program.type + "'!");
+                    break;
+            }
+        } else {
+            RuthefjordBlockly.clearProgram();
         }
     }
 
@@ -786,12 +805,18 @@ handler.onRenderFinal = function(data) {
 }
 
 handler.onProgramParse = function(prog) {
+    RuthefjordUnity.Call.set_program(prog);
     var program = JSON.parse(prog);
     RuthefjordBlockly.setProgram(program);
 }
 
 handler.onToSandbox = function() {
     setState_sandbox();
+}
+
+handler.onErrorMessages = function(errors) {
+    console.log(errors);
+    RuthefjordUI.Instructions.displayErrors(JSON.parse(errors));
 }
 
 return onRuthefjordEvent;

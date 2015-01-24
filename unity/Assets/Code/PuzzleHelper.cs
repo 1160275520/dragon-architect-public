@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Ruthefjord;
 using Ruthefjord.Ast;
 using Microsoft.FSharp.Core;
@@ -10,6 +11,8 @@ public class PuzzleHelper : MonoBehaviour
 {
     public GameObject BlueprintPrefab;
     public GameObject RobotTargetPrefab;
+    public Func<bool> WinPredicate;
+    public List<string> BlockingErrors;
 
     private ImperativeAstManipulator Manipulator { get { return GetComponent<ProgramManager>().Manipulator; } }
 
@@ -26,6 +29,7 @@ public class PuzzleHelper : MonoBehaviour
         if (OptionModule.IsSome(com)) {
             gameObject.AddComponent(com.Value);
         }
+        BlockingErrors = new List<string> ();
     }
 
     void Start() {
@@ -105,6 +109,43 @@ public class PuzzleHelper : MonoBehaviour
 
     public Func<bool> CreateTargetPredicate(IntVec3 cell) {
         return () => FindObjectOfType<RobotController>().Robot.Position.Equals(cell);
+    }
+
+    /** 
+     * reqs : proc name mapped to (call ident mapped to ((int -> bool), error message))
+     * For each procedure with requirements, the count of calls with the specified idents contained in the procedure
+     * definition will be passed to the corresponding function.
+     * This predicate will return the conjunction of all provided functions applied to (the relevant parts of) the current program.
+     * For any function that is false, it will append the provided error message to the list of strings.
+     */
+    public Func<bool> CreateCodeCountPredicate(Dictionary<string, Dictionary<string, Tuple<Func<int, bool>,string>>> reqs, List<string> err) {
+        var progman = GetComponent<ProgramManager>();
+        Func<Imperative.Program, bool> checkProgram = (program) => {
+            bool ret = true;
+            // get all procedures that have specified requirements
+            var procs = program.Body.Where(x => x.Stmt.IsProcedure).Select(x => x.Stmt.AsProcedure())
+                .Where(x => reqs.ContainsKey(x.Name));
+            // make sure all the required procedures exist
+            var dontExist = reqs.Keys.Except(procs.Select((x) => x.Name));
+            if (dontExist.Count() > 0) {
+                err.Add("Required procedures don't exist: " + dontExist.Aggregate((a,b) => a + ", " + b));
+                return false;
+            }
+            foreach (var proc in procs) {
+                // get all procedure calls in the procedure
+                var calls = proc.Body.Where(x => x.Stmt.IsExecute).Select(x => x.Stmt.AsExecute());
+                // pass the count of those calls with specified requirements to the associated function (record any error messages)
+                foreach (var req in reqs[proc.Name]) {
+                    var count = calls.Count(x => x.Identifier == req.Key);
+                    if (!req.Value.Item1(count)) {
+                        err.Add(req.Value.Item2);                      
+                    }
+                    ret = ret && req.Value.Item1(count);
+                }
+            }
+            return ret;
+        };
+        return () => checkProgram(progman.Manipulator.Program);
     }
 
     /// Returns a function that evaluates to true iff all the given predicates evaluate to true.

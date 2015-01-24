@@ -57,6 +57,21 @@
     "edges": [],
     "name": "Procedural Bliss",
     "learn": ["Create custom blocks with procedures"]
+},
+"decomposition":{
+    "nodes": [
+        "decomposition.castle",
+        "decomposition.fix_castle",
+        "decomposition.fix_towers",
+        "decomposition.fix_walls"
+    ],
+    "edges": [
+        ["decomposition.castle", "decomposition.fix_castle"],
+        ["decomposition.fix_castle", "decomposition.fix_towers"],
+        ["decomposition.fix_towers", "decomposition.fix_walls"]
+    ],
+    "name": "One Castle, Two Castle, Red Castle, Blue Castle",
+    "learn": ["How to solve problems"]
 }
 }
 

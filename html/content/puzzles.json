@@ -264,11 +264,83 @@
             "granted": ["defproc"]
         },
         "instructions": {
-            "summary": "Help me fill in the blueprints by using two more {squareProc}.",
+            "summary": "Help me fill in the blueprints by using two more {squareProc}s.",
             "detail": ""
         },
         "program": {"type":"resource", "value":"puzzle/procedures.procedures01"},
         "logging_id": 36
+    },
+    "decomposition.castle": {
+        "name": "Do You Wanna Build a Castle?",
+        "library": {
+            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "required": ["Castle"],
+            "granted": ["speed_slider", "time_slider"],
+            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+        },
+        "goals": [{
+            "type": "run_and_done"
+        }],
+        "instructions": {
+            "summary": "Let's see if the block you have builds the castle I want.",
+            "detail": ""
+        },
+        "logging_id": 102
+    },
+    "decomposition.fix_castle": {
+        "name": "Fixer-Upper",
+        "component": "PuzDecompFixCastle",
+        "library": {
+            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "required": ["Tower", "Wall"],
+            "granted": ["speed_slider", "time_slider"],
+            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+        },
+        "goals": [{
+            "type": "submit"
+        }],
+        "instructions": {
+            "summary": "Fill in the FixedCastle procedure. Click {done} when you're finished.",
+            "detail": "I don't want a castle with only three sides! Help me give my castle four walls and four towers. Try alternating Wall blocks and Tower blocks."
+        },
+        "program": {"type":"resource", "value":"puzzle/decomposition.fix_castle"},
+        "logging_id": 103
+    },
+        "decomposition.fix_towers": {
+        "name": "Taller Towers",
+        "library": {
+            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "required": ["TowerLayer", "TowerTop", "Wall"],
+            "granted": ["speed_slider", "time_slider"],
+            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+        },
+        "goals": [{
+            "type": "submit"
+        }],
+        "instructions": {
+            "summary": "Fill in the FixedTower procedure. Click {done} when you're finished.",
+            "detail": "Those towers are too short. I want big, impressive towers... at least 15 blocks high! Use the TowerLayer block at least 15 times and then use the TowerTop block."
+        },
+        "program": {"type":"resource", "value":"puzzle/decomposition.fix_towers"},
+        "logging_id": 104
+    },
+        "decomposition.fix_walls": {
+        "name": "Better Walls",
+        "library": {
+            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "required": ["WallSheet", "WallTop", "TowerLayer", "TowerTop"],
+            "granted": ["speed_slider", "time_slider"],
+            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+        },
+        "goals": [{
+            "type": "submit"
+        }],
+        "instructions": {
+            "summary": "Fill in the FixedWall procedure. Click {done} when you're finished.",
+            "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all. Use the WallSheet block at least 3 times and then use the WallTop block."
+        },
+        "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
+        "logging_id": 105
     }
 }
 

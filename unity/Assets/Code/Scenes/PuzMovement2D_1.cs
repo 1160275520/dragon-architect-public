@@ -5,17 +5,17 @@ using Ruthefjord;
 
 public class PuzMovement2D_1 : MonoBehaviour {
 
-    private Func<bool> winPredicate;
+    private PuzzleHelper lh;
 
     void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle/tutorial.movement2d");
-        winPredicate = lh.GameIsRunningButDoneExecuting;
+        lh.WinPredicate =  lh.GameIsRunningButDoneExecuting;
     }
 
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
 			GetComponent<PuzzleHelper>().WinLevel();
         }
     }

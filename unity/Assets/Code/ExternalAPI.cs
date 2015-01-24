@@ -93,10 +93,8 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
-    public void EAPI_SetProgramFromConcrete(string code) {
-        var progman = GetComponent<ProgramManager>();
-        progman.Manipulator.Program = Ruthefjord.Parser.Parse(code, "submitted text");
-        Application.ExternalCall(ExternalApiFunc, "onProgramParse", Json.Serialize(Serialization.JsonOfProgram(progman.Manipulator.Program)));
+    public void EAPI_ParseProgramFromConcrete(string code) {
+        Application.ExternalCall(ExternalApiFunc, "onProgramParse", Json.Serialize(Serialization.JsonOfProgram(Ruthefjord.Parser.Parse(code, "submitted text"))));
     }
 
     private void notifyProgramStateChange(string name, Json.JsonValue value) {
@@ -144,6 +142,10 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    public void SendErrorMessages(List<string> errors) {
+        Application.ExternalCall(ExternalApiFunc, "onErrorMessages", Json.Serialize(Json.fromObject(errors)));
+    }
+
     // other controls
     //////////////////////////////////////////////////////////////////////////
 
@@ -179,6 +181,15 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    public void EAPI_SubmitSolution(string ignored) {
+        var helper = FindObjectOfType<PuzzleHelper>();
+        helper.BlockingErrors.Clear(); // clear any existing error messages
+        if (helper.WinPredicate()) { // check for win
+            helper.WinLevel();
+        } else { // send back new error messages
+            SendErrorMessages(helper.BlockingErrors);
+        }
+    }
     // world state
     //////////////////////////////////////////////////////////////////////////
 

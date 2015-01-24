@@ -40,8 +40,35 @@
 }
 
 #instructions-display.expanded #instructions-detail {
-    height: 530px;
+    height: 150px;
     padding-top: 20px;
+}
+
+#instructions-errors {
+    font-size: 16pt;
+    height: 0px;
+    overflow: hidden;
+    padding: 0;
+
+    transition: none 1.0s;
+    transition-property: padding-top, height;
+}
+
+#instructions-display.expanded #instructions-errors {
+    height: 400px;
+    padding-top: 20px;
+}
+
+#instructions-errors-title.populated {
+    padding-top: 10px;
+    background-color: rgba(0, 72, 244, 0.3);
+}
+
+#instructions-errors-list.populated {
+    padding-top: 20px;
+    margin: 0;
+    padding-bottom: 10px;
+    background-color: rgba(0, 72, 244, 0.3);
 }
 
 #instructions-reminder {

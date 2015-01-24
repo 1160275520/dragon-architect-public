@@ -49,6 +49,14 @@ module Imperative =
     | Procedure of Procedure
     | Execute of Execute
     | Command of Command
+        member x.AsProcedure() = 
+            match x with
+            | Procedure p -> p;
+            | _ -> invalidOp "can't convert to procedure";
+        member x.AsExecute() = 
+            match x with
+            | Execute e -> e;
+            | _ -> invalidOp "can't convert to execute";
     and Statement = {
         Stmt: StatementT;
         Meta: Meta;

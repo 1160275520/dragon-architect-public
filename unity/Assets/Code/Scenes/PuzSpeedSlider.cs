@@ -7,19 +7,19 @@ using Ruthefjord.Ast;
 
 public class PuzSpeedSlider : MonoBehaviour
 {
-    Func<bool> winPredicate;
+    PuzzleHelper lh;
 
 	void Start() {
-        var lh = GetComponent<PuzzleHelper>();
+        lh = GetComponent<PuzzleHelper>();
 
         var progman = GetComponent<ProgramManager>();
         progman.LoadProgram("puzzle/tutorial.speed_slider");
 
-        winPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
+        lh.WinPredicate =  PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 
     void Update() {
-        if (winPredicate()) {
+        if (lh.WinPredicate()) {
             GetComponent<PuzzleHelper>().WinLevel();
         }
     }

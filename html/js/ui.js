@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.view-loading, .player-consent, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .moduleSelector, .gallerySelector, .viewerModeUI, .shareModeUI').hide();
+        $('.view-loading, .player-consent, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -62,7 +62,6 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
-        module.CubeCounter.setVisible(false);
         $('.codeEditor, .puzzleModeUI').show();
         RuthefjordUnity.Player.show();
         $(main_selector).removeClass('title');
@@ -77,9 +76,9 @@ module.State = (function(){ "use strict";
         cb();
     };
 
-    self.goToModuleSelect = function(cb) {
+    self.goToPackSelect = function(cb) {
         hideAll();
-        $('.moduleSelector').show();
+        $('.packSelector').show();
         cb();
     }
 
@@ -210,21 +209,21 @@ module.Gallery = (function() {
     return self;
 }());
 
-module.ModuleSelect = (function() {
+module.PackSelect = (function() {
     var self = {};
 
-    function makeModule(module) {
+    function makePack(pack) {
         var span = document.createElement("span");
-        span.id = 'module_' + module.name;
-        $(span).addClass('moduleOption');
+        span.id = 'pack_' + pack.name;
+        $(span).addClass('packOption');
         var title = document.createElement("p");
-        title.innerHTML = module.name;
+        title.innerHTML = pack.name;
         $(title).css("font-weight", "700");
         $(title).css("padding-bottom", "5px");
         $(span).append(title);
         $(span).append("<u>You will learn how to:</u>");
         var learnList = document.createElement("ul");
-        _.each(module.learn, function(item) {
+        _.each(pack.learn, function(item) {
             var e = document.createElement("li");
             e.innerHTML = item;
 
@@ -234,14 +233,14 @@ module.ModuleSelect = (function() {
         return span;
     }
 
-    self.create = function(modules, onSelectCallback) {
-        var selector = $(".moduleOptions");
+    self.create = function(packs, onSelectCallback) {
+        var selector = $(".packOptions");
         selector.empty();
-        _.each(modules, function(module) {
-            if (module.name) {
-                var m = makeModule(module, onSelectCallback);
+        _.each(packs, function(pack) {
+            if (pack.name) {
+                var m = makePack(pack, onSelectCallback);
                 $(m).on('click', function () {
-                    onSelectCallback(module); 
+                    onSelectCallback(pack); 
                 });
                 selector.append(m);
             }
@@ -261,7 +260,7 @@ module.LevelSelect = (function() {
      * Will pass in one argument, an object with the following structure:
      * { id: <id of level>, puzzle: <PuzzleInfo object> }
      */
-    self.create = function(module, scenes, isSceneCompleted, onSelectCallback) {
+    self.create = function(pack, scenes, isSceneCompleted, onSelectCallback) {
         // TODO move hard-coded graph spec to config file of some kind
         var colors = {
             teal: "#5BA68D",
@@ -274,11 +273,11 @@ module.LevelSelect = (function() {
 
         var graph = new dagre.Digraph();
 
-        _.each(module.nodes, function(id) {
+        _.each(pack.nodes, function(id) {
             graph.addNode(id, {label: scenes[id].name, id: id});
         });
 
-        _.each(module.edges, function(edge) {
+        _.each(pack.edges, function(edge) {
             graph.addEdge(null, edge[0], edge[1]);
         });
 
@@ -347,7 +346,8 @@ module.Instructions = (function() {
         learn: "media/learnButton.png",
         workshop: "media/workshopButton.png",
         clear: "media/clearSandboxButton.png",
-        speedSlider: "media/speedSlider.png"
+        speedSlider: "media/speedSlider.png",
+        done: "media/doneButton.png"
     }
 
     var uiIdMap = {
@@ -355,10 +355,11 @@ module.Instructions = (function() {
         rotateCW: "camera-rotate-right",
         rotateCCW: "camera-rotate-left",
         camera: "camera-controls",
-        learn: "btn-modules",
+        learn: "btn-packs",
         workshop: "btn-workshop",
         clear: "btn-header-clear-sandbox",
-        speedSlider: "speed-slider"
+        speedSlider: "speed-slider",
+        done: "btn-done"
     }
 
     function makeImgHtml(file, uiId) {
@@ -455,6 +456,11 @@ module.Instructions = (function() {
     }
 
     self.show = function(instructions, cb, doStartLarge) {
+        // clear old instructions
+        $('#instructions-goal').html("");
+        $('#instructions-detail').html("");
+        self.displayErrors();
+        // load new instructions, if any
         if (instructions) {
             $('#instructions-goal').html(processTemplate(instructions.summary));
             $('#instructions-detail').html(processTemplate(instructions.detail));
@@ -462,6 +468,27 @@ module.Instructions = (function() {
         $('#instructions-container').css('visibility', 'visible');
         setSize(doStartLarge, cb, false)();
         makeImgOnClick();
+    }
+
+    self.displayErrors = function(errors) {
+        var list = $("#instructions-errors-list");
+        // clear old errors
+        $("#instructions-errors-title").html("");
+        $("#instructions-errors-title").removeClass("populated");
+        list.html("");
+        list.removeClass("populated");
+        // load new errors, if any
+        if (errors) {
+            $("#instructions-errors-title").html("Here are some things to fix:");
+            _.each(errors, function(error) {
+                var item = document.createElement("li");
+                $(item).html(error);
+                list[0].appendChild(item);
+            });
+            $("#instructions-errors-title").addClass("populated");
+            list.addClass("populated");
+            setSize(true, null, true)();
+        }
     }
 
     return self;
@@ -636,7 +663,6 @@ module.CubeCounter = (function() {
     var self = {};
 
     self.setVisible = function(isVisible) {
-        console.log('setting to ' + isVisible.toString());
         $('#cube-counter').css('display', isVisible ? 'block' : 'none');
         var n = 0;
         $('#cube-counter').html(n.toString() + " cubes placed.");
@@ -645,6 +671,16 @@ module.CubeCounter = (function() {
     self.update = function(count) {
         $('#cube-counter').html(count + " cubes placed.");
     }
+
+    return self;
+}());
+
+module.DoneButton = (function() {
+    var self = {};
+
+    self.setVisible = function(isVisible) {
+        $('#btn-done').css('display', isVisible ? 'block' : 'none');
+    };
 
     return self;
 }());

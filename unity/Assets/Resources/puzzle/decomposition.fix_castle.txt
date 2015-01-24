@@ -1,0 +1,7 @@
+#lang imperative:1.0
+@NoMove=true
+define FixedCastle()
+    pass
+
+@NoMove=true
+FixedCastle()
