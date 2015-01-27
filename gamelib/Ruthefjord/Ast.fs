@@ -19,6 +19,10 @@ module Imperative =
     | Identifier of string
     | Evaluate of Evaluate
     | Query of Query
+        member x.AsLiteral() =
+            match x with
+            | Literal l -> l;
+            | _ -> invalidOp "can't convert to literal";
     and Expression = {
         Meta: Meta;
         Expr: ExpressionT;
@@ -57,6 +61,10 @@ module Imperative =
             match x with
             | Execute e -> e;
             | _ -> invalidOp "can't convert to execute";
+        member x.AsRepeat() = 
+            match x with
+            | Repeat r -> r;
+            | _ -> invalidOp "can't convert to repeat";
     and Statement = {
         Stmt: StatementT;
         Meta: Meta;

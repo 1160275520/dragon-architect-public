@@ -70,6 +70,16 @@ public class PuzzleHelper : MonoBehaviour
         return progman.RunState == RunState.Finished;
     }
 
+    public Func<bool> MakeGameIsRunningButDoneExecutingWithError(List<string> err) {
+        return () => {
+            var done = GameIsRunningButDoneExecuting();
+            if (!done) {
+                err.Add("Run your program all the way through");
+            }
+            return done;
+        };
+    }
+
     /// Instantiates the blueprint prefab for each of the given cells.
     public void CreateBlueprint(IEnumerable<IntVec3> cells) {
         var grid = GetComponent<Grid>();
@@ -111,6 +121,30 @@ public class PuzzleHelper : MonoBehaviour
         return () => FindObjectOfType<RobotController>().Robot.Position.Equals(cell);
     }
 
+    private int countInRepeat(Imperative.Repeat repeat, string ident) {
+        Debug.Log(repeat + ", " + ident);
+        var nested = repeat.Body.Where(x => x.Stmt.IsRepeat).Select(x => x.Stmt.AsRepeat());
+        var calls = repeat.Body.Where(x => x.Stmt.IsExecute).Select(x => x.Stmt.AsExecute());
+        // assuming integer literals only as repeat parameters
+        var times = Convert.ToInt32(repeat.NumTimes.Expr.AsLiteral());
+        Debug.Log(calls.Count(x => x.Identifier == ident)*times + nested.Select(r => countInRepeat(r, ident)).Sum());
+        return times*(calls.Count(x => x.Identifier == ident) + nested.Select(r => countInRepeat(r, ident)).Sum());
+    }
+
+    private bool applyRequirement(IEnumerable<Imperative.Execute> calls, IEnumerable<Imperative.Repeat> repeats,
+        Dictionary<string, Tuple<Func<int, bool>,string>> req, List<string> err) {
+        bool ret = true;
+        // pass the count of those calls with specified requirements to the associated function (record any error messages)
+        foreach (var r in req) {
+            var count = calls.Count(x => x.Identifier == r.Key) + repeats.Select(repeat => countInRepeat(repeat, r.Key)).Sum();
+            if (!r.Value.Item1(count)) {
+                err.Add(r.Value.Item2);                      
+            }
+            ret = ret && r.Value.Item1(count);
+        }
+        return ret;
+    }
+
     /** 
      * reqs : proc name mapped to (call ident mapped to ((int -> bool), error message))
      * For each procedure with requirements, the count of calls with the specified idents contained in the procedure
@@ -122,11 +156,17 @@ public class PuzzleHelper : MonoBehaviour
         var progman = GetComponent<ProgramManager>();
         Func<Imperative.Program, bool> checkProgram = (program) => {
             bool ret = true;
+            // check main if necessary
+            if (reqs.ContainsKey("MAIN")) {
+                var calls = program.Body.Where(x => x.Stmt.IsExecute).Select(x => x.Stmt.AsExecute());
+                var repeats = program.Body.Where(x => x.Stmt.IsRepeat).Select(x => x.Stmt.AsRepeat());
+                ret = ret && applyRequirement(calls, repeats, reqs["MAIN"], err);
+            }
             // get all procedures that have specified requirements
             var procs = program.Body.Where(x => x.Stmt.IsProcedure).Select(x => x.Stmt.AsProcedure())
                 .Where(x => reqs.ContainsKey(x.Name));
-            // make sure all the required procedures exist
-            var dontExist = reqs.Keys.Except(procs.Select((x) => x.Name));
+            // make sure all the required procedures exist (ignoring the invented MAIN)
+            var dontExist = reqs.Keys.Except(procs.Select((x) => x.Name)).Except(new string[] {"MAIN"});
             if (dontExist.Count() > 0) {
                 err.Add("Required procedures don't exist: " + dontExist.Aggregate((a,b) => a + ", " + b));
                 return false;
@@ -134,14 +174,9 @@ public class PuzzleHelper : MonoBehaviour
             foreach (var proc in procs) {
                 // get all procedure calls in the procedure
                 var calls = proc.Body.Where(x => x.Stmt.IsExecute).Select(x => x.Stmt.AsExecute());
+                var repeats = proc.Body.Where(x => x.Stmt.IsRepeat).Select(x => x.Stmt.AsRepeat());
                 // pass the count of those calls with specified requirements to the associated function (record any error messages)
-                foreach (var req in reqs[proc.Name]) {
-                    var count = calls.Count(x => x.Identifier == req.Key);
-                    if (!req.Value.Item1(count)) {
-                        err.Add(req.Value.Item2);                      
-                    }
-                    ret = ret && req.Value.Item1(count);
-                }
+                ret = ret && applyRequirement(calls, repeats, reqs[proc.Name], err);
             }
             return ret;
         };

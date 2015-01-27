@@ -272,17 +272,18 @@
     },
     "decomposition.castle": {
         "name": "Do You Wanna Build a Castle?",
+        "component": "PuzDecompCastle",
         "library": {
-            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "restricted": ["move2", "place", "up", "down", "defproc", "remove", "repeat"],
             "required": ["Castle"],
             "granted": ["speed_slider", "time_slider"],
             "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
         },
         "goals": [{
-            "type": "run_and_done"
+            "type": "submit"
         }],
         "instructions": {
-            "summary": "Let's see if the block you have builds the castle I want.",
+            "summary": "Let's see if the block you have builds the castle I want. Run a program with one Castle block and click {done} when it finishes.",
             "detail": ""
         },
         "logging_id": 102
@@ -308,6 +309,7 @@
     },
         "decomposition.fix_towers": {
         "name": "Taller Towers",
+        "component": "PuzDecompFixTowers",
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
             "required": ["TowerLayer", "TowerTop", "Wall"],
@@ -326,6 +328,7 @@
     },
         "decomposition.fix_walls": {
         "name": "Better Walls",
+        "component": "PuzDecompFixWalls",
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
             "required": ["WallSheet", "WallTop", "TowerLayer", "TowerTop"],
