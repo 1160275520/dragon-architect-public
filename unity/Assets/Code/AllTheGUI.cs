@@ -162,32 +162,32 @@ public class AllTheGUI : MonoBehaviour
         GUILayoutOption[] options;
 
         if (IsActivePuzzleFinishButton) {
-            area = new Rect(Screen.width/2 - 100, Screen.height/2 - 50, 200, 100);
-            GUILayout.BeginArea(area);
-            GUILayout.BeginVertical("ButtonBackground");
-            GUILayout.Label("Yay, you win!");
-            var style = new GUIStyle("button");
-            style.fontSize = 24;
-            style.fontStyle = FontStyle.Bold;
-
-            string text = "";
-            switch(FindObjectOfType<Global>().PuzzleFinish) {
-            case Global.PuzzleFinishType.to_next_puzzle:
-                text = "Go to next puzzle";
-                break;
-            case Global.PuzzleFinishType.to_puzzle_select:
-                text = "Return to level select";
-                break;
-            case Global.PuzzleFinishType.to_sandbox:
-                text = "Go to sandbox mode";
-                break;
-            }
-
-            if (GUILayout.Button(text, style)) {
-                GetComponent<ExternalAPI>().SendPuzzleFinish();
-            }
-            GUILayout.EndVertical();
-            GUILayout.EndArea();
+//            area = new Rect(Screen.width/2 - 100, Screen.height/2 - 50, 200, 100);
+//            GUILayout.BeginArea(area);
+//            GUILayout.BeginVertical("ButtonBackground");
+//            GUILayout.Label("Yay, you win!");
+//            var style = new GUIStyle("button");
+//            style.fontSize = 24;
+//            style.fontStyle = FontStyle.Bold;
+//
+//            string text = "";
+//            switch(FindObjectOfType<Global>().PuzzleFinish) {
+//            case Global.PuzzleFinishType.to_next_puzzle:
+//                text = "Go to next puzzle";
+//                break;
+//            case Global.PuzzleFinishType.to_puzzle_select:
+//                text = "Return to level select";
+//                break;
+//            case Global.PuzzleFinishType.to_sandbox:
+//                text = "Go to sandbox mode";
+//                break;
+//            }
+//
+//            if (GUILayout.Button(text, style)) {
+//                GetComponent<ExternalAPI>().SendPuzzleFinish();
+//            }
+//            GUILayout.EndVertical();
+//            GUILayout.EndArea();
         }
 
 

@@ -14,7 +14,6 @@ public class Global : MonoBehaviour {
 
     public string CurrentSceneId { get; private set; }
     public Scene.PuzzleInfo CurrentPuzzle { get; set; }
-    public PuzzleFinishType PuzzleFinish { get; private set; }
     public string SandboxWorldData { get; private set; }
 
     void Awake() {
@@ -62,7 +61,6 @@ public class Global : MonoBehaviour {
         var data = Json.Parse(json);
         CurrentSceneId = data.GetField("id").AsString;
         CurrentPuzzle = Scene.PuzzleInfo.Parse(data.GetField("puzzle"));
-        PuzzleFinish = Util.parseEnum<PuzzleFinishType>(data.GetField("finish").AsString);
 
         Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
         Application.LoadLevel("puzzle");

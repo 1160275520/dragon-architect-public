@@ -122,12 +122,10 @@ public class PuzzleHelper : MonoBehaviour
     }
 
     private int countInRepeat(Imperative.Repeat repeat, string ident) {
-        Debug.Log(repeat + ", " + ident);
         var nested = repeat.Body.Where(x => x.Stmt.IsRepeat).Select(x => x.Stmt.AsRepeat());
         var calls = repeat.Body.Where(x => x.Stmt.IsExecute).Select(x => x.Stmt.AsExecute());
         // assuming integer literals only as repeat parameters
         var times = Convert.ToInt32(repeat.NumTimes.Expr.AsLiteral());
-        Debug.Log(calls.Count(x => x.Identifier == ident)*times + nested.Select(r => countInRepeat(r, ident)).Sum());
         return times*(calls.Count(x => x.Identifier == ident) + nested.Select(r => countInRepeat(r, ident)).Sum());
     }
 
@@ -200,7 +198,6 @@ public class PuzzleHelper : MonoBehaviour
     void Update() {
         if (hasBeenWon && Time.fixedTime - winTime > winDelay && !hasSentWinAnnouncement) {
             Debug.Log("actual win");
-            GetComponent<AllTheGUI>().IsActivePuzzleFinishButton = true;
             GetComponent<ExternalAPI>().SendPuzzleComplete();
             hasSentWinAnnouncement = true;
         }

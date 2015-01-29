@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordUnity.Player.hide();
-        $('.view-loading, .player-consent, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI').hide();
+        $('.view-loading, .player-consent, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -688,7 +688,10 @@ module.DoneButton = (function() {
 module.Dialog = (function() {
     self = {};
 
-    self.show = function(content, style) {
+    self.make = function(content, style) {
+        // clear out any old contents
+        module.Dialog.destroy();
+        
         var dialog = document.getElementById('dialog');
 
         // Copy all the specified styles to the dialog.
@@ -696,13 +699,35 @@ module.Dialog = (function() {
           dialog.style[name] = style[name];
         }
         dialog.appendChild(content);
-        dialog.style.visibility = 'visible';
-        dialog.style.zIndex = 1;
+
+        $(dialog).show();
     }
 
-    self.hide = function () {
-        var dialog = document.getElementById('dialog');
-        dialog.style.visibility = 'hidden';
+    self.destroy = function () {
+        $(".dialog-content").remove();
+        $(dialog).hide();
+    }
+
+    return self;
+}());
+
+module.WinMessage = (function() {
+    var self = {};
+
+    self.show = function(msg, btn_msg, cb) {
+        var div = document.createElement('div');
+        $(div).addClass("dialog-content");
+        var dialogContent = document.createElement('span');
+        dialogContent.appendChild(document.createTextNode(msg));
+        var btn = document.createElement('button');
+        btn.style["font-size"] = "20pt";
+        $(btn).addClass("control-btn");
+        $(btn).html(btn_msg);
+        $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
+        div.appendChild(dialogContent);
+        div.appendChild(btn);
+        var style = {width: '450px', top: '400px', left: '200px', "font-size": "35pt"};
+        RuthefjordUI.Dialog.make(div, style);
     }
 
     return self;

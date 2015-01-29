@@ -18,6 +18,7 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d"},
         "logging_id": 21,
         "instructions": {
             "summary": "Click {go} to have me run my program!",
@@ -122,6 +123,7 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"resource", "value":"puzzle/up.what_is_up"},
         "instructions": {
             "summary": "Help me get to the pink box!",
             "detail": "Use two {up} to complete my program."
@@ -286,6 +288,7 @@
             "summary": "Let's see if the block you have builds the castle I want. Run a program with one Castle block and click {done} when it finishes.",
             "detail": ""
         },
+        "winmsg": "That castle doesn't look like what I want at all. Let's fix it!",
         "logging_id": 102
     },
     "decomposition.fix_castle": {

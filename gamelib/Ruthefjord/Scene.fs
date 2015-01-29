@@ -110,6 +110,7 @@ type PuzzleInfo = {
     StartingProgram: Program option;
     WorldData: WorldData option;
     Goals: J.JsonValue;
+    WinMsg: string option;
 } with
     // need to produce the json with and without the checksum so the checksum can actually be computed
     member x.ToJson () =
@@ -124,6 +125,7 @@ type PuzzleInfo = {
             "program", nullOrToJson x.StartingProgram;
             "world", defaultArg (Option.map World.encodeToJson x.WorldData) J.Null;
             "goals", x.Goals;
+            "winmsg", defaultArg (Option.map J.String x.WinMsg) J.Null;
         ]
 
     static member Parse j =
@@ -137,6 +139,7 @@ type PuzzleInfo = {
             StartingProgram = tryJload j "program" Program.Parse;
             WorldData = tryJload j "world" World.decodeFromJsonNoMeta;
             Goals = defaultArg (j.TryGetField "goals") J.Null;
+            WinMsg = tryJload j "winmsg" J.asString;
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}

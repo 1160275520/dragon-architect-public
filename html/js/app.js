@@ -17,6 +17,8 @@ var current_puzzle_runner;
 var world_data;
 
 var current_scene = "title";
+var win_msg;
+var win_btn_msg;
 
 // flag for when unity is rendering gallery thumbnails
 var galleryRender = false; 
@@ -200,15 +202,16 @@ function create_puzzle_runner(pack, sceneSelectType) {
         console.error("TODO make this do something!");
     }
 
-    function setState_puzzle(id, finish_type) {
+    function setState_puzzle(id, finish_msg) {
         current_scene = 'transition';
-        var info = {id:id, puzzle:game_info.puzzles[id], finish:finish_type};
+        var info = {id:id, puzzle:game_info.puzzles[id]};
         RuthefjordUI.State.goToPuzzle(function() {
             if (sceneSelectType === 'tutorial') {
                 $('.hideTutorial').hide();
             }
             RuthefjordUnity.Call.request_start_puzzle(info);
         });
+        win_btn_msg = finish_msg;
     }
 
     self.onPuzzleFinish = function() {
@@ -219,9 +222,9 @@ function create_puzzle_runner(pack, sceneSelectType) {
                     RuthefjordUI.State.goToSceneSelect(function() {
                         RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                             if (progress.puzzles_remaining(pack) === 1) {
-                                setState_puzzle(pid, "to_sandbox");
+                                setState_puzzle(pid, "Go to the sandbox");
                             } else {
-                                setState_puzzle(pid, "to_puzzle_select");
+                                setState_puzzle(pid, "Go to puzzle select");
                             }
                         });
                     });
@@ -234,7 +237,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
             case "tutorial":
                 if (tutorialCounter < pack.nodes.length) {
                     // progress through tutorial using tutorialCounter
-                    var finishType = pack.nodes.length - tutorialCounter === 1 ? "to_sandbox" : "to_next_puzzle";
+                    var finishType = pack.nodes.length - tutorialCounter === 1 ? "Go to the sandbox" : "Go to next puzzle";
                     setState_puzzle(pack.nodes[tutorialCounter++], finishType);
                 } else {
                     // tutorial has been completed, go to sandbox
@@ -511,15 +514,6 @@ $(function() {
                 });
             }
         });
-
-        // SAMPLE POPUP DIALOG CODE
-        // var dialogContent = document.createElement('span');
-        // dialogContent.appendChild(document.createTextNode("This is a test of the popup dialog system."));
-        // console.log(dialogContent);
-        // var style = {width: '370px', top: '120px'};
-        // style['left'] = '215px';
-        // RuthefjordUI.Dialog.show(dialogContent, style); 
-
     });
 });
 
@@ -613,6 +607,12 @@ function start_editor(info) {
         } else {
             RuthefjordBlockly.clearProgram();
         }
+
+        if (info.puzzle.winmsg) {
+            win_msg = info.puzzle.winmsg;
+        } else {
+            win_msg = "Yay, you win!"
+        }
     }
 
     RuthefjordUI.Instructions.show(info.puzzle.instructions, null, true);
@@ -648,6 +648,11 @@ handler.onSandboxStart = function() {
     if (sandboxProgAddon) {
         RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(JSON.parse(sandboxProgAddon)));
         sandboxProgAddon = "";
+    }
+
+    // display the concrete syntax entry in dev mode
+    if (isDevMode) {
+        $('.devModeOnly').show();
     }
 }
 
@@ -756,6 +761,9 @@ handler.onSetColors = function(json) {
 handler.onPuzzleComplete = function(puzzle_id) {
     progress.mark_puzzle_completed(puzzle_id, game_info.puzzles[puzzle_id]);
     if (questLogger) { questLogger.logOnPuzzledCompleted(); }
+    RuthefjordUI.WinMessage.show(win_msg, win_btn_msg, function() { handler.onPuzzleFinish(puzzle_id); });
+    var cheer = new Audio("media/cheer_3.mp3");
+    cheer.play();
 };
 
 // sent when they exit a puzzle
