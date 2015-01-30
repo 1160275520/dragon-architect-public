@@ -12,6 +12,7 @@ type ErrorCode =
 | RobotUnavailable = 4201
 | QueryError = 4203
 | UnableToConvertToInteger = 4301
+| StackOverflow = 4302
 
 let private runtimeError (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
     raise (CodeException (RuntimeError (int code, meta.Id, msg, null)))
@@ -46,12 +47,16 @@ type private CallStackState = {
     Robot: Robot.IRobotSimulator option
 }
 
+let private MAX_CALLSTACK = 1000
+
 type private State = {
     mutable CallStack: CallStackState list;
     mutable LastExecuted: Statement list;
 }
 with
-    member x.Push css = x.CallStack <- css :: x.CallStack
+    member x.Push meta css =
+        if x.CallStack.Length >= MAX_CALLSTACK then runtimeError meta ErrorCode.StackOverflow "max callstack length exceeded"
+        x.CallStack <- css :: x.CallStack
 
 let private valueAsInt meta (o:obj) =
     match o with
@@ -96,7 +101,7 @@ let private step (state:State) =
     | [] -> None
     | head :: tail ->
         match head.ToExecute with
-        | [] -> 
+        | [] ->
             state.CallStack <- tail
             None
         | stmt :: next ->
@@ -114,12 +119,12 @@ let private step (state:State) =
                 let b =
                     try evaluate head cond :?> bool
                     with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
-                state.Push {head with ToExecute=if b then thenb else elseb}
+                state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
                 None
             | Repeat {Body=body; NumTimes=ntimesExpr} ->
                 let ntimes = evaluate head ntimesExpr |> valueAsInt stmt.Meta
                 let toAdd = List.concat (List.init ntimes (fun _ -> body))
-                state.Push {head with ToExecute=toAdd}
+                state.Push stmt.Meta {head with ToExecute=toAdd}
                 None
             | Function func ->
                 state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: tail
@@ -133,7 +138,7 @@ let private step (state:State) =
                     let proc = head.Environment.[name] :?> Procedure
                     let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
                     let env = head.Environment.PushScope args
-                    state.Push {head with Environment=env; ToExecute=proc.Body}
+                    state.Push stmt.Meta {head with Environment=env; ToExecute=proc.Body}
                 with
                 | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
                 | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
@@ -146,9 +151,9 @@ let private step (state:State) =
 let private makeInternalError e =
     RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)
 
-let private internalError e = 
+let private internalError e =
     raise (CodeException (makeInternalError e))
-    
+
 /// Step the simulation a single statement.
 /// Will modify the passed-in state, and return either Some command or None on success, or the RuntimeError if one occurred.
 /// Guaranteed to not throw an exception.
@@ -224,7 +229,7 @@ type LazyStepResult = {
     Stack: StackResult;
     State: StateResult;
     Errors: RuntimeError[];
-}        
+}
 
 type private MutableList<'a> = System.Collections.Generic.List<'a>
 
