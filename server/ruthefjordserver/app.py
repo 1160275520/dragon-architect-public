@@ -5,6 +5,7 @@ import flask.ext.sqlalchemy
 import flask.ext.restless
 from flask import request
 from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ruthefjord'
@@ -18,6 +19,15 @@ def add_cors_header(response):
     response.headers['Access-Control-Allow-Credentials'] = 'true'
 
     return response
+
+@app.route('/api/getuid', methods=['POST'])
+def uuid_of_username():
+    content = request.json
+    username = content['username']
+    namespace = uuid.UUID('0caa0ca1-9d81-43f2-8fd4-4869fee5864f')
+    uuid = str(uuid.uuid5(namespace, username))
+    result = { 'uuid':uuid }
+    return flask.jsonify(result=result)
 
 class Player(db.Model):
     __tablename__ = 'player'
