@@ -285,7 +285,7 @@
             "type": "submit"
         }],
         "instructions": {
-            "summary": "Let's see if the block you have builds the castle I want. Run a program with one Castle block and click {done} when it finishes.",
+            "summary": "Let's see if the block you have builds the castle I want. Run a program with one {castle} and click {done} when it finishes.",
             "detail": ""
         },
         "winmsg": "That castle doesn't look like what I want at all. Let's fix it!",
@@ -304,10 +304,11 @@
             "type": "submit"
         }],
         "instructions": {
-            "summary": "Fill in the FixedCastle procedure. Click {done} when you're finished.",
+            "summary": "Fill in the FixedCastle procedure. Use 4 {wall} and 4 {tower}.",
             "detail": "I don't want a castle with only three sides! Help me give my castle four walls and four towers. Try alternating Wall blocks and Tower blocks."
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_castle"},
+        "winmsg": "Nice work! Those towers look too short, so let's go make them taller.",
         "logging_id": 103
     },
         "decomposition.fix_towers": {
@@ -323,10 +324,11 @@
             "type": "submit"
         }],
         "instructions": {
-            "summary": "Fill in the FixedTower procedure. Click {done} when you're finished.",
-            "detail": "Those towers are too short. I want big, impressive towers... at least 15 blocks high! Use the TowerLayer block at least 15 times and then use the TowerTop block."
+            "summary": "Fill in the FixedTower procedure. Use at least 10 {towerlayer} and a {towertop}.",
+            "detail": "Those towers are too short. I want big, impressive towers... at least 10 blocks high!"
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_towers"},
+        "winmsg": "Getting close! The walls look too thin, and you can help me fix them.",
         "logging_id": 104
     },
         "decomposition.fix_walls": {
@@ -342,8 +344,8 @@
             "type": "submit"
         }],
         "instructions": {
-            "summary": "Fill in the FixedWall procedure. Click {done} when you're finished.",
-            "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all. Use the WallSheet block at least 3 times and then use the WallTop block."
+            "summary": "Fill in the FixedWall procedure. Use at least 3 {wallsheet} and a {walltop}.",
+            "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all."
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
         "logging_id": 105

@@ -1,6 +1,6 @@
 
 var RUTHEFJORD_CONFIG = {
-    game_server: {url: 'http://gigantor.cs.washington.edu:5000/api/'},
+    game_server: {url: 'http://gigantor.cs.washington.edu:27246/api'},
     //are_logins: true,
     logging: {
         //server_tag: 'PRODUCTION_SERVER',

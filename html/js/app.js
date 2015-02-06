@@ -377,34 +377,18 @@ $(function() {
                 storage.load('sandbox_world_data', function(wd) {
                     RuthefjordUnity.Call.request_start_sandbox(wd);
                 });
-                sandboxProgAddon = item.prog;
+                sandboxProgAddon = item.program;
             });
         }
-        RuthefjordUI.Gallery.create([{name:'myCastle0', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
-                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
-                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
-                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
-                                    {name:'myCastle1', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
-                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
-                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
-                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
-                                    {name:'myCastle2', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
-                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
-                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
-                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
-                                    {name:'myCastle3', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
-                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
-                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
-                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
-                                    {name:'myCastle4', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
-                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
-                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
-                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'},
-                                    {name:'myCastle5', prog:'{"meta":{"language":"imperative_v02","version":{"major":1,"minor":0}},\
-                                    "body":[{"args":[{"type":"literal","value":"1"}],"meta":{"id":12},"ident":"Forward","type":"call"},\
-                                    {"args":[{"type":"literal","value":1}],"meta":{"id":16},"ident":"PlaceBlock","type":"call"},{"args":[{"type":"literal",\
-                                    "value":"1"}],"meta":{"id":14},"ident":"Forward","type":"call"}]}'}], sandboxCallback);
-        galleryRender = true;
+        var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
+        site("uploaded_project").get(function (err, data, headers) {
+            if (!err) {
+                RuthefjordUI.Gallery.create(data.objects, sandboxCallback);
+                galleryRender = true;
+            } else {
+                alert("The Gallery server is unavailable.");
+            }
+        });
     }
 
     $('#btn-gallery').on('click', goToGallery);
@@ -412,7 +396,7 @@ $(function() {
     $('#btn-back-gallery').on('click', function () {RuthefjordUI.State.goToGallery(function () {})});
 
     $('#btn-share').on('click', function () {
-        RuthefjordUI.Share.create();
+        RuthefjordUI.Share.create(setState_sandbox);
     });
 
     // initialize subsystems (mainly unity and logging)
@@ -487,8 +471,15 @@ $(function() {
     })
 
     $("#btn-done").on('click', function() {
+        RuthefjordUnity.Call.set_program(JSON.stringify(RuthefjordBlockly.getProgram()));
+        RuthefjordUnity.Call.set_program_execution_time(1);
         RuthefjordUnity.Call.submit_solution();
     });
+
+    // HACK to avoid button text wrapping on smaller screens
+    if ($(document).width() < 1350) {
+        $("html").css("font-size", "10pt");
+    }
 
     // wait for all systems to start up, then go!
     promise_all.done(function() {
@@ -635,8 +626,7 @@ handler.onSandboxStart = function() {
                     summary: "Let's build something cool! Click {learn} to get new tools and abilities, like moving up and down or rotating the camera.",
                     detail:
                         "In this mode, any code you run will stick around <b>permanently</b>. " +
-                        "Click on {workshop} to toggle to a mode where you can test code without blocks sticking around." +
-                        "<br><br>" +
+                        "Click on {workshop} to toggle to a mode where you can test code without blocks sticking around. " +
                         "You can also clear away all of your code and blocks by clicking {clear}."
                 }
             }

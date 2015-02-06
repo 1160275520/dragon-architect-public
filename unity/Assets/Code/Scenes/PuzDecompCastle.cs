@@ -14,6 +14,6 @@ public class PuzDecompCastle : MonoBehaviour {
         config.Add("MAIN", new Dictionary<string, Tuple<Func<int, bool>,string>> ());
         config ["MAIN"].Add("Castle", new Tuple<Func<int, bool>,string>((n) => n == 1, "Run the program with one Castle block to see what it does"));
 
-        lh.WinPredicate = PuzzleHelper.All(new Func<bool>[] { lh.CreateCodeCountPredicate(config, lh.BlockingErrors), lh.MakeGameIsRunningButDoneExecutingWithError(lh.BlockingErrors) });
+        lh.WinPredicate = PuzzleHelper.All(new Func<bool>[] { lh.CreateCodeCountPredicate(config, lh.BlockingErrors)});
     }
 }

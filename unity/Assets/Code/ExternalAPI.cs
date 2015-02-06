@@ -171,12 +171,10 @@ public class ExternalAPI : MonoBehaviour
             camera.Tilt(-10);
             break;
         case "gamemode":
-            GameObject.Find("Camera").tag = "MainCamera";
-            GameObject.Find("Viewer").tag = "";
+            Camera.allCameras.Where((c) => c.name == "Viewer").Single().depth = -1;
             break; 
         case "viewmode": 
-            GameObject.Find("Camera").tag = "";
-            GameObject.Find("Viewer").tag = "MainCamera";
+            Camera.allCameras.Where((c) => c.name == "Viewer").Single().depth = 1;
             break;
         }
     }
@@ -239,10 +237,13 @@ public class ExternalAPI : MonoBehaviour
         var data = Json.Parse(json);
 
         // set up game state
-        EAPI_SetProgramFromJson(data.GetField("prog").AsString);
+        var camera = FindObjectOfType<MyCamera>();
+        camera.ForceFullTranslation = true;
+        EAPI_SetProgramFromJson(data.GetField("program").AsString);
         var progman = GetComponent<ProgramManager>();
         progman.EditMode = EditMode.Workshop;
         progman.SetProgramStateBySlider(1.0f);
+
 
         // render to texture
         yield return new WaitForEndOfFrame();
@@ -257,6 +258,7 @@ public class ExternalAPI : MonoBehaviour
         Destroy(tex);
 
         // encode and ship data
+        camera.ForceFullTranslation = false;
         var dict = new Dictionary<string, Json.JsonValue>();
         dict.Add("id", Json.JsonValue.NewString(data.GetField("id").AsString));
         dict.Add("src", Json.JsonValue.NewString(Convert.ToBase64String(bytes)));

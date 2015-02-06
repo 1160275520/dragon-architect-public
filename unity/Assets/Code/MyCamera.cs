@@ -8,6 +8,7 @@ public class MyCamera : MonoBehaviour
     public float RotationSmoothness = 5.0f;         // The relative speed at which the camera will catch up.
     public float WobblePeriod = 3.0f;
     public float WobbleMagnitude = 3.0f;
+    public bool ForceFullTranslation = false;
 
     private Transform player;           // Reference to the player's transform.
     private Vector3 relCameraPos;       // The relative position of the camera from the player.
@@ -65,12 +66,15 @@ public class MyCamera : MonoBehaviour
                 break;
         }
 
-        // Lerp the camera's position between it's current position and it's new position.
-        transform.position = Vector3.Lerp(transform.position, newPos, TranslationSmoothness * Time.deltaTime);
+        if (ForceFullTranslation) {
+            transform.position = newPos;
+        } else {
+            // Lerp the camera's position between it's current position and it's new position.
+            transform.position = Vector3.Lerp(transform.position, newPos, TranslationSmoothness * Time.deltaTime);
+        }
 
         SmoothLookAt();
     }
-
 
     private bool ViewingPosCheck(Vector3 checkPos) {
         RaycastHit hit;

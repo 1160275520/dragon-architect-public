@@ -110,9 +110,9 @@ module.Share = (function() {
     var self = {};
 
     self.title = "";
-    var site = fermata.json("http://localhost:5000/api");
+    var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
 
-    var submit = function () {
+    var submit = function (cb) {
         var message = $("#share-message");
         if (self.title) {
             // from http://stackoverflow.com/a/2117523
@@ -122,6 +122,7 @@ module.Share = (function() {
             });
             var upload = {id: uuid, author: "00000000-0000-0000-0000-000000000000", name: self.title, time: Date(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
             site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {console.log(e,d);});
+            cb();
         } else {
             // message.html("Please enter a title");
             // message.show();
@@ -131,13 +132,13 @@ module.Share = (function() {
         }
     }
 
-    self.create = function () {
+    self.create = function (cb) {
         $("#share-edit-title").editInPlace({
             callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
             show_buttons: false,
         });
-        RuthefjordUnity.Call.render_final_frame({id:"share-thumb", prog:JSON.stringify(RuthefjordBlockly.getProgram())});
-        $("#btn-share-submit").on('click', submit);
+        RuthefjordUnity.Call.render_final_frame({id:"share-thumb", program:JSON.stringify(RuthefjordBlockly.getProgram())});
+        $("#btn-share-submit").on('click', function () {submit(cb);});
     }
 
     return self;
@@ -150,7 +151,7 @@ module.Gallery = (function() {
 
     function renderThumb(item, thumbId) {
         self.thumbsToRender.push(thumbId);
-        RuthefjordUnity.Call.render_final_frame({id:thumbId, prog:item.prog});
+        RuthefjordUnity.Call.render_final_frame({id:thumbId, prog:item.program});
     }
 
     function makeItem(item, sandboxCallback) {
@@ -174,7 +175,7 @@ module.Gallery = (function() {
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
         function viewItem() {
-            RuthefjordUnity.Call.set_program(item.prog);
+            RuthefjordUnity.Call.set_program(item.program);
             RuthefjordUnity.Call.set_program_execution_time(1);
             RuthefjordUI.State.goToViewer(function () {});
         }
@@ -347,7 +348,14 @@ module.Instructions = (function() {
         workshop: "media/workshopButton.png",
         clear: "media/clearSandboxButton.png",
         speedSlider: "media/speedSlider.png",
-        done: "media/doneButton.png"
+        done: "media/doneButton.png",
+        castle: "media/blockSvgs/castle.svg",
+        wall: "media/blockSvgs/wall.svg",
+        tower: "media/blockSvgs/tower.svg",
+        towerlayer: "media/blockSvgs/towerlayer.svg",
+        towertop: "media/blockSvgs/towertop.svg",
+        wallsheet: "media/blockSvgs/wallsheet.svg",
+        walltop: "media/blockSvgs/walltop.svg"
     }
 
     var uiIdMap = {
@@ -726,7 +734,7 @@ module.WinMessage = (function() {
         $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
         div.appendChild(dialogContent);
         div.appendChild(btn);
-        var style = {width: '450px', top: '400px', left: '200px', "font-size": "35pt"};
+        var style = {width: '450px', top: '400px', left: '200px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
     }
 
