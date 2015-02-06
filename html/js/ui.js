@@ -115,14 +115,28 @@ module.Share = (function() {
     var submit = function (cb) {
         var message = $("#share-message");
         if (self.title) {
-            // from http://stackoverflow.com/a/2117523
-            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                return v.toString(16);
-            });
-            var upload = {id: uuid, author: "00000000-0000-0000-0000-000000000000", name: self.title, time: Date(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
-            site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {console.log(e,d);});
-            cb();
+            $.ajax(RUTHEFJORD_CONFIG.game_server.url + '/getuid', {
+                data: JSON.stringify({username:RuthefjordLogging.uid()}),
+                contentType: 'application/json',
+                type: 'POST'
+            })
+                .done(function(data) {
+                    // from http://stackoverflow.com/a/2117523
+                    var author_uuid = data.result.uuid;
+                    var project_uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                        return v.toString(16);
+                    });
+                    var upload = {id: project_uuid, author: author_uuid, name: self.title, time: Date(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
+                    console.info(upload);
+                    site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {console.log(e,d);});
+                })
+                .fail(function(data) {
+                    // if THIS fails, give up and turn off logins
+                    console.log("getting the user uuid failed D:")
+                    cb();
+                });
+
         } else {
             // message.html("Please enter a title");
             // message.show();

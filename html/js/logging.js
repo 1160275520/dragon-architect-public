@@ -5,6 +5,10 @@ var user;
 var is_initialized = false;
 var self = {};
 
+self.uid = function() {
+    return user.getUserId();
+}
+
 self.initialize = function(uid) {
 
     var skey = RUTHEFJORD_CONFIG.logging.game.skey;
