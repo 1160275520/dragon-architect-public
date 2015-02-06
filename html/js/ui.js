@@ -127,7 +127,7 @@ module.Share = (function() {
                         var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
                         return v.toString(16);
                     });
-                    var upload = {id: project_uuid, author: author_uuid, name: self.title, time: Date(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
+                    var upload = {id: project_uuid, author: author_uuid, name: self.title, time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
                     console.info(upload);
                     site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {console.log(e,d);});
                 })
