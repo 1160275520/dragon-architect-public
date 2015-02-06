@@ -25,8 +25,8 @@ def uuid_of_username():
     content = request.json
     username = content['username']
     namespace = uuid.UUID('0caa0ca1-9d81-43f2-8fd4-4869fee5864f')
-    uuid = str(uuid.uuid5(namespace, username))
-    result = { 'uuid':uuid }
+    uid = unicode(uuid.uuid5(namespace, username.encode('utf-8')))
+    result = { 'uuid':uid }
     return flask.jsonify(result=result)
 
 class Player(db.Model):
