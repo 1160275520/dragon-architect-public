@@ -383,8 +383,12 @@ $(function() {
         var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
         site("uploaded_project").get(function (err, data, headers) {
             if (!err) {
-                RuthefjordUI.Gallery.create(data.objects, sandboxCallback);
-                galleryRender = true;
+                if (data.objects && data.objects.length > 0) {
+                    RuthefjordUI.Gallery.create(data.objects, sandboxCallback);
+                    galleryRender = true;
+                } else {
+                    RuthefjordUI.State.goToGallery(function () {}); // just go to empty gallery
+                }
             } else {
                 alert("The Gallery server is unavailable.");
             }
