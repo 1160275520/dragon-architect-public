@@ -94,7 +94,8 @@ if __name__ == '__main__':
     mut.add_argument('-r', action='store_const', dest='mode', const='release',
         help="Build in release mode."
     )
-    mut.add_argument('--config', '-c', dest='config', default=None,
+
+    parser.add_argument('--config', '-c', dest='config', default=None,
         help="Config file to use in place of default (this should be something from build/ for production builds!)"
     )
 
