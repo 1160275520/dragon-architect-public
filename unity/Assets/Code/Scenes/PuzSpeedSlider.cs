@@ -10,6 +10,7 @@ public class PuzSpeedSlider : MonoBehaviour
     PuzzleHelper lh;
 
 	void Start() {
+        lh = GetComponent<PuzzleHelper>();
         lh.WinPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 
