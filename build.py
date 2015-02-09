@@ -7,6 +7,7 @@ import argparse
 import traceback
 import platform
 import timeit
+import shutil
 
 def check(code):
     if code != 0:
@@ -24,8 +25,15 @@ def build_unity(mode):
 def build_blockly(mode):
     check(subprocess.call(['python', 'build.py'], cwd='blockly'))
 
+# HACK HACK HACK
+config_file = None
+
 # the actual webpage
 def build_html(mode):
+    if config_file is not None:
+        print("Copying config file %s to html/js/config.js..." % config_file)
+        shutil.copyfile(config_file, 'html/js/config.js')
+
     # for some reason shell=True is required on windows but breaks on Mac?
     shell = platform.system() == 'Windows'
     check(subprocess.call(['npm', 'install'], cwd='html/', shell=shell))
@@ -44,6 +52,8 @@ def build(target, mode):
     print("Done building '%s'." % target)
 
 def main(args):
+    global config_file
+    config_file = args.config
 
     start_time = timeit.default_timer()
 
@@ -83,6 +93,9 @@ if __name__ == '__main__':
     )
     mut.add_argument('-r', action='store_const', dest='mode', const='release',
         help="Build in release mode."
+    )
+    mut.add_argument('--config', '-c', dest='config', default=None,
+        help="Config file to use in place of default (this should be something from build/ for production builds!)"
     )
 
     main(parser.parse_args())
