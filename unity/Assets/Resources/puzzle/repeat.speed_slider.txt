@@ -5,6 +5,6 @@ repeat 5 times
     repeat 4 times
         repeat 20 times
             Forward(1)
-        PuzzleHelper lh; Left()
+        Left()
     Up(1)
 

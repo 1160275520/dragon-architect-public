@@ -28,11 +28,11 @@ define WallLayer()
     Forward(1)
 
 define WallSheet()
-    repeat 10 times # wall height
+    repeat 6 times # wall height
         WallLayer()
     Right()
     Forward(1)
-    Down(10) # wall height
+    Down(6) # wall height
     Left()
 
 define Wall()
@@ -41,13 +41,13 @@ define Wall()
     WallTop()
 
 define WallTop()
-    Up(10) # wall height
+    Up(6) # wall height
     Left()
     Forward(1)
     Right()
     repeat 2 times # wall battlement height
         WallLayer()
-    Down(12) # wall + battlement height
+    Down(8) # wall + battlement height
     Right()
     Forward(4) # 7 - wall thickness
     Right()
@@ -55,7 +55,7 @@ define WallTop()
 
 define Gate()
     repeat 3 times # gate wall thickness
-        repeat 9 times # gate height
+        repeat 5 times # gate height
             Line7()
             Forward(6) # gate width
             Line7()
@@ -67,15 +67,15 @@ define Gate()
             WallLayer()
         Right()
         Forward(1)
-        Down(10) # gate wall height
+        Down(6) # gate wall height
         Left()
-    Up(10) # gate wall height
+    Up(6) # gate wall height
     Left()
     Forward(1)
     Right()
     repeat 2 times # gate battlement height
         WallLayer()
-    Down(12) # gate height + gate battlement height
+    Down(8) # gate height + gate battlement height
     Right()
     Forward(4)
     Right()

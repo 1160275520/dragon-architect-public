@@ -10,12 +10,7 @@ public class PuzSpeedSlider : MonoBehaviour
     PuzzleHelper lh;
 
 	void Start() {
-        lh = GetComponent<PuzzleHelper>();
-
-        var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle/tutorial.speed_slider");
-
-        lh.WinPredicate =  PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
+        lh.WinPredicate = PuzzleHelper.All(new Func<bool>[] { lh.GameIsRunningButDoneExecuting, programWinPredicate });
 	}
 
     void Update() {
@@ -24,7 +19,7 @@ public class PuzSpeedSlider : MonoBehaviour
         }
     }
 
-    private bool programWinPredicate() {
+    public bool programWinPredicate() {
         var progman = GetComponent<ProgramManager>();
         return progman.TicksPerStep < 15;
     }

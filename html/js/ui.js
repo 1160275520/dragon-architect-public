@@ -165,7 +165,7 @@ module.Gallery = (function() {
 
     function renderThumb(item, thumbId) {
         self.thumbsToRender.push(thumbId);
-        RuthefjordUnity.Call.render_final_frame({id:thumbId, prog:item.program});
+        RuthefjordUnity.Call.render_final_frame({id:thumbId, program:item.program});
     }
 
     function makeItem(item, sandboxCallback) {

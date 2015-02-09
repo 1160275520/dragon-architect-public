@@ -193,6 +193,7 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"resource", "value":"puzzle/tutorial.arguments"},
         "logging_id": 24
     },
     "repeat.speed_slider": {
@@ -207,6 +208,7 @@
             "summary": "This program takes a long time to run. Speed me up by dragging {speedSlider} to <b>Fast</b>!",
             "detail": ""
         },
+        "program": {"type":"resource", "value":"puzzle/repeat.speed_slider"},
         "logging_id": 25
     },
     "repeat.repeat_fixedProgram": {
@@ -222,8 +224,9 @@
         },
         "instructions": {
             "summary": "Help me fill in the blueprint by changing {repeat} to {repeat4}!",
-            "detail": "{repeat4} tells me to do everything inside 5 times."
+            "detail": "{repeat4} tells me to do everything inside 4 times."
         },
+        "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedProgram"},
         "logging_id": 26
     },
     "repeat.repeat_fixedLoops": {
@@ -238,6 +241,7 @@
             "summary": "Help me fill in the blueprint by adding a {forward} and a {placecube} to my program!",
             "detail": "Try adding those code blocks inside {repeat9}."
         },
+        "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedLoops"},
         "logging_id": 27
     },
     "repeat.repeat_101Cubes": {
@@ -348,6 +352,7 @@
             "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all."
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
+        "winmsg": "At last, the perfect castle!",
         "logging_id": 105
     }
 }

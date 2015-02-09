@@ -12,9 +12,6 @@ public class PuzRepeatFixedLoops : MonoBehaviour {
     void Start() {
         lh = GetComponent<PuzzleHelper>();
 
-        var progman = GetComponent<ProgramManager>();
-        progman.LoadProgram("puzzle/repeat.repeat_fixedLoops");
-        
         var template = new List<IntVec3>();
         const int size = 10;
         const int offset = 1;

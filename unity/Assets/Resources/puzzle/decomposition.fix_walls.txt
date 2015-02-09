@@ -22,11 +22,6 @@ define FixedTower()
     TowerLayer()
     TowerLayer()
     TowerLayer()
-    TowerLayer()
-    TowerLayer()
-    TowerLayer()
-    TowerLayer()
-    TowerLayer()
     TowerTop()
 
 @NoMove=true
