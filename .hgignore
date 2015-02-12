@@ -27,4 +27,9 @@ html/generated/
 html/node_modules/
 server/venv*/
 dist/
+*.aux
+*.bbl
+*.log
+*.blg
+papers/**/*.pdf
 
