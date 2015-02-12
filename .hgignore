@@ -32,4 +32,4 @@ dist/
 *.log
 *.blg
 papers/**/*.pdf
-
+.\#*

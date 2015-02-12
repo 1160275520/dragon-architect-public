@@ -96,11 +96,23 @@
 \keywords{Game-based learning; computational thinking; programming education}
 
 \section{Introduction}
-The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. Many of these projects, including some of the most visible such as Scratch and Code.org's Hour of Code~\cite{codedotorg}, are online programming environments that expose users to basic programming concepts. Despite the proliferation of these systems, little work has investigated the design of the structure or content of such systems. Comparative studies providing evidence for effective ways of presenting these ideas in this context have been largely absent. 
+The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. 
+Many of these projects, including some of the most visible such as Scratch and Code.org's Hour of Code~\cite{codedotorg}, are online programming environments that expose users to basic programming concepts. 
+Despite the proliferation of these systems, little work has investigated the design of the structure or content of such systems. 
+Comparative studies providing evidence for effective ways of presenting these ideas in this context have been largely absent. 
 
-A Potential line of inquiry could include the effects of changes in programming language syntax and semantics on novices. One might ask if there are benefits to evolving the available language elements as a novice progresses, and in which order these elements should become available. What combination of language elements affords beginners the most expressiveness without introducing overwhelming complexity? Another set of questions concern the impact of combining puzzles and an open-ended sandbox. Can puzzles provide sufficient structure and guidance to facilitate productive exploration of a game's concepts in an unstructured sandbox? When and how should the player transition between the two? These and many more topics relating to online programming environments deserve further study, particularly in light of their surging popularity \TODO{footnote about \# of Scratch users/Hour of Code participants?}. 
+A Potential line of inquiry could include the effects of changes in programming language syntax and semantics on novices. 
+One might ask if there are benefits to evolving the available language elements as a novice progresses, and in which order these elements should become available. 
+What combination of language elements affords beginners the most expressiveness without introducing overwhelming complexity? Another set of questions concern the impact of combining puzzles and an open-ended sandbox. 
+Can puzzles provide sufficient structure and guidance to facilitate productive exploration of a game's concepts in an unstructured sandbox? 
+When and how should the player transition between the two? 
+These and many more topics relating to online programming environments deserve further study, particularly in light of their surging popularity \TODO{footnote about \# of Scratch users/Hour of Code participants?}. 
 
-In this paper we present \gametitle{}, an educational game designed to be a tool with which to conduct such studies. In \gametitle{}, players use a visual, drag-and-drop programming language to control a dragon in a 3D grid world. The visual language is a set of \emph{code blocks} that snap together to form programs. The player can move the dragon in three dimensions and have the dragon place and remove cubes of various colors. In addition to blocks that control the dragon directly, players can also make use of definite loops and procedures (see Figure~\ref{fig:toolbox}).
+In this paper we present \gametitle{}, an educational game designed to be a tool with which to conduct such studies. 
+In \gametitle{}, players use a visual, drag-and-drop programming language to control a dragon in a 3D grid world. 
+The visual language is a set of \emph{code blocks} that snap together to form programs. 
+The player can move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
+In addition to blocks that control the dragon directly, players can also make use of definite loops and procedures (see Figure~\ref{fig:toolbox}).
 
 \begin{figure}[ht]
   \centering
@@ -109,7 +121,32 @@ In this paper we present \gametitle{}, an educational game designed to be a tool
   \label{fig:toolbox}
 \end{figure}
 
-Our motivation for developing \gametitle{} is to use it in exploring a variety of open questions in both education and games. The remainder of this paper is as follows: after an overview of some of the related work it discusses our research goals. Next, \gametitle{} is described in more detail. The paper then highlights several important design issues that have arisen during \gametitle{}'s development and presents our observations from students' experiences with the game so far. The paper concludes with our thoughts on other interesting questions our system might be used to answer.
+Our motivation for developing \gametitle{} is to use it in exploring a variety of open questions in both education and games. 
+The remainder of this paper is as follows: after \gametitle{} is described in more detail, it surveys the related work and discusses the related learning theory. 
+Next, it discusses our research goals. 
+The paper then highlights several design issues that have arisen during \gametitle{}'s development and presents our observations from students' experiences with the game so far. 
+The paper concludes with our thoughts on other interesting questions our system might be used to answer.
+
+\section{\gametitle{}}
+\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title}
+We have been developing \gametitle{} since spring 2014. 
+\gametitle{} is played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (\TODO{figure}). 
+The visualization uses the Unity game engine~\TODO{cite} and the drag-and-drop programming UI is provided by the Blockly library~\TODO{cite}.
+
+\subsubsection{Progression}
+
+As they progress through the game, players alternate between short sequences of one to five puzzles with a specific goal and a specific set of available code blocks and an open-ended sandbox. 
+The game begins with four puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon in 2D and putting down cubes.
+After that, the player can experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available in the sandbox, switching between sandbox and puzzles at any time. 
+Like the first puzzles, each subsequent sequence focuses on a few specific concepts. 
+In this way, the language the player uses to write instructions for the dragon gradually expands as the player advances.
+
+% \subsubsection{Language}
+
+% The visual, drag-and-drop language used by the player is a custom, if, in game's development so far, simplistic, language designed specifically for \gametitle{}. We have implemented a textual concrete syntax, and we plan for the game to eventually expose this to the player, allowing them to choose which input method they prefer. This also allows for a direct translation from text to code blocks and vice versa. Some similar projects use a popular industry programming language such as Javascript or Java. We believe implementing our own gives us a valuable flexibility as well as preventing our players from dealing with the idiosyncrasies of any popular language. Having complete control over every part of the language implementation will provide useful in any study of the effects of changes in language features. 
+
+% \subsubsection{Technology}
+% \TODO{a few sentences or cut}
 
 
 \section{Related Work}
@@ -148,21 +185,6 @@ A great deal of recent education research suggests that \emph{curricula can mode
 
 Our goal is to incorporate computational thinking strategies into the content of an educational game. This includes demonstrating these strategies and giving players an opportunity to practice them. We believe a game is particularly well suited to this task. \TODO{expand on this}
 
-
-\section{\gametitle{}}
-\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title}
-We have been developing \gametitle{} since spring 2014. This section will provide an overview of the game itself. As mentioned previously, \gametitle{} is an online programming environment and is played in a web browser. Similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (\TODO{figure}). 
-
-\subsubsection{Progression}
-
-As they progress through the game, players alternate between short sequences of one to five puzzles with a specific goal and a specific set of available code blocks and an open-ended sandbox. The game begins with four puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon in 2D and putting down cubes. After that, the player can experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available in the sandbox, switching between sandbox and puzzles at any time. Like the first puzzles, each subsequent sequence focuses on a few specific concepts. In this way, the language the player uses to write instructions for the dragon gradually expands as the player advances.
-
-\subsubsection{Language}
-
-The visual, drag-and-drop language used by the player is a custom, if, in game's development so far, simplistic, language designed specifically for \gametitle{}. We have implemented a textual concrete syntax, and we plan for the game to eventually expose this to the player, allowing them to choose which input method they prefer. This also allows for a direct translation from text to code blocks and vice versa. Some similar projects use a popular industry programming language such as Javascript or Java. We believe implementing our own gives us a valuable flexibility as well as preventing our players from dealing with the idiosyncrasies of any popular language. Having complete control over every part of the language implementation will provide useful in any study of the effects of changes in language features. 
-
-\subsubsection{Technology}
-\TODO{a few sentences or cut}
 
 \section{Design Issues}
 
