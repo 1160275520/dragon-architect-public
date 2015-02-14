@@ -125,10 +125,10 @@ In addition to blocks that control the dragon directly, players can also make us
   \label{fig:toolbox}
 \end{figure}
 
-Our motivation for developing \gametitle{} is to use it in exploring a variety of open questions in both education and games. 
+Our motivation for developing \gametitle{} is to explore a variety of open questions in both education and games. 
 In this paper we review the space of these programming environments and related systems as it currently stands, noting how we differ and how we take inspiration from related work.  
 Despite so many existing systems with overlapping educational properties, we developed a new game (as opposed to using existing educational software) in order to design it as a research tool from the ground up.
-In Section~\ref{sec:research} we propose \TODO{number} research questions we believe need more study and discuss how these questions have informed the design of our game. 
+In Section~\ref{sec:research} we propose four research questions we believe need more study and discuss how these questions have informed the design of our game. 
 
 The remainder of this paper is as follows: after \gametitle{} is described in more detail, it discusses related work and our research goals. 
 The paper then highlights several design issues that have arisen during \gametitle{}'s development and presents our observations from students' experiences with the game so far. 
@@ -159,6 +159,7 @@ In this way, the language the player uses to write instructions for the dragon g
 \section{Related Work}
 
 \subsection{Learning Theory}
+\label{subsec:learning}
 Supporters of \emph{constructionism} argue that children can learn through self-directed discovery \TODO{cite} and that this has many advantages over traditional teaching approaches \TODO{cite}.
 Others have argued that games are an ideal environment for constructionist teaching \TODO{cite}.
 However, evidence suggests that a purely self-directed learning approach is inadquate for effective learning \TODO{cite}.
@@ -197,12 +198,24 @@ Here's that project the guy from FDG talked about \TODO{cite}.
 \section{Research Questions}
 \label{sec:research}
 Our primary goal for \gametitle{} is to produce a flexible system that we can use to investigate questions in computer science education and game-based learning. 
-We are especially concerned with these questions as they relate to novice programmers, so we have tried to make \gametitle{} accessible to players as young as 9. \TODO{how have we made it accessible}
+Below we present four questions we believe are under-researched and that informed the design of our game. 
 
 \subsection{Scaffolded Sandbox}
-\TODO{presumably this should be connected to whatever discussion of guided discovery learning appears earlier}
-\TODO{phase this as a question, not a goal}
-Within the context of investigating game-based learning, we specifically want to explore the coupling of highly structured puzzle levels and an open, unstructured sandbox. The former unlock and introduce concepts and tools that are then available in the latter. \TODO{citations about creativity being engaging, and pure discovery learning being lousy}. Thus, we aim to use \gametitle{} to study the properties of introducing both structure and direct guidance into a sandbox environment through puzzles. Related questions include to what degree the player should have control over the rate and sequence of puzzles, and effects of introducing social features into this structure. 
+Within the context of investigating game-based learning, we believe more research is needed on guided discovery learning to games. 
+Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g. Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g. Portal~\TODO{cite}). 
+In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
+
+Other games teach players by doing something in between. 
+Games in the Zelda series~\TODO{cite} contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
+Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tutorials the player may choose to go through before beginning more open-ended play.
+The variety of approaches games take in teaching players leads to interesting questions about how different methods affect what players do in a game, or, in the case of educational software, how they learn. 
+Furthermore, for complex topics such as computer science, the concepts a game needs to teach its players are likely to be more difficult to discover through exploration and require more sophisitcation to explain through direct guidance. Thus, more research is needed to refine and evaluate these techniques. 
+
+Education research indicates that guided discovery learning, the blending of exploration and direct guidance, can benefit learning (see Section~\ref{subsec:learning}). 
+In the case of \gametitle{}, we have combined structured puzzle levels and an open, unstructured sandbox. 
+The puzzles, by leading the player to demonstrate a particular concept, act as a form of direct guidance. 
+A process of discovery can then take place in the sandbox where the player is free to experiment with the ideas introduced in the puzzles. 
+As discussed in Section~\ref{sec:action}, our playtesting has shown this approach to be promising for many of the concepts currently in the game. 
 
 \subsection{Compuational Thinking}
 
@@ -229,6 +242,7 @@ there are examples where social community has been an important part of the succ
 
 
 \section{\gametitle{} in Action}
+\label{sec:action}
 \begin{itemize}
 \item how we have made our observations
 \item what we have observed
