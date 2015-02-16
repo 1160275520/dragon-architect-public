@@ -245,13 +245,24 @@ For example, to enable the player to give the castle the correct number of walls
 This part of \gametitle{} needs to be expanded and refined before it can be evaluated, but we are confident the larger question merits further attention. 
 
 \subsection{Language for Novices}
-For students and others just starting to program, many aspects of the programming environment can affect their progress. 
-effects of language semantics on novices understudied (other aspects have seen some study --- stefik on syntx, ko on compiler messages)
+For those just starting to program, many aspects of the programming language and programming environment can affect their progress. 
+While previous work indicates aspects such as language syntax~\cite{stefik2013syntax}, compiler messages~\cite{nienaltowski2008compiler}, and language semantics~\cite{hoc1990language} can all have an impact, only the first two of those three have been characterized with much specificity. 
+Though langauge semantics has certainly been shown to matter for novice programmers, the literature lacks support for more definite conclusions. 
+Hence, we see the need for further research on this question to guide the development of programming environments for novices.
+
+This informed our decision to implement a custom language behind \gametitle{}'s visual programming language instead of using a popular existing language like JavaScript. 
+Doing so confers several advantages, the first of which is that having complete control over every aspect of the language's implementation gives us the flexibility to experiment widely with langauge semantics. 
+In addition, we don't have to inflict the quirks of any existing language on our players. 
+Finally, we have implemented a concrete syntax for our language that corresponds precisely with its visual code-block equivalent, so we can expose it to the player and allow them to choose which method of input they prefer. 
 
 \subsection{Social Community}
-there are examples where social community has been an important part of the success of an online programming environment (e.g. scratch, MOOSE crossing), and research in behavioral and social sciences indicates sharing and collaboration can improve learning~\TODO{cite how people learn book}. Despite this, the specific contributions of social features to an online programming environment remain largely unstudied
+There are examples where social community has been an important part of the success of an online programming environment. 
+Scratch users, for example, have shared millions of projects and even formed online \emph{companies} to tackle projects together~\cite{resnik2009scratch}. 
+Research using an online programming environment called MOOSE Crossing~\cite{bruckman1997moose} found that a social context can support and motivate learning programming~\cite{bruckman2000situated}.
+This work is backed by research in behavioral and social sciences that indicates sharing and collaboration can improve learning~\cite{branford2000people}. 
+Despite this, the specific contributions of social features to an online programming environment (and how to design those features) remain largely unstudied.
 
-\cite{repenning2011collective}
+
 
 \section{Design Issues}
 
