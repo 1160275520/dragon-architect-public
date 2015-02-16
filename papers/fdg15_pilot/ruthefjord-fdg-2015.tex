@@ -178,6 +178,7 @@ There a been a recent proliferation of widely available CS education tools on th
 In some, like the step-by-step lessons available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, or the game CodeSpells \cite{esper2013codespells}, users program in a popular industry programming language such as Javascript or Java.
 Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, other tools chose to use a visual language as there is evidence those are helpful to novices~\cite{whitley1997visual}.
 \TODO{should also mention Programming By Design and related project Bootstrap as curricula-oriented projects}
+\TODO{cite and talk about AgentSheets}
 Examples of such tools include Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media.
 Scratch has been successful in building vibrant community around open-ended, creative, social environment (want to borrow ideas of personalization in the future).
 Some suggest that the lack of structure may pose a barrier to entry and to learning (quantity and complexity of immediately available features may be intimidating or confusing, discovery-learning-ineffective citation) \TODO{cite};
@@ -200,8 +201,9 @@ Here's that project the guy from FDG talked about \TODO{cite}.
 Our primary goal for \gametitle{} is to produce a flexible system that we can use to investigate questions in computer science education and game-based learning. 
 Below we present four questions we believe are under-researched and that informed the design of our game. 
 
-\subsection{Scaffolded Sandbox}
-Within the context of investigating game-based learning, we believe more research is needed on guided discovery learning to games. 
+\subsection{Guided Discovery Learning}
+Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning (see Section~\ref{subsec:learning}) when compared to using just one or the other. 
+We believe more research is needed on guided discovery learning in games. 
 Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g. Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g. Portal~\TODO{cite}). 
 In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
 
@@ -211,7 +213,6 @@ Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tut
 The variety of approaches games take in teaching players leads to interesting questions about how different methods affect what players do in a game, or, in the case of educational software, how they learn. 
 Furthermore, for complex topics such as computer science, the concepts a game needs to teach its players are likely to be more difficult to discover through exploration and require more sophisitcation to explain through direct guidance. Thus, more research is needed to refine and evaluate these techniques. 
 
-Education research indicates that guided discovery learning, the blending of exploration and direct guidance, can benefit learning (see Section~\ref{subsec:learning}). 
 In the case of \gametitle{}, we have combined structured puzzle levels and an open, unstructured sandbox. 
 The puzzles, by leading the player to demonstrate a particular concept, act as a form of direct guidance. 
 A process of discovery can then take place in the sandbox where the player is free to experiment with the ideas introduced in the puzzles. 
@@ -219,20 +220,38 @@ As discussed in Section~\ref{sec:action}, our playtesting has shown this approac
 
 \subsection{Compuational Thinking}
 
-Many have studied (e.g. \cite{repenning2010scalable}, \cite{barr2011bringing}) how to increase presence of computational thinking in computer science education (and education in general). \TODO{if you can think of it, you can automate building it = a primary component of Wing's~\cite{wing2008computational} definition of computational thinking --- does this fly in the face of the evidence against discovery learning?}
+Many have studied (e.g. \cite{barr2011bringing}) how to increase presence of computational thinking in computer science education (and education in general). 
+Others have developed games to teach these ideas (e.g. \cite{weintrop2013robobuilder}, \cite{kazimoglu2012serious}). 
+Repenning et al.~\cite{repenning2010scalable} report six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
+In our view, more research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
 
-\TODO{phrase as a question}
-It is our goal with \gametitle{} to approach teaching these ideas in a more profound way then simply hoping students absorb this \emph{way of thinking} as a byproduct of working with other computer science concepts (such as basic programming). We propose to go further and teach computational thinking by directly teaching one of its core components: the identification and application of problem-solving strategies (such as divide and conquer). 
+The development of \gametitle{} has been shaped by Wing's~\cite{wing2008computational} definition of computational thinking, which takes automation and abstraction to be its central ideas. 
+The open-ended building of our game's sandbox encourages players to take up these principles. 
+Since the building must be done via a program written by the player and carried out by their dragon, the player must necessarily automate their ideas. 
+As the player sets more sophisticated goals, abstraction becomes important (e.g. abstracting the building of a wall into a procedure) to keep the visual programming feasible. 
 
-A great deal of recent education research suggests that \emph{curricula can model such strategies for students} and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can \emph{enable students to learn to use these strategies independently}~\cite{report2010computational}. Mayer and Wittrock~\cite{mayer1996handbook} call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}. The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy. In both cases, studies have shown that teaching these skills directly can improve learning and performance. 
+We believe there should also be future study on more profound ways to teach computational thinking then simply hoping students absorb this \emph{way of thinking} as a byproduct of working with other computer science concepts (such as basic programming). 
+One possible approach (that we explore with \gametitle{}) is to directly teach a core component of computational thinking: the identification and application of problem-solving strategies (in our case, divide and conquer). 
+A great deal of recent education research suggests that \emph{curricula can model such strategies for students} and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can \emph{enable students to learn to use these strategies independently}~\cite{report2010computational}. 
+Mayer and Wittrock~\cite{mayer1996handbook} call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}. 
+The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy. 
+In both cases, studies have shown that teaching these skills directly can improve learning and performance. 
 
-Our goal is to incorporate computational thinking strategies into the content of an educational game. This includes demonstrating these strategies and giving players an opportunity to practice them. We believe a game is particularly well suited to this task. \TODO{expand on this}
+\TODO{a figure (or two) for this paragraph)}
+\gametitle{} explores this with a sequence of puzzles that demonstrate the divide and conquer strategy (i.e. the decomposition of a large problem into smaller subproblems and the subsequent synthesizing of subproblem solutions to solve the original problem). 
+The player is presented with a single code block that builds an entire castle, but discovers the construction has a number of flaws. 
+The following puzzles each decompose some part of the flawed program in order to give the player a chance to repair it. 
+For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure. 
+This part of \gametitle{} needs to be expanded and refined before it can be evaluated, but we are confident the larger question merits further attention. 
 
 \subsection{Language for Novices}
+For students and others just starting to program, many aspects of the programming environment can affect their progress. 
 effects of language semantics on novices understudied (other aspects have seen some study --- stefik on syntx, ko on compiler messages)
 
 \subsection{Social Community}
 there are examples where social community has been an important part of the success of an online programming environment (e.g. scratch, MOOSE crossing), and research in behavioral and social sciences indicates sharing and collaboration can improve learning~\TODO{cite how people learn book}. Despite this, the specific contributions of social features to an online programming environment remain largely unstudied
+
+\cite{repenning2011collective}
 
 \section{Design Issues}
 
