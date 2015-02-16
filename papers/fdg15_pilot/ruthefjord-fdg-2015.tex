@@ -268,10 +268,28 @@ Browsing the gallery, players can view, and get the code for, any uploaded const
 \TODO{we track attribution}
 
 \section{Design Issues}
+The design of \gametitle{} has been informed by our research goals, and by existing software such as Minecraft and Scratch. 
+In this section we discuss two cases where these objectives presented unusual challenges. 
 
-\subsection{Permanence vs. Experimentation}
+\subsection{Consistency vs. Experimentation}
+Part of Minecraft's popularity is the collaborative multiplayer environment it offers. 
+On a Minecraft server, players can explore and shape the world together. \TODO{citation?} 
+We want \gametitle{} to be able to provide the same kind of experience, which means giving the world the players inhabit consistency. 
+We envision players visiting and admiring each other's constructions or working together on the project. 
+While this is relatively straightforward in Minecraft (the whole world shares the same real-time simulation and players' actions are fine-grained with permanent effects), it is complicated in our game by the fact that player input is code. 
+Running a single program can have large effects only reversible by tedious effort, so it's important for players to be able to experiment with and tweak their code before committing to it. 
+On the other hand, if a player can undo the effects of their programs at will, interactions with existing creations become unpredictable and inconsistent. 
 
-\subsection{Puzzles as Scaffolding}
+We have so far only partly resolved this tension in \gametitle{}. 
+The sandbox makes the effects of programs permanent by default, including any cubes placed and the dragon's position.
+To allow for experimentation, the player has the option to switch to \emph{workshop mode}, which resets the world to its previous state each time the player runs a new program. 
+The player can freely toggle between these two modes, testing out each program before committing to its results. 
+Aside from the fact that the existence of these two modes is difficult to communicate to the player, and that the distinction between them can be confusing, this solution doesn't resolve how to model or visualize the modes in a multiplayer setting. 
+Ideally, the player would receive clear indication that effects executed in workshop mode cannot be depended upon.
+
+\subsection{Puzzles as Guidance}
+Using puzzles as the guidance in \gametitle{}'s guided discovery is central to the design of the game. 
+The puzzles must strike a difficult balance: get the player to the sandbox where they can experiment with their new tools as quickly as possible and support the player in the gradual acquisition of new knowledge and skills. 
 
 
 \section{\gametitle{} in Action}
