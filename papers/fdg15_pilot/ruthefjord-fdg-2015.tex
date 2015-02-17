@@ -121,7 +121,7 @@ In addition to blocks that control the dragon directly, players can also make us
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\columnwidth]{images/toolbox_wide}
-  \caption{The programming elements currently available in \gametitle{}}
+  \caption{The programming elements currently available in \gametitle{} \TODO{add procedure call block}}
   \label{fig:toolbox}
 \end{figure}
 
@@ -299,25 +299,42 @@ Ideally, the player would receive clear indication that effects executed in work
 \subsection{Puzzles as Guidance}
 Using puzzles as the guidance in \gametitle{}'s guided discovery is central to the design of the game. 
 The puzzles must strike a difficult balance: get the player to the sandbox where they can experiment with their new tools as quickly as possible and support the player in the gradual acquisition of new knowledge and skills. 
+Puzzle sequences need to be relatively short to avoid provoking frustration from players who are not engaged by solving puzzles. 
 
 
 \section{\gametitle{} in Action}
 \label{sec:action}
-\begin{itemize}
-\item how we have made our observations
-\item what we have observed
-\begin{itemize}
-\item kids excited by premise
-\item some want to do puzzles, some want to play in the sandbox
-\item idea generation (i.e. what to do) in the sandbox can be a barrier
-\item great interest in personalization
-\item often try and accomplish goal bit by bit
-\item common confusions: no mental model of code as program, procedure blocks as definition and invocation
-\end{itemize}
+We have conducted numerous playtests since we began developing \gametitle{}, largely with students ages 9 to 14. 
+Most had no previous exposure to programming, but some students had previously used systems like Scratch or had participated in the Hour of Code.
+Aside from multiple rounds of usability improvements, these playtests gave us insight into \TODO{something}.
 
-\item what we have learned from watching \gametitle{} in action
-\end{itemize}
+A clear message from our playtests is that the premise of programming a dragon in a Minecraft-like world appeals to younger players, and is equally appealing to all genders. 
+This is in spite of \gametitle{}'s lack of polish, particularly in the art and UI. 
+We have often been asked for a release date or a URL where players can continue with the game. 
+Common sandbox activities include making the dragon travel very long distances, building big and impressive towers, and building one's name out of cubes.
 
+We have also noted that building structures in the sandbox is not necessarily the activity of choice for every player. 
+Some choose to \emph{doodle} in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
+Others exclusively seek out the game's puzzles, more interesting in solving those than working in the sandbox.
+We believe the freedom a player has to choose what activity interests them most, and to freely switch between them, allows \gametitle{} to engage a wider range of players.
+
+That said, freedom is not always helpful.
+Players have gotten \emph{stuck} at the sandbox, unsure of what they should do next, or trying to come up with an idea of what to build. 
+We need to more clearly communicate the available options, and provide players ideas to get started with and to use as \emph{jumping off points}.
+Other players can also be a source of guidance and ideas, so the social features will play an important role in this as well.
+
+Conceptually, the most common stumbling block we've observed has been a flawed mental model of how the code relates to what the dragon does. 
+For example, a player is doing a puzzle where they need to make the dragon move two spaces forward. 
+The current program moves the dragon one space forward. 
+After running the code, the player sees that the dragon is now only one space away from the goal. 
+They quickly reset the program and run it again, not realizing that this resets the dragon as well. 
+Another manifestation of this is players add additional code blocks to an existing program, expecting only the new instructions to be run. 
+They are surprised when all the code they have assembled is executed. 
+Another frequent, if unsurprising, difficulty is procedures. 
+Players often don't understand the separation of a procedure into a definition and zero or more invocations. 
+This leads to mistakes such as defining a procedure multiple times in order to use it multiple times, or unintentionally introducing recursive calls. 
+
+\TODO{do we need a paragraph to sum up lessons?}
 
 \section{Discussion}
 \TODO{description of open problems in CS education and game-based learning, exploration of how \gametitle{} might be used to approach them}
