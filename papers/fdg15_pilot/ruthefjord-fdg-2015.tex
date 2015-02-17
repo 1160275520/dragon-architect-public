@@ -281,7 +281,7 @@ The design of \gametitle{} has been informed by our research goals, and by exist
 In this section we discuss two cases where these objectives presented unusual challenges. 
 
 \subsection{Consistency vs. Experimentation}
-Part of Minecraft's popularity is the collaborative multiplayer environment it offers. 
+Part of Minecraft's popularity is the collaborative multiplayer environment it offers. \TODO{citation, or argument that this is true}
 On a Minecraft server, players can explore and shape the world together. \TODO{citation?} 
 We want \gametitle{} to be able to provide the same kind of experience, which means giving the world the players inhabit consistency. 
 We envision players visiting and admiring each other's constructions or working together on the project. 
@@ -301,6 +301,39 @@ Using puzzles as the guidance in \gametitle{}'s guided discovery is central to t
 The puzzles must strike a difficult balance: get the player to the sandbox where they can experiment with their new tools as quickly as possible and support the player in the gradual acquisition of new knowledge and skills. 
 Puzzle sequences need to be relatively short to avoid provoking frustration from players who are not engaged by solving puzzles. 
 
+\TODO{this is a super rough idea dump}
+Many developers advocate for games with minimal explicit tutorials \TODO{cite}.
+Rather than explicitly telling the player how to use new mechanics or tackle particular challenges, games trap players in a limited environment in which they can explore new mechanics in safety and isolation.
+This approach to learning in games falls under the category of pure discovery learning.
+While it can be extremely effective for certain domains, such as the skills required for an action game, discovery learning performs very poorly when trying to teach metacognitive strageties \TODO{cite}.
+As a concrete example in games, it is unlikely that players learn high-level strategies by exploration within the game alone. \TODO{don't really like this example cuz multiplayer, pick a better one. also this isn't rigiorous, also it's bad because you could plausibly learn by studying replays}.
+With complex domains, direct guidance is required \TODO{cite} to effectively teach concepts and high-level strategies.
+
+The ideal situation is an open sandbox where just-in-time guidance is given at the most appropriate minute, as an effective human tutor would do.
+Intelligent tutoring systems accomplish this by modeling tracking player knowledge and skill.
+As we do not have a model for our game domain, this is not an option.
+
+Our current approach is to allow the player unlimited usage of the sandbox and programming tools that they have already used.
+In order to unlock new programming tools, player must volunteer to start a new puzzle that will directly guide them in some concept.
+A list of available modules advertise what techniques and tools players can learn from puzzles.
+
+However, this approach has several shortcomings.
+Emperically in play tests, players have expressed that they wish certain features were available, such as moving the dragon up and down.
+In fact, such features were advertised explicitly in the list of modules, but players did not think to check the list, even if they had been there previously.
+But even assuming we could get players in the habit of consulting this list, the items they want at the moment was not be obviously on the list.
+Perhaps what they do not know how to clearly articulate what the want to do or we as designers have not chosen the best language to describe a techinque.
+Then players will not find their desired item on the list.
+Human tutors, on the other hand, could help with this translation.
+
+Another problem with this approach is the difficulty in choosing an appropriate sequence of puzzles.
+One goal is that players can learn whatever strategy than need to when they need it, with no articifial restrictions gating content.
+A contradictory goal is that players are not overwhelmed with concepts at the beginning, as they are in Scratch~\cite{resnick2009scratch} and other fully open tools.
+This goal suggest we impose a partial ordering on content and introduce concepts in a deliberate order.
+However, with such gating, players may think a feature doesn't exist when, in reality, it's hidden behind several prerequisite concepts.
+
+A potential approach to balance these goals is to expose the entire list of strategies at the start, but still require players to go through the prerequisits.
+That is, a player can identify a learning module the wish to reach, and the game will walk them through all the basic skills that they need to get there \TODO{some citation on this style of self-directed learning must exist}.
+However, with the entire list was available at the start, seaching for concepts and strategies becomes a more difficult task.
 
 \section{\gametitle{} in Action}
 \label{sec:action}
