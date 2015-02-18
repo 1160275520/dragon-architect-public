@@ -306,9 +306,20 @@ A player can choose to share anything they build in the sandbox, sending it to a
 Browsing the gallery, players can view, and get the code for, any uploaded construction.
 \TODO{we track attribution}
 
-\section{Design Issues}
+\section{Design Issues and Playtest Results}
 The design of \gametitle{} has been informed by our research goals, and by existing software such as Minecraft and Scratch. 
 In this section we discuss two cases where these objectives presented unusual challenges. 
+
+\subsection{General Impressions}
+
+We have conducted numerous playtests since we began developing \gametitle{}, largely with students ages 9 to 14. 
+Most had no previous exposure to programming, but some students had previously used systems like Scratch or had participated in the Hour of Code.
+Aside from multiple rounds of usability improvements, these playtests gave us insight into \TODO{something}.
+
+A clear message from our playtests is that the premise of programming a dragon in a Minecraft-like world appeals to younger players, and is equally appealing to all genders. 
+This is in spite of \gametitle{}'s lack of polish, particularly in the art and UI. 
+We have often been asked for a release date or a URL where players can continue with the game. 
+Common sandbox activities include making the dragon travel very long distances, building big and impressive towers, and building one's name out of cubes.
 
 \subsection{Consistency vs. Experimentation}
 Part of Minecraft's popularity is the collaborative multiplayer environment it offers. \TODO{citation, or argument that this is true}
@@ -332,12 +343,6 @@ The puzzles must strike a difficult balance: get the player to the sandbox where
 Puzzle sequences need to be relatively short to avoid provoking frustration from players who are not engaged by solving puzzles. 
 
 \TODO{this is a super rough idea dump}
-Many developers advocate for games with minimal explicit tutorials \TODO{cite}.
-Rather than explicitly telling the player how to use new mechanics or tackle particular challenges, games trap players in a limited environment in which they can explore new mechanics in safety and isolation.
-This approach to learning in games falls under the category of pure discovery learning.
-While it can be extremely effective for certain domains, such as the skills required for an action game, discovery learning performs very poorly when trying to teach metacognitive strageties \TODO{cite}.
-As a concrete example in games, it is unlikely that players learn high-level strategies by exploration within the game alone. \TODO{don't really like this example cuz multiplayer, pick a better one. also this isn't rigiorous, also it's bad because you could plausibly learn by studying replays}.
-With complex domains, direct guidance is required \TODO{cite} to effectively teach concepts and high-level strategies.
 
 The ideal situation is an open sandbox where just-in-time guidance is given at the most appropriate minute, as an effective human tutor would do.
 Intelligent tutoring systems accomplish this by modeling tracking player knowledge and skill.
@@ -346,6 +351,10 @@ As we do not have a model for our game domain, this is not an option.
 Our current approach is to allow the player unlimited usage of the sandbox and programming tools that they have already used.
 In order to unlock new programming tools, player must volunteer to start a new puzzle that will directly guide them in some concept.
 A list of available modules advertise what techniques and tools players can learn from puzzles.
+
+In tests, players have gotten \emph{stuck} at the sandbox, unsure of what they should do next, or trying to come up with an idea of what to build. 
+We need to more clearly communicate the available options, and provide players ideas to get started with and to use as \emph{jumping off points}.
+Other players can also be a source of guidance and ideas, so the social features will play an important role in this as well.
 
 However, this approach has several shortcomings.
 Emperically in play tests, players have expressed that they wish certain features were available, such as moving the dragon up and down.
@@ -365,26 +374,12 @@ A potential approach to balance these goals is to expose the entire list of stra
 That is, a player can identify a learning module the wish to reach, and the game will walk them through all the basic skills that they need to get there \TODO{some citation on this style of self-directed learning must exist}.
 However, with the entire list was available at the start, seaching for concepts and strategies becomes a more difficult task.
 
-\section{\gametitle{} in Action}
-\label{sec:action}
-We have conducted numerous playtests since we began developing \gametitle{}, largely with students ages 9 to 14. 
-Most had no previous exposure to programming, but some students had previously used systems like Scratch or had participated in the Hour of Code.
-Aside from multiple rounds of usability improvements, these playtests gave us insight into \TODO{something}.
-
-A clear message from our playtests is that the premise of programming a dragon in a Minecraft-like world appeals to younger players, and is equally appealing to all genders. 
-This is in spite of \gametitle{}'s lack of polish, particularly in the art and UI. 
-We have often been asked for a release date or a URL where players can continue with the game. 
-Common sandbox activities include making the dragon travel very long distances, building big and impressive towers, and building one's name out of cubes.
-
 We have also noted that building structures in the sandbox is not necessarily the activity of choice for every player. 
 Some choose to \emph{doodle} in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
 Others exclusively seek out the game's puzzles, more interesting in solving those than working in the sandbox.
 We believe the freedom a player has to choose what activity interests them most, and to freely switch between them, allows \gametitle{} to engage a wider range of players.
 
-That said, freedom is not always helpful.
-Players have gotten \emph{stuck} at the sandbox, unsure of what they should do next, or trying to come up with an idea of what to build. 
-We need to more clearly communicate the available options, and provide players ideas to get started with and to use as \emph{jumping off points}.
-Other players can also be a source of guidance and ideas, so the social features will play an important role in this as well.
+\subsection{Mental Model Problems}
 
 Conceptually, the most common stumbling block we've observed has been a flawed mental model of how the code relates to what the dragon does. 
 For example, a player is doing a puzzle where they need to make the dragon move two spaces forward. 
@@ -397,9 +392,20 @@ Another frequent, if unsurprising, difficulty is procedures.
 Players often don't understand the separation of a procedure into a definition and zero or more invocations. 
 This leads to mistakes such as defining a procedure multiple times in order to use it multiple times, or unintentionally introducing recursive calls. 
 
-\TODO{do we need a paragraph to sum up lessons?}
+\section{Conclusion}
 
-\section{Discussion}
+In this paper we have presented \gametitle{}.
+There are several under-explored research areas in computer science education and game-based learning, and we created \gametitle{} to investigate these questions.
+These questions include how to teach problem-solving strategies such as divide-and-conquer and which language semantics are suitable for novices.
+These directly lead to questions about the structure of the learning environment.
+Fully open, discovery-learning based approaches common to games and educational software require a teacher to be effective with complicated learning domains such as proramming.
+We must explore the space between linear sequences and open-ended sandboxes without a teacher to guide.
+Social settings play an important role in learning complex domains, but many details remained unresearched.
+
+Players have so far responded positively to the game, but several design challenges have arisin as a result of the research goals.
+Balancing an open sandbox with direct-guidance puzzles proves challenging without a teacher to help students find appropriate puzzles.
+Creating a collobarative shared environment clashes with the desire for the ability to reset and debug programs.
+
 \TODO{description of open problems in CS education and game-based learning, exploration of how \gametitle{} might be used to approach them}
 \begin{itemize}
 \item visual debugging
