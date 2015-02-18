@@ -230,29 +230,13 @@ Our game does not support mods and instead supports programming as a core mechan
 
 \section{Research Questions}
 \label{sec:research}
+
 Our primary goal for \gametitle{} is to produce a flexible system that we can use to investigate questions in computer science education and game-based learning. 
 Below we present four questions we believe are under-researched and that informed the design of our game. 
 
-\subsection{Guided Discovery Learning}
-Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning
-%(see Section~\ref{subsec:learning})
-when compared to using just one or the other. 
-We believe more research is needed on guided discovery learning in games. 
-Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g. Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g. Portal~\TODO{cite}). 
-In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
+\subsection{What to Teach}
 
-Other games teach players by doing something in between. 
-Games in the Zelda series~\TODO{cite} contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
-Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tutorials the player may choose to go through before beginning more open-ended play.
-The variety of approaches games take in teaching players leads to interesting questions about how different methods affect what players do in a game, or, in the case of educational software, how they learn. 
-Furthermore, for complex topics such as computer science, the concepts a game needs to teach its players are likely to be more difficult to discover through exploration and require more sophisitcation to explain through direct guidance. Thus, more research is needed to refine and evaluate these techniques. 
-
-In the case of \gametitle{}, we have combined structured puzzle levels and an open, unstructured sandbox. 
-The puzzles, by leading the player to demonstrate a particular concept, act as a form of direct guidance. 
-A process of discovery can then take place in the sandbox where the player is free to experiment with the ideas introduced in the puzzles. 
-As discussed in Section~\ref{sec:action}, our playtesting has shown this to be a promising approach for many of the concepts currently in our game. 
-
-\subsection{Compuational Thinking}
+\subsubsection{Compuational Thinking}
 
 Many have studied (e.g. \cite{barr2011bringing}) how to increase presence of computational thinking in computer science education (and education in general). 
 Others have developed games to teach these ideas (e.g. \cite{weintrop2013robobuilder}, \cite{kazimoglu2012serious}). 
@@ -278,7 +262,7 @@ The following puzzles each decompose some part of the flawed program in order to
 For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure. 
 This part of \gametitle{} needs to be expanded and refined before it can be evaluated, but we are confident the larger question merits further attention. 
 
-\subsection{Language for Novices}
+\subsubsection{Language for Novices}
 For those just starting to program, many aspects of the programming language and programming environment can affect their progress. 
 While previous work indicates aspects such as language syntax~\cite{stefik2013syntax}, compiler messages~\cite{nienaltowski2008compiler}, and language semantics~\cite{hoc1990language} can all have an impact, only the first two of those three have been characterized with much specificity. 
 Though langauge semantics has certainly been shown to matter for novice programmers, the literature lacks support for more definite conclusions. 
@@ -289,7 +273,28 @@ Doing so confers several advantages, the first of which is that having complete 
 In addition, we don't have to inflict the quirks of any existing language on our players. 
 Finally, we have implemented a concrete syntax for our language that corresponds precisely with its visual code-block equivalent, so we can expose it to the player and allow them to choose which method of input they prefer. 
 
-\subsection{Social Community}
+\subsection{Structure of Learning Environment}
+
+\subsubsection{Guided Discovery Learning}
+Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning
+%(see Section~\ref{subsec:learning})
+when compared to using just one or the other. 
+We believe more research is needed on guided discovery learning in games. 
+Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g. Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g. Portal~\TODO{cite}). 
+In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
+
+Other games teach players by doing something in between. 
+Games in the Zelda series~\TODO{cite} contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
+Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tutorials the player may choose to go through before beginning more open-ended play.
+The variety of approaches games take in teaching players leads to interesting questions about how different methods affect what players do in a game, or, in the case of educational software, how they learn. 
+Furthermore, for complex topics such as computer science, the concepts a game needs to teach its players are likely to be more difficult to discover through exploration and require more sophisitcation to explain through direct guidance. Thus, more research is needed to refine and evaluate these techniques. 
+
+In the case of \gametitle{}, we have combined structured puzzle levels and an open, unstructured sandbox. 
+The puzzles, by leading the player to demonstrate a particular concept, act as a form of direct guidance. 
+A process of discovery can then take place in the sandbox where the player is free to experiment with the ideas introduced in the puzzles. 
+As discussed in Section~\ref{sec:action}, our playtesting has shown this to be a promising approach for many of the concepts currently in our game. 
+
+\subsubsection{Social Community}
 There are examples where social community has been an important part of the success of an online programming environment. 
 Scratch users, for example, have shared millions of projects and even formed online \emph{companies} to tackle projects together~\cite{resnick2009scratch}. 
 Research using an online programming environment called MOOSE Crossing~\cite{bruckman1997moose} found that a social context can support and motivate learning programming~\cite{bruckman2000situated}.
