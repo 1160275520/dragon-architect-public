@@ -158,42 +158,50 @@ In this way, the language the player uses to write instructions for the dragon g
 
 \section{Related Work}
 
+\subsection{Computer Science Educational Technology and Games}
 
-\subsubsection{Constructionism}
-\emph{Constructionism} is a learning theory that proposes students learn effectively by constructing things of social relevance in a social context \cite{kafai06constructionism}.
-Part of constructionism includes theories of discovery learning that suggest students learn best by doing and building.
-Another primary aspect of constructionism is that the learning process should occur in a social envionrment in which students are building things that matter to them and the social group.
-
-Others have argued that games are an ideal environment for constructionist teaching \TODO{cite}.
-However, evidence suggests that a purely self-directed learning approach is inadquate for effective learning \TODO{cite}.
-
-\subsubsection{Tools and Games for CS Education}
-The history of tools designed to teach novices programming dates back to the 1960's, originating with Pappert's LOGO \TODO{cite}.
+The history of tools designed to teach novices programming dates back to sytems such as Pappert's LOGO~\cite{papert80mindstorms}.
 Kelleher and Pausch review programming environments for novices and describe a taxonomy of these systems~\cite{kelleher2005lowering}.
 Within that taxonomy, \gametitle{} fist best as a teaching system that targets \emph{structuring programs} and aims to provide learning support both through \emph{social learning} and \emph{providing a motivating context}.
+
+\subsubsection{Open-Ended Creative Systems}
+These early tools and some popular tools today are structure as open-ended creative environments.
+LOGO allowed players to create drawings by controlling a robot with a virtual pen.
+A popular modern example is Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media such as stories and games.
+Scratch has been successful in building vibrant community around open-ended, creative, social environment (want to borrow ideas of personalization in the future).
+Many of this style of tool are influenced by \emph{constructionism}, which is a learning theory that proposes students learn effectively by constructing things of social relevance in a social context \cite{kafai06constructionism}.
+Part of constructionism includes theories of discovery learning that suggest students learn best by doing and building.
+Another primary aspect of constructionism is that the learning process should occur in a social envionrment in which students are building things that matter to them and the social group.
+Others have argued that games are an ideal environment for constructionist teaching \TODO{cite}.
+However, evidence suggests that a purely self-directed learning approach is inadquate for effective learning \TODO{cite}.
+Evidence suggests that pure self-directed discovery learning is not effective in complex domains unless students have prior background knowlege, so these systems often are paired with cirrucla to guide students in use of the system.
+With \gametitle{}, we aim to investigate whether and how structure such as direct guidance and scaffolding can be included in the system itself while preserving the positive aspects of open-ended, social, creative tools.
+
+\subsubsection{Structured Learning Systems}
+Another type of programming educational system is instead arranged as a linear sequence of problems or puzzles.
+Step-by-step lessons are available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, in which users program in a popular industry programming language such as Javascript or Java, sometimes with accompanying video.
+Code.org~\cite{codedotorg} is a sequence of videos and puzzles, but using visual programming (like Scratch) and presented as puzzles using characters from popular games like Rovio's \emph{Angry Birds}.
+
+Several games also fall into this category.
+The game \emph{LightBot}~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles.
+The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code\footnote{\url{http://lightbot.com/hocflash.html}}.
+In \emph{CodeSpells}~\cite{esper2013codespells}, players write Java code to cast spells in an adventure game.
+In \emph{RoboBuilder}~\cite{weintrop2012robobuilder}, players program robots to battle against enemies.
+\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-athored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
+We wish to combine direct lessons and open-ended structure into a single system, and explore the tradeoffs and whether we can get advangates from both types of systems.
+
+\subsubsection{Other Stuff \TODO{fix this}}
+Several of these systems such as Codecademy, Codespells, and LOGO, have students or players input code in text format.
+Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, other tools chose to use a visual language as there is evidence those are helpful to novices~\cite{whitley1997visual}. Examples include Scratch, LightBot, and Code.org.
 
 Lye and Koh recently reviewed studies that investigated teaching \emph{computational thinking}~\cite{wing2008computational} in K12 classrooms~\cite{lye2014review}.
 They found that this area deserves more research and that
 the reviewed findings suggest structured, guided discovery is a better approach for learning than pure self-driven discovery.
 
-
-
-There a been a recent proliferation of widely available CS education tools on the internet.
-In some, like the step-by-step lessons available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, or the game CodeSpells \cite{esper2013codespells}, users program in a popular industry programming language such as Javascript or Java.
-Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, other tools chose to use a visual language as there is evidence those are helpful to novices~\cite{whitley1997visual}.
 \TODO{should also mention Programming By Design and related project Bootstrap as curricula-oriented projects}
 \TODO{cite and talk about AgentSheets}
-Examples of such tools include Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media.
-Scratch has been successful in building vibrant community around open-ended, creative, social environment (want to borrow ideas of personalization in the future).
-Some suggest that the lack of structure may pose a barrier to entry and to learning (quantity and complexity of immediately available features may be intimidating or confusing, discovery-learning-ineffective citation) \TODO{cite};
-With \gametitle{}, we want to see if a gradual introduction of features can be easier to get in to while still inspiring the creative experimentation Scratch fostered in its community.
 
-Other recent efforts have, rather than provide an open creative environment, present players with a series of mostly linear challenges.
-The game LightBot~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles. The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code\footnote{\url{http://lightbot.com/hocflash.html}}.
-Many of these examples are games, such as Lightbot \TODO{cite} and \TODO{cite some other example}.
-Code.org presents a sequence of explanatory videos and linear puzzles. \TODO{cite}
-The project has had extremely wide reach but was limited in scope. \TODO{cite}
-\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-athored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\TODO{cite}.
+\subsection{Related Learning Technologies}
 
 \subsubsection{Intelligent Tutoring Systems}
 Intelligent Tutoring Systems~\cite{koedinger06cognitive} have been successful applied to several teaching domains.
@@ -207,7 +215,9 @@ Student modeling is more challenging in games than rigid tutor environments, and
 Creating a full set of production rules for an open-ended sandbox is not feasible since there are no direct goals.
 Even with puzzle sections, creating the set of knowledge components is infeasible for desired concepts such a meta-strategies for programming.
 
-\subsubsection{Minecraft}
+\subsubsection{Game-Based Learning}
+\TODO{maybe like have a section maybe}
+
 Because of the popularity of Minecraft and its ability to engage children, several people have tried to take advantage of this in educational settings.
 %Teachers have Here's that project the guy from FDG talked about \TODO{cite}.
 %Several people have creating programming plugins for Minecraft
