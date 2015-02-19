@@ -104,9 +104,18 @@ Many of these projects, such as Scratch~\cite{scratch} and Code.org's Hour of Co
 Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} discussed their design~\cite{powers2006tools}.
 Comparative studies of effective ways to present computer science concepts in these systems, however, have been largely absent. 
 
-As the expansion of computer science education, especially for primary- and secondard-school students, gathers steam, it would be valuable to have concrete data to guide the development of the educational systems involved. 
+As the expansion of computer science education, especially for primary and secondary-school students, gathers steam, it would be valuable to have concrete data to guide the development of the educational systems involved. 
 This includes the structure of the systems themselves in addition to the curricula and pedagogy they employ. 
 This paper focuses on a connected set of research questions that follow naturally from this need.
+
+%How can we effectively teach high-level programming concepts and skills through educational software and games?
+%For example, \emph{computational thinking}~\cite{wing2008computational} is a central element of the discussion on programming education.
+%There is significant interest in bringing computational thinking into the classroom~\cite{barr2011bringing, lye2014review}, and more research is required on teaching computational thinking skills through educational software and games.
+%Another important aspect of teaching programming tools is choice of programming language.
+%How does the design of the programming language a system uses affect its users?
+%One part of investigating how to teach such skills involes exploring how to teach the strategies and metastrategies, such as divide and conquer, involved in computational thinking.
+%Answering such research questions requires exploring the structure of educational games.
+%The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from instructors or other members of the social community using the system or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. 
 
 Computational thinking is often discussed in the context of educational programming environments and there needs to be more research on how such systems can effectively teach these ideas. 
 Programming language semantics are one understudied aspect of this. 
@@ -161,18 +170,21 @@ Common sandbox activities have included making the dragon travel very long dista
 \label{sec:research}
 
 Our primary goal for \gametitle{} is to investigate questions in computer science education and game-based learning. 
-Below we present four questions we believe are under-researched and that dictated the design of our game. 
+Specially, we are interested in exploring how to teach compuational thinking skills and problem-solving stategies, and we are interested in exploring which programming languages best support novices in learning these skills. 
+This naturally leads to research questions on how an effective educational game should be structured.
+Open-ended games and systems typically peform poorly at teaching complex concepts without instructors or other outside help, but linear, direct-guidance based games and systems don't offer the engaging creative and social experiences that can be found in more open-ended settings.
+In this section, we describe these research poblems in detail and design decisions informed by these problems.
 
 \subsection{Teaching Computer Science}
 
 \subsubsection{Compuational Thinking}
 
-Many have studied (e.g., Barr and Stephenson~\cite{barr2011bringing}, Lye and Koh~\cite{lye2014review}) how to increase presence and effectiveness of computational thinking in computer science education (and education in general). 
+Many have studied how to increase presence and effectiveness of \emph{computational thinking}~\cite{wing2008computational} in computer science education (and education in general)~\cite{barr2011bringing, lye2014review}.
 Others have developed games to teach these ideas~\cite{weintrop2013robobuilder, kazimoglu2012serious}. 
 Repenning et al.~\cite{repenning2010scalable} report six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
 More research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
 
-The development of \gametitle{} has been shaped by Wing's~\cite{wing2008computational} definition of computational thinking, which takes automation and abstraction to be its central ideas. 
+The development of \gametitle{} has been shaped by Wing's definition of computational thinking, which takes automation and abstraction to be its central ideas. 
 The open-ended building of our game's sandbox encourages players to take up these principles. 
 Since the building must be done via a program written by the player and carried out by their dragon, the player must necessarily automate their ideas. 
 As the player sets more sophisticated goals, abstraction becomes important (e.g., abstracting the building of a wall into a procedure) to keep the visual programming feasible. 
@@ -197,17 +209,21 @@ This part of \gametitle{} needs to be expanded and refined before it can be eval
   \label{fig:decomp}
 \end{figure*}
 
-\subsubsection{Language for Novices}
+\subsubsection{Language Semantics for Novices}
+
 For those just starting to program, many aspects of the programming language and programming environment can affect their progress. 
-While previous work indicates aspects such as language syntax~\cite{stefik2013syntax}, compiler messages~\cite{nienaltowski2008compiler}, and language semantics~\cite{hoc1990language} can all have an impact, only the first two of those three have been characterized with much specificity. 
-Though langauge semantics has certainly been shown to matter for novice programmers, the literature lacks support for more definite conclusions. 
-Hence, there is a need for further research on this question to guide the development of programming environments for novices.
+Language syntax and semantics have been extensively studied for professional programmings~\TODO{cite}.
+While previous work indicates aspects such as language syntax~\cite{stefik2013syntax}, compiler messages~\cite{nienaltowski2008compiler}, and language semantics~\cite{hoc1990language} can all have an impact, only syntax and compiler messages have been characterized in detail with research on the effectivenss of particular design decisions. 
+So while we have drawn on existing research when choosing the programming syntax and input method for players, the literature lacks support for definite conclusions and suggestions for language semantics. 
 In addition, we are not aware of any investigation into the relationship between language design and teaching computational thinking.
 
-This informed our decision to implement a custom language behind \gametitle{}'s visual programming language instead of using a popular existing language like JavaScript. 
-Doing so confers several advantages, the first of which is that having complete control over every aspect of the language's implementation gives us the flexibility to experiment widely with langauge semantics. 
-In addition, we don't have to inflict the quirks of any existing language on our players. 
-Finally, we have implemented a concrete syntax for our language that corresponds precisely with its visual code-block equivalent, so we can expose it to the player and allow them to choose which method of input they prefer. 
+In order to support research exploration in language semantics, \gametitle{} uses a custom visual programming language instead of using a popular existing language like JavaScript. 
+This gives us fine-grained control over how the language behaves, enabling experimentation in language semantics.
+Additionally, we do not have to inflict the quirks of any existing language on our players. 
+Finally, we have implemented a concrete syntax for our language that corresponds precisely with its visual code-block equivalent, allowing translation to and from concrete syntax, allowing players to choose which method of input they prefer.  
+The most apparent drawback of this approach is the lack of existing resources for studets to use.
+Using an existing popular language not only comes with a very large and free corpus of learning material, but provides an avenue for students to apply what they have learned directly outside the game.
+Possible problems to explore include use of recussion and looping, eager versus lazy evaluation, or type checking.
 
 \subsection{Structure of Learning Environment}
 
