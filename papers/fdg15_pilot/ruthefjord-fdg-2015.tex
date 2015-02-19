@@ -137,6 +137,7 @@ The visualization uses the Unity game engine~\cite{unity} and the drag-and-drop 
 The visual language players use is a set of \emph{code blocks} that snap together to form programs. 
 The player can move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
 In addition to blocks that control the dragon directly, players can also make use of definite loops and procedures (see Figure~\ref{fig:toolbox}).
+Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, we chose to use a visual language as there is evidence visual languages are helpful to novices~\cite{whitley1997visual}.
 
 As players progress through the game, they alternate between short sequences of puzzles with a specific goal and a specific set of available code blocks and an open-ended sandbox. 
 The game begins with puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon in 2D and putting down cubes.
@@ -166,7 +167,7 @@ Below we present four questions we believe are under-researched and that dictate
 
 \subsubsection{Compuational Thinking}
 
-Many have studied (e.g. Barr \cite{barr2011bringing}) how to increase presence of computational thinking in computer science education (and education in general). 
+Many have studied (e.g. Barr and Stephenson~\cite{barr2011bringing}, Lye and Koh~\cite{lye2014review}) how to increase presence and effectiveness of computational thinking in computer science education (and education in general). 
 Others have developed games to teach these ideas \cite{weintrop2013robobuilder}, \cite{kazimoglu2012serious}. 
 Repenning et al.~\cite{repenning2010scalable} report six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
 More research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
@@ -336,31 +337,24 @@ Within that taxonomy, \gametitle{} fist best as a teaching system that targets \
 These early tools and some popular tools today are structure as open-ended creative environments.
 LOGO allowed players to create drawings by controlling a robot with a virtual pen.
 A popular modern example is Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media such as stories and games.
-Scratch has been successful in building vibrant community around open-ended, creative, social environment.
+Scratch has been successful in building vibrant community around its open-ended, creative, social environment with millions of projects shared via its website~\cite{scratch}.
+ 
+\TODO{cite and talk about AgentSheets~\cite{repenning2000agentsheets}, Kodu~\cite{maclaurin2009kodu}, Alice~\cite{cooper2000alice}}
 
 \subsubsection{Structured Learning Systems}
 Another type of programming educational system is instead arranged as a linear sequence of problems or puzzles.
 Step-by-step lessons are available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, in which users program in a popular industry programming language such as Javascript or Java, sometimes with accompanying video.
-Code.org~\cite{codedotorg} is a sequence of videos and puzzles, but using visual programming (like Scratch) and presented as puzzles using characters from popular games like Rovio's \emph{Angry Birds}.
+Code.org~\cite{codedotorg} is a sequence of videos and puzzles where users control characters from popular games like Rovio's \emph{Angry Birds} or movies like Disney's \emph{Frozen} with drag-and-drop programming (like Scratch).
 
 Several games also fall into this category.
 The game \emph{LightBot}~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles.
 The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code\footnote{\url{http://lightbot.com/hocflash.html}}.
-In \emph{CodeSpells}~\cite{esper2013codespells}, players write Java code to cast spells in an adventure game.
+In \emph{CodeSpells}~\cite{esper2013codespells}, players write Java code to cast spells that control their environment in an adventure game.
 In \emph{RoboBuilder}~\cite{weintrop2012robobuilder}, players program robots to battle against enemies.
-\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-athored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
+\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-authored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
 We wish to combine direct lessons and open-ended structure into a single system, and explore the tradeoffs and whether we can get advangates from both types of systems.
 
-\subsubsection{Other Stuff \TODO{fix this}}
-Several of these systems such as Codecademy, Codespells, and LOGO, have students or players input code in text format.
-Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, other tools chose to use a visual language as there is evidence those are helpful to novices~\cite{whitley1997visual}. Examples include Scratch, LightBot, and Code.org.
-
-Lye and Koh recently reviewed studies that investigated teaching \emph{computational thinking}~\cite{wing2008computational} in K12 classrooms~\cite{lye2014review}.
-They found that this area deserves more research and that
-the reviewed findings suggest structured, guided discovery is a better approach for learning than pure self-driven discovery.
-
-\TODO{should also mention Programming By Design and related project Bootstrap as curricula-oriented projects}
-\TODO{cite and talk about AgentSheets, Karel the Robot, Stagecast, Kodu}
+\TODO{should also mention Programming By Design~\cite{felleisen2001design} as curricula-oriented project}
 
 \subsection{Related Learning Technologies}
 
@@ -370,7 +364,8 @@ These tutors are typcally rigidly structured, choosing which problem the student
 These tutors often employ results from cognitive psychology and thus are also called \emph{cognitive tutors}.
 Techniques such as Knowledge Tracing~\cite{corbett1994knowledge} model student knowledge with a Bayesian framework.
 This modeling requires experts to design a set of \emph{knowledge components} that encompass the skills and abilities players use, as well as a comprehensive set of production rules students use to solve problems in the tutor.
-In \gametitle{}, we wish to use direct teaching statagies, but balanced with an open environment in an effort to make the experience more engaging and meaningful to players.
+
+In \gametitle{}, we use direct teaching, but balanced with an open environment in an effort to make the experience more engaging and meaningful to players.
 Projects such as \emph{Crystal Island} have integrated ITS technologies into educational games and found success with student knowledge modeling, goal recognition, and affect modeling~\cite{lester2013serious,rowe2010modeling}.
 Student modeling is more challenging in games than rigid tutor environments, and this problem is even larger with open-ended games.
 Creating a full set of production rules for an open-ended sandbox is not feasible since there are no direct goals.
