@@ -101,7 +101,7 @@
 \section{Introduction}
 The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. 
 Many of these projects, such as Scratch~\cite{scratch} and Code.org's Hour of Code~\cite{codedotorg}, are educational programming environments that expose users to basic programming concepts. 
-Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} and there have been panel discussions on their design~\cite{powers2006tools}.
+Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} discussed their design~\cite{powers2006tools}.
 Comparative studies of effective ways to present computer science concepts in these systems, however, have been largely absent. 
 
 As the expansion of computer science education, especially for primary- and secondard-school students, gathers steam, it would be valuable to have concrete data to guide the development of the educational systems involved. 
@@ -112,7 +112,7 @@ Computational thinking is often discussed in the context of educational programm
 Programming language semantics are one understudied aspect of this. 
 How does the design of the programming language a system uses affect its users' understanding of computational thinking?
 Further research should also explore ways to directly teach the strategies and metastrategies, such as divide and conquer, involved in computational thinking instead of expecting learners to absorb them as a result of working with other computer science concepts.
-The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from other members of the social community using the system or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. 
+The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from instructors or other members of the social community using the system or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. 
 Given the limitations inherent to each group, there needs to be an exploration of the design space between these two approaches in which exploration, social community, and some form of direct guidance are integrated together. 
 
 In this paper we present \gametitle{}, an educational game designed to be a tool with which to investigate these questions. 
@@ -131,7 +131,7 @@ The paper concludes with our thoughts on other interesting questions our game mi
 \section{\gametitle{}}
 \TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title} 
 We have been developing \gametitle{} since spring 2014. 
-It's played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (see Figure~\ref{fig:overall}). 
+It can be played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (see Figure~\ref{fig:overall}). 
 The visualization uses the Unity game engine~\cite{unity} and the drag-and-drop programming UI is provided by the Blockly library~\cite{blockly}.
 
 The visual language players use is a set of \emph{code blocks} that snap together to form programs. 
@@ -167,15 +167,15 @@ Below we present four questions we believe are under-researched and that dictate
 
 \subsubsection{Compuational Thinking}
 
-Many have studied (e.g. Barr and Stephenson~\cite{barr2011bringing}, Lye and Koh~\cite{lye2014review}) how to increase presence and effectiveness of computational thinking in computer science education (and education in general). 
-Others have developed games to teach these ideas \cite{weintrop2013robobuilder}, \cite{kazimoglu2012serious}. 
+Many have studied (e.g., Barr and Stephenson~\cite{barr2011bringing}, Lye and Koh~\cite{lye2014review}) how to increase presence and effectiveness of computational thinking in computer science education (and education in general). 
+Others have developed games to teach these ideas~\cite{weintrop2013robobuilder, kazimoglu2012serious}. 
 Repenning et al.~\cite{repenning2010scalable} report six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
 More research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
 
 The development of \gametitle{} has been shaped by Wing's~\cite{wing2008computational} definition of computational thinking, which takes automation and abstraction to be its central ideas. 
 The open-ended building of our game's sandbox encourages players to take up these principles. 
 Since the building must be done via a program written by the player and carried out by their dragon, the player must necessarily automate their ideas. 
-As the player sets more sophisticated goals, abstraction becomes important (e.g. abstracting the building of a wall into a procedure) to keep the visual programming feasible. 
+As the player sets more sophisticated goals, abstraction becomes important (e.g., abstracting the building of a wall into a procedure) to keep the visual programming feasible. 
 
 There should also be future study on more profound ways to teach computational thinking then simply hoping students absorb this \emph{way of thinking} as a byproduct of working with other computer science concepts (such as basic programming). 
 The approach we are taking is to directly teach a core component of computational thinking: the identification and application of problem-solving strategies (such as divide and conquer). 
@@ -224,7 +224,7 @@ Finally, we have implemented a concrete syntax for our language that corresponds
 %Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning when compared to using just one or the other. 
 More research is needed on guided discovery learning in games. 
 
-Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g. Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g. Portal~\TODO{cite}). 
+Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g., Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g., Portal~\TODO{cite}). 
 In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
 Other games teach players by doing something in between. 
 Games in the Zelda series~\TODO{cite} contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
