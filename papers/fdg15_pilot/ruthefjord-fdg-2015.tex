@@ -87,6 +87,7 @@
 
 \maketitle
 \begin{abstract}
+
     \TODO{Giant wall of text just to fill in the space and get an idea of how long the paper actually is. In this paper we present \gametitle{} which is trying to do some interesting research in CS education. CS education is hard, and also a popular thing to do. Attempts for CS stuff/games usually either approach is as a sequence of challanges/puzzles or a free-for-all sandbox funland. We want to explore combining these two aspects. Our contributions include presenting \gametitle{}, thoroughly describing the unaddressed research problems the space, discussing design challenges encountered attempting to tacke these problems, and initial feedback from players.}
 \end{abstract}
 
@@ -99,174 +100,108 @@
 
 \section{Introduction}
 The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. 
-Many of these projects, including some of the most visible such as Scratch and Code.org's Hour of Code~\cite{codedotorg}, are online programming environments that expose users to basic programming concepts. 
-Despite the proliferation of these systems, little work has investigated the design of the structure or content of such systems. 
-Comparative studies providing evidence for effective ways of presenting these ideas in this context have been largely absent. 
+Many of these projects, such as Scratch~\cite{scratch} and Code.org's Hour of Code~\cite{codedotorg}, are educational programming environments that expose users to basic programming concepts. 
+Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} and there have been panel discussions on their design~\cite{powers2006tools}.
+Comparative studies of effective ways to present computer science concepts in these systems, however, have been largely absent. 
 
-% As one example, we believe the effects of changes in programming language syntax and semantics on novices need more study. 
-% One might ask if there are benefits to evolving the available language elements as a novice progresses, and in which order these elements should become available. 
-% What combination of language elements affords beginners the most expressiveness without introducing overwhelming complexity? 
-% Another set of questions concern the impact of combining puzzles and an open-ended sandbox. 
-% Can puzzles provide sufficient structure and guidance to facilitate productive exploration of a game's concepts in an unstructured sandbox? 
-% When and how should the player transition between the two? 
-% These and many more topics relating to online programming environments deserve further study, particularly in light of their surging popularity \TODO{footnote about \# of Scratch users/Hour of Code participants?}. 
-% In this paper, 
+As the expansion of computer science education, especially for primary- and secondard-school students, gathers steam, it would be valuable to have concrete data to guide the development of the educational systems involved. 
+This includes the structure of the systems themselves in addition to the curricula and pedagogy they employ. 
+This paper focuses on a connected set of research questions that follow naturally from this need.
 
-In this paper we present \gametitle{}, an educational game designed to be a tool with which to conduct such studies. 
-In \gametitle{}, players use a visual, drag-and-drop programming language to control a dragon in a 3D grid world. 
-The visual language is a set of \emph{code blocks} that snap together to form programs. 
+Computational thinking is often discussed in the context of educational programming environments and there needs to be more research on how such systems can effectively teach these ideas. 
+Programming language semantics are one understudied aspect of this. 
+How does the design of the programming language a system uses affect its users' understanding of computational thinking?
+Further research should also explore ways to directly teach the strategies and metastrategies, such as divide and conquer, involved in computational thinking instead of expecting learners to absorb them as a result of working with other computer science concepts.
+The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from other members of the social community using the system or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. 
+Given the limitations inherent to each group, there needs to be an exploration of the design space between these two approaches in which exploration, social community, and some form of direct guidance are integrated together. 
+
+In this paper we present \gametitle{}, an educational game designed to be a tool with which to investigate these questions. 
+In our game, players use a visual, drag-and-drop programming language to control a dragon in a 3D grid world. 
+The remainder of this paper is as follows: after it describes our game in more detail, it discusses our research goals and how they affected the design of \gametitle{}. 
+The paper then gives an overview of players' response to our game and highlights several design issues that have arisen during its development.
+The paper concludes with our thoughts on other interesting questions our game might be used to help answer.
+
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=\textwidth]{images/overall-example}
+  \caption{The player assembles code for the dragon on the left side, and the dragon and world it inhabits are visualized on the right side. Only a few different code blocks are available to the player initially.}
+  \label{fig:overall}
+\end{figure*}
+
+\section{\gametitle{}}
+\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title} 
+We have been developing \gametitle{} since spring 2014. 
+It's played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (see Figure~\ref{fig:overall}). 
+The visualization uses the Unity game engine~\cite{unity} and the drag-and-drop programming UI is provided by the Blockly library~\cite{blockly}.
+
+The visual language players use is a set of \emph{code blocks} that snap together to form programs. 
 The player can move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
 In addition to blocks that control the dragon directly, players can also make use of definite loops and procedures (see Figure~\ref{fig:toolbox}).
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=\columnwidth]{images/toolbox_wide}
-  \caption{The programming elements currently available in \gametitle{} \TODO{add procedure call block}}
-  \label{fig:toolbox}
-\end{figure}
-
-Our motivation for developing \gametitle{} is to explore a variety of open questions in both education and games. 
-In this paper we review the space of these programming environments and related systems as it currently stands, noting how we differ and how we take inspiration from related work.  
-Despite so many existing systems with overlapping educational properties, we developed a new game (as opposed to using existing educational software) in order to design it as a research tool from the ground up.
-In Section~\ref{sec:research} we propose four research questions we believe need more study and discuss how these questions have informed the design of our game. 
-
-The remainder of this paper is as follows: after \gametitle{} is described in more detail, it discusses related work and our research goals. 
-The paper then highlights several design issues that have arisen during \gametitle{}'s development and presents our observations from students' experiences with the game so far. 
-The paper concludes with our thoughts on other interesting questions our game might be used to help answer.
-
-\section{\gametitle{}}
-\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title}
-We have been developing \gametitle{} since spring 2014. 
-It's played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (\TODO{figure}). 
-The visualization uses the Unity game engine~\TODO{cite} and the drag-and-drop programming UI is provided by the Blockly library~\TODO{cite}.
-
-As they progress through the game, players alternate between short sequences of one to five puzzles with a specific goal and a specific set of available code blocks and an open-ended sandbox. 
-The game begins with four puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon in 2D and putting down cubes.
-After that, the player can experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available in the sandbox, switching between sandbox and puzzles at any time. 
-Like the first puzzles, each subsequent sequence focuses on a few specific concepts. 
+As players progress through the game, they alternate between short sequences of puzzles with a specific goal and a specific set of available code blocks and an open-ended sandbox. 
+The game begins with puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon in 2D and putting down cubes.
+After that, the player can experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available, switching between sandbox and puzzles at any time. 
 In this way, the language the player uses to write instructions for the dragon gradually expands as the player advances.
 
-\TODO{talk about building on Minecraft's popularity and broad appeal}
+The popularity and broad appeal of Minecraft~\cite{minecraft} motivated our use of a 3D grid world in which the player's programs could place cubes.
+This choice also makes it natural to extend our game in the future with exploration, more complex interaction with the environment, or players working together in a shared world.
+Our playtests with \gametitle{} have shown the premise of programming a dragon in a Minecraft-like world appeals to younger players of all genders.
+Common sandbox activities have included making the dragon travel very long distances, building big and impressive towers, and spelling one's name out of cubes.
 
-% \subsubsection{Language}
-
-% The visual, drag-and-drop language used by the player is a custom, if, in game's development so far, simplistic, language designed specifically for \gametitle{}. We have implemented a textual concrete syntax, and we plan for the game to eventually expose this to the player, allowing them to choose which input method they prefer. This also allows for a direct translation from text to code blocks and vice versa. Some similar projects use a popular industry programming language such as Javascript or Java. We believe implementing our own gives us a valuable flexibility as well as preventing our players from dealing with the idiosyncrasies of any popular language. Having complete control over every part of the language implementation will provide useful in any study of the effects of changes in language features. 
-
-% \subsubsection{Technology}
-% \TODO{a few sentences or cut}
-
-
-\section{Related Work}
-
-\subsection{Computer Science Educational Technology and Games}
-
-The history of tools designed to teach novices programming dates back to sytems such as Pappert's LOGO~\cite{papert80mindstorms}.
-Kelleher and Pausch review programming environments for novices and describe a taxonomy of these systems~\cite{kelleher2005lowering}.
-Within that taxonomy, \gametitle{} fist best as a teaching system that targets \emph{structuring programs} and aims to provide learning support both through \emph{social learning} and \emph{providing a motivating context}.
-
-\subsubsection{Open-Ended Creative Systems}
-These early tools and some popular tools today are structure as open-ended creative environments.
-LOGO allowed players to create drawings by controlling a robot with a virtual pen.
-A popular modern example is Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media such as stories and games.
-Scratch has been successful in building vibrant community around open-ended, creative, social environment (want to borrow ideas of personalization in the future).
-Many of this style of tool are influenced by \emph{constructionism}, which is a learning theory that proposes students learn effectively by constructing things of social relevance in a social context \cite{kafai06constructionism}.
-Part of constructionism includes theories of discovery learning that suggest students learn best by doing and building.
-Another primary aspect of constructionism is that the learning process should occur in a social envionrment in which students are building things that matter to them and the social group.
-Others have argued that games are an ideal environment for constructionist teaching \TODO{cite}.
-However, evidence suggests that a purely self-directed learning approach is inadquate for effective learning \TODO{cite}.
-Evidence suggests that pure self-directed discovery learning is not effective in complex domains unless students have prior background knowlege, so these systems often are paired with cirrucla to guide students in use of the system.
-With \gametitle{}, we aim to investigate whether and how structure such as direct guidance and scaffolding can be included in the system itself while preserving the positive aspects of open-ended, social, creative tools.
-
-\subsubsection{Structured Learning Systems}
-Another type of programming educational system is instead arranged as a linear sequence of problems or puzzles.
-Step-by-step lessons are available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, in which users program in a popular industry programming language such as Javascript or Java, sometimes with accompanying video.
-Code.org~\cite{codedotorg} is a sequence of videos and puzzles, but using visual programming (like Scratch) and presented as puzzles using characters from popular games like Rovio's \emph{Angry Birds}.
-
-Several games also fall into this category.
-The game \emph{LightBot}~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles.
-The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code\footnote{\url{http://lightbot.com/hocflash.html}}.
-In \emph{CodeSpells}~\cite{esper2013codespells}, players write Java code to cast spells in an adventure game.
-In \emph{RoboBuilder}~\cite{weintrop2012robobuilder}, players program robots to battle against enemies.
-\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-athored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
-We wish to combine direct lessons and open-ended structure into a single system, and explore the tradeoffs and whether we can get advangates from both types of systems.
-
-\subsubsection{Other Stuff \TODO{fix this}}
-Several of these systems such as Codecademy, Codespells, and LOGO, have students or players input code in text format.
-Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, other tools chose to use a visual language as there is evidence those are helpful to novices~\cite{whitley1997visual}. Examples include Scratch, LightBot, and Code.org.
-
-Lye and Koh recently reviewed studies that investigated teaching \emph{computational thinking}~\cite{wing2008computational} in K12 classrooms~\cite{lye2014review}.
-They found that this area deserves more research and that
-the reviewed findings suggest structured, guided discovery is a better approach for learning than pure self-driven discovery.
-
-\TODO{should also mention Programming By Design and related project Bootstrap as curricula-oriented projects}
-\TODO{cite and talk about AgentSheets}
-
-\subsection{Related Learning Technologies}
-
-\subsubsection{Intelligent Tutoring Systems}
-Intelligent Tutoring Systems~\cite{koedinger06cognitive} have been successful applied to several teaching domains.
-These tutors are typcally rigidly structured, choosing which problem the student will work on next.
-These tutors often employ results from cognitive psychology and thus are also called \emph{cognitive tutors}.
-Techniques such as Knowledge Tracing~\cite{corbett1994knowledge} model student knowledge with a Bayesian framework.
-This modeling requires experts to design a set of \emph{knowledge components} that encompass the skills and abilities players use, as well as a comprehensive set of production rules students use to solve problems in the tutor.
-In \gametitle{}, we wish to use direct teaching statagies, but balanced with an open environment in an effort to make the experience more engaging and meaningful to players.
-Projects such as \emph{Crystal Island} have integrated ITS technologies into educational games and found success with student knowledge modeling, goal recognition, and affect modeling~\cite{lester2013serious,rowe2010modeling}.
-Student modeling is more challenging in games than rigid tutor environments, and this problem is even larger with open-ended games.
-Creating a full set of production rules for an open-ended sandbox is not feasible since there are no direct goals.
-Even with puzzle sections, creating the set of knowledge components is infeasible for desired concepts such a meta-strategies for programming.
-
-\subsubsection{Game-Based Learning}
-\TODO{maybe like have a section maybe}
-
-Because of the popularity of Minecraft and its ability to engage children, several people have tried to take advantage of this in educational settings.
-%Teachers have Here's that project the guy from FDG talked about \TODO{cite}.
-%Several people have creating programming plugins for Minecraft
-Zorn et al.\ created CodeBlocks, a plugin for Minecraft that allows players to program a robot within the game, and they found that CodeBlocks increased non-programmers' interest in programming~\cite{zorn2013minecraft}.
-We wish to draw inpsiration from the aspects that make open multiplayer games like \emph{Minecraft} appealing.
-Another avenue people have tried is to teach programming by having students create modifications and plugins for Minecraft, through mods such as ScriptCraft~\footnote{\url{http://scriptcraftjs.org/}}.
-Our game does not support mods and instead supports programming as a core mechanic.
-\TODO{this could really use some examples of MC-inspired games that aren't \emph{literally} in MC.}
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=\columnwidth]{images/toolbox-wide}
+  \caption{The programming elements available in \gametitle{}.}
+  \label{fig:toolbox}
+\end{figure}
 
 
 \section{Research Questions}
 \label{sec:research}
 
-Our primary goal for \gametitle{} is to produce a flexible system that we can use to investigate questions in computer science education and game-based learning. 
-Below we present four questions we believe are under-researched and that informed the design of our game. 
+Our primary goal for \gametitle{} is to investigate questions in computer science education and game-based learning. 
+Below we present four questions we believe are under-researched and that dictated the design of our game. 
 
-\subsection{What to Teach}
+\subsection{Teaching Computer Science}
 
 \subsubsection{Compuational Thinking}
 
-Many have studied (e.g. \cite{barr2011bringing}) how to increase presence of computational thinking in computer science education (and education in general). 
-Others have developed games to teach these ideas (e.g. \cite{weintrop2013robobuilder}, \cite{kazimoglu2012serious}). 
+Many have studied (e.g. Barr \cite{barr2011bringing}) how to increase presence of computational thinking in computer science education (and education in general). 
+Others have developed games to teach these ideas \cite{weintrop2013robobuilder}, \cite{kazimoglu2012serious}. 
 Repenning et al.~\cite{repenning2010scalable} report six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
-In our view, more research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
+More research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
 
 The development of \gametitle{} has been shaped by Wing's~\cite{wing2008computational} definition of computational thinking, which takes automation and abstraction to be its central ideas. 
 The open-ended building of our game's sandbox encourages players to take up these principles. 
 Since the building must be done via a program written by the player and carried out by their dragon, the player must necessarily automate their ideas. 
 As the player sets more sophisticated goals, abstraction becomes important (e.g. abstracting the building of a wall into a procedure) to keep the visual programming feasible. 
 
-We believe there should also be future study on more profound ways to teach computational thinking then simply hoping students absorb this \emph{way of thinking} as a byproduct of working with other computer science concepts (such as basic programming). 
-One possible approach (that we explore with \gametitle{}) is to directly teach a core component of computational thinking: the identification and application of problem-solving strategies (in our case, divide and conquer). 
-A great deal of recent education research suggests that \emph{curricula can model such strategies for students} and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can \emph{enable students to learn to use these strategies independently}~\cite{report2010computational}. 
+There should also be future study on more profound ways to teach computational thinking then simply hoping students absorb this \emph{way of thinking} as a byproduct of working with other computer science concepts (such as basic programming). 
+The approach we are taking is to directly teach a core component of computational thinking: the identification and application of problem-solving strategies (such as divide and conquer). 
+A great deal of recent education research suggests that ``curricula can model such strategies for students'' and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can ``enable students to learn to use these strategies independently''~\cite{report2010computational}. 
 Mayer and Wittrock~\cite{mayer1996handbook} call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}. 
 The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy. 
-In both cases, studies have shown that teaching these skills directly can improve learning and performance. 
+In both cases, Mayer and Wittrock describe studies that have shown teaching these skills directly can improve learning and performance. 
 
-\TODO{a figure (or two) for this paragraph)}
-\gametitle{} explores this with a sequence of puzzles that demonstrate the divide and conquer strategy (i.e. the decomposition of a large problem into smaller subproblems and the subsequent synthesizing of subproblem solutions to solve the original problem). 
+\gametitle{} explores directly teaching strategies with a sequence of puzzles that demonstrate the divide and conquer strategy (i.e., the decomposition of a large problem into smaller subproblems and the subsequent combining of subproblem solutions to solve the original problem). 
 The player is presented with a single code block that builds an entire castle, but discovers the construction has a number of flaws. 
 The following puzzles each decompose some part of the flawed program in order to give the player a chance to repair it. 
-For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure. 
-This part of \gametitle{} needs to be expanded and refined before it can be evaluated, but we are confident the larger question merits further attention. 
+For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure (see Figure~\ref{fig:decomp}). 
+This part of \gametitle{} needs to be expanded and refined before it can be evaluated, but the larger question certainly merits further attention. 
+
+\begin{figure*}[th!]
+  \centering
+  \includegraphics[width=\textwidth]{images/decomp-code}
+  \caption{The code required by a progression of levels demonstrating the strategy of divide and conquer. In A, the player uses a single code block to build an entire castle. Then, in B, the player is given an empty FixedCastle procedure, which they must fill with the appropriate number of wall and tower blocks. Finally, in C, the player is given a completed FixedCastle procedure and must fill in the FixedTower procedure as shown.}
+  \label{fig:decomp}
+\end{figure*}
 
 \subsubsection{Language for Novices}
 For those just starting to program, many aspects of the programming language and programming environment can affect their progress. 
 While previous work indicates aspects such as language syntax~\cite{stefik2013syntax}, compiler messages~\cite{nienaltowski2008compiler}, and language semantics~\cite{hoc1990language} can all have an impact, only the first two of those three have been characterized with much specificity. 
 Though langauge semantics has certainly been shown to matter for novice programmers, the literature lacks support for more definite conclusions. 
-Hence, we see the need for further research on this question to guide the development of programming environments for novices.
+Hence, there is a need for further research on this question to guide the development of programming environments for novices.
+In addition, we are not aware of any investigation into the relationship between language design and teaching computational thinking.
 
 This informed our decision to implement a custom language behind \gametitle{}'s visual programming language instead of using a popular existing language like JavaScript. 
 Doing so confers several advantages, the first of which is that having complete control over every aspect of the language's implementation gives us the flexibility to experiment widely with langauge semantics. 
@@ -276,13 +211,20 @@ Finally, we have implemented a concrete syntax for our language that corresponds
 \subsection{Structure of Learning Environment}
 
 \subsubsection{Guided Discovery Learning}
-Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning
-%(see Section~\ref{subsec:learning})
-when compared to using just one or the other. 
-We believe more research is needed on guided discovery learning in games. 
+%Many open-ended creative prgramming tools (such as Scratch) are influenced by \emph{constructionism}, which is a learning theory that proposes students learn effectively by constructing things of social relevance in a social context \cite{kafai06constructionism}.
+%One component of constructionism is discovery learning that suggest students learn best by doing and building.
+%Others have argued that games are an ideal environment for constructionist teaching \TODO{cite}.
+%However, evidence suggests that a purely self-directed learning approach is inadquate for effective learning \TODO{cite}.
+%Evidence suggests that pure self-directed discovery learning is not effective in complex domains unless students have prior background knowlege, so these systems often are paired with cirrucla to guide students in use of the system.
+%With \gametitle{}, we aim to investigate whether and how structure such as direct guidance and scaffolding can be included in the system itself while preserving the positive aspects of open-ended, social, creative tools.
+\TODO{define discovery learning.}
+\TODO{define direct guidance.}
+\TODO{establish support for guided discovery.}
+%Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning when compared to using just one or the other. 
+More research is needed on guided discovery learning in games. 
+
 Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g. Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g. Portal~\TODO{cite}). 
 In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
-
 Other games teach players by doing something in between. 
 Games in the Zelda series~\TODO{cite} contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
 Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tutorials the player may choose to go through before beginning more open-ended play.
@@ -292,9 +234,10 @@ Furthermore, for complex topics such as computer science, the concepts a game ne
 In the case of \gametitle{}, we have combined structured puzzle levels and an open, unstructured sandbox. 
 The puzzles, by leading the player to demonstrate a particular concept, act as a form of direct guidance. 
 A process of discovery can then take place in the sandbox where the player is free to experiment with the ideas introduced in the puzzles. 
-As discussed in Section~\ref{sec:action}, our playtesting has shown this to be a promising approach for many of the concepts currently in our game. 
+Our playtesting has shown this to be a promising approach in getting players to understand many of the concepts currently in our game. 
 
 \subsubsection{Social Community}
+Another primary aspect of constructionism is that the learning process should occur in a social envionrment in which students are building things that matter to them and the social group.
 There are examples where social community has been an important part of the success of an online programming environment. 
 Scratch users, for example, have shared millions of projects and even formed online \emph{companies} to tackle projects together~\cite{resnick2009scratch}. 
 Research using an online programming environment called MOOSE Crossing~\cite{bruckman1997moose} found that a social context can support and motivate learning programming~\cite{bruckman2000situated}.
@@ -306,20 +249,9 @@ A player can choose to share anything they build in the sandbox, sending it to a
 Browsing the gallery, players can view, and get the code for, any uploaded construction.
 \TODO{we track attribution}
 
-\section{Design Issues and Playtest Results}
+\section{Design Issues}
 The design of \gametitle{} has been informed by our research goals, and by existing software such as Minecraft and Scratch. 
 In this section we discuss two cases where these objectives presented unusual challenges. 
-
-\subsection{General Impressions}
-
-We have conducted numerous playtests since we began developing \gametitle{}, largely with students ages 9 to 14. 
-Most had no previous exposure to programming, but some students had previously used systems like Scratch or had participated in the Hour of Code.
-Aside from multiple rounds of usability improvements, these playtests gave us insight into \TODO{something}.
-
-A clear message from our playtests is that the premise of programming a dragon in a Minecraft-like world appeals to younger players, and is equally appealing to all genders. 
-This is in spite of \gametitle{}'s lack of polish, particularly in the art and UI. 
-We have often been asked for a release date or a URL where players can continue with the game. 
-Common sandbox activities include making the dragon travel very long distances, building big and impressive towers, and building one's name out of cubes.
 
 \subsection{Consistency vs. Experimentation}
 Part of Minecraft's popularity is the collaborative multiplayer environment it offers. \TODO{citation, or argument that this is true}
@@ -391,6 +323,70 @@ They are surprised when all the code they have assembled is executed.
 Another frequent, if unsurprising, difficulty is procedures. 
 Players often don't understand the separation of a procedure into a definition and zero or more invocations. 
 This leads to mistakes such as defining a procedure multiple times in order to use it multiple times, or unintentionally introducing recursive calls. 
+
+\section{Related Work}
+
+\subsection{Educational Technology and Games for Computer Science}
+
+The development of tools designed to teach novices programming dates back to sytems such as Pappert's LOGO~\cite{papert80mindstorms}.
+Kelleher and Pausch review programming environments for novices and describe a taxonomy of these systems~\cite{kelleher2005lowering}.
+Within that taxonomy, \gametitle{} fist best as a teaching system that targets \emph{structuring programs} and aims to provide learning support both through \emph{social learning} and \emph{providing a motivating context}.
+
+\subsubsection{Open-Ended Creative Systems}
+These early tools and some popular tools today are structure as open-ended creative environments.
+LOGO allowed players to create drawings by controlling a robot with a virtual pen.
+A popular modern example is Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media such as stories and games.
+Scratch has been successful in building vibrant community around open-ended, creative, social environment.
+
+\subsubsection{Structured Learning Systems}
+Another type of programming educational system is instead arranged as a linear sequence of problems or puzzles.
+Step-by-step lessons are available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, in which users program in a popular industry programming language such as Javascript or Java, sometimes with accompanying video.
+Code.org~\cite{codedotorg} is a sequence of videos and puzzles, but using visual programming (like Scratch) and presented as puzzles using characters from popular games like Rovio's \emph{Angry Birds}.
+
+Several games also fall into this category.
+The game \emph{LightBot}~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles.
+The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code\footnote{\url{http://lightbot.com/hocflash.html}}.
+In \emph{CodeSpells}~\cite{esper2013codespells}, players write Java code to cast spells in an adventure game.
+In \emph{RoboBuilder}~\cite{weintrop2012robobuilder}, players program robots to battle against enemies.
+\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-athored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
+We wish to combine direct lessons and open-ended structure into a single system, and explore the tradeoffs and whether we can get advangates from both types of systems.
+
+\subsubsection{Other Stuff \TODO{fix this}}
+Several of these systems such as Codecademy, Codespells, and LOGO, have students or players input code in text format.
+Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, other tools chose to use a visual language as there is evidence those are helpful to novices~\cite{whitley1997visual}. Examples include Scratch, LightBot, and Code.org.
+
+Lye and Koh recently reviewed studies that investigated teaching \emph{computational thinking}~\cite{wing2008computational} in K12 classrooms~\cite{lye2014review}.
+They found that this area deserves more research and that
+the reviewed findings suggest structured, guided discovery is a better approach for learning than pure self-driven discovery.
+
+\TODO{should also mention Programming By Design and related project Bootstrap as curricula-oriented projects}
+\TODO{cite and talk about AgentSheets, Karel the Robot, Stagecast, Kodu}
+
+\subsection{Related Learning Technologies}
+
+\subsubsection{Intelligent Tutoring Systems}
+Intelligent Tutoring Systems~\cite{koedinger06cognitive} have been successful applied to several teaching domains.
+These tutors are typcally rigidly structured, choosing which problem the student will work on next.
+These tutors often employ results from cognitive psychology and thus are also called \emph{cognitive tutors}.
+Techniques such as Knowledge Tracing~\cite{corbett1994knowledge} model student knowledge with a Bayesian framework.
+This modeling requires experts to design a set of \emph{knowledge components} that encompass the skills and abilities players use, as well as a comprehensive set of production rules students use to solve problems in the tutor.
+In \gametitle{}, we wish to use direct teaching statagies, but balanced with an open environment in an effort to make the experience more engaging and meaningful to players.
+Projects such as \emph{Crystal Island} have integrated ITS technologies into educational games and found success with student knowledge modeling, goal recognition, and affect modeling~\cite{lester2013serious,rowe2010modeling}.
+Student modeling is more challenging in games than rigid tutor environments, and this problem is even larger with open-ended games.
+Creating a full set of production rules for an open-ended sandbox is not feasible since there are no direct goals.
+Even with puzzle sections, creating the set of knowledge components is infeasible for desired concepts such a meta-strategies for programming.
+
+\subsubsection{Game-Based Learning}
+\TODO{maybe like have a section maybe}
+
+Because of the popularity of Minecraft and its ability to engage children, several people have tried to take advantage of this in educational settings.
+%Teachers have Here's that project the guy from FDG talked about \TODO{cite}.
+%Several people have creating programming plugins for Minecraft
+Zorn et al.\ created CodeBlocks, a plugin for Minecraft that allows players to program a robot within the game, and they found that CodeBlocks increased non-programmers' interest in programming~\cite{zorn2013minecraft}.
+We wish to draw inpsiration from the aspects that make open multiplayer games like \emph{Minecraft} appealing.
+Another avenue people have tried is to teach programming by having students create modifications and plugins for Minecraft, through mods such as ScriptCraft~\footnote{\url{http://scriptcraftjs.org/}}.
+Our game does not support mods and instead supports programming as a core mechanic.
+\TODO{this could really use some examples of MC-inspired games that aren't \emph{literally} in MC.}
 
 \section{Conclusion}
 
