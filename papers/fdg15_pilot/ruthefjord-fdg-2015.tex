@@ -179,27 +179,30 @@ In this section, we describe these research poblems in detail and design decisio
 
 \subsubsection{Compuational Thinking}
 
-Many have studied how to increase presence and effectiveness of \emph{computational thinking}~\cite{wing2008computational} in computer science education (and education in general)~\cite{barr2011bringing, lye2014review}.
-Others have developed games to teach these ideas~\cite{weintrop2013robobuilder, kazimoglu2012serious}. 
-Repenning et al.~\cite{repenning2010scalable} report six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
-More research is needed to characterize how systems acquire these (and other) useful properties, and what benefits those properties might provide with respect to computational thinking. 
+% what is it
+A major goal of our project is to explore methods of teaching \emph{computational thinking}~\cite{wing2008computational} skills.
+Many have studied how to increase presence and effectiveness of computational thinking in computer science education (and education in general)~\cite{barr2011bringing, lye2014review},
+other others have developed games to teach these ideas~\cite{weintrop2013robobuilder, kazimoglu2012serious}. 
+Repenning et al.~\cite{repenning2010scalable} suggest six properties a computational thinking tool for K-12 must have in order to achieve systemic impact. 
+Evaluating and characterizing the effectiveness of systems that use these (and other) properties is an ongoing research effort.
 
-The development of \gametitle{} has been shaped by Wing's definition of computational thinking, which takes automation and abstraction to be its central ideas. 
-The open-ended building of our game's sandbox encourages players to take up these principles. 
-Since the building must be done via a program written by the player and carried out by their dragon, the player must necessarily automate their ideas. 
+\gametitle{}'s design is structred to encourage and require use of computational thinking skills.
+Like many programming games, we force the player to automate tasks that they are used to performing manually (in this case, the construction of 3d block structures).
 As the player sets more sophisticated goals, abstraction becomes important (e.g., abstracting the building of a wall into a procedure) to keep the visual programming feasible. 
 
-There should also be future study on more profound ways to teach computational thinking then simply hoping students absorb this \emph{way of thinking} as a byproduct of working with other computer science concepts (such as basic programming). 
-The approach we are taking is to directly teach a core component of computational thinking: the identification and application of problem-solving strategies (such as divide and conquer). 
+% how can we teach it directly?
+As we cannot expect players to learn such complex and abstract skills simply by playing in an environment that requires them, we explore how to effectively directly teach computational thinking skills.
+One such skill is a core component of computational thinking: the identification and application of problem-solving strategies (such as divide and conquer). 
 A great deal of recent education research suggests that ``curricula can model such strategies for students'' and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can ``enable students to learn to use these strategies independently''~\cite{report2010computational}. 
 Mayer and Wittrock~\cite{mayer1996handbook} call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}. 
 The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy. 
 In both cases, Mayer and Wittrock describe studies that have shown teaching these skills directly can improve learning and performance. 
 
-\gametitle{} explores directly teaching strategies with a sequence of puzzles that demonstrate the divide and conquer strategy (i.e., the decomposition of a large problem into smaller subproblems and the subsequent combining of subproblem solutions to solve the original problem). 
+% teaching stategies like divide and conquer
+Our initial attempt to directly teach divide-and-conquer is to lead the player though a top-down deconstruction of building a large castle.
 The player is presented with a single code block that builds an entire castle, but discovers the construction has a number of flaws. 
 The following puzzles each decompose some part of the flawed program in order to give the player a chance to repair it. 
-For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure (see Figure~\ref{fig:decomp}). 
+For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure, as shown Figure~\ref{fig:decomp}. 
 This part of \gametitle{} needs to be expanded and refined before it can be evaluated, but the larger question certainly merits further attention. 
 
 \begin{figure*}[th!]
