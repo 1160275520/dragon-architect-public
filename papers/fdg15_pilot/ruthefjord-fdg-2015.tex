@@ -231,30 +231,34 @@ Possible problems to explore include use of recussion and looping, eager versus 
 \subsection{Structure of Learning Environment}
 
 \subsubsection{Guided Discovery Learning}
-%Many open-ended creative prgramming tools (such as Scratch) are influenced by \emph{constructionism}, which is a learning theory that proposes students learn effectively by constructing things of social relevance in a social context \cite{kafai06constructionism}.
-%One component of constructionism is discovery learning that suggest students learn best by doing and building.
-%Others have argued that games are an ideal environment for constructionist teaching \TODO{cite}.
-%However, evidence suggests that a purely self-directed learning approach is inadquate for effective learning \TODO{cite}.
-%Evidence suggests that pure self-directed discovery learning is not effective in complex domains unless students have prior background knowlege, so these systems often are paired with cirrucla to guide students in use of the system.
-%With \gametitle{}, we aim to investigate whether and how structure such as direct guidance and scaffolding can be included in the system itself while preserving the positive aspects of open-ended, social, creative tools.
-\TODO{define discovery learning.}
-\TODO{define direct guidance.}
-\TODO{establish support for guided discovery.}
-%Education research indicates that guided discovery, the blending of exploration and direct guidance, can benefit learning when compared to using just one or the other. 
-More research is needed on guided discovery learning in games. 
 
-Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g., Minecraft, SimCity~\TODO{cite}), and others provide a linear sequence of levels designed to teach the player the relevant information (e.g., Portal~\TODO{cite}). 
-In terms of learning theory, the former have a lot in common with pure discovery learning (ignoring potential external sources of information such as wikis or friends), while the latter rely on direct guidance. 
+Teaching complex skills such as computational thinking or programming though interactive software is very challenging, and any effort in teaching such skills through a game leads to research questions about which structures are most effective.
+Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g., Minecraft, SimCity~\TODO{cite}), while others provide a linear sequence of levels designed to teach the player the relevant information (e.g., Portal~\TODO{cite}). 
+
+In terms of learning theory, the former is known as \emph{discovery learning}, in which learning takes place through exploration with the object of study.
+A major advantage it can have over a traditional teaching approach is motivational: directly exploring and interacting with something can be substantially more engaging than hearing someone talk about it.
+Furthermore, this allows learning domains to be grounded in an application of interest to the learner, creating meaning and intrinsic interest in developing the desired skills.
+While the pure form of this approach can work for simple learning domains, complex ones such as programming or computational thinking cannot be taught through exploration alone unless players have sufficient background knowlege~\TODO{cite}.
+
+In practice, systems use \emph{guided discovery}, in which discovery learning is paired with some kind of external direct guidance.  For example, in games, players might consult wikis or ask friends to help them develop high-level skills in games.
+This approach of combining settings for discovery learning with guidance is a central part of \emph{constructionism}, a learning theory that proposes students learn effectively by constructing things of social relevance in a social context~\cite{kafai06constructionism}.
+Scratch~\cite{maloney2010scratch}, which enables users to create interactive digital media projects such as stories and games, is among the most popular of systems designed with constructionist principles.
+Scratch's open-ended creative environment allows player to persue meaningful creative projects, giving them motivation to learn the programming skills required to do so.
+However, the tool in isolation cannot effectively teach these skills.
+In practice, the external guidance must come from an instructor, mentor, or social group.
+
+On the other hand, more structured systems can do a better job at teaching skills by limiting player freedom.
+Linear games such as Portal introduce concepts in a deliberate ordering and pacing to allow players to develop skills.
+Methods of direct instruction also fall into this category, such as standard classroom lectures.
+Online systems such as Code.org pair linear sequences of puzzles with videos to explain and teach the concepts.
+
 Other games teach players by doing something in between. 
 Games in the Zelda series~\TODO{cite} contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
 Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tutorials the player may choose to go through before beginning more open-ended play.
-The variety of approaches games take in teaching players leads to interesting questions about how different methods affect what players do in a game, or, in the case of educational software, how they learn. 
-Furthermore, for complex topics such as computer science, the concepts a game needs to teach its players are likely to be more difficult to discover through exploration and require more sophisitcation to explain through direct guidance. Thus, more research is needed to refine and evaluate these techniques. 
 
-In the case of \gametitle{}, we have combined structured puzzle levels and an open, unstructured sandbox. 
-The puzzles, by leading the player to demonstrate a particular concept, act as a form of direct guidance. 
-A process of discovery can then take place in the sandbox where the player is free to experiment with the ideas introduced in the puzzles. 
-Our playtesting has shown this to be a promising approach in getting players to understand many of the concepts currently in our game. 
+We hope to make \gametitle{} usable without a required instructor, which leads to research questions about whether benefits from these two approaches can be combined.
+To that end, we have been exploring combining an open sandbox with voluntary small sequences of puzzles that directly guide players.
+Our playtesting has shown this to be a promising approach, though this encounters several design challenges, detailed in Section~\ref{sec:direct_guidance}.
 
 \subsubsection{Social Community}
 Another primary aspect of constructionism is that the learning process should occur in a social envionrment in which students are building things that matter to them and the social group.
@@ -292,6 +296,8 @@ Aside from the fact that the existence of these two modes is difficult to commun
 Ideally, the player would receive clear indication that effects executed in workshop mode cannot be depended upon.
 
 \subsection{Puzzles as Guidance}
+\label{sec:direct_guidance}
+
 Using puzzles as the guidance in \gametitle{}'s guided discovery is central to the design of the game. 
 The puzzles must strike a difficult balance: get the player to the sandbox where they can experiment with their new tools as quickly as possible and support the player in the gradual acquisition of new knowledge and skills. 
 Puzzle sequences need to be relatively short to avoid provoking frustration from players who are not engaged by solving puzzles. 
