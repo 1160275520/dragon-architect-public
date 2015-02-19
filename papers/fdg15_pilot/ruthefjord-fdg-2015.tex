@@ -205,7 +205,7 @@ This part of \gametitle{} needs to be expanded and refined before it can be eval
 \begin{figure*}[th!]
   \centering
   \includegraphics[width=\textwidth]{images/decomp-code}
-  \caption{The code required by a progression of levels demonstrating the strategy of divide and conquer. In A, the player uses a single code block to build an entire castle. Then, in B, the player is given an empty FixedCastle procedure, which they must fill with the appropriate number of wall and tower blocks. Finally, in C, the player is given a completed FixedCastle procedure and must fill in the FixedTower procedure as shown.}
+  \caption{The code required by a progression of levels demonstrating the strategy of divide and conquer. In A, the player uses a single code block to build an entire castle. Then, in B, the player is given an empty FixedCastle procedure, which they must fill with the appropriate number of wall and tower blocks. Finally, in C, the player is given a completed FixedCastle procedure and must fill in the FixedTower procedure as shown. The final completed castle is shown on the right.}
   \label{fig:decomp}
 \end{figure*}
 
@@ -261,10 +261,12 @@ Research using an online programming environment called MOOSE Crossing~\cite{bru
 This work is supported by research in behavioral and social sciences that indicates sharing and collaboration can improve learning~\cite{bransford2000people}. 
 Given these promising results, it is unfortunate the specific contributions of social features to an online programming environment (and how to design those features) remain largely unstudied.
 
+Minecraft social stuff
+
 We have incorporated features of this kind into the design of \gametitle{} modeled on the way Scratch lets its users share projects. 
 A player can choose to share anything they build in the sandbox, sending it to a gallery containing everyone's shared creations.
 Browsing the gallery, players can view, and get the code for, any uploaded construction.
-\TODO{we track attribution}
+\TODO{intent for shared world, ran into design issues, see section~\ref{}}
 
 \section{Design Issues}
 The design of \gametitle{} has been informed by our research goals, and by existing software such as Minecraft and Scratch. 
@@ -352,25 +354,35 @@ Within that taxonomy, \gametitle{} fist best as a teaching system that targets \
 \subsubsection{Open-Ended Creative Systems}
 These early tools and some popular tools today are structure as open-ended creative environments.
 LOGO allowed players to create drawings by controlling a robot with a virtual pen.
-A popular modern example is Scratch~\cite{maloney2010scratch}, a visual programming environment focused on empowering its users to create interactive digital media such as stories and games.
-Scratch has been successful in building vibrant community around its open-ended, creative, social environment with millions of projects shared via its website~\cite{scratch}.
+While Logo was text-based, many modern examples use visual programming languages. 
+Scratch~\cite{maloney2010scratch}, which enables users to create interactive digital media projects such as stories and games, is among the most popular.
+Also 
+AgentSheets~\cite{repenning2000agentsheets} lets users create simulations and games by programming agents on a grid, conditioning behavior on the contents of adjacent grid cells. 
+
  
-\TODO{cite and talk about AgentSheets~\cite{repenning2000agentsheets}, Kodu~\cite{maclaurin2009kodu}, Alice~\cite{cooper2000alice}}
+\TODO{cite and talk about, Kodu~\cite{maclaurin2009kodu}, Alice~\cite{cooper2000alice}}
+
+There are also educational programming games that have their players tackle open-ended challenges.
+\emph{CodeSpells}~\cite{esper2013codespells} is a game in which players write Java code to cast spells that control their environment. 
+In \emph{RoboBuilder}~\cite{weintrop2012robobuilder}, players program robots to battle against enemies.
 
 \subsubsection{Structured Learning Systems}
 Another type of programming educational system is instead arranged as a linear sequence of problems or puzzles.
 Step-by-step lessons are available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, in which users program in a popular industry programming language such as Javascript or Java, sometimes with accompanying video.
 Code.org~\cite{codedotorg} is a sequence of videos and puzzles where users control characters from popular games like Rovio's \emph{Angry Birds} or movies like Disney's \emph{Frozen} with drag-and-drop programming (like Scratch).
 
-Several games also fall into this category.
+Some games also fall into this category.
 The game \emph{LightBot}~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles.
 The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code\footnote{\url{http://lightbot.com/hocflash.html}}.
-In \emph{CodeSpells}~\cite{esper2013codespells}, players write Java code to cast spells that control their environment in an adventure game.
-In \emph{RoboBuilder}~\cite{weintrop2012robobuilder}, players program robots to battle against enemies.
 \emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-authored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
 We wish to combine direct lessons and open-ended structure into a single system, and explore the tradeoffs and whether we can get advangates from both types of systems.
 
-\TODO{should also mention Programming By Design~\cite{felleisen2001design} as curricula-oriented project}
+Program By Design~\cite{programbydesign} is a curricula-oriented project that shares several principles with our approach, including gradually expanding the programming language. 
+Following the course laid out in the textbook~\cite{felleisen2001design}, a student uses a series of subsets of the programming language Racket.
+Like most computer science curricula this gradually exposes the student to more programming concepts over time, but also prevents beginning students from dealing with unexplained language constructs or error messages depending on knowledge the student has not learned.
+Adapting this curriculum, a related project called Bootstrap~\cite{bootstrap} uses videogame programming to teach algebra and geometry to middle school students.
+
+
 
 \subsection{Related Learning Technologies}
 
