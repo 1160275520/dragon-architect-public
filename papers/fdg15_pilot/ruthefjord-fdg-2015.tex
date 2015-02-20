@@ -232,7 +232,6 @@ Possible problems to explore include use of recussion and looping, eager versus 
 
 \subsubsection{Guided Discovery Learning}
 
-
 Teaching complex skills such as computational thinking or programming though interactive software is very challenging, and any effort in teaching such skills through a game leads to research questions about which structures are most effective.
 Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g., Minecraft, SimCity~\TODO{cite}), while others provide a linear sequence of levels designed to teach the player the relevant information (e.g., Portal~\TODO{cite}). 
 
@@ -241,6 +240,7 @@ A major advantage it can have over a traditional teaching approach is motivation
 Furthermore, this allows learning domains to be grounded in an application of interest to the learner, creating meaning and intrinsic interest in developing the desired skills.
 While the pure form of this approach can work for simple learning domains, complex ones such as programming or computational thinking cannot be taught through exploration alone unless players have sufficient background knowlege~\TODO{cite}.
 
+\TODO{cite the discovery-learning-sucks-wihtout-guidance paper}
 In practice, systems use \emph{guided discovery}, in which discovery learning is paired with some kind of external direct guidance.  For example, in games, players might consult wikis or ask friends to help them develop high-level skills in games.
 This approach of combining settings for discovery learning with guidance is a central part of \emph{constructionism}, a learning theory that proposes students learn effectively by constructing things of social relevance in a social context~\cite{kafai06constructionism}.
 Scratch~\cite{maloney2010scratch}, which enables users to create interactive digital media projects such as stories and games, is among the most popular of systems designed with constructionist principles.
@@ -260,27 +260,35 @@ Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tut
 We hope to make \gametitle{} usable without a required instructor, which leads to research questions about whether benefits from these two approaches can be combined.
 To that end, we have been exploring combining an open sandbox with voluntary small sequences of puzzles that directly guide players.
 Our playtesting has shown this to be a promising approach, though this encounters several design challenges, detailed in Section~\ref{sec:direct_guidance}.
+The primary challenge with direct guidance in an open-ended game is providing guidance at the appropriate moment.
+Effective games provide help on-demand and just-in-time~\cite{gee2003video}.
 
 \subsubsection{Social Community}
-Another primary aspect of constructionism is that the learning process should occur in a social envionrment in which students are building things that matter to them and the social group.
-There are examples where social community has been an important part of the success of an online programming environment. 
+
+An effective technique for providing guidance and guided discovery is through social environments.
+Social communities both create motivation to learn (to impress the social group) and guidance (by geting help from the group).
 Scratch users, for example, have shared millions of projects and even formed online \emph{companies} to tackle projects together~\cite{resnick2009scratch}. 
 Research using an online programming environment called MOOSE Crossing~\cite{bruckman1997moose} found that a social context can support and motivate learning programming~\cite{bruckman2000situated}.
 This work is supported by research in behavioral and social sciences that indicates sharing and collaboration can improve learning~\cite{bransford2000people}. 
-Given these promising results, it is unfortunate the specific contributions of social features to an online programming environment (and how to design those features) remain largely unstudied.
 
-Minecraft social stuff
+Social environments are also a critical aspect of learning in many games, including non-educational games.
+The communities surrounding skill-based games (wikis, forums, conferences) help players learn effective high-level skills and strategies~\TODO{cite, someone definitely looked at this}.
+Open-world multiplyer games, notably Mincraft, have been used effectively as a virtual classroom environment~\TODO{cite}.
+Players working together in Minecraft are able to share their work, collaborate with others, and help directly guide others.
 
-We have incorporated features of this kind into the design of \gametitle{} modeled on the way Scratch lets its users share projects. 
+We have so far incorporated the project-sharing features of Scratch.
 A player can choose to share anything they build in the sandbox, sending it to a gallery containing everyone's shared creations.
 Browsing the gallery, players can view, and get the code for, any uploaded construction.
-\TODO{intent for shared world, ran into design issues, see section~\ref{}}
+However, a much more desirable goal is support the close collaboration that environments like Minecraft support.
+This encounters several design challenges, which we decribe in Section~\ref{sec:multiplayer}.
 
 \section{Design Issues}
 The design of \gametitle{} has been informed by our research goals, and by existing software such as Minecraft and Scratch. 
 In this section we discuss two cases where these objectives presented unusual challenges. 
 
 \subsection{Consistency vs. Experimentation}
+\label{sec:multiplayer}
+
 Part of Minecraft's popularity is the collaborative multiplayer environment it offers. \TODO{citation, or argument that this is true}
 On a Minecraft server, players can explore and shape the world together. \TODO{citation?} 
 We want \gametitle{} to be able to provide the same kind of experience, which means giving the world the players inhabit consistency. 
