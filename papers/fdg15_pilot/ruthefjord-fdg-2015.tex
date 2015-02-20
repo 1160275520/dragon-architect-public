@@ -231,6 +231,7 @@ Possible problems to explore include use of recussion and looping, eager versus 
 \subsection{Structure of Learning Environment}
 
 \subsubsection{Guided Discovery Learning}
+\label{sec:guided_discovery_theory}
 
 Teaching complex skills such as computational thinking or programming though interactive software is very challenging, and any effort in teaching such skills through a game leads to research questions about which structures are most effective.
 Some games provide a sandbox where players discover the properties of the environment through largely unguided exploration (e.g., Minecraft, SimCity~\TODO{cite}), while others provide a linear sequence of levels designed to teach the player the relevant information (e.g., Portal~\TODO{cite}). 
@@ -260,8 +261,8 @@ Strategy games such as Crusader Kings II~\TODO{cite} offer a set of explicit tut
 With \gametitle{}, we are exploring how to teach complex skills without an external curriculum and trained instructor, which leads to research questions about whether benefits from these two approaches can be combined.
 To that end, we have been exploring combining an open sandbox with voluntary small sequences of puzzles that directly guide players.
 Our playtesting has shown this to be a promising approach, though this encounters several design challenges, detailed in Section~\ref{sec:direct_guidance}.
-The primary challenge with direct guidance in an open-ended game is providing guidance at the appropriate moment.
-Effective games provide help on-demand and just-in-time~\cite{gee2003video}.
+The primary challenge with direct guidance in an open-ended game is providing guidance at the appropriate moment;
+effective games provide help on-demand and just-in-time~\cite{gee2003video}.
 
 \subsubsection{Social Environments}
 \label{sec:social}
@@ -285,7 +286,7 @@ This encounters several design challenges, which we decribe in Section~\ref{sec:
 
 \section{Design Issues}
 \gametitle{}'s design and research goals have led to several tensions and difficulties.
-In this section we discuss cases where the gaols have presented unusual challenges.
+In this section we discuss cases where the gaols have presented unusual challenges, and relevant results from pilot tests.
 
 \subsection{Consistency vs. Experimentation}
 \label{sec:multiplayer}
@@ -313,49 +314,43 @@ The player can freely toggle between these two modes, testing out each program b
 In practice, players have a difficult time understanding the nuanced difference between the two modes, despite dramatic visual cues.
 The feature is empirically both difficult to discover and difficult to understand even once explained.
 
-\subsection{Puzzles as Guidance}
+\subsection{Guided Learning in a Sandbox}
 \label{sec:direct_guidance}
 
-Using puzzles as the guidance in \gametitle{}'s guided discovery is central to the design of the game. 
-The puzzles must strike a difficult balance: get the player to the sandbox where they can experiment with their new tools as quickly as possible and support the player in the gradual acquisition of new knowledge and skills. 
-Puzzle sequences need to be relatively short to avoid provoking frustration from players who are not engaged by solving puzzles. 
+Section~\ref{sec:guided_discovery_theory} introduced \emph{guided discovery learning} and the  aproaches games and educational systems use to approach teaching.
+In \gametitle{}, our difficult design goal is to center the experience in an open sandbox (like, e.g., Minecraft) but provide on-demand, just-in-time direct guidance for new tools and concepts in the form of small puzzle segments.
 
-\TODO{this is a super rough idea dump}
+The ideal we are trying to emuluate, like much educational software, is a personal human tutor.
+An effective tutor can allow the player to explore in the sandbox, and, once the player expresses the need for a tool or feature they do not yet possess, the tutor can guide them to the appropriate learning material.
+Knowing when to intervene and what the player is trying to do is a challenge.
+Intelligent tutoring systems accomplish this by tracking player knowledge and skill, which requires both a model of all conceptual knowledge and a rigid structure of problems with known solution stategies.
+As we have neither of these, this is not an option.
 
-The ideal situation is an open sandbox where just-in-time guidance is given at the most appropriate minute, as an effective human tutor would do.
-Intelligent tutoring systems accomplish this by modeling tracking player knowledge and skill.
-As we do not have a model for our game domain, this is not an option.
+The game must strike a difficult balance: get the player to the sandbox where they can experiment as quickly and often as possible, but support the player in the gradual acquisition of new knowledge and skills. 
 
-Our current approach is to allow the player unlimited usage of the sandbox and programming tools that they have already used.
-In order to unlock new programming tools, player must volunteer to start a new puzzle that will directly guide them in some concept.
-A list of available modules advertise what techniques and tools players can learn from puzzles.
+We do not wish to overwhelm new players with the full suite of features and tools upon start, so they are locked behind puzzles until the player has a chance to learn about them in a guided, isolated setting.
+Puzzle sequences need to be relatively short to minimize frustration and boredom; they should give players the knowledge they need and allow them to return to the sandbox.
+Once unlocked, players have free use of tools in the sandbox.
+A list of available learning modules advertise what techniques and tools players can gain from puzzles.
+This is in tension with the desire to quickly allow player access to the tools they need without jumping through hoops and challenges. Systems like Scratch are fully open from the start, and expect an expert to guide newcomers through the system.
 
-In tests, players have gotten \emph{stuck} at the sandbox, unsure of what they should do next, or trying to come up with an idea of what to build. 
-We need to more clearly communicate the available options, and provide players ideas to get started with and to use as \emph{jumping off points}.
-Other players can also be a source of guidance and ideas, so the social features will play an important role in this as well.
+Even if committed to the design of gated introduction of featuers, there are difficult questions about what should be unlockable when.
+The total set of features and stategies avliable are quite large, and, if given freedom to learn \emph{any} of them immediately, may overwhelm players.
+Content is instead currently arranged into a graph, where prequisite concepts must be unlocked before access to more complex ones is granted.
+This, however, makes it difficult to players to determine if a feature is completely absent or if they simply have not unlocked it yet.
 
-However, this approach has several shortcomings.
-Emperically in play tests, players have expressed that they wish certain features were available, such as moving the dragon up and down.
-In fact, such features were advertised explicitly in the list of modules, but players did not think to check the list, even if they had been there previously.
-But even assuming we could get players in the habit of consulting this list, the items they want at the moment was not be obviously on the list.
-Perhaps what they do not know how to clearly articulate what the want to do or we as designers have not chosen the best language to describe a techinque.
-Then players will not find their desired item on the list.
-Human tutors, on the other hand, could help with this translation.
+Empirically, players initially struggle with the structure but enjoy it once it is explained to them.
+Very few players discover the puzzles without external guidance, a clear failure point if we wish the system to function without an instructor.
+In playtests, players will often ask if they game supports a feature (e.g., moving up and down, removing blocks), when such a feature is directly advertised in the list of available modules.
+After being informed of this a few players, players began to understand the basic loop and would check for other skills they could learn through puzzles.
+Other players can also be a source of guidance and ideas, so the social features will play an important role in this process.
+For example, a friend in Minecraft can jumpstart a new player by giving them tools and showing them around.
+Perhaps in our game, veteran players can unlock tools for new players to let them bypass the built-in gating when mentoring them.
 
-Another problem with this approach is the difficulty in choosing an appropriate sequence of puzzles.
-One goal is that players can learn whatever strategy than need to when they need it, with no articifial restrictions gating content.
-A contradictory goal is that players are not overwhelmed with concepts at the beginning, as they are in Scratch~\cite{resnick2009scratch} and other fully open tools.
-This goal suggest we impose a partial ordering on content and introduce concepts in a deliberate order.
-However, with such gating, players may think a feature doesn't exist when, in reality, it's hidden behind several prerequisite concepts.
-
-A potential approach to balance these goals is to expose the entire list of strategies at the start, but still require players to go through the prerequisits.
-That is, a player can identify a learning module the wish to reach, and the game will walk them through all the basic skills that they need to get there \TODO{some citation on this style of self-directed learning must exist}.
-However, with the entire list was available at the start, seaching for concepts and strategies becomes a more difficult task.
-
-We have also noted that building structures in the sandbox is not necessarily the activity of choice for every player. 
-Some choose to \emph{doodle} in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
+We have also found that creating in the sandbox is not necessarily the activity of choice for every player. 
+Some choose to doodle in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
 Others exclusively seek out the game's puzzles, more interesting in solving those than working in the sandbox.
-We believe the freedom a player has to choose what activity interests them most, and to freely switch between them, allows \gametitle{} to engage a wider range of players.
+Theoretically, this game structure should allow \gametitle{} to appeal to players with either interests, though it currently requires both parts.
 
 \subsection{Mental Model Problems}
 
