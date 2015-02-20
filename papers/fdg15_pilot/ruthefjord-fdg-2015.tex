@@ -115,7 +115,7 @@ Our contributions are as follows: we survey research on teaching computational t
 \begin{figure*}[t!]
   \centering
   \includegraphics[width=\textwidth]{images/overall-example}
-  \caption{The player assembles code for the dragon on the left side, and the dragon and world it inhabits are visualized on the right side. Only a few different code blocks are available to the player initially.}
+  \caption{The player assembles code to control the dragon on the left side, and the dragon and world it inhabits are visualized on the right side. Only a few different code blocks are available to the player initially, and more are unlocked through completing guided puzzles.}
   \label{fig:overall}
 \end{figure*}
 
@@ -135,7 +135,7 @@ The game begins with puzzles that introduce the idea of assembling and running c
 After that, the player can experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available, switching between sandbox and puzzles at any time. 
 In this way, the language the player uses to write instructions for the dragon gradually expands as the player advances.
 
-The popularity and broad appeal of \emph{Minecraft}~\cite{minecraft} motivated our use of a 3D grid world in which the player's programs could place cubes.
+The popularity and uniquely broad appeal of \emph{Minecraft}~\cite{minecraft} motivated our use of a 3D grid world in which the player's programs could place cubes.
 This choice also makes it natural to extend our game in the future with exploration, more complex interaction with the environment, or players working together in a shared world.
 Our playtests with \gametitle{} have shown the premise of programming a dragon in a \emph{Minecraft}-like world appeals to younger players of all genders.
 Common sandbox activities have included making the dragon travel very long distances, building big and impressive towers, and spelling one's name out of cubes.
@@ -143,7 +143,7 @@ Common sandbox activities have included making the dragon travel very long dista
 \begin{figure}[htb]
   \centering
   \includegraphics[width=\columnwidth]{images/toolbox-wide}
-  \caption{The programming elements available in \gametitle{}.}
+  \caption{The programming elements available in \gametitle{}, which include moving the dragon, placing blocks, a repeat construct, and procedure definitions.}
   \label{fig:toolbox}
 \end{figure}
 
@@ -152,7 +152,7 @@ Common sandbox activities have included making the dragon travel very long dista
 \label{sec:research}
 
 Our primary goal for \gametitle{} is to investigate questions in computer science education and game-based learning. 
-Specially, we are interested in exploring how to teach computational thinking skills and problem-solving strategies, and we are interested in exploring which programming languages best support novices in learning these skills. 
+Specifically, we are interested in exploring how to teach computational thinking skills and problem-solving strategies, and we are interested in exploring which programming languages best support novices in learning these skills. 
 This naturally leads to research questions on how an effective educational game should be structured.
 Open-ended games and systems typically perform poorly at teaching complex concepts without instructors or other outside help, but linear, direct-guidance based games and systems don't offer the engaging creative and social experiences that can be found in more open-ended settings.
 In this section, we describe these research problems in detail and design decisions informed by these problems.
@@ -174,7 +174,8 @@ As the player sets more sophisticated goals, modularity becomes important (e.g.,
 
 % how can we teach it directly?
 As we cannot expect players to learn such complex skills simply by playing in an environment that requires them~\cite{mayer2004should}, we must address how to effectively directly teach computational thinking skills.
-One such skill is a core component of computational thinking: the identification and application of problem-solving strategies such as divide and conquer.
+One such skill is the identification and application of problem-solving strategies, which is a core component of computational thinking.
+One such strategy is \emph{divide and conquer}.
 A great deal of recent education research suggests that ``curricula can model such strategies for students'' and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can ``enable students to learn to use these strategies independently''~\cite{report2010computational}.
 Mayer and Wittrock call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}~\cite{mayer1996handbook}.
 The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy.
