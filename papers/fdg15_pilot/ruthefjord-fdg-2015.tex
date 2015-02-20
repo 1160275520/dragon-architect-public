@@ -263,7 +263,8 @@ Our playtesting has shown this to be a promising approach, though this encounter
 The primary challenge with direct guidance in an open-ended game is providing guidance at the appropriate moment.
 Effective games provide help on-demand and just-in-time~\cite{gee2003video}.
 
-\subsubsection{Social Community}
+\subsubsection{Social Environments}
+\label{sec:social}
 
 An effective technique for providing guidance and guided discovery is through social environments.
 Social communities both create motivation to learn (to impress the social group) and guidance (by geting help from the group).
@@ -283,26 +284,34 @@ However, a much more desirable goal is support close collaboration like pair pro
 This encounters several design challenges, which we decribe in Section~\ref{sec:multiplayer}.
 
 \section{Design Issues}
-The design of \gametitle{} has been informed by our research goals, and by existing software such as Minecraft and Scratch. 
-In this section we discuss two cases where these objectives presented unusual challenges. 
+\gametitle{}'s design and research goals have led to several tensions and difficulties.
+In this section we discuss cases where the gaols have presented unusual challenges.
 
 \subsection{Consistency vs. Experimentation}
 \label{sec:multiplayer}
 
-Part of Minecraft's popularity is the collaborative multiplayer environment it offers. \TODO{citation, or argument that this is true}
-On a Minecraft server, players can explore and shape the world together. \TODO{citation?} 
-We want \gametitle{} to be able to provide the same kind of experience, which means giving the world the players inhabit consistency. 
-We envision players visiting and admiring each other's constructions or working together on the project. 
-While this is relatively straightforward in Minecraft (the whole world shares the same real-time simulation and players' actions are fine-grained with permanent effects), it is complicated in our game by the fact that player input is code. 
-Running a single program can have large effects only reversible by tedious effort, so it's important for players to be able to experiment with and tweak their code before committing to it. 
-On the other hand, if a player can undo the effects of their programs at will, interactions with existing creations become unpredictable and inconsistent. 
+As discussed in Section~\ref{sec:social}, social environments are an important part of guiding discovery learning and a major goal of the project.
+The goal is to create a shared virutal environment in which players can assist each other and collaborate.
+The works naturually in multiplayer games such as Minecraft, where players on the same game server can explore and shape a persistent world together.
+This shared world has several benefits.
+It is easy for players to share their creations with other but at the same time work relatively independently.
+Changes to the world are localized around the player, so one player does not interfere with those far away.
+At the same time, working closely together is as simple as walking to the same place in the world, where players can assist each other.
 
-We have so far only partly resolved this tension in \gametitle{}. 
+Such interactions could be invaluable for programming, supporting activiites such as pair programming and mentoring of new concepts.
+However, the persistent world model conflicts with other design considerations.
+It is very easy to accidentally (or intentially) write programs that have non-localized effects, interfering with others in the shared world.
+Programming often relies on rereunning the same program over and over to iterate and find bugs, but this requires resetting the world state to a consistent start state.
+While such a reset or undo feature is an option, if a player writes code the places blocks all over another player's work, how should the game reset state in a consistent and understandable manner?
+This tension is even present without the multiplayer setting.
+Playtesters that wanted to construct complex objects, such as a town of buildings, often wanted to do so piecemeal. They write separate programs to build each part without wanting to reset the world to a start state.
+
+Our current approach does not sufficiently resolve this tension, and only addresses the single-player setting.
 The sandbox makes the effects of programs permanent by default, including any cubes placed and the dragon's position.
 To allow for experimentation, the player has the option to switch to \emph{workshop mode}, which resets the world to its previous state each time the player runs a new program. 
 The player can freely toggle between these two modes, testing out each program before committing to its results. 
-Aside from the fact that the existence of these two modes is difficult to communicate to the player, and that the distinction between them can be confusing, this solution doesn't resolve how to model or visualize the modes in a multiplayer setting. 
-Ideally, the player would receive clear indication that effects executed in workshop mode cannot be depended upon.
+In practice, players have a difficult time understanding the nuanced difference between the two modes, despite dramatic visual cues.
+The feature is empirically both difficult to discover and difficult to understand even once explained.
 
 \subsection{Puzzles as Guidance}
 \label{sec:direct_guidance}
