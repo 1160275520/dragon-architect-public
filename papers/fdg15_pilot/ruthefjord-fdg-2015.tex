@@ -52,7 +52,7 @@
 
 \newcommand{\TODO}[1]{{\color{red} TODO: #1}}
 %\newcommand{\gametitle}{{\color{RoyalPurple} Dragon Architect}}
-\newcommand{\gametitle}{{Dragon Architect}}
+\newcommand{\gametitle}{{\emph{Dragon Architect}}}
 
 \toappear{Submitted for review.}
 
@@ -119,12 +119,11 @@ In this paper, we present \gametitle{}, an educational game designed to investig
   \label{fig:overall}
 \end{figure*}
 
-\section{\gametitle{}}
-\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title} 
-We first describe basic information about the game to give context to discussion of the research questions and challenges.
-We have been developing \gametitle{} since spring 2014. 
-It can be played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (see Figure~\ref{fig:overall}). 
-The visualization uses the \emph{Unity} game engine~\cite{unity} and the drag-and-drop programming UI is provided by the Blockly library~\cite{blockly}.
+\section{Game Description}
+We first describe basic information about \gametitle{} to give context to discussion of the research questions and challenges.
+The game, which has been in development since spring 2014, can be played in a web browser.
+Similar to other programming environments, the user interface is separated into two parts: an area where the player can assemble their code and a visualization of the 3D environment their code affects (see Figure~\ref{fig:overall}). 
+The game uses the \emph{Unity} game engine~\cite{unity} for the 3D environment and the Blockly drag-and-drop programming library~\cite{blockly} for inputing code.
 
 The visual language players use is a set of \emph{code blocks} that snap together to form programs. 
 The player can move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
@@ -132,7 +131,7 @@ In addition to blocks that control the dragon directly, players can also make us
 Given that syntax can be an obstacle for those new to programming~\cite{stefik2013syntax}, we chose to use a visual language as there is evidence visual languages are helpful to novices~\cite{whitley1997visual}.
 
 As players progress through the game, they alternate between short sequences of puzzles with a specific goal and a specific set of available code blocks and an open-ended sandbox. 
-The game begins with puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon in 2D and putting down cubes.
+The game begins with puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon and placing cubes.
 After that, the player can experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available, switching between sandbox and puzzles at any time. 
 In this way, the language the player uses to write instructions for the dragon gradually expands as the player advances.
 
