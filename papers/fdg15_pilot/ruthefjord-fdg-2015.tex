@@ -101,8 +101,8 @@
 \section{Introduction}
 The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. 
 Many of these projects, such as Scratch~\cite{scratch} and Code.org's Hour of Code~\cite{codedotorg}, are educational programming environments that expose users to basic programming concepts. 
-Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} discussed their design~\cite{powers2006tools}.
-Comparative studies of effective ways to present computer science concepts in these systems, however, have been largely absent. 
+Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis, backlund2013educational}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} discussed their design~\cite{powers2006tools}.
+Comparative studies of effective ways to present computer science concepts in these systems, however, have been largely absent. A meta-analysis by Ke~\cite{ke2009qualitative} found that existing empirical research is fragmented and called for a more systematic approach.
 
 As the expansion of computer science education, especially for primary and secondary-school students, gathers steam, it would be valuable to have concrete data to guide the development of the educational systems involved. 
 This includes the structure of the systems themselves in addition to the curricula and pedagogy they employ. 
@@ -279,7 +279,7 @@ Players working together in Minecraft are able to share their work, collaborate 
 We have so far incorporated the project-sharing features of Scratch.
 A player can choose to share anything they build in the sandbox, sending it to a gallery containing everyone's shared creations.
 Browsing the gallery, players can view, and get the code for, any uploaded construction.
-However, a much more desirable goal is support the close collaboration that environments like Minecraft support.
+However, a much more desirable goal is support close collaboration like pair programming or a Minecraft-like shared world.
 This encounters several design challenges, which we decribe in Section~\ref{sec:multiplayer}.
 
 \section{Design Issues}
@@ -367,18 +367,18 @@ This leads to mistakes such as defining a procedure multiple times in order to u
 
 The development of tools designed to teach novices programming dates back to sytems such as Pappert's LOGO~\cite{papert80mindstorms}.
 Kelleher and Pausch review programming environments for novices and describe a taxonomy of these systems~\cite{kelleher2005lowering}.
-Within that taxonomy, \gametitle{} fist best as a teaching system that targets \emph{structuring programs} and aims to provide learning support both through \emph{social learning} and \emph{providing a motivating context}.
+Within that taxonomy, \gametitle{} fist best as a teaching system that targets \emph{structuring programs} and aims to provide learning support both through \emph{social learning} and \emph{providing a motivating context}. 
+In this section, we summarize the current space of educational programming tools. 
+We separate them into two broad categories according to their structure: open-ended, largely unstructured systems that allow users to creatively exlpore and systems that present users with a linear sequence of problems or puzzles to solve. 
 
 \subsubsection{Open-Ended Creative Systems}
-These early tools and some popular tools today are structure as open-ended creative environments.
+Both early tools like LOGO and recent tools like Scratch have an open-ended and creative approach.
 LOGO allowed players to create drawings by controlling a robot with a virtual pen.
 While Logo was text-based, many modern examples use visual programming languages. 
-Scratch~\cite{maloney2010scratch}, which enables users to create interactive digital media projects such as stories and games, is among the most popular.
-Also 
-AgentSheets~\cite{repenning2000agentsheets} lets users create simulations and games by programming agents on a grid, conditioning behavior on the contents of adjacent grid cells. 
-
- 
-\TODO{cite and talk about, Kodu~\cite{maclaurin2009kodu}, Alice~\cite{cooper2000alice}}
+Alice~\cite{cooper2000alice}, like Scratch, focuses on storytelling, though it does so in a 3D animation context with more fine-grained control than Scratch offers.
+Other systems such as AgentSheets~\cite{repenning2000agentsheets} and Kodu~\cite{kodu} let users create simulations and games.
+AgentSheets models its world as agents on a grid, and players can program the behavior of each type of agent, conditioning behavior on the contents of adjacent grid cells. 
+Designed for the Xbox as well as PC, Kodu users program the behavior of each entity by setting up a series of event triggers and corresponding actions. The large number of available triggers and actions are accessed through a series of menus. 
 
 There are also educational programming games that have their players tackle open-ended challenges.
 \emph{CodeSpells}~\cite{esper2013codespells} is a game in which players write Java code to cast spells that control their environment. 
@@ -400,8 +400,6 @@ Following the course laid out in the textbook~\cite{felleisen2001design}, a stud
 Like most computer science curricula this gradually exposes the student to more programming concepts over time, but also prevents beginning students from dealing with unexplained language constructs or error messages depending on knowledge the student has not learned.
 Adapting this curriculum, a related project called Bootstrap~\cite{bootstrap} uses videogame programming to teach algebra and geometry to middle school students.
 
-
-
 \subsection{Related Learning Technologies}
 
 \subsubsection{Intelligent Tutoring Systems}
@@ -421,15 +419,16 @@ Even with puzzle sections, creating the set of knowledge components is infeasibl
 Games have been steadily gaining attention as educational tools. 
 Gee~\cite{gee2003video} discusses games' potential for learning in a variety of subjects. 
 He also describes ways \emph{good} games educate their players, including operating at the edge of a player's skill and allowing players to be producers as well as consumers. 
+A meta-analysis of research on games as educational tools \cite{ke2009qualitative} found games can be effective in some educational settings, but require appropriate instructional support.
+Such support could be external (provided by teacher facilitation, good team dynamics, or structured cooperative learning/playing) or internal (provided by debriefing, flexible scoring, progression of complexity, or other methods).
 
-Because of the popularity of Minecraft and its ability to engage children, several people have tried to take advantage of this in educational settings.
+Games can be educational tools by design, or be adapted to educational purposes. 
+Minecraft's popularity and its ability to engage children have prompted several efforts to use it as an educational tool.
+
 %Teachers have Here's that project the guy from FDG talked about \TODO{cite}.
 %Several people have creating programming plugins for Minecraft
 Zorn et al.\ created CodeBlocks, a plugin for Minecraft that allows players to program a robot within the game, and they found that CodeBlocks increased non-programmers' interest in programming~\cite{zorn2013minecraft}.
-We wish to draw inpsiration from the aspects that make open multiplayer games like \emph{Minecraft} appealing.
 Another avenue people have tried is to teach programming by having students create modifications and plugins for Minecraft, through mods such as ScriptCraft~\footnote{\url{http://scriptcraftjs.org/}}.
-Our game does not support mods and instead supports programming as a core mechanic.
-\TODO{this could really use some examples of MC-inspired games that aren't \emph{literally} in MC.}
 
 \section{Conclusion}
 
