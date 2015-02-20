@@ -120,7 +120,7 @@ In this paper, we present \gametitle{}, an educational game designed to investig
 \end{figure*}
 
 \section{\gametitle{}}
-%\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title} 
+\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title} 
 We first describe basic information about the game to give context to discussion of the research questions and challenges.
 We have been developing \gametitle{} since spring 2014. 
 It can be played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (see Figure~\ref{fig:overall}). 
@@ -256,8 +256,8 @@ Research using an online programming environment called MOOSE Crossing~\cite{bru
 This work is supported by research in behavioral and social sciences that indicates sharing and collaboration can improve learning~\cite{bransford2000people}. 
 
 Social environments are also a critical aspect of learning in many games, including non-educational games.
-The communities surrounding skill-based games (wikis, forums, conferences) help players learn effective high-level skills and strategies%~\TODO{cite, someone definitely looked at this}.
-Open-world multiplayer games, notably \emph{Mincraft}, have been used effectively as a virtual classroom environment%~\TODO{cite}.
+The communities surrounding skill-based games (wikis, forums, conferences) help players learn effective high-level skills and strategies~\TODO{cite, someone definitely looked at this}.
+Open-world multiplayer games, notably \emph{Mincraft}, have been used effectively as a virtual classroom environment~\TODO{cite}.
 Players working together in \emph{Minecraft} are able to share their work, collaborate with others, and help directly guide others.
 
 We have so far incorporated the project-sharing features of \emph{Scratch}.
@@ -269,32 +269,6 @@ This encounters several design challenges, which we describe in Section~\ref{sec
 \section{Design Issues}
 \gametitle{}'s design and research goals have led to several tensions and difficulties.
 In this section we discuss cases where the gaols have presented unusual challenges, and relevant results from pilot tests.
-
-\subsection{Consistency vs. Experimentation}
-\label{sec:multiplayer}
-
-As discussed in Section~\ref{sec:social}, social environments are an important part of guiding discovery learning and a major goal of our project.
-The goal is to create a shared virtual environment in which players can assist each other and collaborate.
-This works naturally in multiplayer games such as \emph{Minecraft}, where players on the same game server can explore and shape a persistent world together.
-This shared world has several benefits.
-It is easy for players to share their creations with others, but at the same time work relatively independently.
-Changes to the world are localized around the player, so one player does not interfere with those far away.
-At the same time, working closely together is as simple as walking to the same place in the world, where players can assist each other.
-
-Such interactions could be invaluable for programming, supporting activities such as pair programming and mentoring of new concepts.
-However, the persistent world model conflicts with other design considerations.
-It is very easy to accidentally (or intentionally) write programs that have non-localized effects, interfering with others in the shared world.
-Programming often relies on rerunning the same program over and over to iterate and find bugs, but this requires resetting the world state to a consistent start state.
-While such a reset or undo feature is an option, if a player writes code the places blocks all over another player's work, how should the game reset state in a consistent and understandable manner?
-This tension is even present without the multiplayer setting.
-Playtesters that wanted to construct complex objects, such as a town of buildings, often wanted to do so piecemeal. They write separate programs to build each part without wanting to reset the world to a start state.
-
-Our current approach does not sufficiently resolve this tension, and only addresses the single-player setting.
-The sandbox makes the effects of programs permanent by default, including any cubes placed and the dragon's position.
-To allow for experimentation, the player has the option to switch to \emph{workshop mode}, which resets the world to its previous state each time the player runs a new program. 
-The player can freely toggle between these two modes, testing out each program before committing to its results. 
-In practice, players have a difficult time understanding the nuanced difference between the two modes, despite dramatic visual cues.
-The feature is empirically both difficult to discover and difficult to understand even once explained.
 
 \subsection{Guided Learning in a Sandbox}
 \label{sec:direct_guidance}
@@ -335,6 +309,32 @@ We have also found that creating in the sandbox is not necessarily the activity 
 Some choose to doodle in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
 Others exclusively seek out the game's puzzles, more interesting in solving those than working in the sandbox.
 Theoretically, this game structure should allow \gametitle{} to appeal to players with either interests, though it currently requires both parts.
+
+\subsection{Collaboration in a Multiplayer\\Environment}
+\label{sec:multiplayer}
+
+As discussed in Section~\ref{sec:social}, social environments are an important part of guiding discovery learning and a major goal of our project.
+The goal is to create a shared virtual environment in which players can assist each other and collaborate.
+This works naturally in multiplayer games such as \emph{Minecraft}, where players on the same game server can explore and shape a persistent world together.
+This shared world has several benefits.
+It is easy for players to share their creations with others, but at the same time work relatively independently.
+Changes to the world are localized around the player, so one player does not interfere with those far away.
+At the same time, working closely together is as simple as walking to the same place in the world, where players can assist each other.
+
+Such interactions could be invaluable for programming, supporting activities such as pair programming and mentoring of new concepts.
+However, the persistent world model conflicts with other design considerations.
+It is very easy to accidentally (or intentionally) write programs that have non-localized effects, interfering with others in the shared world.
+Programming often relies on rerunning the same program over and over to iterate and find bugs, but this requires resetting the world state to a consistent start state.
+While such a reset or undo feature is an option, if a player writes code the places blocks all over another player's work, how should the game reset state in a consistent and understandable manner?
+This tension is even present without the multiplayer setting.
+Playtesters that wanted to construct complex objects, such as a town of buildings, often wanted to do so piecemeal. They write separate programs to build each part without wanting to reset the world to a start state.
+
+Our current approach does not sufficiently resolve this tension, and only addresses the single-player setting.
+The sandbox makes the effects of programs permanent by default, including any cubes placed and the dragon's position.
+To allow for experimentation, the player has the option to switch to \emph{workshop mode}, which resets the world to its previous state each time the player runs a new program. 
+The player can freely toggle between these two modes, testing out each program before committing to its results. 
+In practice, players have a difficult time understanding the nuanced difference between the two modes, despite dramatic visual cues.
+The feature is empirically both difficult to discover and difficult to understand even once explained.
 
 \section{Related Work}
 
@@ -417,7 +417,7 @@ Social settings play an important role in learning complex domains, but many det
 Players have so far responded positively to \gametitle{}, but several design challenges have arisen as a result of the research goals.
 Balancing an open sandbox with direct-guidance puzzles proves challenging without a teacher to help students find appropriate puzzles.
 Creating a collaborative shared environment clashes with the desire for the ability to reset and debug programs.
-%\TODO{final aspirational sentence?}
+\TODO{final aspirational sentence?}
 
 % Comment out in submission version
 %\section{Acknowledgments}
