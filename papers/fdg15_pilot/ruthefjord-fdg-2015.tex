@@ -145,6 +145,7 @@ We present a detailed discussion of the above research questions, the design dec
 
 \section{\gametitle{}}
 %\TODO{Can't use macros in section titles because the formatted gets messed up, replace once we choose a title} 
+We first describe basic information about the game to give context to discussion of the research questions and challenges.
 We have been developing \gametitle{} since spring 2014. 
 It can be played in a web browser, and similar to many other such systems, the page is separated into two parts: an area where the player can assemble their code and a visualization of the environment their code affects (see Figure~\ref{fig:overall}). 
 The visualization uses the \emph{Unity} game engine~\cite{unity} and the drag-and-drop programming UI is provided by the Blockly library~\cite{blockly}.
@@ -352,7 +353,7 @@ After being informed of this, players began to understand the basic loop and wou
 
 Other players can also be a source of guidance and ideas, so the social features will play an important role in this process.
 For example, a friend in \emph{Minecraft} can jump-start a new player by giving them tools and showing them around.
-Perhaps in our game, veteran players can unlock tools for new players to let them bypass the built-in gating when mentoring them.
+Perhaps, in our game, veteran players could unlock tools for new players to let them bypass the built-in gating when mentoring them.
 
 We have also found that creating in the sandbox is not necessarily the activity of choice for every player. 
 Some choose to doodle in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
@@ -395,7 +396,7 @@ We wish to combine direct lessons and open-ended structure into a single system,
 
 Program By Design~\cite{programbydesign} is a curricula-oriented project that shares several principles with our approach, including gradually expanding the programming language. 
 Following the course laid out in the textbook~\cite{felleisen2001design}, a student uses a series of subsets of the programming language Racket.
-Like most computer science curricula this gradually exposes the student to more programming concepts over time, but also prevents beginning students from dealing with unexplained language constructs or error messages depending on knowledge the student has not learned.
+Like most computer science curricula, Program By Design gradually exposes the student to more programming concepts over time, but also prevents beginning students from dealing with unexplained language constructs or error messages depending on knowledge the student has not learned.
 Adapting this curriculum, a related project called Bootstrap~\cite{bootstrap} uses videogame programming to teach algebra and geometry to middle school students.
 
 \subsection{Related Learning Technologies}
@@ -403,7 +404,7 @@ Adapting this curriculum, a related project called Bootstrap~\cite{bootstrap} us
 \subsubsection{Intelligent Tutoring Systems}
 Intelligent Tutoring Systems~\cite{koedinger06cognitive} have been successful applied to several teaching domains.
 These tutors are typically rigidly structured, choosing which problem the student will work on next.
-These tutors often employ results from cognitive psychology and thus are also called \emph{cognitive tutors}.
+Some system employ results from cognitive psychology and thus are also called \emph{cognitive tutors}.
 Techniques such as Knowledge Tracing~\cite{corbett1994knowledge} model student knowledge with a Bayesian framework.
 This modeling requires experts to design a set of \emph{knowledge components} that encompass the skills and abilities players use, as well as a comprehensive set of production rules students use to solve problems in the tutor.
 
@@ -411,13 +412,13 @@ In \gametitle{}, we use direct teaching, but balanced with an open environment i
 Projects such as \emph{Crystal Island} have integrated ITS technologies into educational games and found success with student knowledge modeling, goal recognition, and affect modeling~\cite{lester2013serious,rowe2010modeling}.
 Student modeling is more challenging in games than rigid tutor environments, and this problem is even larger with open-ended games.
 Creating a full set of production rules for an open-ended sandbox is not feasible since there are no direct goals.
-Even with puzzle sections, creating the set of knowledge components is infeasible for desired concepts such a meta-strategies for programming.
+Even with puzzle sections, creating the set of knowledge components is currently impractical for desired concepts such a meta-strategies for programming.
 
 \subsubsection{Game-Based Learning}
 Games have been steadily gaining attention as educational tools. 
-Gee~\cite{gee2003video} discusses games' potential for learning in a variety of subjects. 
-He also describes ways \emph{good} games educate their players, including operating at the edge of a player's skill and allowing players to be producers as well as consumers. 
-A meta-analysis of research on games as educational tools \cite{ke2009qualitative} found games can be effective in some educational settings, but require appropriate instructional support.
+Gee discusses games' potential for learning in a variety of subjects~\cite{gee2003video}.
+He also describes ways \emph{good} games educate their players, including operating at the edge of a player's skill and allowing players to be producers as well as consumers.
+A meta-analysis of research on games as educational tools found games can be effective in some educational settings, but require appropriate instructional support~\cite{ke2009qualitative}.
 Such support could be external (provided by teacher facilitation, good team dynamics, or structured cooperative learning/playing) or internal (provided by debriefing, flexible scoring, progression of complexity, or other methods).
 
 Games can be educational tools by design, or be adapted to educational purposes. 
