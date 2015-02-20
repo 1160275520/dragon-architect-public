@@ -87,7 +87,7 @@
 
 \maketitle
 \begin{abstract}
-Computer science is expanding into K12 education and several educational games and software have been created to teach programming skills. We present \gametitle{}, an educational game built to explore under-researched questions in game-based learning and computer science education. Two research questions in computer science education we discuss are the teaching of abstract computational thinking skills and the effect of programming language semantics on novices. Because we seek to teach complex skills, we discuss research questions about learning in games. Open-ended games such as \emph{Minecraft} have proven valuable in an educational settings, but open-ended systems require outside instruction to be effective. We explore how to combine these games with more structured, linear learning experiences, and the impact of social environments on learning. We discuss how these research problems have informed the design of \gametitle{}, a description the design challenges encountered regarding those questions and player feedback, and a survey of educational programming games and software.
+Computer science is expanding into K12 education and numerous educational games and systems have been created to teach programming skills. We present \gametitle{}, an educational game built to explore under-researched questions in game-based learning and computer science education. Two research questions in computer science education we discuss are the teaching of abstract computational thinking skills and the effect of programming language semantics on novices. Because we seek to teach complex skills, we discuss research questions about learning in games. Open-ended games such as \emph{Minecraft} have proven valuable in an educational settings, but open-ended systems require outside instruction to be effective. We explore how to combine these games with more structured, linear learning experiences, and the impact of social environments on learning. We discuss how these research problems have informed the design of \gametitle{}, describe the design challenges encountered regarding those questions and player feedback, and survey current educational programming games and software.
 \end{abstract}
 % TODO replace macros in abstract so we don't accidentally paste them into form
 
@@ -99,42 +99,17 @@ Computer science is expanding into K12 education and several educational games a
 \keywords{Game-based learning; computational thinking; programming education}
 
 \section{Introduction}
-The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. 
-As the expansion of computer science education, especially for primary and secondary-school students, gathers steam, we need more concrete data to guide the development of the educational systems and curricula. 
-There are a large number of games and software created to be educational environments for novice programmers,
-such as \emph{Scratch}~\cite{scratch} and Code.org's Hour of Code~\cite{codedotorg}.
-However, there are several areas of computers science education and game-based learning deserving of more research and investigation.
-
+% TODO move these citations somewhere
 %Despite the proliferation of these systems, little work has investigated how to design the structure or content of such systems. There have been surveys of both the systems themselves~\cite{guzdial2004programming, kelleher2005lowering} and of research involving these systems~\cite{salleh2013analysis, backlund2013educational}. Researchers have enumerated desirable properties for such systems~\cite{repenning2010scalable} discussed their design~\cite{powers2006tools}.
 %Comparative studies of effective ways to present computer science concepts in these systems, however, have been largely absent. A meta-analysis by Ke~\cite{ke2009qualitative} found that existing empirical research is fragmented and called for a more systematic approach.
 
-%This includes the structure of the systems themselves in addition to the curricula and pedagogy they employ. 
-%This paper focuses on a connected set of research questions that follow naturally from this need.
+The past few years have seen many efforts to broaden the reach of computer science education and make it available, and appealing, to more students in more places. As the expansion of computer science education, especially for primary and secondary-school students, gathers steam, we need more concrete data to guide the development of the educational systems and curricula. Many of the educational tools are programming environments for novice programmers, such as \emph{Scratch}~\cite{scratch} and Code.org's Hour of Code~\cite{codedotorg}. However, several areas of computers science education and game-based learning deserve of more research and investigation.
 
-%How can we effectively teach high-level programming concepts and skills through educational software and games?
-%For example, \emph{computational thinking}~\cite{wing2008computational} is a central element of the discussion on programming education.
-%There is significant interest in bringing computational thinking into the classroom~\cite{barr2011bringing, lye2014review}, and more research is required on teaching computational thinking skills through educational software and games.
-%Another important aspect of teaching programming tools is choice of programming language.
-%How does the design of the programming language a system uses affect its users?
-%One part of investigating how to teach such skills involes exploring how to teach the strategies and metastrategies, such as divide and conquer, involved in computational thinking.
-%Answering such research questions requires exploring the structure of educational games.
-%The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from instructors or other members of the social community using the system or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. 
+Two research questions in computer science education we hope to address are the teaching of \emph{computational thinking} and the effect of programming language semantics on novice programmers. Computational thinking is often discussed in the context of educational programming environments and there needs to be more research on how such systems can effectively teach these ideas. Important computational thinking skills include problem-solving strategies and meta-strategies, such as divide and conquer. We wish to explore how to directly teach such skills in the context of an educational game. As these skills will be learned and practiced in the context of programming, language design is a crucial part of the design of these systems. 
 
-Computational thinking is often discussed in the context of educational programming environments and there needs to be more research on how such systems can effectively teach these ideas. 
-Programming language semantics are one understudied aspect of this. 
-How does the design of the programming language a system uses affect its users' understanding of computational thinking?
-Further research should also explore ways to directly teach the strategies and metastrategies, such as divide and conquer, involved in computational thinking instead of expecting learners to absorb them as a result of working with other computer science concepts.
+Exploring these questions lead to related research questions about effective methods of teaching in games. The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from instructors or other members of the social community, or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. Exploring the space in between these designs leads to many interesting questions and design challenges. An important method through which open-ended games can guide players in the social environment, and questions about how to foster such guidance in a programming game deserve special attention.
 
-The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from instructors or other members of the social community using the system or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. 
-Given the limitations inherent to each group, there needs to be an exploration of the design space between these two approaches in which exploration, social community, and some form of direct guidance are integrated together. 
-
-In this paper, we present \gametitle{}, an educational game designed to investigate these questions. 
-In the game, players use a visual, drag-and-drop programming language to control a dragon in a 3D grid world. 
-We present a detailed discussion of the above research questions, the design decisions for \gametitle{} informed by these questions, and obstacles and challenges we have encountered executing on this design, informed by playtests with players. We also survey the landscape of educational games and software for programming and computer science.
-
-%The remainder of this paper is as follows: after it describes our game in more detail, it discusses our research goals and how they affected the design of \gametitle{}. 
-%The paper then gives an overview of players' response to our game and highlights several design issues that have arisen during its development.
-%The paper concludes with our thoughts on other interesting questions our game might be used to help answer.
+In this paper, we present \gametitle{}, an educational game designed to investigate these questions. In the game, players use a visual, drag-and-drop programming language to control a dragon in a 3D grid world. Player We present a detailed discussion of the above research questions, the design decisions for \gametitle{} informed by these questions, and obstacles and challenges we have encountered executing on this design, informed by playtests with players. We also survey the landscape of educational games and software for programming and computer science.
 
 \begin{figure*}[t!]
   \centering
