@@ -112,13 +112,6 @@ Investigating these questions depend on answers to broader research questions ab
 
 Our contributions are as follows: we survey research on teaching computational thinking in games and software systems and describe the open problems in that space, including how languages impact novices. We then survey and discuss related research problems in game-based learning. We are currently creating \gametitle{}, an educational, creativity sandbox game designed to investigate these questions. We describe design trade-offs and decisions in \gametitle{}, focusing on a few unsolved design obstacles: how to combine open-ended sandbox games with direct guidance, and how to encourage a social environment in a programming game. The focus of this paper on the survey and discussion of open research problems in teaching computational thinking through games, and the design challenges and trade-offs encountered when building a game to tackle these problems, rather than our game per se. We think the problems we describe are relevant to anyone making educational games or systems that need to teach complex concepts and skills.
 
-\begin{figure*}[t!]
-  \centering
-  \includegraphics[width=\textwidth]{images/overall-example}
-  \caption{The player assembles code to control the dragon on the left side, and the dragon and world it inhabits are visualized on the right side. Only a few different code blocks are available to the player initially, and more are unlocked through completing guided puzzles.}
-  \label{fig:overall}
-\end{figure*}
-
 \section{Game Description}
 Before we discuss open research problems and design challenges, we describe basic information about \gametitle{} to provide context for the discussion.
 In \gametitle{}, players write code to control a dragon that builds 3D structures in a block world.
@@ -148,6 +141,13 @@ Common sandbox activities have included making the dragon travel very long dista
   \label{fig:toolbox}
 \end{figure}
 
+
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=\textwidth]{images/overall-example}
+  \caption{The player assembles code to control the dragon on the left side, and the dragon and world it inhabits are visualized on the right side. Only a few different code blocks are available to the player initially, and more are unlocked through completing guided puzzles.}
+  \label{fig:overall}
+\end{figure*}
 
 \section{Research Questions}
 \label{sec:research}
@@ -203,7 +203,7 @@ Previous work on programming for novices indicates aspects such as language synt
 So while we can draw on existing research when choosing the programming syntax and input method, it is an open problem which language semantics help novices learn programming and computational thinking.
 
 
-\gametitle{} uses a custom visual programming language instead of using a popular existing language like JavaScript.
+\gametitle{} uses a custom visual programming language instead of a popular existing language like JavaScript.
 The primary benefit of the approach is that we have fine-grained control over language semantics, enabling future experimentation and comparative studies on language semantics.
 However, this comes with several downsides over using an existing language.
 The most apparent drawback of this approach is the lack of existing resources for students to use.
@@ -227,7 +227,7 @@ A major advantage it can have over a traditional teaching approach is motivation
 Furthermore, this allows learning domains to be grounded in an application of interest to the learner, creating meaning and intrinsic interest in developing the desired skills.
 While the pure form of this approach can work for simple learning domains, complex ones such as programming or computational thinking cannot be taught through exploration alone unless players have sufficient background knowledge~\cite{kirschner2006minimal}. 
 
-The recommended practice is for systems to use \emph{guided discovery}, in which discovery learning is paired with some kind of external direct guidance~\cite{mayer2004should}.  For example, in games, players might consult wikis or ask friends to help them develop high-level skills.
+The recommended practice is to use \emph{guided discovery}, in which discovery learning is paired with some kind of external direct guidance~\cite{mayer2004should}.  For example, in games, players might consult wikis or ask friends to help them develop high-level skills.
 This approach of combining settings for discovery learning with guidance is a central part of \emph{constructionism}, a learning theory that proposes students learn effectively by constructing things of social relevance in a social context~\cite{kafai06constructionism}.
 \emph{Scratch}~\cite{maloney2010scratch}, which enables users to create interactive digital media projects such as stories and games, is among the most popular of systems designed with constructionist principles.
 \emph{Scratch}'s open-ended creative environment allows player to pursue meaningful creative projects, giving them motivation to learn the programming skills required to do so.
