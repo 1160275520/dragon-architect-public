@@ -53,12 +53,18 @@
 },
 "procedures":{
     "prereq": ["repeat"],
-    "nodes": ["procedures.procedures01"],
-    "edges": [],
+    "nodes": [
+        "procedures.call_me",
+        "procedures.definitions"
+    ],
+    "edges": [
+        ["procedures.call_me", "procedures.definitions"]
+    ],
     "name": "Procedural Bliss",
     "learn": ["Create custom blocks with procedures"]
 },
 "decomposition":{
+    "prereq": ["procedures"],
     "nodes": [
         "decomposition.castle",
         "decomposition.fix_castle",

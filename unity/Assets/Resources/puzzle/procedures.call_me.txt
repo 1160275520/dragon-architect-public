@@ -1,0 +1,14 @@
+#lang imperative:1.0
+
+@FrozenBlocks=true
+@FrozenArgs=true
+define Square()
+    Forward(1)
+    repeat 4 times
+        repeat 4 times
+            PlaceCube(1)
+            Forward(1)
+        Right()
+    Forward(7)
+
+Square()

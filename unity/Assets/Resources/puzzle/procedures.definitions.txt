@@ -1,0 +1,10 @@
+#lang imperative:1.0
+
+define Pillar()
+    pass
+
+@FrozenBlocks=true
+@FrozenArgs=true
+Pillar()
+Pillar()
+Pillar()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using Ruthefjord;
 
-public class PuzProcedures01 : MonoBehaviour
+public class PuzProceduresCall : MonoBehaviour
 {
     PuzzleHelper lh;
 

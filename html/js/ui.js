@@ -369,7 +369,8 @@ module.Instructions = (function() {
         towerlayer: "media/blockSvgs/towerlayer.svg",
         towertop: "media/blockSvgs/towertop.svg",
         wallsheet: "media/blockSvgs/wallsheet.svg",
-        walltop: "media/blockSvgs/walltop.svg"
+        walltop: "media/blockSvgs/walltop.svg",
+        pillarProc: "media/blockSvgs/pillarProc.svg"
     }
 
     var uiIdMap = {

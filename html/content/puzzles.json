@@ -262,19 +262,35 @@
         },
         "logging_id": 28
     },
-    "procedures.procedures01": {
-        "name": "Procedures 101",
-        "component": "PuzProcedures01",
+    "procedures.call_me": {
+        "name": "Call Me, Square",
+        "component": "PuzProceduresCall",
         "library": {
-            "required": ["repeat"],
-            "granted": ["defproc"]
+            "restricted": ["move2", "place", "up", "down", "defproc", "remove", "repeat"],
+            "required": [],
+            "granted": []
         },
         "instructions": {
             "summary": "Help me fill in the blueprints by using two more {squareProc}s.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.procedures01"},
-        "logging_id": 36
+        "program": {"type":"resource", "value":"puzzle/procedures.call_me"},
+        "logging_id": 106
+    },
+    "procedures.definitions": {
+        "name": "Definitions",
+        "component": "PuzProceduresDef",
+        "library": {
+            "restricted": ["defproc"],
+            "required": ["up", "down"],
+            "granted": ["defproc"]
+        },
+        "instructions": {
+            "summary": "Help me fill in the blueprints by filling in {pillarProc}.",
+            "detail": ""
+        },
+        "program": {"type":"resource", "value":"puzzle/procedures.definitions"},
+        "logging_id": 107
     },
     "decomposition.castle": {
         "name": "Do You Wanna Build a Castle?",
