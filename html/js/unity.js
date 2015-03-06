@@ -84,6 +84,10 @@ module.Call = (function() {
         send_message("System", "EAPI_StepProgramExecution", JSON.stringify(params));
     }
 
+    self.next_interesting_step = function() {
+        send_message("System", "EAPI_NextInterestingStep", "");
+    }
+
     self.request_start_puzzle = function(puzzle_info) {
         send_message("Global", "EAPI_RequestStartPuzzle", JSON.stringify(puzzle_info));
     }

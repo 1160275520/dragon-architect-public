@@ -98,7 +98,7 @@ let ``Puzzle load actual content test`` () =
     let dir = "../../../../html/content/"
 
     // just try to parse the modules to make sure it's valid json
-    let modules = File.ReadAllText (dir + "modules.json") |> Json.Parse
+    let modules = File.ReadAllText (dir + "packs.json") |> Json.Parse
     // parse puzzles into PuzzleInfo to make sure that works okay
     let puzzles =
         File.ReadAllText (dir + "puzzles.json")

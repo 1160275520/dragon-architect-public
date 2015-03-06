@@ -10,7 +10,7 @@ open Ruthefjord
 let newRobot () = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 
 let loadBuiltIns () =
-    let builtInsFilename = "../../../../unity/Assets/Resources/stdlib.imperative.txt"
+    let builtInsFilename = "../../../../unity/Assets/Resources/module/stdlib.txt"
     let text = File.ReadAllText builtInsFilename
     Parser.Parse (text, "stdlib") |> Simulator.import
 

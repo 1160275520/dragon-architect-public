@@ -443,7 +443,8 @@ $(function() {
     });
 
     $('#btn-step').on('click', function() {
-        RuthefjordUnity.Call.step_program("Statement", 1);
+        // RuthefjordUnity.Call.step_program("Statement", 1);
+        RuthefjordUnity.Call.next_interesting_step();
     });
 
     // camera
@@ -742,6 +743,23 @@ handler.onProgramStateChange = function(data) {
 
         RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
+}
+
+handler.onStepHighlight = function(id) {
+    // clear any existing highlights
+    var highlights = $(".blocklyHighlighted", $("#blockly").contents());
+    for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
+    };
+    var highlights = $(".primaryHighlight", $("#blockly").contents());
+    if (highlights.length > 0) {
+        for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+            highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
+        };
+    }
+    // apply new highlight
+    var block = Blockly.mainWorkspace.getBlockById(id.toString());
+    block.svg_.addHighlight(true);
 }
 
 handler.onSetColors = function(json) {

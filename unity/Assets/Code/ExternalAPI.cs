@@ -118,6 +118,10 @@ public class ExternalAPI : MonoBehaviour
         notifyProgramStateChange("current_state", sd.ToJson());
     }
 
+    public void NotifyStepHighlight(int id) {
+        Application.ExternalCall(ExternalApiFunc, "onStepHighlight", id);
+    }
+
     public void EAPI_SetProgramState(string arg) {
         var json = Json.Parse(arg).AsObject.ToMap;
         var progman = GetComponent<ProgramManager>();
@@ -231,6 +235,10 @@ public class ExternalAPI : MonoBehaviour
         var type = Util.parseEnum<ProgramStepType>(json.GetField("type").AsString);
         var dist = json.GetField("distance").AsInt;
         GetComponent<ProgramManager>().StepProgramState(type, dist);
+    }
+
+    public void EAPI_NextInterestingStep() {
+        GetComponent<ProgramManager>().AdvanceToNextInterestingStep();
     }
 
     public System.Collections.IEnumerator EAPI_RenderFinal(string json) {

@@ -14,6 +14,17 @@ public enum ProgramStepType
 
 public class ProgramManager : MonoBehaviour {
 
+    private static Dictionary<string, int> stdlibSteps = new Dictionary<string, int>
+    {
+        {"Forward", 2}, 
+        {"Left", 1}, 
+        {"Right", 1}, 
+        {"Up", 2}, 
+        {"Down", 2}, 
+        {"PlaceCube", 1}, 
+        {"RemoveCube", 1}
+    };
+
     public int TicksPerStep;
     public const float TicksPerSecond = 60.0f;
 
@@ -208,6 +219,28 @@ public class ProgramManager : MonoBehaviour {
                     setGameStateToStepIndex(currentStepIndex + distance);
                     break;
             }
+        }
+    }
+
+    public void AdvanceToNextInterestingStep() {
+        if (currentStepIndex < result.Steps.Length - 1) {
+            Debug.Log("skipping to callstack change");
+            int distance = 1;
+            var currentCallstack = result.Steps [currentStepIndex];
+            int stepsRemaining = (result.Steps.Length - 1) - currentStepIndex;
+            while (distance < stepsRemaining && Enumerable.SequenceEqual(currentCallstack, result.Steps [currentStepIndex + distance])) {
+                Debug.Log(distance);
+                distance++;
+            }
+            Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance] [0];
+            GetComponent<ExternalAPI>().NotifyStepHighlight(nextOnCallstack.Meta.Id);
+            // if the next thing on the callstack is the start of a stdlib procedure that performs a command
+            if (nextOnCallstack.Stmt.IsExecute && stdlibSteps.ContainsKey(nextOnCallstack.Stmt.AsExecute().Identifier)) {
+                Debug.Log("stdlib execute");
+                // skip the steps that don't change the state
+                distance += stdlibSteps [nextOnCallstack.Stmt.AsExecute().Identifier];
+            }
+            setGameStateToStepIndex(currentStepIndex + distance);
         }
     }
 

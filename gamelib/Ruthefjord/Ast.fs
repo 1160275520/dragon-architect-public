@@ -61,6 +61,10 @@ module Imperative =
             match x with
             | Execute e -> e;
             | _ -> invalidOp "can't convert to execute";
+        member x.AsCommand() = 
+            match x with
+            | Command c -> c;
+            | _ -> invalidOp "can't convert to command";
         member x.AsRepeat() = 
             match x with
             | Repeat r -> r;
