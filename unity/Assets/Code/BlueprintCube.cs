@@ -16,9 +16,9 @@ public class BlueprintCube : MonoBehaviour {
 	void Update () {
         var grid = FindObjectOfType<Grid>();
         if (grid[GridPosition] != null) {
-            renderer.material = SatisfiedMaterial;
+            GetComponent<Renderer>().material = SatisfiedMaterial;
         } else {
-            renderer.material = OriginalMaterial;
+            GetComponent<Renderer>().material = OriginalMaterial;
         }
 	}
 }

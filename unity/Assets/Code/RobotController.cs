@@ -90,7 +90,7 @@ public class RobotController : MonoBehaviour {
         if (secondsPerCommand > MIN_ANIMATION_TIME && com != null) {
             Profiler.BeginSample("RobotController.SetRobot.setAnim");
             // if time is large enough, animmate the robot going to the new position
-            var anim = transform.FindChild("dragon_improved").gameObject.animation;
+            var anim = transform.FindChild("dragon_improved").gameObject.GetComponent<Animation>();
             switch (com.Name) {
                 case "cube":
                     anim["bite"].speed = anim["bite"].length / secondsPerCommand;

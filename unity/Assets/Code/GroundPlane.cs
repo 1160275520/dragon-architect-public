@@ -24,10 +24,10 @@ public class GroundPlane : MonoBehaviour {
 //                var grass = Resources.Load<Material>("Grass");
 //                var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));
 //                renderer.materials = new Material[] {grass, grassGrid};
-                renderer.materials = new Material[] {Resources.Load<Material>("GrassGround")};
+                GetComponent<Renderer>().materials = new Material[] {Resources.Load<Material>("GrassGround")};
             } else {
                 var ground = Resources.Load<Material>("Ground");
-                renderer.materials = new Material[] {ground};
+                GetComponent<Renderer>().materials = new Material[] {ground};
             }
             lastEditMode = em;
         }

@@ -12,7 +12,7 @@ public class Cube : MonoBehaviour {
         if (lastCubeId != CubeId && CubeId > 0) {
             lastCubeId = CubeId;
             var ct = GameObject.FindGameObjectWithTag("System").GetComponent<CubeTextures>();
-            renderer.material = ct.AvailableMaterials[CubeId - 1];
+            GetComponent<Renderer>().material = ct.AvailableMaterials[CubeId - 1];
         }
 	}
 }

@@ -23,11 +23,36 @@ public class PuzzleHelper : MonoBehaviour
     private bool hasSentWinAnnouncement = false;
     private bool isFirstUpdate;
 
+    // HACK lol AddComponent requires a Type instead of string so let's make a giant table of them
+    private static readonly System.Type[] Components = {
+        typeof(PuzBridge),
+        typeof(PuzDecompCastle),
+        typeof(PuzDecompFixCastle),
+        typeof(PuzDecompFixTowers),
+        typeof(PuzDecompFixWalls),
+        typeof(PuzMovement2D_1),
+        typeof(PuzMovement2D_2),
+        typeof(PuzMovement2D_3),
+        typeof(PuzMovementArgs),
+        typeof(PuzPlacement),
+        typeof(PuzProceduresCall),
+        typeof(PuzProceduresDef),
+        typeof(PuzRemove),
+        typeof(PuzRepeat101Cubes),
+        typeof(PuzRepeatFixedLoops),
+        typeof(PuzRepeatFixedProgram),
+        typeof(PuzRotate),
+        typeof(PuzSpeedSlider),
+        typeof(PuzWhatIsDown),
+        typeof(PuzWhatIsUp),
+    };
+
     void Awake() {
         var global = FindObjectOfType<Global>();
-        var com = global.CurrentPuzzle.Component;
-        if (OptionModule.IsSome(com)) {
-            gameObject.AddComponent(com.Value);
+        var comopt = global.CurrentPuzzle.Component;
+        if (OptionModule.IsSome(comopt)) {
+            var com = comopt.Value;
+            gameObject.AddComponent(Components.First(c => c.Name == com));
         }
         BlockingErrors = new List<string> ();
     }
