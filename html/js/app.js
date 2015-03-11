@@ -443,7 +443,6 @@ $(function() {
     });
 
     $('#btn-step').on('click', function() {
-        // RuthefjordUnity.Call.step_program("Statement", 1);
         RuthefjordUnity.Call.next_interesting_step();
     });
 
@@ -465,10 +464,12 @@ $(function() {
     RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
 
     $("#btn-time-slider-back").on('click', function() { 
-        RuthefjordUnity.Call.step_program("Command", -1)
+        RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() - 0.01);
+        RuthefjordUnity.Call.set_program_execution_time(RuthefjordUI.TimeSlider.value());
     });
     $("#btn-time-slider-forward").on('click', function() { 
-        RuthefjordUnity.Call.step_program("Command", 1)
+        RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() + 0.01);
+        RuthefjordUnity.Call.set_program_execution_time(RuthefjordUI.TimeSlider.value());
     });
 
     $("#btn-code-entry").on('click', function() {
@@ -657,6 +658,19 @@ handler.onPuzzleChange = function(json) {
     start_editor(JSON.parse(json));
 };
 
+function clearHighlights () {
+    var highlights = $(".blocklyHighlighted", $("#blockly").contents());
+    for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
+    };
+    var highlights = $(".primaryHighlight", $("#blockly").contents());
+    if (highlights.length > 0) {
+        for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
+            highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
+        };
+    }
+}
+
 handler.onProgramStateChange = function(data) {
     var json = JSON.parse(data);
 
@@ -692,15 +706,7 @@ handler.onProgramStateChange = function(data) {
     // clear current highlights when not paused or currently unpausing
     var highlights = $(".blocklyHighlighted", $("#blockly").contents());
     if (highlights.length > 0 && program_state.run_state !== 'paused' && json.run_state !== 'executing') {
-        for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-            highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
-        };
-        var highlights = $(".primaryHighlight", $("#blockly").contents());
-        if (highlights.length > 0) {
-            for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-                highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
-            };
-        }
+        clearHighlights();
     }
 
     if ('current_state' in json) {
@@ -726,16 +732,7 @@ handler.onProgramStateChange = function(data) {
                 }
             } else {
                 // clear final highlights 
-                var highlights = $(".blocklyHighlighted", $("#blockly").contents());
-                for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-                    highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
-                };
-                var highlights = $(".primaryHighlight", $("#blockly").contents());
-                if (highlights.length > 0) {
-                    for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-                        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
-                    };
-                }
+                clearHighlights();
             }
         }
 
@@ -747,19 +744,12 @@ handler.onProgramStateChange = function(data) {
 
 handler.onStepHighlight = function(id) {
     // clear any existing highlights
-    var highlights = $(".blocklyHighlighted", $("#blockly").contents());
-    for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
-    };
-    var highlights = $(".primaryHighlight", $("#blockly").contents());
-    if (highlights.length > 0) {
-        for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-            highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
-        };
-    }
+    clearHighlights();
     // apply new highlight
     var block = Blockly.mainWorkspace.getBlockById(id.toString());
-    block.svg_.addHighlight(true);
+    if (block) {
+        block.svg_.addHighlight(true);
+    }
 }
 
 handler.onSetColors = function(json) {

@@ -232,7 +232,7 @@ public class ProgramManager : MonoBehaviour {
                 Debug.Log(distance);
                 distance++;
             }
-            Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance] [0];
+            Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance].First();
             GetComponent<ExternalAPI>().NotifyStepHighlight(nextOnCallstack.Meta.Id);
             // if the next thing on the callstack is the start of a stdlib procedure that performs a command
             if (nextOnCallstack.Stmt.IsExecute && stdlibSteps.ContainsKey(nextOnCallstack.Stmt.AsExecute().Identifier)) {
