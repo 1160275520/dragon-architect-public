@@ -23,13 +23,13 @@ public class Global : MonoBehaviour {
     void OnEnable() {
         Ruthefjord.Logger.logAction = Debug.Log;
 
-        Application.RegisterLogCallbackThreaded(handleLog);
+        Application.logMessageReceived += handleLog;
 
         Application.ExternalCall(ExternalAPI.ExternalApiFunc, ExternalAPI.OnSystemStart, "");
     }
 
     void OnDisable() {
-        Application.RegisterLogCallback(null);
+        Application.logMessageReceived -= handleLog;
     }
 
     private void log(string logFn, string logTypeName, string message) {

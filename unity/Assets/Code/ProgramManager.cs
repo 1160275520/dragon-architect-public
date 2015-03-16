@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Microsoft.FSharp.Core;
 
 using Ruthefjord;
 using Ruthefjord.Ast;
@@ -161,7 +162,7 @@ public class ProgramManager : MonoBehaviour {
 
         if (EditMode.IsPersistent) {
             // use the current grid as the initial state
-            var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
+            var grid = new GridStateTracker(GetComponent<Grid>().AllCellsWithCommands);
             // just use wherever the robot current is as the initial state
             lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, importedModules, grid, robot.Robot);
         } else if (EditMode.IsWorkshop) {
@@ -224,7 +225,7 @@ public class ProgramManager : MonoBehaviour {
 
     public void AdvanceToNextInterestingStep() {
         if (currentStepIndex < result.Steps.Length - 1) {
-            Debug.Log("skipping to callstack change");
+            // skip to the first callstack change
             int distance = 1;
             var currentCallstack = result.Steps [currentStepIndex];
             int stepsRemaining = (result.Steps.Length - 1) - currentStepIndex;
@@ -236,7 +237,6 @@ public class ProgramManager : MonoBehaviour {
             GetComponent<ExternalAPI>().NotifyStepHighlight(nextOnCallstack.Meta.Id);
             // if the next thing on the callstack is the start of a stdlib procedure that performs a command
             if (nextOnCallstack.Stmt.IsExecute && stdlibSteps.ContainsKey(nextOnCallstack.Stmt.AsExecute().Identifier)) {
-                Debug.Log("stdlib execute");
                 // skip the steps that don't change the state
                 distance += stdlibSteps [nextOnCallstack.Stmt.AsExecute().Identifier];
             }
@@ -278,7 +278,7 @@ public class ProgramManager : MonoBehaviour {
 
             var isOldIndexAtEnd = result != null && currentStateIndex == result.States.Length;
 
-            var grid = new GridStateTracker(initialCells);
+            var grid = new GridStateTracker(initialCells.Select((kvp) => new KeyValuePair<IntVec3, Tuple<int, Ruthefjord.Robot.Command>>(kvp.Key, new Tuple<int, Ruthefjord.Robot.Command>(kvp.Value, null))));
             var initialRobotState = result != null ? ((BasicWorldState)result.States[0].Data.WorldState).Robot : robot.Robot;
             var runner = new BasicImperativeRobotSimulator(initialRobotState, grid);
             result = Simulator.SimulateWithRobot(Manipulator.Program, importedModules, runner);
@@ -314,7 +314,7 @@ public class ProgramManager : MonoBehaviour {
         if (EditMode.IsPersistent && RunState.IsExecuting) {
             for (var i = 0; i < stepsPassed; i++) {
                 Profiler.BeginSample("ProgramManager.Update.GetGrid");
-                var grid = new GridStateTracker(GetComponent<Grid>().AllCells);
+                var grid = new GridStateTracker(GetComponent<Grid>().AllCellsWithCommands);
                 Profiler.EndSample();
                 if (lazyProgramRunner.IsDone) {
                     RunState = RunState.Stopped;

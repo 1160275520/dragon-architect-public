@@ -5,11 +5,13 @@ namespace Ruthefjord.Robot
 
 open System.Collections.Generic
 open Ruthefjord
+open Ruthefjord.Ast.Imperative
 
 [<AllowNullLiteral>]
-type Command(t,a) =
+type Command(t,a,s) =
     member x.Name: string = t
     member x.Args: ImmArr<obj> = a
+    member x.LastExecuted: Statement list = s
 
 type Query = {
     Name: string;

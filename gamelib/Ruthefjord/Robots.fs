@@ -5,9 +5,9 @@ namespace Ruthefjord
 open System
 open System.Collections.Generic
 
-type Block = int
+type Cube = int * Robot.Command
 
-type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
+type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
 
     let MAX_CUBES = 8000
 
@@ -24,7 +24,7 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Block> seq) =
     member x.OverwriteObject idx cube = cells.[idx] <- cube
     member x.RemoveObject idx = cells.Remove idx |> ignore
     member x.GetObject idx =
-        let v = ref 0
+        let v = ref (0,null)
         if cells.TryGetValue (idx, v) then Some !v else None
 
 type BasicRobot = {
@@ -34,7 +34,7 @@ type BasicRobot = {
 
 type BasicWorldState = {
     Robot: BasicRobot;
-    Grid: ImmArr<KeyValuePair<IntVec3,Block>>;
+    Grid: ImmArr<KeyValuePair<IntVec3,Cube>>;
 }
 
 type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
@@ -61,7 +61,7 @@ type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
                 | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
                 | "cube" ->
                     let cube = command.Args.[0] :?> int
-                    grid.AddObject p cube
+                    grid.AddObject p (cube, command)
                 | "remove" -> grid.RemoveObject p
                 | _ -> ()
             else ()

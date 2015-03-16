@@ -300,12 +300,13 @@ function onProgramEdit() {
         if (program_state.run_state === 'stopped') {
             RuthefjordUnity.Call.set_program(p);
             program_state.last_program_sent = p;
+            clearHighlights();
         }
+    }
 
-        if (current_scene === 'sandbox') {
-            var prog = RuthefjordBlockly.getXML();
-            storage.save('sandbox_program', prog);
-        }
+    if (current_scene === 'sandbox') {
+        var prog = RuthefjordBlockly.getXML();
+        storage.save('sandbox_program', prog);
     }
 }
 
@@ -658,17 +659,17 @@ handler.onPuzzleChange = function(json) {
     start_editor(JSON.parse(json));
 };
 
-function clearHighlights () {
-    var highlights = $(".blocklyHighlighted", $("#blockly").contents());
+function clearBlocklyClass (className) {
+    var highlights = $('.' + className, $("#blockly").contents());
     for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" blocklyHighlighted", ""));
+        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" "+className, ""));
     };
-    var highlights = $(".primaryHighlight", $("#blockly").contents());
-    if (highlights.length > 0) {
-        for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-            highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" primaryHighlight", ""));
-        };
-    }
+}
+
+function clearHighlights () {
+    clearBlocklyClass("blocklyHighlighted");
+    clearBlocklyClass("primaryHighlight");
+    clearBlocklyClass("blocklyDebugHighlight");
 }
 
 handler.onProgramStateChange = function(data) {
@@ -705,7 +706,7 @@ handler.onProgramStateChange = function(data) {
 
     // clear current highlights when not paused or currently unpausing
     var highlights = $(".blocklyHighlighted", $("#blockly").contents());
-    if (highlights.length > 0 && program_state.run_state !== 'paused' && json.run_state !== 'executing') {
+    if (program_state.run_state !== 'paused' && json.run_state !== 'executing') {
         clearHighlights();
     }
 
@@ -749,6 +750,17 @@ handler.onStepHighlight = function(id) {
     var block = Blockly.mainWorkspace.getBlockById(id.toString());
     if (block) {
         block.svg_.addHighlight(true);
+    }
+}
+
+handler.onDebugHighlight = function(id) {
+    // clear any existing highlights
+    clearBlocklyClass("blocklyDebugHighlight");
+    // apply new highlight
+    var block = Blockly.mainWorkspace.getBlockById(id.toString());
+    if (block) {
+        Blockly.addClass_(block.svg_.svgGroup_, "blocklyDebugHighlight");
+        block.svg_.svgGroup_.parentNode.appendChild(block.svg_.svgGroup_);
     }
 }
 

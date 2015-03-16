@@ -146,7 +146,7 @@ let private step (state:State) =
             | Command {Name=cmd; Arguments=args} ->
                 if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
                 let args = List.map (evaluate head) args
-                Some (Robot.Command (cmd, ImmArr.ofSeq args))
+                Some (Robot.Command (cmd, ImmArr.ofSeq args, state.LastExecuted))
 
 let private makeInternalError e =
     RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)

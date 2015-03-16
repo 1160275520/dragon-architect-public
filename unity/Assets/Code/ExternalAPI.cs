@@ -122,6 +122,10 @@ public class ExternalAPI : MonoBehaviour
         Application.ExternalCall(ExternalApiFunc, "onStepHighlight", id);
     }
 
+    public void NotifyDebugHighlight(int id) {
+        Application.ExternalCall(ExternalApiFunc, "onDebugHighlight", id);
+    }
+
     public void EAPI_SetProgramState(string arg) {
         var json = Json.Parse(arg).AsObject.ToMap;
         var progman = GetComponent<ProgramManager>();

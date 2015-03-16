@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using Microsoft.FSharp.Collections;
 
 public class MyCamera : MonoBehaviour
 {
@@ -76,16 +77,34 @@ public class MyCamera : MonoBehaviour
         SmoothLookAt();
     }
 
+    void Update() {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hitInfo = new RaycastHit();
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            bool hit = Physics.Raycast(ray, out hitInfo);
+            if (hit) 
+            {
+                if (hitInfo.transform.gameObject.name.StartsWith("Cube") && FindObjectOfType<ProgramManager>().EditMode.IsWorkshop) {
+                    // the command StatementT will be first, so we want the execute right after that with the id for the corresponding code block
+                    var id = FindObjectOfType<Grid>().CommandForCube(hitInfo.transform.gameObject).LastExecuted.Tail.Head.Meta.Id;
+                    FindObjectOfType<ExternalAPI>().NotifyDebugHighlight(id);
+                }
+            }
+        } 
+    }
+
     private bool ViewingPosCheck(Vector3 checkPos) {
         RaycastHit hit;
 
         // If a raycast from the check position to the player hits something...
-        if (Physics.Raycast(checkPos, player.position - checkPos, out hit, relCameraPosMag))
+        if (Physics.Raycast(checkPos, player.position - checkPos, out hit, relCameraPosMag)) {
             // ... if it is not the player...
-            if (hit.transform != player)
+            if (hit.transform != player && !hit.transform.IsChildOf(player)) {
                 // This position isn't appropriate.
                 return false;
-
+            }
+        }
         // If we haven't hit anything or we've hit the player, this is an appropriate position.
         newPos = checkPos;
         return true;

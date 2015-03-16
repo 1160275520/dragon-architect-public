@@ -48,7 +48,7 @@ let ``World serialization repeat program test`` () =
     let states = (Simulator.SimulateWithRobot prog lib robot).States
     let cubes = (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.ToArray()
     let robots = [| (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Robot |]
-    let world = {Cubes=cubes; Robots=robots}
+    let world = {Cubes=cubes |> Array.map (fun kvp -> KeyValuePair(kvp.Key, fst kvp.Value)); Robots=robots}
 
     let encoded = World.encodeToString world 
     let decoded = World.decodeFromString encoded 

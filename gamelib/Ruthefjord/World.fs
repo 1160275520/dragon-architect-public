@@ -47,10 +47,10 @@ with
 
     member x.ToJson () = J.String (x.ToString ())
 
-type BlockData = KeyValuePair<IntVec3, Block> []
+type CubeData = KeyValuePair<IntVec3, int> []
 
 type WorldData = {
-    Cubes: BlockData;
+    Cubes: CubeData;
     Robots: BasicRobot[];
 }
 
@@ -85,7 +85,7 @@ module World =
         IntVec3 (arr.[0].AsInt, arr.[1].AsInt, arr.[2].AsInt)
 
     /// Encode a blocks to a stream.
-    let private encodeBlocks (blocks: BlockData) =
+    let private encodeBlocks (blocks: CubeData) =
         // create a big binary array of the blocks
         let arr : int[] = Array.zeroCreate (4 * blocks.Length)
         for i = 0 to blocks.Length - 1 do
