@@ -32,6 +32,7 @@ def uuid_of_username():
 class Player(db.Model):
     __tablename__ = 'player'
     id = db.Column(UUID, primary_key=True)
+    username = db.Column(db.Unicode, unique=True, index=True, nullable=False)
     puzzles_completed = db.Column(db.Unicode)
     sandbox_program = db.Column(db.Unicode)
     sandbox_world_data = db.Column(db.Unicode)
