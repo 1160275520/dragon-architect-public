@@ -163,9 +163,9 @@ var progress = (function(){
 
     self.initialize = function(cb) {
         // load the level progress from this session (if any)
-        console.info('loading saved puzzles!');
+        // console.info('loading saved puzzles!');
         storage.load("puzzles_completed", function(x) {
-            console.log(x);
+            // console.log(x);
             if (x) {
                 puzzles_completed = x.split(',');
             }
@@ -277,7 +277,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
 // callback function that receives messages from unity, sends to handler
 function onRuthefjordEvent(func, arg) {
     if (func !== 'onProgramStateChange') {
-        console.info('received Unity event ' + func);
+        // console.info('received Unity event ' + func);
     }
     handler[func](arg);
 }
@@ -510,7 +510,7 @@ $(function() {
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 
-        console.info('EVERYTHING IS READY!');
+        // console.info('EVERYTHING IS READY!');
 
         // HACK this needs to wait for the packs to be loaded
         _.each(game_info.packs, function(pack, id) {
@@ -671,7 +671,7 @@ handler.onSandboxStart = function() {
 }
 
 handler.onPuzzleChange = function(json) {
-    console.log('starting puzzle ' + json);
+    // console.log('starting puzzle ' + json);
     current_scene = "puzzle";
     start_editor(JSON.parse(json));
 };
@@ -693,7 +693,7 @@ handler.onProgramStateChange = function(data) {
     var json = JSON.parse(data);
 
     if ('edit_mode' in json) {
-        console.log('on edit mode change');
+        // console.log('on edit mode change');
         var em = json.edit_mode;
         program_state.edit_mode = em;
         RuthefjordUI.ModeButton.update(em === 'workshop');
@@ -703,7 +703,7 @@ handler.onProgramStateChange = function(data) {
 
     if ('run_state' in json) {
         var rs = json.run_state;
-        console.log('on run state change: ' + rs);
+        // console.log('on run state change: ' + rs);
         program_state.run_state = rs;
         RuthefjordUI.StepButton.update(rs === 'paused' && rs !== 'finished');
         RuthefjordUI.PauseButton.update(rs !== 'stopped' && rs !== 'finished', rs === 'paused');
@@ -782,7 +782,7 @@ handler.onDebugHighlight = function(id) {
 }
 
 handler.onSetColors = function(json) {
-    console.info('on set colors!');
+    // console.info('on set colors!');
     var colors = JSON.parse(json);
     Blockly.FieldColour.COLOURS = colors;
     Blockly.FieldColour.COLUMNS = Math.min(colors.length, 8);
@@ -816,7 +816,7 @@ handler.onWorldDataChunkSend = function(chunk) {
 }
 
 handler.onWorldDataEnd = function() {
-    console.info(world_data);
+    // console.info(world_data);
     storage.save('sandbox_world_data', world_data);
 }
 

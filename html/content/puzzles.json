@@ -42,7 +42,7 @@
         "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part2"},
         "logging_id": 31,
         "instructions": {
-            "summary": "I need to get to the pink box, and my program doesn't move me far enough.",
+            "summary": "I need to get to the {pinkboxGround}, and my program doesn't move me far enough.",
             "detail": "Add a {forward} to complete my program and click {go}."
         }
     },
@@ -63,7 +63,7 @@
         "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part3"},
         "logging_id": 32,
         "instructions": {
-            "summary": "The pink box has moved. Change my program to help me get there!",
+            "summary": "The {pinkboxGround} has moved. Change my program to help me get there!",
             "detail": "Add a {right} to my program and click {go}."
         }
     },
@@ -125,7 +125,7 @@
         },
         "program": {"type":"resource", "value":"puzzle/up.what_is_up"},
         "instructions": {
-            "summary": "Help me get to the pink box!",
+            "summary": "Help me get to the {pinkboxUp}!",
             "detail": "Use two {up} to complete my program."
         },
         "logging_id": 30
@@ -144,7 +144,7 @@
             "robots": [{"pos": [2, 3, 0], "dir":[-1, 0, 0]}]
         },
         "instructions": {
-            "summary": "Help me get to the pink box!",
+            "summary": "Help me get to the {pinkboxGround}!",
             "detail": "Use three {down} to get me there."
         },
         "logging_id": 33

@@ -214,7 +214,7 @@ public class PuzzleHelper : MonoBehaviour
     public void WinLevel() {
         // TODO maybe do actual things once you win
         if (!hasBeenWon) {
-            Debug.Log("win declared, waiting " + winDelay);
+//            Debug.Log("win declared, waiting " + winDelay);
             winTime = Time.fixedTime;
             hasBeenWon = true;
         }
@@ -222,7 +222,7 @@ public class PuzzleHelper : MonoBehaviour
 
     void Update() {
         if (hasBeenWon && Time.fixedTime - winTime > winDelay && !hasSentWinAnnouncement) {
-            Debug.Log("actual win");
+//            Debug.Log("actual win");
             GetComponent<ExternalAPI>().SendPuzzleComplete();
             hasSentWinAnnouncement = true;
         }

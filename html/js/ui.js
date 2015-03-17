@@ -128,8 +128,7 @@ module.Share = (function() {
                         return v.toString(16);
                     });
                     var upload = {id: project_uuid, author: author_uuid, name: self.title, time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
-                    console.info(upload);
-                    site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {console.log(e,d);});
+                    site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {});
                 })
                 .fail(function(data) {
                     // if THIS fails, give up and turn off logins
@@ -363,6 +362,8 @@ module.Instructions = (function() {
         clear: "media/clearSandboxButton.png",
         speedSlider: "media/speedSlider.png",
         done: "media/doneButton.png",
+        pinkboxGround: "media/pinkboxGround.png",
+        pinkboxUp: "media/pinkboxUp.png",
         castle: "media/blockSvgs/castle.svg",
         wall: "media/blockSvgs/wall.svg",
         tower: "media/blockSvgs/tower.svg",

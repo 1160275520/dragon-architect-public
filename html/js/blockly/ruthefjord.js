@@ -115,7 +115,7 @@ RuthefjordBlockly.clearProgram = function () {
  * set blocks making up current program
  */
 RuthefjordBlockly.setProgram = function(program) {
-    console.info(program);
+    // console.info(program);
 
     RuthefjordBlockly.ignoreNextHistory = true;
     RuthefjordBlockly.clearProgram();
@@ -128,8 +128,6 @@ RuthefjordBlockly.setProgram = function(program) {
         if (stmt.meta) { attr = stmt.meta.attributes; }
         if (attr) {
             var block = Blockly.mainWorkspace.getBlockById(stmt.meta.id);
-            console.log(stmt);
-            console.log(block);
             if (attr['FrozenBlocks']) {
                 var doFreezeArgs = Boolean(attr['FrozenArgs']);
                 RuthefjordBlockly.freezeBody(block, doFreezeArgs);
@@ -160,7 +158,7 @@ RuthefjordBlockly.setProgram = function(program) {
  * loads new program and takes care of related adjustments
  */
 RuthefjordBlockly.loadBlocks = function (blocksXML) {
-    console.info(blocksXML);
+    // console.info(blocksXML);
     BlocklyApps.loadBlocks(blocksXML);
 
     // update the toolbox in case the program contains any procedures
@@ -202,7 +200,7 @@ RuthefjordBlockly.updateToolbox = function() {
  */
 RuthefjordBlockly.setLevel = function(scene_info, library) {
     // ignore scene_info.library, trust only the library parameter
-    console.log(scene_info);
+    // console.log(scene_info);
     current_tools = _.contains(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
 
     // filter out restricted blocks

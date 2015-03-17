@@ -62,7 +62,7 @@ public class Global : MonoBehaviour {
         CurrentSceneId = data.GetField("id").AsString;
         CurrentPuzzle = Scene.PuzzleInfo.Parse(data.GetField("puzzle"));
 
-        Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
+//        Debug.Log("starting puzzle '" + CurrentSceneId + "'!");
         Application.LoadLevel("puzzle");
     }
 

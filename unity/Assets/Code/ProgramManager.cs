@@ -230,7 +230,6 @@ public class ProgramManager : MonoBehaviour {
             var currentCallstack = result.Steps [currentStepIndex];
             int stepsRemaining = (result.Steps.Length - 1) - currentStepIndex;
             while (distance < stepsRemaining && Enumerable.SequenceEqual(currentCallstack, result.Steps [currentStepIndex + distance])) {
-                Debug.Log(distance);
                 distance++;
             }
             Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance].First();

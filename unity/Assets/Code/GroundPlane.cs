@@ -19,7 +19,7 @@ public class GroundPlane : MonoBehaviour {
 	void Update () {
         var em = progman.EditMode;
         if (!em.Equals(lastEditMode)) {
-            Debug.Log(em);
+//            Debug.Log(em);
             if (em.IsPersistent) {
 //                var grass = Resources.Load<Material>("Grass");
 //                var grassGrid = (Material)Resources.Load("GrassGrid", typeof(Material));

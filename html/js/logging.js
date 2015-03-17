@@ -17,7 +17,6 @@ self.initialize = function(uid) {
     var skey = RUTHEFJORD_CONFIG.logging.game.skey;
     var skeyHash = cgs.server.logging.GameServerData.UUID_SKEY_HASH;
     var serverTag = cgs.server.CGSServerProps[RUTHEFJORD_CONFIG.logging.server_tag];
-    console.info(serverTag);
     var gameName = RUTHEFJORD_CONFIG.logging.game.name;
     var gameId = RUTHEFJORD_CONFIG.logging.game.id;
     var versionId = 1;
@@ -112,7 +111,7 @@ self.startQuest = function(qid, checksum) {
         user.logQuestStart(questId, questHash, details, function(response) {
             //Callback is optional and usually is only used for testing.
         }, localDqid);
-        console.info('logging quest start for qid ' + qid);
+        // console.info('logging quest start for qid ' + qid);
     }
 
     var ql = {};
@@ -184,7 +183,7 @@ self.startQuest = function(qid, checksum) {
         user.logQuestEnd(questEndDetail, function(response) {
             //Callback is optional and usually is only used for testing.
         }, localDqid);
-        console.info('logging quest end for qid ' + qid);
+        // console.info('logging quest end for qid ' + qid);
         self.activeQuestLogger = null;
     };
 

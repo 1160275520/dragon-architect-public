@@ -67,7 +67,6 @@ public class ExternalAPI : MonoBehaviour
 
     public void SendColors() {
         Application.ExternalCall(ExternalApiFunc, "onSetColors", Json.Serialize(Json.fromObject(CubeTextures.AvailableColors)));
-        Debug.Log("SendColors");
     }
 
     public void SendPuzzleComplete() {
@@ -220,7 +219,7 @@ public class ExternalAPI : MonoBehaviour
         }
         var world = new WorldData(blocks, robots.ToArray());
 
-        Debug.Log("Saving! num blocks: " + blocks.Length.ToString());
+//        Debug.Log("Saving! num blocks: " + blocks.Length.ToString());
         SendWorldState(World.encodeToString(world));
     }
 

@@ -51,7 +51,7 @@ module.Call = (function() {
     var self = {};
 
     self.set_program_state = function(parameter) {
-        console.info('setting program state: ' + JSON.stringify(parameter));
+        // console.info('setting program state: ' + JSON.stringify(parameter));
         send_message("System", "EAPI_SetProgramState", JSON.stringify(parameter));
     }
 
@@ -64,7 +64,7 @@ module.Call = (function() {
     }
 
     self.set_program = function(prog) {
-        console.log(prog);
+        // console.log(prog);
         send_message("System", "EAPI_SetProgramFromJson", prog);
     }
 

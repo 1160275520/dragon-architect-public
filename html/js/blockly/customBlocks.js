@@ -64,7 +64,7 @@ Blockly.Procedures.rename = function(text) {
 };
 
 Blockly.addCanvasListener("blocklyBlockDeleted", function() {
-    console.log('delete event!');
+    // console.log('delete event!');
     if (!Blockly.mainWorkspace.dragMode) {
         RuthefjordBlockly.updateToolbox();
     }
