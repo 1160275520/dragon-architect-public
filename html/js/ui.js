@@ -626,7 +626,9 @@ module.CameraControls = (function() {
     return self;
 }());
 
-function Slider(selector, labels, visSelector) {
+/// a horizontal slider.
+/// elemName is the name used for logging ui actions.
+function Slider(elemName, selector, labels, visSelector) {
     var self = {};
     var container;
     var slider;
@@ -657,6 +659,12 @@ function Slider(selector, labels, visSelector) {
         slider.on("slide", function(slideEvent) {
             onChangeCallback(slideEvent.value);
         });
+        slider.on("slideStart", function(slideEvent) {
+            var questLogger = RuthefjordLogging.activeQuestLogger;
+            if (questLogger) {
+                questLogger.logDoUiAction(elemName, 'start', null);
+            }
+        });
     };
 
     self.setVisible = function(isVisible) {
@@ -683,9 +691,9 @@ function Slider(selector, labels, visSelector) {
     return self;
 }
 
-module.SpeedSlider = Slider('#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], "#speed-controls");
+module.SpeedSlider = Slider('speed-slider', '#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], "#speed-controls");
 
-module.TimeSlider = Slider('#time-slider', ['Start', '<----- Time ----->', 'End'], "#time-controls");
+module.TimeSlider = Slider('time-slider', '#time-slider', ['Start', '<----- Time ----->', 'End'], "#time-controls");
 
 module.CubeCounter = (function() {
     var self = {};

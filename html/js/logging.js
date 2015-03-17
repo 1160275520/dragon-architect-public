@@ -5,6 +5,9 @@ var user;
 var is_initialized = false;
 var self = {};
 
+// expose the logger globally because ui needs it XP
+self.activeQuestLogger = null;
+
 self.uid = function() {
     return user.getUserId();
 }
@@ -89,6 +92,8 @@ var AID = {
     DoProgramPause: 20013,
     DoProgramFinish: 20014,
     DoEditModeChange: 20021,
+    // generic ui action, since we have so dang many
+    DoUiAction: 20101,
 
     Unused: 0 // to prevent comma sadness
 };
@@ -168,6 +173,10 @@ self.startQuest = function(qid, checksum) {
         log(AID.DoEditModeChange, {mode: newMode});
     };
 
+    ql.logDoUiAction = function(element, action, data) {
+        log(AID.DoUiAction, {element: element, action: action, data: data});
+    };
+
     ql.logQuestEnd = function() {
         if (!is_initialized) return;
 
@@ -176,11 +185,13 @@ self.startQuest = function(qid, checksum) {
             //Callback is optional and usually is only used for testing.
         }, localDqid);
         console.info('logging quest end for qid ' + qid);
+        self.activeQuestLogger = null;
     };
 
     if (is_initialized) {
         start();
     }
+    self.activeQuestLogger = ql;
     return ql;
 };
 
