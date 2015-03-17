@@ -180,7 +180,7 @@ module.Gallery = (function() {
 
         var content = document.createElement("div");
         var thumb = document.createElement("img");
-        thumb.id = span.id + '_thumb';
+        thumb.id = item.id;
         renderThumb(item, thumb.id);
         $(content).append(thumb);
         
@@ -567,7 +567,7 @@ module.ModeButton = (function() {
     var self = {};
 
     self.update = function(isWorkshopMode) {
-        update_button('#btn-workshop', true, isWorkshopMode, "Enter Workshop Mode", "Exit Workshop Mode");
+        update_button('#btn-workshop', true, isWorkshopMode, "Enter Workshop", "Exit Workshop");
     };
 
     return self;
@@ -626,7 +626,7 @@ module.CameraControls = (function() {
     return self;
 }());
 
-function Slider(selector, labels) {
+function Slider(selector, labels, visSelector) {
     var self = {};
     var container;
     var slider;
@@ -647,40 +647,45 @@ function Slider(selector, labels) {
 
         container.append(slider);
 
-        slider.slider({
+        slider.bootstrapSlider({
             value: 0.22,
             min: 0.0,
             max: 1.0,
             step: 0.01,
-            slide: function( event, ui ) {
-                onChangeCallback(ui.value);
-            }
+            tooltip: 'hide'
+        });
+        slider.on("slide", function(slideEvent) {
+            onChangeCallback(slideEvent.value);
         });
     };
 
     self.setVisible = function(isVisible) {
-        container.css('visibility', isVisible ? 'visible' : 'hidden');
+        $(visSelector).css('visibility', isVisible ? 'visible' : 'hidden');
     };
 
     self.setEnabled = function(isEnabled) {
-        slider.slider("option", "disabled", !isEnabled);
+        if (isEnabled) {
+            slider.bootstrapSlider("enable");
+        } else {
+            slider.bootstrapSlider("disable");
+        }
         container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
     }
 
     self.value = function(x) {
         if (x === undefined) {
-            return slider.slider("option", "value");
+            return slider.bootstrapSlider("getValue");
         } else {
-            slider.slider("value", x);
+            slider.bootstrapSlider("setValue", x);
         }
     };
 
     return self;
 }
 
-module.SpeedSlider = Slider('#speed-slider', ['Slow', 'Medium', 'Fast']);
+module.SpeedSlider = Slider('#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], "#speed-controls");
 
-module.TimeSlider = Slider('#time-slider', ['Beginning', 'Middle', 'End']);
+module.TimeSlider = Slider('#time-slider', ['Start', '<----- Time ----->', 'End'], "#time-controls");
 
 module.CubeCounter = (function() {
     var self = {};

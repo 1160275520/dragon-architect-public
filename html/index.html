@@ -9,7 +9,7 @@
     <!-- build:css code/style.css -->
     <link rel="stylesheet" type="text/css" href="lib/normalize/normalize.css">
     <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.css">
-    <link rel="stylesheet" type="text/css" href="css/slider.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/instructions.css">
     <!-- endbuild -->
@@ -28,6 +28,7 @@
     <script src="lib/cgs/cgs_common.js"></script>
     <script src="lib/fermata/fermata.js"></script>
     <script src="lib/editinplace/editinplace.js"></script>
+    <script src="lib/bootstrap-slider/bootstrap-slider.js"></script>
     <script src="js/config.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/db.js"></script>
@@ -41,16 +42,16 @@
   </head>
   <body>
     <header id="header">
-      <h1>Ruthefjord!</h1>
+      <h1>Dragon Architect</h1>
       <div>
-        <p class="sandboxModeUI">You are in sandbox mode!</p>
-        <button id="btn-packs" class="sandboxModeUI">Learn more code</button>
-        <button id="btn-gallery" class="sandboxModeUI">Gallery</button>
-        <button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear cubes and code</button>
-        <button id="btn-share" class="sandboxModeUI">Share your code</button>
+        <p class="sandboxModeUI">You are in the sandbox!</p>
+        <button id="btn-packs" class="sandboxModeUI">Learn more</button>
+        <!-- <button id="btn-gallery" class="sandboxModeUI">Gallery</button> -->
+        <button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear everything</button>
+        <!-- <button id="btn-share" class="sandboxModeUI">Share!</button> -->
         <button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button>
         <button id="btn-back-selector-pack" class="puzzleModeUI puzzleSelector hideTutorial">Try a different pack</button>
-        <button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector packSelector gallerySelector viewerModeUI hideTutorial shareModeUI">Go back to sandbox mode</button>
+        <button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector packSelector gallerySelector viewerModeUI hideTutorial shareModeUI">Go back to sandbox</button>
         <button id="btn-back-gallery" class="viewerModeUI">Go back to gallery</button>
       </div>
       <!-- leave the div around, event when not in dev mode, because the button spacing relies on it existing -->
@@ -114,15 +115,17 @@
             <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i></button>
             <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i></button>
           </div>
-          <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop Mode</button>
+          <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop</button>
         </div>
         <div id="unity-player"></div>
         <div id="game-controls-bar-bottom" class="game-controls-bar puzzleModeUI sandboxModeUI">
-          <div id="speed-slider"></div>
-          <div id="time-controls">
+          <div id="time-controls" class="game-control">
             <button id="btn-time-slider-back" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-left"></i></button>
             <div id="time-slider"></div>
             <button id="btn-time-slider-forward" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-right"></i></button>
+          </div>
+          <div id="speed-controls" class="game-control">
+            <div id="speed-slider"></div>
           </div>
           <!-- <p id="cube-counter" class="game-control">X</p> -->
         </div>

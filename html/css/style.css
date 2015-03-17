@@ -159,9 +159,9 @@ header > h1 {
 }
 
 .game-control {
-    border: 2px solid black;
-    border-radius: 6px;
     height: 52px;
+    border-radius: 6px;
+    background: rgba(74, 170, 227, 0.7);
 }
 
 p.game-control {
@@ -184,7 +184,7 @@ div.game-control {
 header button, .control-btn, .control-icon-btn {
     display: block;
     height: 40px;
-    border: 2px solid black;
+    border: 2px solid rgb(160, 139, 72);
     border-radius: 4px;
     background-color: #d1bd7d;
 }
@@ -366,10 +366,7 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .slider-container {
-    width: 300px;
     height: 52px;
-    border: 2px solid black;
-    border-radius: 6px;
     padding: 5px;
     background-color: transparent;
 }
