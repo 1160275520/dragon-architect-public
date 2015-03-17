@@ -31,35 +31,52 @@ var storage = (function() {
     var base_url = RUTHEFJORD_CONFIG.game_server.url;
     var remote_data;
 
+    function create_new_user(username, cb) {
+        $.ajax(RUTHEFJORD_CONFIG.game_server.url + '/getuid', {
+            data: JSON.stringify({username:username}),
+            contentType: 'application/json',
+            type: 'POST'
+        }).then(function(data) {
+            return $.ajax(base_url + '/player', {
+                data: JSON.stringify({id:data.result.uuid, username:username}),
+                contentType: 'application/json',
+                type: 'POST'
+            });
+        }).done(function(data) {
+            remote_data = data;
+            cb();
+        }).fail(function(data) {
+            // if THIS fails, give up and turn off logins
+            console.log("creating a player failed D:")
+            cb();
+        });
+    }
+
     self.initialize = function(cb) {
         if (RUTHEFJORD_CONFIG.are_logins) {
             var username = '';
             while (!username) {
                 username = window.prompt("Please enter your username");
             }
+
+            var filters = [{name: 'username', op: '==', val: username}];
+
             // try to grab all the user data
-            $.get(base_url + 'player/' + username)
-                .done(function(data) {
-                    remote_data = data;
+            $.ajax(base_url + '/player', {
+                data: {q: JSON.stringify({filters: filters})},
+                dataType: 'json',
+                contentType: 'application/json',
+            }).done(function(data) {
+                if (data.num_results > 0) {
+                    remote_data = data.objects[0];
                     cb();
-                })
-                .fail(function(data) {
-                    // on failure, make a new user
-                    $.ajax(base_url + 'player', {
-                        data: JSON.stringify({id:username}),
-                        contentType: 'application/json',
-                        type: 'POST'
-                    })
-                        .done(function(data) {
-                            remote_data = data;
-                            cb();
-                        })
-                        .fail(function(data) {
-                            // if THIS fails, give up and turn off logins
-                            console.log("creating a player failed D:")
-                            cb();
-                        });
-                });
+                } else {
+                    create_new_user(username, cb);
+                }
+            }).fail(function(data) {
+                // on failure, make a new user
+                create_new_user(username, cb);
+            });
 
         } else {
             cb();
@@ -75,7 +92,7 @@ var storage = (function() {
             var o = {};
             o[key] = value;
 
-            $.ajax(base_url + 'player/' + remote_data.id, {
+            $.ajax(base_url + '/player/' + remote_data.id, {
                 data: JSON.stringify(o),
                 contentType: 'application/json',
                 type: 'PUT'
@@ -96,7 +113,7 @@ var storage = (function() {
 
     self.remove = function(key) {
         if (remote_data) {
-            $.ajax(base_url + 'player/' + remote_data.id, {
+            $.ajax(base_url + '/player/' + remote_data.id, {
                 data: JSON.stringify({key:null}),
                 contentType: 'application/json',
                 type: 'PUT'
