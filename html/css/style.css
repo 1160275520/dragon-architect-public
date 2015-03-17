@@ -164,6 +164,10 @@ header > h1 {
     background: rgba(74, 170, 227, 0.7);
 }
 
+.game-control.disabled {
+    background: rgba(150, 150, 150, 0.7); 
+}
+
 p.game-control {
     font-size: 16pt;
     padding: 10px;
@@ -210,6 +214,11 @@ header button, .control-btn, .control-icon-btn {
 .btn-time-slider {
     margin: 10px;
     height: auto;
+}
+
+.btn-time-slider.disabled {
+    background-color: #CDCDCD;
+    border-color: rgb(100,100,100);
 }
 
 /* run/pause buttons */

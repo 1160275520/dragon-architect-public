@@ -628,7 +628,7 @@ module.CameraControls = (function() {
 
 /// a horizontal slider.
 /// elemName is the name used for logging ui actions.
-function Slider(elemName, selector, labels, visSelector) {
+function Slider(elemName, selector, labels, allElems) {
     var self = {};
     var container;
     var slider;
@@ -668,14 +668,16 @@ function Slider(elemName, selector, labels, visSelector) {
     };
 
     self.setVisible = function(isVisible) {
-        $(visSelector).css('visibility', isVisible ? 'visible' : 'hidden');
+        $(allElems.join(', ')).css('visibility', isVisible ? 'visible' : 'hidden');
     };
 
     self.setEnabled = function(isEnabled) {
         if (isEnabled) {
             slider.bootstrapSlider("enable");
+            $(allElems.join(', ')).removeClass("disabled");
         } else {
             slider.bootstrapSlider("disable");
+            $(allElems.join(', ')).addClass("disabled");
         }
         container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
     }
@@ -691,9 +693,9 @@ function Slider(elemName, selector, labels, visSelector) {
     return self;
 }
 
-module.SpeedSlider = Slider('speed-slider', '#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], "#speed-controls");
+module.SpeedSlider = Slider('speed-slider', '#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], ["#speed-controls"]);
 
-module.TimeSlider = Slider('time-slider', '#time-slider', ['Start', '<----- Time ----->', 'End'], "#time-controls");
+module.TimeSlider = Slider('time-slider', '#time-slider', ['Start', '<----- Time ----->', 'End'], ["#time-controls", ".btn-time-slider"]);
 
 module.CubeCounter = (function() {
     var self = {};
