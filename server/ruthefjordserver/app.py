@@ -6,6 +6,8 @@ import flask.ext.restless
 from flask import request
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
+import random
+from .experiments import experiments
 
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ruthefjord'
@@ -20,6 +22,16 @@ def add_cors_header(response):
 
     return response
 
+@app.route('/api/create_player', methods=['POST'])
+def get_player_id():
+    # create a new random player id
+    player = Player(id=unicode(uuid.uuid4()))
+    db.session.add(player)
+    db.session.commit()
+    result = { 'id':player.id }
+    return flask.jsonify(result=result)
+
+# TODO rename
 @app.route('/api/getuid', methods=['POST'])
 def uuid_of_username():
     content = request.json
@@ -29,13 +41,39 @@ def uuid_of_username():
     result = { 'uuid':uid }
     return flask.jsonify(result=result)
 
+@app.route('/api/experiment', methods=['POST'])
+def get_experimental_condition_for_player():
+    content = request.json
+    player_id =content['player_id']
+    experiment_id = content['experiment_id']
+
+    pe = PlayerExperiment.query.filter_by(player_id=player_id, experiment_id=experiment_id).first()
+    if pe is None:
+        # new user! give them a condition
+        exper = experiments[experiment_id]
+        condition = random.choice(exper['conditions'])
+        pe = PlayerExperiment(player_id=player_id, experiment_id=experiment_id, condition=condition['id'])
+        db.session.add(pe)
+        db.session.commit()
+
+    result = { 'condition':pe.condition }
+    return flask.jsonify(result=result)
+
 class Player(db.Model):
     __tablename__ = 'player'
     id = db.Column(UUID, primary_key=True)
-    username = db.Column(db.Unicode, unique=True, index=True, nullable=False)
+    username = db.Column(db.Unicode, unique=True, index=True, nullable=True)
     puzzles_completed = db.Column(db.Unicode)
     sandbox_program = db.Column(db.Unicode)
     sandbox_world_data = db.Column(db.Unicode)
+
+# many-to-many mapping of player to experimental condition
+class PlayerExperiment(db.Model):
+    __tablename__ = 'player_experiment'
+    # TODO add foreign key for player
+    player_id = db.Column(UUID, db.ForeignKey('player.id'), primary_key=True)
+    experiment_id = db.Column(UUID, primary_key=True)
+    condition = db.Column(db.Integer, nullable=False)
 
 class UploadedProject(db.Model):
     __tablename__ = 'uploaded_project'
