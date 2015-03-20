@@ -198,6 +198,7 @@ var progress = (function(){
     var puzzles_completed = [];
 
     self.initialize = function(cb) {
+        console.info('initializing progress!');
         // load the level progress from this session (if any)
         // console.info('loading saved puzzles!');
         Storage.load("puzzles_completed", function(x) {
@@ -393,7 +394,10 @@ $(function() {
                 contentType: 'application/json',
                 type: 'POST'
             }).then(function(data) {
+                var cond = data.result.condition;
                 console.info('got condition! ' + data.result.condition);
+                // copy the experimental condition info the config object
+                RUTHEFJORD_CONFIG.features = RUTHEFJORD_CONFIG.feature_conditions[cond];
                 d.resolve();
             });
         } else {
@@ -406,6 +410,153 @@ $(function() {
     // initialize subsystems (mainly unity and logging)
     ////////////////////////////////////////////////////////////////////////////////
 
+    function initializeUi() {
+        // set up callbacks for transitions between application state
+        ////////////////////////////////////////////////////////////////////////////////
+
+        var devSelectPack = $('#dev-select-pack');
+        devSelectPack.change(function() {
+            var val = devSelectPack.val();
+            // HACK assumes opening line starts with '-'
+            if (val[0] !== '-') {
+                current_puzzle_runner = create_puzzle_runner(game_info.packs[val], "pack");
+            }
+        });
+
+        $('#btn-header-clear-sandbox').on('click', function() {
+            Storage.remove('sandbox_program');
+            Storage.remove('sandbox_world_data');
+            // HACK if they're in the sandbox, just reload it to force a clear
+            if (current_scene == 'sandbox') {
+                setState_sandbox();
+            }
+        });
+
+        $('#btn-header-sandbox').on('click', setState_sandbox);
+        $('#btn-back-sandbox').on('click', setState_sandbox);
+
+        $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
+
+        function goToPacks() {
+            RuthefjordUI.State.goToPackSelect(function () {
+                RuthefjordUI.PackSelect.create(_.filter(game_info.packs,
+                    function(m) {
+                        return !progress.is_pack_completed(m);
+                    }),
+                    function(pack) {
+                        current_puzzle_runner = create_puzzle_runner(pack, "pack");
+                    });
+            });
+        }
+
+        $('#btn-packs').on('click', goToPacks);
+        $('#btn-back-selector-pack').on('click', goToPacks);
+
+        function goToGallery() {
+            function sandboxCallback(item) {
+                current_scene = 'transition';
+                RuthefjordUI.State.goToSandbox(function() {
+                    Storage.load('sandbox_world_data', function(wd) {
+                        RuthefjordUnity.Call.request_start_sandbox(wd);
+                    });
+                    sandboxProgAddon = item.program;
+                });
+            }
+            var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
+            site("uploaded_project").get(function (err, data, headers) {
+                if (!err) {
+                    if (data.objects && data.objects.length > 0) {
+                        RuthefjordUI.Gallery.create(data.objects, sandboxCallback);
+                        galleryRender = true;
+                    } else {
+                        RuthefjordUI.State.goToGallery(function () {}); // just go to empty gallery
+                    }
+                } else {
+                    alert("The Gallery server is unavailable.");
+                }
+            });
+        }
+
+        $('#btn-gallery').on('click', goToGallery);
+
+        $('#btn-back-gallery').on('click', function () {RuthefjordUI.State.goToGallery(function () {})});
+
+        $('#btn-share').on('click', function () {
+            RuthefjordUI.Share.create(setState_sandbox);
+        });
+
+        // set up some of the callbacks for code editing UI
+        ////////////////////////////////////////////////////////////////////////////////
+
+        $('#btn-run').on('click', function() {
+            var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
+            if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
+            RuthefjordUnity.Call.set_program_state({run_state: newRS});
+
+        });
+
+        $('#btn-workshop').on('click', function() {
+            var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
+            if (questLogger) { questLogger.logDoEditModeChange(newEM); }
+            RuthefjordUnity.Call.set_program_state({edit_mode: newEM});
+        });
+
+        $('#btn-pause').on('click', function() {
+            var oldRS = program_state.run_state;
+            if (oldRS === 'executing' || oldRS === 'paused') {
+                var newRS = oldRS === 'executing' ? 'paused' : 'executing';
+                if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
+                RuthefjordUnity.Call.set_program_state({run_state: newRS});
+            }
+        });
+
+        $('#btn-step').on('click', function() {
+            RuthefjordUnity.Call.next_interesting_step();
+        });
+
+        // camera
+        $('#camera-zoom-in').click(function(){RuthefjordUnity.Call.control_camera('zoomin');});
+        $('#camera-zoom-out').click(function(){RuthefjordUnity.Call.control_camera('zoomout');});
+        $('#camera-rotate-left').click(function(){RuthefjordUnity.Call.control_camera('rotateleft');});
+        $('#camera-rotate-right').click(function(){RuthefjordUnity.Call.control_camera('rotateright');});
+        $('#camera-tilt-up').click(function(){RuthefjordUnity.Call.control_camera('tiltup');});
+        $('#camera-tilt-down').click(function(){RuthefjordUnity.Call.control_camera('tiltdown');});
+
+        // undo button
+        // TODO shouldn't this be in blockly/ruthefjord.js?
+        $('#btn-undo').on('click', RuthefjordBlockly.undo);
+
+        RuthefjordUI.Instructions.hide();
+
+        RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
+        RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
+
+        $("#btn-time-slider-back").on('click', function() { 
+            RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() - 0.01);
+            RuthefjordUnity.Call.set_program_execution_time(RuthefjordUI.TimeSlider.value());
+        });
+        $("#btn-time-slider-forward").on('click', function() { 
+            RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() + 0.01);
+            RuthefjordUnity.Call.set_program_execution_time(RuthefjordUI.TimeSlider.value());
+        });
+
+        $("#btn-code-entry").on('click', function() {
+            RuthefjordUnity.Call.parse_concrete_program($("#code-entry-area").val());
+        })
+
+        $("#btn-done").on('click', function() {
+            RuthefjordUnity.Call.set_program(JSON.stringify(RuthefjordBlockly.getProgram()));
+            RuthefjordUnity.Call.set_program_execution_time(1);
+            RuthefjordUnity.Call.submit_solution();
+        });
+
+        // HACK to avoid button text wrapping on smaller screens
+        // THIS SHOULD BE IN CSS
+        if ($(document).width() < 1350) {
+            $("html").css("font-size", "10pt");
+        }
+    }
+
     // fetch the uid from the GET params and pass that to logging initializer
     // we don't actually need to wait for it to finish before using it
     // TODO ensure this assumption is actually true
@@ -413,177 +564,35 @@ $(function() {
     RuthefjordLogging.initialize(uid);
 
     // load save data first, then get the experimental condition, then do all the things
-    var promise_all =
-        load_save_data()
-        .then(function() {
-            console.log('asdfasdfasdfasdf');
-            // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
-            RuthefjordLogging.logPlayerLogin(Storage.id());
-            return fetch_experimental_condition();
-        })
-        .then(function() {
-            return Q.all([
-                content.initialize(),
-                initialize_unity(),
-                RuthefjordBlockly.init(),
-            ]);
-        });
-
-    // set up callbacks for transitions between application state
-    ////////////////////////////////////////////////////////////////////////////////
-
-    var devSelectPack = $('#dev-select-pack');
-    devSelectPack.change(function() {
-        var val = devSelectPack.val();
-        // HACK assumes opening line starts with '-'
-        if (val[0] !== '-') {
-            current_puzzle_runner = create_puzzle_runner(game_info.packs[val], "pack");
-        }
-    });
-
-    $('#btn-header-clear-sandbox').on('click', function() {
-        Storage.remove('sandbox_program');
-        Storage.remove('sandbox_world_data');
-        // HACK if they're in the sandbox, just reload it to force a clear
-        if (current_scene == 'sandbox') {
-            setState_sandbox();
-        }
-    });
-
-    $('#btn-header-sandbox').on('click', setState_sandbox);
-    $('#btn-back-sandbox').on('click', setState_sandbox);
-
-    $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
-
-    function goToPacks() {
-        RuthefjordUI.State.goToPackSelect(function () {
-            RuthefjordUI.PackSelect.create(_.filter(game_info.packs,
-                function(m) {
-                    return !progress.is_pack_completed(m);
-                }),
-                function(pack) {
-                    current_puzzle_runner = create_puzzle_runner(pack, "pack");
-                });
-        });
-    }
-
-    $('#btn-packs').on('click', goToPacks);
-    $('#btn-back-selector-pack').on('click', goToPacks);
-
-    function goToGallery() {
-        function sandboxCallback(item) {
-            current_scene = 'transition';
-            RuthefjordUI.State.goToSandbox(function() {
-                Storage.load('sandbox_world_data', function(wd) {
-                    RuthefjordUnity.Call.request_start_sandbox(wd);
-                });
-                sandboxProgAddon = item.program;
-            });
-        }
-        var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
-        site("uploaded_project").get(function (err, data, headers) {
-            if (!err) {
-                if (data.objects && data.objects.length > 0) {
-                    RuthefjordUI.Gallery.create(data.objects, sandboxCallback);
-                    galleryRender = true;
-                } else {
-                    RuthefjordUI.State.goToGallery(function () {}); // just go to empty gallery
-                }
-            } else {
-                alert("The Gallery server is unavailable.");
-            }
-        });
-    }
-
-    $('#btn-gallery').on('click', goToGallery);
-
-    $('#btn-back-gallery').on('click', function () {RuthefjordUI.State.goToGallery(function () {})});
-
-    $('#btn-share').on('click', function () {
-        RuthefjordUI.Share.create(setState_sandbox);
-    });
-
-    // set up some of the callbacks for code editing UI
-    ////////////////////////////////////////////////////////////////////////////////
-
-    $('#btn-run').on('click', function() {
-        var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
-        if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
-        RuthefjordUnity.Call.set_program_state({run_state: newRS});
-
-    });
-
-    $('#btn-workshop').on('click', function() {
-        var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
-        if (questLogger) { questLogger.logDoEditModeChange(newEM); }
-        RuthefjordUnity.Call.set_program_state({edit_mode: newEM});
-    });
-
-    $('#btn-pause').on('click', function() {
-        var oldRS = program_state.run_state;
-        if (oldRS === 'executing' || oldRS === 'paused') {
-            var newRS = oldRS === 'executing' ? 'paused' : 'executing';
-            if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
-            RuthefjordUnity.Call.set_program_state({run_state: newRS});
-        }
-    });
-
-    $('#btn-step').on('click', function() {
-        RuthefjordUnity.Call.next_interesting_step();
-    });
-
-    // camera
-    $('#camera-zoom-in').click(function(){RuthefjordUnity.Call.control_camera('zoomin');});
-    $('#camera-zoom-out').click(function(){RuthefjordUnity.Call.control_camera('zoomout');});
-    $('#camera-rotate-left').click(function(){RuthefjordUnity.Call.control_camera('rotateleft');});
-    $('#camera-rotate-right').click(function(){RuthefjordUnity.Call.control_camera('rotateright');});
-    $('#camera-tilt-up').click(function(){RuthefjordUnity.Call.control_camera('tiltup');});
-    $('#camera-tilt-down').click(function(){RuthefjordUnity.Call.control_camera('tiltdown');});
-
-    // undo button
-    // TODO shouldn't this be in blockly/ruthefjord.js?
-    $('#btn-undo').on('click', RuthefjordBlockly.undo);
-
-    RuthefjordUI.Instructions.hide();
-
-    RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
-    RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
-
-    $("#btn-time-slider-back").on('click', function() { 
-        RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() - 0.01);
-        RuthefjordUnity.Call.set_program_execution_time(RuthefjordUI.TimeSlider.value());
-    });
-    $("#btn-time-slider-forward").on('click', function() { 
-        RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() + 0.01);
-        RuthefjordUnity.Call.set_program_execution_time(RuthefjordUI.TimeSlider.value());
-    });
-
-    $("#btn-code-entry").on('click', function() {
-        RuthefjordUnity.Call.parse_concrete_program($("#code-entry-area").val());
+    load_save_data()
+    .then(function() {
+        // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
+        RuthefjordLogging.logPlayerLogin(Storage.id());
+        return fetch_experimental_condition();
     })
+    .then(function() {
+        initializeUi();
 
-    $("#btn-done").on('click', function() {
-        RuthefjordUnity.Call.set_program(JSON.stringify(RuthefjordBlockly.getProgram()));
-        RuthefjordUnity.Call.set_program_execution_time(1);
-        RuthefjordUnity.Call.submit_solution();
-    });
+        return Q.all([
+            content.initialize(),
+            initialize_unity(),
+            RuthefjordBlockly.init(),
+        ]);
+    }).then(function() {
+        // turn off gallery elements if diabled
+        if (!RUTHEFJORD_CONFIG.features.is_debugging) {
+            $('.tools-debug').hide();
+        }
 
-    // HACK to avoid button text wrapping on smaller screens
-    // THIS SHOULD BE IN CSS
-    if ($(document).width() < 1350) {
-        $("html").css("font-size", "10pt");
-    }
-
-    // wait for all systems to start up, then go!
-    promise_all.done(function() {
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 
         console.info('EVERYTHING IS READY!');
 
         // HACK this needs to wait for the packs to be loaded
+        console.log(game_info.packs);
         _.each(game_info.packs, function(pack, id) {
-            devSelectPack.append('<option value="' + id + '">' + id + '</option>');
+            $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
 
         progress.initialize(function() {
