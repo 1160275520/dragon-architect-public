@@ -74,6 +74,7 @@ var AID = {
     // meta stuff
 
     PlayerConsented: 101,
+    PlayerLogin: 102,
 
     // state changes
 
@@ -194,8 +195,14 @@ self.startQuest = function(qid, checksum) {
     return ql;
 };
 
+self.logPlayerLogin = function(loginId) {
+    var actionId = AID.PlayerLogin;
+    var actionDetail = {id:loginId};
+    var action = new cgs.UserAction(actionId, actionDetail);
+    user.logAction(action);
+}
+
 self.logStudentConsented = function(didPlayerConsent) {
-    //Action unrelated to a quest.
     var actionId = AID.PlayerConsented;
     var actionDetail = {did_consent:didPlayerConsent};
     var action = new cgs.UserAction(actionId, actionDetail);

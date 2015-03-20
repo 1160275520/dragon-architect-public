@@ -106,11 +106,12 @@ module.State = (function(){ "use strict";
     return self;
 }());
 
+/*
 module.Share = (function() {
     var self = {};
 
     self.title = "";
-    var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
+    var site = fermata.json(RUTHEFJORD_CONFIG.server.url);
 
     var submit = function (cb) {
         var message = $("#share-message");
@@ -222,6 +223,7 @@ module.Gallery = (function() {
 
     return self;
 }());
+*/
 
 module.PackSelect = (function() {
     var self = {};

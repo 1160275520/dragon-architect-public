@@ -26,34 +26,38 @@ var galleryRender = false;
 // flag and data for when code from a gallery item is added to the sandbox
 var sandboxProgAddon = ""; 
 
-var storage = (function() {
-    var self = {};
-    var base_url = RUTHEFJORD_CONFIG.game_server.url;
-    var remote_data;
+var Storage = (function() {
+    var mdl = {};
+    var base_url = RUTHEFJORD_CONFIG.server.url;
 
-    function create_new_user(username, cb) {
-        $.ajax(RUTHEFJORD_CONFIG.game_server.url + '/getuid', {
-            data: JSON.stringify({username:username}),
-            contentType: 'application/json',
-            type: 'POST'
-        }).then(function(data) {
-            return $.ajax(base_url + '/player', {
-                data: JSON.stringify({id:data.result.uuid, username:username}),
+    // commented out because we're not using it for UIST
+    /*
+    var ServerStorage = function() {
+        var self = {};
+        var remote_data;
+
+        function create_new_user(username, cb) {
+            $.ajax(RUTHEFJORD_CONFIG.game_server.url + '/getuid', {
+                data: JSON.stringify({username:username}),
                 contentType: 'application/json',
                 type: 'POST'
+            }).then(function(data) {
+                return $.ajax(base_url + '/player', {
+                    data: JSON.stringify({id:data.result.uuid, username:username}),
+                    contentType: 'application/json',
+                    type: 'POST'
+                });
+            }).done(function(data) {
+                remote_data = data;
+                cb();
+            }).fail(function(data) {
+                // if THIS fails, give up and turn off logins
+                console.log("creating a player failed D:")
+                cb();
             });
-        }).done(function(data) {
-            remote_data = data;
-            cb();
-        }).fail(function(data) {
-            // if THIS fails, give up and turn off logins
-            console.log("creating a player failed D:")
-            cb();
-        });
-    }
+        }
 
-    self.initialize = function(cb) {
-        if (RUTHEFJORD_CONFIG.are_logins) {
+        self.initialize = function() {
             var username = '';
             while (!username) {
                 username = window.prompt("Please enter your username");
@@ -77,18 +81,13 @@ var storage = (function() {
                 // on failure, make a new user
                 create_new_user(username, cb);
             });
+        };
 
-        } else {
-            cb();
-        }
-    }
+        self.getItem = function(key) {
+            return remote_data[key];
+        };
 
-    self.save = function(key, value) {
-        if (typeof key !== "string") throw new TypeError("keys must be strings!");
-        if (value !== null && typeof value !== "string") throw new TypeError("can only save string values!");
-
-        // only save if the current value is different or non-existent
-        if (remote_data && remote_data[key] !== value) {
+        self.setItem = function(key, value) {
             var o = {};
             o[key] = value;
 
@@ -98,33 +97,70 @@ var storage = (function() {
                 type: 'PUT'
             });
             remote_data[key] = value;
-        } else {
-            sessionStorage.setItem(key, value);
-        }
-    }
+        };
 
-    self.load = function(key, cb) {
-        if (remote_data) {
-            cb(remote_data[key]);
-        } else {
-            cb(sessionStorage.getItem(key));
-        }
-    }
-
-    self.remove = function(key) {
-        if (remote_data) {
+        self.removeItem = function (key) {
             $.ajax(base_url + '/player/' + remote_data.id, {
                 data: JSON.stringify({key:null}),
                 contentType: 'application/json',
                 type: 'PUT'
             });
             remote_data[key] = null;
-        } else {
-            sessionStorage.removeItem(key);
-        }
+        };
+    };
+    */
+
+    var storageImpl;
+
+    mdl.id = function() {
+        return storageImpl.getItem('id');
     }
 
-    return self;
+    mdl.initialize = function(cb) {
+        switch (RUTHEFJORD_CONFIG.server.storage) {
+            //case 'server':
+            //    storageImpl = ServerStorage();
+            //      TODO once this is commented back in have to actually initialize it
+            //    break;
+            case 'local':
+                storageImpl = window.localStorage;
+                break;
+            case 'session':
+                storageImpl = window.sessionStorage;
+                break;
+            default: throw 'invalid storage type!';
+        }
+
+        // need to generate a user id if one does not exist
+        if (mdl.id()) {
+            console.info('loaded user id ' + mdl.id());
+            cb();
+        } else {
+            $.ajax(base_url + '/create_player', {
+                type: 'POST'
+            }).then(function(data) {
+                storageImpl.setItem('id', data.result.id);
+                console.info('generated new user id ' + data.result.id);
+                cb();
+            });
+        }
+    };
+
+    mdl.save = function(key, value) {
+        if (typeof key !== "string") throw new TypeError("keys must be strings!");
+        if (value !== null && typeof value !== "string") throw new TypeError("can only save string values!");
+        storageImpl.setItem(key, value);
+    };
+
+    mdl.load = function(key, cb) {
+        cb(storageImpl.getItem(key));
+    };
+
+    mdl.remove = function(key) {
+        storageImpl.removeItem(key);
+    }
+
+    return mdl;
 }());
 
 var content = (function() {
@@ -164,7 +200,7 @@ var progress = (function(){
     self.initialize = function(cb) {
         // load the level progress from this session (if any)
         // console.info('loading saved puzzles!');
-        storage.load("puzzles_completed", function(x) {
+        Storage.load("puzzles_completed", function(x) {
             // console.log(x);
             if (x) {
                 puzzles_completed = x.split(',');
@@ -176,7 +212,7 @@ var progress = (function(){
     self.mark_puzzle_completed = function(id, puzzle) {
         if (!_.contains(puzzles_completed, id)) {
             puzzles_completed.push(id);
-            storage.save("puzzles_completed", puzzles_completed.toString());
+            Storage.save("puzzles_completed", puzzles_completed.toString());
         }
     }
 
@@ -304,7 +340,7 @@ function setState_intro() {
 function setState_sandbox() {
     current_scene = 'transition';
     RuthefjordUI.State.goToSandbox(function() {
-        storage.load('sandbox_world_data', function(wd) {
+        Storage.load('sandbox_world_data', function(wd) {
             RuthefjordUnity.Call.request_start_sandbox(wd);
         });
     });
@@ -323,7 +359,7 @@ function onProgramEdit() {
 
     if (current_scene === 'sandbox') {
         var prog = RuthefjordBlockly.getXML();
-        storage.save('sandbox_program', prog);
+        Storage.save('sandbox_program', prog);
     }
 }
 
@@ -343,9 +379,55 @@ $(function() {
 
     function load_save_data() {
         var d = Q.defer();
-        storage.initialize(function() { d.resolve(); });
+        Storage.initialize(function() { d.resolve(); });
         return d.promise;
     }
+
+    function fetch_experimental_condition() {
+        var d = Q.defer();
+
+        if (RUTHEFJORD_CONFIG.experiment) {
+            console.log('logging experiment!');
+            $.ajax(RUTHEFJORD_CONFIG.server.url + '/experiment', {
+                data: JSON.stringify({player_id: Storage.id(), experiment_id: RUTHEFJORD_CONFIG.experiment.id}),
+                contentType: 'application/json',
+                type: 'POST'
+            }).then(function(data) {
+                console.info('got condition! ' + data.result.condition);
+                d.resolve();
+            });
+        } else {
+            d.resolve();
+        }
+
+        return d.promise;
+    }
+
+    // initialize subsystems (mainly unity and logging)
+    ////////////////////////////////////////////////////////////////////////////////
+
+    // fetch the uid from the GET params and pass that to logging initializer
+    // we don't actually need to wait for it to finish before using it
+    // TODO ensure this assumption is actually true
+    var uid = $.url().param('uid');
+    RuthefjordLogging.initialize(uid);
+
+    // load save data first, then get the experimental condition, then do all the things
+    var promise_all =
+        load_save_data()
+        .then(function() {
+            console.log('asdfasdfasdfasdf');
+            // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
+            RuthefjordLogging.logPlayerLogin(Storage.id());
+            return fetch_experimental_condition();
+        })
+        .then(function() {
+            return Q.all([
+                content.initialize(),
+                initialize_unity(),
+                RuthefjordBlockly.init(),
+            ]);
+        });
 
     // set up callbacks for transitions between application state
     ////////////////////////////////////////////////////////////////////////////////
@@ -360,8 +442,8 @@ $(function() {
     });
 
     $('#btn-header-clear-sandbox').on('click', function() {
-        storage.remove('sandbox_program');
-        storage.remove('sandbox_world_data');
+        Storage.remove('sandbox_program');
+        Storage.remove('sandbox_world_data');
         // HACK if they're in the sandbox, just reload it to force a clear
         if (current_scene == 'sandbox') {
             setState_sandbox();
@@ -392,7 +474,7 @@ $(function() {
         function sandboxCallback(item) {
             current_scene = 'transition';
             RuthefjordUI.State.goToSandbox(function() {
-                storage.load('sandbox_world_data', function(wd) {
+                Storage.load('sandbox_world_data', function(wd) {
                     RuthefjordUnity.Call.request_start_sandbox(wd);
                 });
                 sandboxProgAddon = item.program;
@@ -420,20 +502,6 @@ $(function() {
     $('#btn-share').on('click', function () {
         RuthefjordUI.Share.create(setState_sandbox);
     });
-
-    // initialize subsystems (mainly unity and logging)
-    ////////////////////////////////////////////////////////////////////////////////
-
-    var promise_all = Q.all([
-        content.initialize(),
-        load_save_data(),
-        initialize_unity(),
-        RuthefjordBlockly.init(),
-    ]);
-
-    // fetch the uid from the GET params and pass that to logging initializer
-    var uid = $.url().param('uid');
-    RuthefjordLogging.initialize(uid);
 
     // set up some of the callbacks for code editing UI
     ////////////////////////////////////////////////////////////////////////////////
@@ -501,6 +569,7 @@ $(function() {
     });
 
     // HACK to avoid button text wrapping on smaller screens
+    // THIS SHOULD BE IN CSS
     if ($(document).width() < 1350) {
         $("html").css("font-size", "10pt");
     }
@@ -510,7 +579,7 @@ $(function() {
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 
-        // console.info('EVERYTHING IS READY!');
+        console.info('EVERYTHING IS READY!');
 
         // HACK this needs to wait for the packs to be loaded
         _.each(game_info.packs, function(pack, id) {
@@ -637,7 +706,7 @@ function start_editor(info) {
 handler.onSandboxStart = function() {
     current_scene = "sandbox";
 
-    storage.load('sandbox_program', function(sandbox_program) {
+    Storage.load('sandbox_program', function(sandbox_program) {
         var info = {
             checksum: 0,
             is_starting: true,
@@ -817,7 +886,7 @@ handler.onWorldDataChunkSend = function(chunk) {
 
 handler.onWorldDataEnd = function() {
     // console.info(world_data);
-    storage.save('sandbox_world_data', world_data);
+    Storage.save('sandbox_world_data', world_data);
 }
 
 handler.onUnlockDevMode = function() {
