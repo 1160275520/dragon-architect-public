@@ -10,6 +10,7 @@ var COLOR_LOOPS = '#00711C';
 var COLOR_PROCS = '#7C478B';
 var COLOR_UNUSED_1 = '#B63551';
 var COLOR_UNUSED_2 = '#A88217';
+var COLOR_LOCKED = '#707070';
 
 Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
 Blockly.Blocks.procedures.COLOR = COLOR_PROCS;
@@ -49,6 +50,9 @@ var old_rename_func = Blockly.Procedures.rename;
 
 // monkey patch procedure renaming to change valid names, and also update library
 Blockly.Procedures.rename = function(text) {
+    if (this.sourceBlock_.locked) {
+        return;
+    }
     if (this.sourceBlock_.isInFlyout) {
         // don't allow renaming of something in toolbox, this breaks everything...
         return this.sourceBlock_.getProcedureDef()[0];
@@ -135,6 +139,20 @@ Blockly.Blocks['Up'] = {
     }
 };
 
+Blockly.Blocks['Up_locked'] = {
+    init: function() {
+        this.setFullColor(COLOR_LOCKED);
+        this.appendDummyInput()
+            .appendField("up by")
+            .appendField(new Blockly.FieldTextInput('1',
+                Blockly.FieldTextInput.nonnegativeIntegerValidator), "VALUE");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.locked = true;
+        this.packName = "up";
+    }
+};
+
 Blockly.UnityJSON['Up'] = function(block) {
     return newCall1("Up", block.id, block.getFieldValue("VALUE"));
 };
@@ -149,6 +167,20 @@ Blockly.Blocks['Down'] = {
                 Blockly.FieldTextInput.nonnegativeIntegerValidator), "VALUE");
         this.setPreviousStatement(true);
         this.setNextStatement(true);
+    }
+};
+
+Blockly.Blocks['Down_locked'] = {
+    init: function() {
+        this.setFullColor(COLOR_LOCKED);
+        this.appendDummyInput()
+            .appendField("down by")
+            .appendField(new Blockly.FieldTextInput('1',
+                Blockly.FieldTextInput.nonnegativeIntegerValidator), "VALUE");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.locked = true;
+        this.packName = "up";
     }
 };
 
@@ -183,11 +215,49 @@ Blockly.Blocks['RemoveCube'] = {
     }
 };
 
+Blockly.Blocks['RemoveCube_locked'] = {
+    init: function() {
+        this.setFullColor(COLOR_BLOCK);
+        this.appendDummyInput()
+            .appendField("remove cube");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.locked = true;
+        this.packName = "remove";
+    }
+};
+
 Blockly.UnityJSON['RemoveCube'] = function(block) {
     return newCall0("RemoveCube", block.id);
 };
 
 // REPEAT
+Blockly.Blocks['controls_repeat_locked'] = {
+  /**
+   * Block for repeat n times (internal number).
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setHelpUrl(Blockly.Msg.CONTROLS_REPEAT_HELPURL);
+    this.setFullColor(Blockly.Blocks.loops.COLOR);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.CONTROLS_REPEAT_TITLE_REPEAT)
+        .appendField(new Blockly.FieldTextInput('10',
+            Blockly.FieldTextInput.nonnegativeIntegerValidator), 'TIMES')
+        .appendField(Blockly.Msg.CONTROLS_REPEAT_TITLE_TIMES);
+    this.appendStatementInput('DO')
+        .appendField(Blockly.Msg.CONTROLS_REPEAT_INPUT_DO);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.Msg.CONTROLS_REPEAT_TOOLTIP);
+
+    // make inner repeat connections immune to freezing
+    this.inputList[1].connection.neverFrozen = true;
+    this.locked = true;
+    this.packName = "repeat";
+  }
+};
+
 Blockly.UnityJSON['controls_repeat'] = function(block, children) {
     return {
         meta: {id:Number(block.id)},
@@ -196,6 +266,50 @@ Blockly.UnityJSON['controls_repeat'] = function(block, children) {
         type: "repeat"
     };
 }
+
+Blockly.Blocks['procedures_defnoreturn_locked'] = {
+  /**
+   * Block for defining a procedure with no return value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
+    this.setFullColor(Blockly.Blocks.procedures.COLOR);
+    var name = Blockly.Procedures.findLegalName(
+        Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
+    this.appendDummyInput()
+        .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
+        .appendField(new Blockly.FieldTextInput(name,
+        Blockly.Procedures.rename), 'NAME')
+        .appendField('', 'PARAMS');
+    this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
+    this.arguments_ = [];
+    this.setStatements_(true);
+    this.statementConnection_ = null;
+    this.locked = true;
+    this.packName = "procedures";
+  },
+  /**
+   * Add or remove the statement block from this function definition.
+   * @param {boolean} hasStatements True if a statement block is needed.
+   * @this Blockly.Block
+   */
+  setStatements_: function(hasStatements) {
+    if (this.hasStatements_ === hasStatements) {
+      return;
+    }
+    if (hasStatements) {
+      this.appendStatementInput('STACK')
+          .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_DO);
+      if (this.getInput('RETURN')) {
+        this.moveInputBefore('STACK', 'RETURN');
+      }
+    } else {
+      this.removeInput('STACK', true);
+    }
+    this.hasStatements_ = hasStatements;
+  }
+};
 
 // CALL
 Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {

@@ -398,7 +398,7 @@ module.Instructions = (function() {
     }
 
     // replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
-    function processTemplate(str) {
+    self.processTemplate = function(str) {
         return str.replace(/{(\w+)}/g, function(match, id) {
             return typeof imgFileMap[id] != 'undefined'
                 ? makeImgHtml(imgFileMap[id], uiIdMap[id]) 
@@ -409,7 +409,7 @@ module.Instructions = (function() {
 
     // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element 
     // when the image is clicked
-    function makeImgOnClick() {
+    self.makeImgOnClick = function() {
         $(".instructions-img").each(function() {
             if ($(this).attr("data-uiId")) {
                 var uiElem = $($(this).attr("data-uiId"));
@@ -488,12 +488,12 @@ module.Instructions = (function() {
         self.displayErrors();
         // load new instructions, if any
         if (instructions) {
-            $('#instructions-goal').html(processTemplate(instructions.summary));
-            $('#instructions-detail').html(processTemplate(instructions.detail));
+            $('#instructions-goal').html(self.processTemplate(instructions.summary));
+            $('#instructions-detail').html(self.processTemplate(instructions.detail));
         }
         $('#instructions-container').css('visibility', 'visible');
         setSize(doStartLarge, cb, false)();
-        makeImgOnClick();
+        self.makeImgOnClick();
     }
 
     self.displayErrors = function(errors) {
@@ -760,15 +760,42 @@ module.WinMessage = (function() {
         $(div).addClass("dialog-content");
         var dialogContent = document.createElement('span');
         dialogContent.appendChild(document.createTextNode(msg));
+        dialogContent.style["text-align"] = "center";
+        dialogContent.style["display"] = "block";
         var btn = document.createElement('button');
         btn.style["font-size"] = "20pt";
+        btn.style["margin"] = "0 auto";
+        btn.style["display"] = "block";
         $(btn).addClass("control-btn");
         $(btn).html(btn_msg);
         $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
+        setTimeout(function () { module.Dialog.destroy(); cb(); }, 4000);
         div.appendChild(dialogContent);
         div.appendChild(btn);
-        var style = {width: '450px', top: '400px', left: '200px', "font-size": "30pt"};
+        var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
+    }
+
+    return self;
+}());
+
+module.UnlockBlockMsg = (function() {
+    var self = {};
+
+    self.show = function(svg, cb) {
+        var div = document.createElement('div');
+        $(div).addClass("dialog-content");
+        var btn = document.createElement('button');
+        btn.style["font-size"] = "16pt";
+        $(btn).addClass("control-btn");
+        $(btn).html("Unlock this here");
+        $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
+        div.appendChild(btn);
+        var rect = svg.getBoundingClientRect();
+        var style = {width: '200px', top: (rect.top + $("#code-area").position().top) + 'px', left: (rect.left + 50) + 'px'};
+        $("#dialog").stop(true, true);
+        RuthefjordUI.Dialog.make(div, style);
+        $("#dialog").fadeOut(4000, "easeInExpo", function() { module.Dialog.destroy(); });
     }
 
     return self;

@@ -391,7 +391,7 @@ header button, .control-btn, .control-icon-btn {
 #selector-puzzle {
     position: relative
     width: 100%;
-    margin: 100px;
+    margin: 30px;
     background-color: black;
     z-index: 1;
 }
@@ -546,7 +546,7 @@ header button, .control-btn, .control-icon-btn {
 /************************************************************/
 
 #dialog {
-  background-color: rgba(175,53,49,0.9);
+  background-color: rgba(74,170,227,0.9);
   color: #fff;
   border: 1px solid #ccc;
   position: absolute;

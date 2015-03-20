@@ -14,6 +14,7 @@ var RuthefjordBlockly = {};
 RuthefjordBlockly.history = [];
 RuthefjordBlockly.curProgramStr = "";
 RuthefjordBlockly.ignoreNextHistory = false;
+RuthefjordBlockly.isSandbox = false;
 
 var q_defer = Q.defer();
 
@@ -47,13 +48,13 @@ document.write('<script type="text/javascript" src="generated/' +
 // list of custom block xml, in the order they should appear in the library
 RuthefjordBlockly.Commands = [
     ['move2',  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>'],
-    ['up',  '<block type="Up"></block>'],
-    ['down',  '<block type="Down"></block>'],
     ['place',  '<block type="PlaceCube"></block>'],
-    ['remove', '<block type="RemoveCube"></block>'],
     ['line',   '<block type="Line"></block>'],
-    ['repeat', '<block type="controls_repeat"></block>'],
-    ['defproc', '<block type="procedures_defnoreturn"></block>']
+    ['up',  '<block type="Up"></block>', '<block type="Up_locked"></block>'],
+    ['down',  '<block type="Down"></block>', '<block type="Down_locked"></block>'],
+    ['remove', '<block type="RemoveCube"></block>', '<block type="RemoveCube_locked"></block>'],
+    ['repeat', '<block type="controls_repeat"></block>', '<block type="controls_repeat_locked"></block>'],
+    ['defproc', '<block type="procedures_defnoreturn"></block>', '<block type="procedures_defnoreturn_locked"></block>']
 ]
 
 RuthefjordBlockly.AddonCommands = [];
@@ -179,6 +180,8 @@ RuthefjordBlockly.updateToolbox = function() {
     _.each(_.union(RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands), function(pair) {
         if (_.contains(current_tools, pair[0])) {
             toolXML += pair[1];
+        } else if (pair[2] && RuthefjordBlockly.isSandbox) {
+            toolXML += pair[2];
         }
     });
 
@@ -191,6 +194,17 @@ RuthefjordBlockly.updateToolbox = function() {
 
     toolXML += '</xml>';
     Blockly.updateToolbox(toolXML);
+
+    // lock blocks as necessary
+    _.each(Blockly.mainWorkspace.flyout_.workspace_.getAllBlocks(), function(block) {
+        if (block.locked) {
+            block.setDisabled(true);
+            block.setEditable(false);
+            $(block.svg_.svgGroup_).on('click', function() {
+                onRuthefjordEvent("onLockedToolboxClick", block);
+            });
+        }
+    });
 };
 
 /**

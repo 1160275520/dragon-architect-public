@@ -258,6 +258,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
 
     function setState_puzzle(id, finish_msg) {
         current_scene = 'transition';
+        RuthefjordBlockly.isSandbox = false;
         var info = {id:id, puzzle:game_info.puzzles[id]};
         RuthefjordUI.State.goToPuzzle(function() {
             if (sceneSelectType === 'tutorial') {
@@ -340,6 +341,7 @@ function setState_intro() {
 
 function setState_sandbox() {
     current_scene = 'transition';
+    RuthefjordBlockly.isSandbox = true;
     RuthefjordUI.State.goToSandbox(function() {
         Storage.load('sandbox_world_data', function(wd) {
             RuthefjordUnity.Call.request_start_sandbox(wd);
@@ -836,6 +838,12 @@ handler.onProgramStateChange = function(data) {
 
         RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
+}
+
+handler.onLockedToolboxClick = function(block) {
+    RuthefjordUI.UnlockBlockMsg.show(block.svg_.svgGroup_, function () {
+        create_puzzle_runner(game_info.packs[block.packName], "pack");
+    });
 }
 
 handler.onStepHighlight = function(id) {
