@@ -247,7 +247,7 @@ module.PackSelect = (function() {
         })
         $(span).append(learnList);
         return span;
-    }
+    };
 
     self.create = function(packs, onSelectCallback) {
         var selector = $(".packOptions");
@@ -261,7 +261,7 @@ module.PackSelect = (function() {
                 selector.append(m);
             }
         });
-    }
+    };
 
     return self;
 }());
@@ -331,6 +331,25 @@ module.LevelSelect = (function() {
                 x.childNodes[0].style.fill = colors[COLOR_MAP.unavailable];
             }
         });
+
+        // set up image of back to sandbox button
+        $(".instructions-img").each(function() {
+            if ($(this).attr("data-uiId")) {
+                var uiElem = $($(this).attr("data-uiId"));
+                $(this).on('click', function (ev) {
+                    ev.stopPropagation();
+                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiId")) {
+                        arrowTarget = $(this).attr("data-uiId");
+                        var arrow = $("#attention-arrow");
+                        arrow.css("display", "block");
+                        module.Arrow.positionLeftOf(uiElem);
+                        arrow.stop().animate({opacity: '100'});
+                        arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
+                    }
+                });
+            }
+        });
+
     };
 
     return self;
@@ -374,7 +393,7 @@ module.Instructions = (function() {
         wallsheet: "media/blockSvgs/wallsheet.svg",
         walltop: "media/blockSvgs/walltop.svg",
         pillarProc: "media/blockSvgs/pillarProc.svg"
-    }
+    };
 
     var uiIdMap = {
         go: "btn-run",
@@ -386,7 +405,7 @@ module.Instructions = (function() {
         clear: "btn-header-clear-sandbox",
         speedSlider: "speed-slider",
         done: "btn-done"
-    }
+    };
 
     function makeImgHtml(file, uiId) {
         var html = "<object class=\"instructions-img\" data=\"" + file + "\" style=\"vertical-align:middle\"";
@@ -395,21 +414,21 @@ module.Instructions = (function() {
         } 
         html += "></object>";
         return html;
-    }
+    };
 
     // replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
-    self.processTemplate = function(str) {
+    function processTemplate(str) {
         return str.replace(/{(\w+)}/g, function(match, id) {
             return typeof imgFileMap[id] != 'undefined'
                 ? makeImgHtml(imgFileMap[id], uiIdMap[id]) 
                 : match
             ;
         });
-    }
+    };
 
     // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element 
     // when the image is clicked
-    self.makeImgOnClick = function() {
+    function makeImgOnClick() {
         $(".instructions-img").each(function() {
             if ($(this).attr("data-uiId")) {
                 var uiElem = $($(this).attr("data-uiId"));
@@ -429,11 +448,11 @@ module.Instructions = (function() {
                 });
             }
         });
-    }
+    };
 
     function setOnExpandAnimationDone(f) {
         setTimeout(f, 1000);
-    }
+    };
 
     function setSize(doMakeLarge, clickCallback, doAnimate) {
 
@@ -475,11 +494,11 @@ module.Instructions = (function() {
                 onDone();
             }
         }
-    }
+    };
 
     self.hide = function() {
         $('#instructions-container').css('visibility', 'hidden');
-    }
+    };
 
     self.show = function(instructions, cb, doStartLarge) {
         // clear old instructions
@@ -488,13 +507,13 @@ module.Instructions = (function() {
         self.displayErrors();
         // load new instructions, if any
         if (instructions) {
-            $('#instructions-goal').html(self.processTemplate(instructions.summary));
-            $('#instructions-detail').html(self.processTemplate(instructions.detail));
+            $('#instructions-goal').html(processTemplate(instructions.summary));
+            $('#instructions-detail').html(processTemplate(instructions.detail));
         }
         $('#instructions-container').css('visibility', 'visible');
         setSize(doStartLarge, cb, false)();
-        self.makeImgOnClick();
-    }
+        makeImgOnClick();
+    };
 
     self.displayErrors = function(errors) {
         var list = $("#instructions-errors-list");
@@ -515,7 +534,7 @@ module.Instructions = (function() {
             list.addClass("populated");
             setSize(true, null, true)();
         }
-    }
+    };
 
     return self;
 }());

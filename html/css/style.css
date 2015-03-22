@@ -389,10 +389,7 @@ header button, .control-btn, .control-icon-btn {
 /************************************************************/
 
 #selector-puzzle {
-    position: relative
-    width: 100%;
     margin: 30px;
-    background-color: black;
     z-index: 1;
 }
 
@@ -422,6 +419,20 @@ header button, .control-btn, .control-icon-btn {
     fill: none;
 }
 
+#selector-puzzle-instructions {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 16pt;
+    color: #000;
+    background-color: #4aaae3;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+}
+
+/* pack selection */
+/************************************************************/
+
 #selector-pack {
     display: flex;
     flex-direction: column;
@@ -449,6 +460,9 @@ header button, .control-btn, .control-icon-btn {
     border-width: 2px;
     cursor: pointer;
 }
+
+/* gallery */
+/************************************************************/
 
 #selector-gallery {
     display: flex;
@@ -507,6 +521,9 @@ header button, .control-btn, .control-icon-btn {
     margin-bottom: 25px;
     width: 100px;
 }
+
+/* share screen */
+/************************************************************/
 
 #share-container {
     display: flex;
