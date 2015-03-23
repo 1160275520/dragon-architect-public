@@ -86,7 +86,7 @@
     <input id="btn-consent-continue" type="submit" value="Continue">
     </div>
     <div id="selector-puzzle" class="puzzleSelector">
-      <div id="selector-puzzle-instructions">Complete the puzzles below to unlock new abilities. Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"></img> to go back.</div> 
+      <div id="selector-puzzle-instructions">X</div> 
       <svg width=800 height=350>
         <g transform="translate(20,20)"/>
       </svg>
@@ -132,10 +132,11 @@
           <div id="speed-controls" class="game-control tools-debug">
             <div id="speed-slider"></div>
           </div>
+          <button id="btn-turbo" class="control-btn tools-no-debug">X</button>
           <!-- <p id="cube-counter" class="game-control">X</p> -->
         </div>
         <div id="code-entry" class="devModeOnly">
-          <textarea id="code-entry-area"></textarea>
+          <textarea id="code-entry-area" placeholder="devmode-only text-to-code-blocks input"></textarea>
           <button id="btn-code-entry">Submit</button>
         </div>
       </div>

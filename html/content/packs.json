@@ -44,11 +44,11 @@
     "edges": [
         ["repeat.arguments", "repeat.repeat_fixedProgram"],
         ["repeat.arguments", "repeat.repeat_fixedLoops"],
-        ["repeat.repeat_fixedProgram", "repeat.repeat_101Cubes"],
-        ["repeat.repeat_fixedLoops", "repeat.repeat_101Cubes"],
-        ["repeat.repeat_101Cubes", "repeat.speed_slider"]
+        ["repeat.repeat_fixedProgram", "repeat.speed_slider"],
+        ["repeat.repeat_fixedLoops", "repeat.speed_slider"],
+        ["repeat.speed_slider", "repeat.repeat_101Cubes"]
     ],
-    "name": "Meaty Beaty Big and Bouncy",
+    "name": "Better Building Through Repeat",
     "learn": ["Use arguments","Repeat code many times","Control program speed"]
 },
 "procedures":{

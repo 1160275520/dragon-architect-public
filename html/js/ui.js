@@ -225,13 +225,28 @@ module.Gallery = (function() {
 }());
 */
 
+// TODO move hard-coded graph spec to config file of some kind
+var colors = {
+    teal: "#5BA68D",
+    brown: "#A6875B",
+    purple: "#995BA6",
+    green: "#5BA65B",
+    gray: "#777777",
+    orange: "#FFB361"
+};
+
 module.PackSelect = (function() {
     var self = {};
 
-    function makePack(pack) {
+    function makePack(pack, isCompleted) {
         var span = document.createElement("span");
         span.id = 'pack_' + pack.name;
         $(span).addClass('packOption');
+        if (isCompleted) {
+            span.style.background = colors.green;
+        } else {
+            span.style.background = colors.orange;
+        }
         var title = document.createElement("p");
         title.innerHTML = pack.name;
         $(title).css("font-weight", "700");
@@ -249,12 +264,14 @@ module.PackSelect = (function() {
         return span;
     };
 
-    self.create = function(packs, onSelectCallback) {
+    self.create = function(packs, progress, onSelectCallback) {
+        console.log(packs);
         var selector = $(".packOptions");
         selector.empty();
         _.each(packs, function(pack) {
-            if (pack.name) {
-                var m = makePack(pack, onSelectCallback);
+            console.log(pack);
+            if (pack.name && (!pack.prereq || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))) {
+                var m = makePack(pack, progress.is_pack_completed(pack));
                 $(m).on('click', function () {
                     onSelectCallback(pack); 
                 });
@@ -277,15 +294,6 @@ module.LevelSelect = (function() {
      * { id: <id of level>, puzzle: <PuzzleInfo object> }
      */
     self.create = function(pack, scenes, isSceneCompleted, onSelectCallback) {
-        // TODO move hard-coded graph spec to config file of some kind
-        var colors = {
-            teal: "#5BA68D",
-            brown: "#A6875B",
-            purple: "#995BA6",
-            green: "#5BA65B",
-            gray: "#777777",
-            orange: "#FFB361"
-        };
 
         var graph = new dagre.Digraph();
 
@@ -334,18 +342,16 @@ module.LevelSelect = (function() {
 
         // set up image of back to sandbox button
         $(".instructions-img").each(function() {
-            if ($(this).attr("data-uiId")) {
-                var uiElem = $($(this).attr("data-uiId"));
+            if ($(this).attr("data-uiid")) {
+                var uiElem = $($(this).attr("data-uiid"));
                 $(this).on('click', function (ev) {
                     ev.stopPropagation();
-                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiId")) {
-                        arrowTarget = $(this).attr("data-uiId");
-                        var arrow = $("#attention-arrow");
-                        arrow.css("display", "block");
-                        module.Arrow.positionLeftOf(uiElem);
-                        arrow.stop().animate({opacity: '100'});
-                        arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
-                    }
+                    var arrowTarget = $(this).attr("data-uiid");
+                    var arrow = $("#attention-arrow");
+                    arrow.css("display", "block");
+                    module.Arrow.positionLeftOf(uiElem);
+                    arrow.stop().animate({opacity: '100'});
+                    arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
                 });
             }
         });
@@ -410,7 +416,7 @@ module.Instructions = (function() {
     function makeImgHtml(file, uiId) {
         var html = "<object class=\"instructions-img\" data=\"" + file + "\" style=\"vertical-align:middle\"";
         if (uiId) {
-            html += " data-uiId=\"#" + uiId + "\"";
+            html += " data-uiid=\"#" + uiId + "\"";
         } 
         html += "></object>";
         return html;
@@ -430,12 +436,12 @@ module.Instructions = (function() {
     // when the image is clicked
     function makeImgOnClick() {
         $(".instructions-img").each(function() {
-            if ($(this).attr("data-uiId")) {
-                var uiElem = $($(this).attr("data-uiId"));
+            if ($(this).attr("data-uiid")) {
+                var uiElem = $($(this).attr("data-uiid"));
                 $(this).on('click', function (ev) {
                     ev.stopPropagation();
-                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiId")) {
-                        arrowTarget = $(this).attr("data-uiId");
+                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiid")) {
+                        arrowTarget = $(this).attr("data-uiid");
                         var arrow = $("#attention-arrow");
                         arrow.css("display", "block");
                         module.Arrow.positionLeftOf(uiElem);
@@ -585,6 +591,16 @@ module.RunButton = (function() {
     return self;
 }());
 
+module.TurboButton = (function() {
+    var self = {};
+
+    self.update = function(isTurbo) {
+        update_button('#btn-turbo', true, isTurbo, "Go Turbo Speed", "Go Normal Speed");
+    };
+
+    return self;
+}());
+
 module.ModeButton = (function() {
     var self = {};
 
@@ -652,6 +668,7 @@ module.CameraControls = (function() {
 /// elemName is the name used for logging ui actions.
 function Slider(elemName, selector, labels, allElems) {
     var self = {};
+    self.SLIDER_DEFAULT = 0.25
     var container;
     var slider;
 
@@ -672,7 +689,7 @@ function Slider(elemName, selector, labels, allElems) {
         container.append(slider);
 
         slider.bootstrapSlider({
-            value: 0.22,
+            value: self.SLIDER_DEFAULT,
             min: 0.0,
             max: 1.0,
             step: 0.01,
@@ -787,8 +804,8 @@ module.WinMessage = (function() {
         btn.style["display"] = "block";
         $(btn).addClass("control-btn");
         $(btn).html(btn_msg);
-        $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
-        setTimeout(function () { module.Dialog.destroy(); cb(); }, 4000);
+        var timeout = setTimeout(function () { module.Dialog.destroy(); cb(); }, 4000);
+        $(btn).on('click', function () { clearTimeout(timeout); module.Dialog.destroy(); cb(); });
         div.appendChild(dialogContent);
         div.appendChild(btn);
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};

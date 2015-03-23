@@ -272,21 +272,18 @@ function create_puzzle_runner(pack, sceneSelectType) {
     self.onPuzzleFinish = function() {
         switch (sceneSelectType) {
             case "pack":
-                if (progress.puzzles_remaining(pack) > 0 || isDevMode) {
-                    // bring up the level select
-                    RuthefjordUI.State.goToSceneSelect(function() {
-                        RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                            if (progress.puzzles_remaining(pack) === 1) {
-                                setState_puzzle(pid, "Go to the sandbox");
-                            } else {
-                                setState_puzzle(pid, "Go to puzzle select");
-                            }
-                        });
-                    });
+                // adjust the instructions depending on if the pack is complete
+                if (progress.puzzles_remaining(pack) > 0) {
+                    $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"></img> if you want to go back.'); 
                 } else {
-                    // pack has been completed, go to sandbox
-                    setState_sandbox();
+                    $("#selector-puzzle-instructions").html('All done! Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"></img> to go back.'); 
                 }
+                // bring up the level select
+                RuthefjordUI.State.goToSceneSelect(function() {
+                    RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                            setState_puzzle(pid, "Go to puzzle select");
+                    });
+                });
                 break;
 
             case "tutorial":
@@ -441,10 +438,8 @@ $(function() {
 
         function goToPacks() {
             RuthefjordUI.State.goToPackSelect(function () {
-                RuthefjordUI.PackSelect.create(_.filter(game_info.packs,
-                    function(m) {
-                        return !progress.is_pack_completed(m);
-                    }),
+                RuthefjordUI.PackSelect.create(game_info.packs,
+                    progress,
                     function(pack) {
                         current_puzzle_runner = create_puzzle_runner(pack, "pack");
                     });
@@ -531,6 +526,20 @@ $(function() {
         RuthefjordUI.Instructions.hide();
 
         RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
+        
+        $("#btn-turbo").on('click', function () {
+            if (RuthefjordUI.SpeedSlider.value() === 1) { // switch from turbo to normal
+                RuthefjordUI.SpeedSlider.value(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT)
+                RuthefjordUnity.Call.set_program_execution_speed(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT);
+                RuthefjordUI.TurboButton.update(false);
+            } else { // switch from normal to turbo
+                RuthefjordUI.SpeedSlider.value(1.0);
+                RuthefjordUnity.Call.set_program_execution_speed(1.0);
+                RuthefjordUI.TurboButton.update(true);
+            }
+        });
+        RuthefjordUI.TurboButton.update(false); // initialize button text
+
         RuthefjordUI.TimeSlider.initialize(RuthefjordUnity.Call.set_program_execution_time);
 
         $("#btn-time-slider-back").on('click', function() { 
@@ -584,6 +593,8 @@ $(function() {
         // turn off gallery elements if diabled
         if (!RUTHEFJORD_CONFIG.features.is_debugging) {
             $('.tools-debug').hide();
+        } else {
+            $('.tools-no-debug').hide();
         }
 
         // HACK add blockly change listener for saving
@@ -609,6 +620,8 @@ $(function() {
                 });
             }
         });
+        RuthefjordBlockly.game_info = game_info;
+        RuthefjordBlockly.progress = progress;
     });
 });
 
@@ -842,7 +855,7 @@ handler.onProgramStateChange = function(data) {
 
 handler.onLockedToolboxClick = function(block) {
     RuthefjordUI.UnlockBlockMsg.show(block.svg_.svgGroup_, function () {
-        create_puzzle_runner(game_info.packs[block.packName], "pack");
+        current_puzzle_runner = create_puzzle_runner(game_info.packs[block.packName], "pack");
     });
 }
 

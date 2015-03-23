@@ -14,7 +14,11 @@ var RuthefjordBlockly = {};
 RuthefjordBlockly.history = [];
 RuthefjordBlockly.curProgramStr = "";
 RuthefjordBlockly.ignoreNextHistory = false;
+
+// references to data from app.js (these should be treated as READ-ONLY)
 RuthefjordBlockly.isSandbox = false;
+RuthefjordBlockly.game_info;
+RuthefjordBlockly.progress;
 
 var q_defer = Q.defer();
 
@@ -46,16 +50,17 @@ document.write('<script type="text/javascript" src="generated/' +
  */
 
 // list of custom block xml, in the order they should appear in the library
+// block name, standard xml, locked xml, pack name
 RuthefjordBlockly.Commands = [
     ['move2',  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>'],
     ['place',  '<block type="PlaceCube"></block>'],
     ['line',   '<block type="Line"></block>'],
-    ['up',  '<block type="Up"></block>', '<block type="Up_locked"></block>'],
-    ['down',  '<block type="Down"></block>', '<block type="Down_locked"></block>'],
-    ['remove', '<block type="RemoveCube"></block>', '<block type="RemoveCube_locked"></block>'],
-    ['repeat', '<block type="controls_repeat"></block>', '<block type="controls_repeat_locked"></block>'],
-    ['defproc', '<block type="procedures_defnoreturn"></block>', '<block type="procedures_defnoreturn_locked"></block>']
-]
+    ['up',  '<block type="Up"></block>', '<block type="Up_locked"></block>', 'up'],
+    ['down',  '<block type="Down"></block>', '<block type="Down_locked"></block>', 'up'],
+    ['remove', '<block type="RemoveCube"></block>', '<block type="RemoveCube_locked"></block>', 'remove'],
+    ['repeat', '<block type="controls_repeat"></block>', '<block type="controls_repeat_locked"></block>', 'repeat'],
+    ['defproc', '<block type="procedures_defnoreturn"></block>', '<block type="procedures_defnoreturn_locked"></block>', 'procedures']
+];
 
 RuthefjordBlockly.AddonCommands = [];
 
@@ -177,11 +182,14 @@ RuthefjordBlockly.freezeBody = function(block, doFreezeArgs) {
 
 RuthefjordBlockly.updateToolbox = function() {
     var toolXML = '<xml id="toolbox" style="display: none">';
-    _.each(_.union(RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands), function(pair) {
-        if (_.contains(current_tools, pair[0])) {
-            toolXML += pair[1];
-        } else if (pair[2] && RuthefjordBlockly.isSandbox) {
-            toolXML += pair[2];
+    _.each(_.union(RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands), function(commandData) {
+        if (_.contains(current_tools, commandData[0])) {
+            toolXML += commandData[1];
+        } else if (commandData[2] && RuthefjordBlockly.isSandbox) {
+            var pack = RuthefjordBlockly.game_info.packs[commandData[3]];
+            if (!pack.prereq || pack.prereq.every(function (packName) { return RuthefjordBlockly.progress.is_pack_completed(RuthefjordBlockly.game_info.packs[packName]); })) {
+                toolXML += commandData[2];
+            }
         }
     });
 
