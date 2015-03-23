@@ -367,15 +367,17 @@ function onProgramEdit() {
 $(function() {
     RuthefjordUI.State.goToLoading();
 
+    // hide this message, will re-show if loading takes too long
+    $('#msg-plugin-blocked').hide();
+    $('#msg-not-loading').hide();
+
     // check for the unity plugin, add a message to the loading screen if not detected
     if (navigator && navigator.plugins && navigator.plugins['Unity Player']) {
         $('#msg-missing-unity').hide();
     } else {
+        $('#msg-loading').hide();
         return;
     }
-
-    // hide this message, will re-show if loading takes too long
-    $('#msg-plugin-blocked').hide();
 
     function initialize_unity() {
         var isResolved = false;
@@ -594,6 +596,14 @@ $(function() {
     var uid = $.url().param('uid');
     RuthefjordLogging.initialize(uid);
 
+    var isInitialized = false;
+    setTimeout(function() {
+        if (!isInitialized) {
+            $('#msg-loading').hide();
+            $('#msg-not-loading').show();
+        }
+    }, 15000);
+
     // load save data first, then get the experimental condition, then do all the things
     load_save_data()
     .then(function() {
@@ -610,6 +620,8 @@ $(function() {
             RuthefjordBlockly.init(),
         ]);
     }).then(function() {
+        isInitialized = true;
+
         // turn off gallery elements if diabled
         if (!RUTHEFJORD_CONFIG.features.is_debugging) {
             $('.tools-debug').hide();
