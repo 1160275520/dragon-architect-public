@@ -77,7 +77,7 @@ header > h1 {
     background: white;
 }
 
-.view-loading > p {
+.view-loading > #msg-loading {
     font-size: 40pt;
 }
 

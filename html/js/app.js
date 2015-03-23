@@ -367,11 +367,31 @@ function onProgramEdit() {
 $(function() {
     RuthefjordUI.State.goToLoading();
 
+    // check for the unity plugin, add a message to the loading screen if not detected
+    if (navigator && navigator.plugins && navigator.plugins['Unity Player']) {
+        $('#msg-missing-unity').hide();
+    } else {
+        return;
+    }
+
+    // hide this message, will re-show if loading takes too long
+    $('#msg-plugin-blocked').hide();
+
     function initialize_unity() {
+        var isResolved = false;
         var d = Q.defer();
         handler.onSystemStart = function() {
+            isResolved = true;
             d.resolve();
         };
+
+        setTimeout(function() {
+            if (!isResolved) {
+                $('#msg-loading').hide();
+                $('#msg-plugin-blocked').show();
+            }
+        }, 10000);
+
         // this doesn't return a promise, unity will get back to us via hander.onSystemStart
         RuthefjordUnity.Player.initialize();
         return d.promise;
