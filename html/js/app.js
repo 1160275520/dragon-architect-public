@@ -530,6 +530,9 @@ $(function() {
         });
 
         $('#btn-step').on('click', function() {
+            if (questLogger) {
+                questLogger.logDoUiAction('button-one-step', 'click', null);
+            }
             RuthefjordUnity.Call.next_interesting_step();
         });
 
@@ -550,14 +553,22 @@ $(function() {
         RuthefjordUI.SpeedSlider.initialize(RuthefjordUnity.Call.set_program_execution_speed);
         
         $("#btn-turbo").on('click', function () {
+            var toggleState;
+
             if (RuthefjordUI.SpeedSlider.value() === 1) { // switch from turbo to normal
+                toggleState = 1;
                 RuthefjordUI.SpeedSlider.value(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT)
                 RuthefjordUnity.Call.set_program_execution_speed(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT);
                 RuthefjordUI.TurboButton.update(false);
             } else { // switch from normal to turbo
+                toggleState = 0;
                 RuthefjordUI.SpeedSlider.value(1.0);
                 RuthefjordUnity.Call.set_program_execution_speed(1.0);
                 RuthefjordUI.TurboButton.update(true);
+            }
+
+            if (questLogger) {
+                questLogger.logDoUiAction('button-turbo', 'click', {toggle:toggleState});
             }
         });
         RuthefjordUI.TurboButton.update(false); // initialize button text
