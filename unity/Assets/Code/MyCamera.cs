@@ -10,12 +10,13 @@ public class MyCamera : MonoBehaviour
     public float WobblePeriod = 3.0f;
     public float WobbleMagnitude = 3.0f;
     public bool ForceFullTranslation = false;
+    public GameObject CubeHighlight;
 
     private Transform player;           // Reference to the player's transform.
     private Vector3 relCameraPos;       // The relative position of the camera from the player.
     private float relCameraPosMag;      // The distance of the camera from the player.
     private Vector3 newPos;             // The position the camera is trying to reach.
-
+    private GameObject currentCubeHighlight;
 
     void Awake() {
         // Setting up the reference.
@@ -85,13 +86,22 @@ public class MyCamera : MonoBehaviour
             bool hit = Physics.Raycast(ray, out hitInfo);
             if (hit) 
             {
+                clearCubeHighlight();
                 if (hitInfo.transform.gameObject.name.StartsWith("Cube") && FindObjectOfType<ProgramManager>().EditMode.IsWorkshop) {
+                    // highlight cube
+                    currentCubeHighlight = (GameObject)GameObject.Instantiate(CubeHighlight, hitInfo.transform.position, Quaternion.identity);
                     // the command StatementT will be first, so we want the execute right after that with the id for the corresponding code block
                     var id = FindObjectOfType<Grid>().CommandForCube(hitInfo.transform.gameObject).LastExecuted.Tail.Head.Meta.Id;
                     FindObjectOfType<ExternalAPI>().NotifyDebugHighlight(id);
                 }
             }
         } 
+    }
+
+    public void clearCubeHighlight() {
+        if (currentCubeHighlight) {
+            Destroy(currentCubeHighlight);
+        }
     }
 
     private bool ViewingPosCheck(Vector3 checkPos) {

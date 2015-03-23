@@ -111,7 +111,7 @@ public class ProgramManager : MonoBehaviour {
 
             // stop playback when mode changes (which should clear out any workshop changes)
             RunState = RunState.Stopped;
-
+            FindObjectOfType<MyCamera>().clearCubeHighlight();
             if (value.IsWorkshop) {
                 // if switching to workshop mode, backup all cells and clear old states
                 var grid = GetComponent<Grid>();
@@ -199,6 +199,7 @@ public class ProgramManager : MonoBehaviour {
     private void setGameState(Simulator.StateResult state, IEnumerable<Imperative.Statement> stack, float transitionTimeSeconds) {
         Profiler.BeginSample("ProgramManager.setGameState");
         if (state != currentState) {
+            FindObjectOfType<MyCamera>().clearCubeHighlight();
             currentState = state;
             var grid = GetComponent<Grid>();
             var ws = state.WorldState as BasicWorldState;
