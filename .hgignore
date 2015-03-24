@@ -12,8 +12,9 @@ syntax: glob
 *.pdb.meta
 dependency_override.json
 packages/
-bin/
-obj/
+gamelib/**/bin/
+gamelib/**obj/
+unity/obj/
 unity/UnityGenerated/
 unity/Library/
 unity/ExportedObj/
