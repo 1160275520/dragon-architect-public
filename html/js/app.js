@@ -29,6 +29,8 @@ var sandboxProgAddon = "";
 var Storage = (function() {
     var mdl = {};
     var base_url = RUTHEFJORD_CONFIG.server.url;
+    // if we find something lower than this, it's old data, just delete it!
+    var STORAGE_VERSION = "1";
 
     // commented out because we're not using it for UIST
     /*
@@ -117,6 +119,7 @@ var Storage = (function() {
     }
 
     mdl.initialize = function(cb) {
+        var isLocal = false;
         switch (RUTHEFJORD_CONFIG.server.storage) {
             //case 'server':
             //    storageImpl = ServerStorage();
@@ -124,11 +127,22 @@ var Storage = (function() {
             //    break;
             case 'local':
                 storageImpl = window.localStorage;
+                isLocal = true;
                 break;
             case 'session':
                 storageImpl = window.sessionStorage;
+                isLocal = true;
                 break;
             default: throw 'invalid storage type!';
+        }
+
+        // for local/session storage, check the version number and discard if necessary
+        if (isLocal) {
+            if (!storageImpl.getItem('version') || storageImpl.getItem('version') !== STORAGE_VERSION) {
+                console.warn("Stored data is for an older version of the game! Deleting...");
+                storageImpl.clear();
+            }
+            storageImpl.setItem('version', STORAGE_VERSION);
         }
 
         // need to generate a user id if one does not exist
@@ -138,13 +152,21 @@ var Storage = (function() {
         } else {
             $.ajax(base_url + '/create_player', {
                 type: 'POST'
-            }).then(function(data) {
+            }).done(function(data) {
                 storageImpl.setItem('id', data.result.id);
                 console.info('generated new user id ' + data.result.id);
+                cb();
+            }).fail(function() {
+                // TODO maybe set something so the game can keep going
+                console.error("server not around, can't get a user id!");
                 cb();
             });
         }
     };
+
+    mdl.clear = function() {
+        storageImpl.clear();
+    }
 
     mdl.save = function(key, value) {
         if (typeof key !== "string") throw new TypeError("keys must be strings!");
@@ -442,6 +464,10 @@ $(function() {
             if (val[0] !== '-') {
                 current_puzzle_runner = create_puzzle_runner(game_info.packs[val], "pack");
             }
+        });
+
+        $('#btn-clear-save-data').on('click', function() {
+            Storage.clear();
         });
 
         $('#btn-header-clear-sandbox').on('click', function() {
