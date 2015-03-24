@@ -7,7 +7,8 @@ if [ $# -lt 3 ]; then
 fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROG="$DIR/cgsanalysis"
+# apparently uses the wrong python unless we call python directly...
+PROG="python $DIR/cgsanalysis"
 
 $PROG init && $PROG markcid $1 $2 && $PROG transfer $3 && $PROG clean
 
