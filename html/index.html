@@ -72,22 +72,26 @@
       <p id="msg-plugin-blocked">Unity is taking a long time to load! It is possible that your browser is blocking the plugin. In Chrome, you can check the right side of the address bar for a blocked plugin icon. It's also possibile that there is a bug in our program or your browser is unsupported.</p>
       <p id="msg-not-loading">Something is going wrong with initializing the game! This game is still in development, so it is likely there is a bug.</p>
     </div>
-    <div class="player-consent">
-    <p>By playing this game you acknowledge that:</p>
-    <ul>
-      <li><b>We are recording logs of player decisions.</b> As you play this game, you are participating in a research study, and it is keeping a record of your decisions and pathways through the game so that the game's creators, researchers at the University of Washington*, can improve the game for future players, as well as see whether our games improve our abilities with in-game tasks over time. Your play log will be added to a dataset that shows up trends in player behavior. This data will be kept for 7 years. This logging is no different than the standard practice in the game industry aimed at improving player's experience.</li><br>
+    <div id="player-consent" class="intro-msg">
+      <p>By playing this game you acknowledge that:</p>
+      <ul>
+        <li><b>We are recording logs of player decisions.</b> As you play this game, you are participating in a research study, and it is keeping a record of your decisions and pathways through the game so that the game's creators, researchers at the University of Washington*, can improve the game for future players, as well as see whether our games improve our abilities with in-game tasks over time. Your play log will be added to a dataset that shows up trends in player behavior. This data will be kept for 7 years. This logging is no different than the standard practice in the game industry aimed at improving player's experience.</li><br>
 
-      <li><b>For some games, we ask a set of survey questions about your perceptions of math and intelligence, and for basic demographic information: Age, Gender, and Education Level.</b></li><br>
+        <li><b>For some games, we ask a set of survey questions about your perceptions of math and intelligence, and for basic demographic information: Age, Gender, and Education Level.</b></li><br>
 
-      <li><b>The data will be shared with our collaborators at DARPA and ONR,</b> who are working with us on this project.</li><br>
+        <li><b>The data will be shared with our collaborators at DARPA and ONR,</b> who are working with us on this project.</li><br>
 
-      <li><b>This data may be published or shared with the academic community</b> for the purposes of presenting research findings and furthering the advancement of improving games and learning through games. The log data will be in the aggregate and collected form (not per individual), without the possibility for anyone to determine any personally identifiable information or even personally identifiable gameplay information.</li>
-    </ul>
+        <li><b>This data may be published or shared with the academic community</b> for the purposes of presenting research findings and furthering the advancement of improving games and learning through games. The log data will be in the aggregate and collected form (not per individual), without the possibility for anyone to determine any personally identifiable information or even personally identifiable gameplay information.</li>
+      </ul>
 
-    <p>If you have any questions or concerns about the research or game, please feel free to contact us at cgs-feedback@cs.washington.edu or at (425) 312-3363. If you have questions about your rights as a research participant, you may contact a member of UW's Human Subjects Division at hsdinfo@uw.edu or at (206) 543-0098. Please note that emails are considered insecure and privacy is not guaranteed.</p><br>
+      <p>If you have any questions or concerns about the research or game, please feel free to contact us at cgs-feedback@cs.washington.edu or at (425) 312-3363. If you have questions about your rights as a research participant, you may contact a member of UW's Human Subjects Division at hsdinfo@uw.edu or at (206) 543-0098. Please note that emails are considered insecure and privacy is not guaranteed.</p><br>
 
-    <input id="chkbox-consent" type="checkbox" checked> By leaving this box checked I give permission for my data to be used for research purposes.<br><br>
-    <input id="btn-consent-continue" type="submit" value="Continue">
+      <input id="chkbox-consent" type="checkbox" checked> By leaving this box checked I give permission for my data to be used for research purposes.<br><br>
+      <input id="btn-consent-continue" type="submit" value="Continue">
+    </div>
+    <div id="alpha-msg" class="intro-msg">
+      <p><b>Dragon Arcitect</b> is very early in development. You may find bugs. Please contact us with problems, questions, and comments at <a href="mailto:cgs-feedback@cs.washington.edu">cgs-feedback@cs.washington.edu</a>.</p>
+      <button id="btn-alpha-continue" class="control-btn">Continue</button>
     </div>
     <div id="selector-puzzle" class="puzzleSelector">
       <div id="selector-puzzle-instructions">X</div> 

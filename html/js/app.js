@@ -679,13 +679,18 @@ $(function() {
 
         progress.initialize(function() {
             if (progress.is_pack_completed(game_info.packs["tutorial"])) {
-                setState_sandbox();
+                RuthefjordUI.State.goToAlphaMsg();
+                $("#btn-alpha-continue").on('click', function() {
+                    setState_sandbox();
+                });
             } else {
-                // setState_title();
                 RuthefjordUI.State.goToConsent();
                 $("#btn-consent-continue").on('click', function() {
                     RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked);
-                    setState_title();
+                    RuthefjordUI.State.goToAlphaMsg();
+                    $("#btn-alpha-continue").on('click', function() {
+                        setState_title();
+                    });
                 });
             }
         });

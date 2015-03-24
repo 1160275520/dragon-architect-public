@@ -81,13 +81,22 @@ header > h1 {
     font-size: 40pt;
 }
 
-.player-consent {
+.intro-msg {
     display: inline-table; /* don't know why, but this gets it to size to content */
     font-family: "Open Sans";
     background-color: #fff;
     margin: 0;
     padding: 0;
     height: 100%;
+}
+
+#alpha-msg > p {
+    margin: 200px 200px 20px;
+    font-size: 20pt;
+}
+#alpha-msg > button {
+    margin: auto;
+    font-size: 16pt;
 }
 /* main area and two main vertical divs */
 /************************************************************/
