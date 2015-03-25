@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from .base import TableBase
 

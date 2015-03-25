@@ -1,7 +1,7 @@
 """Helper functions and common argparse parameters and descriptions for command-line programs that do data transfers.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import create_engine
 from . import dbinfo
 import getpass

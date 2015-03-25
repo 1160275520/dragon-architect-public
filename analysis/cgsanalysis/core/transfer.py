@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import create_engine, Table, MetaData, Column, String, ForeignKey
 from sqlalchemy.sql import select, union, or_, and_, func
 from sqlalchemy.schema import ForeignKeyConstraint
@@ -175,7 +175,8 @@ def transfer_logging_by_cid(args, dst_engine, dst_conn, game, rowset, banned_uid
         for t in log_tables.values():
             t.create_local(dst_conn)
 
-        table_info = fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multiplayer=bool(row.is_multiplayer))
+        # HACK multiplayer always false for now because no idea how this was working before
+        table_info = fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multiplayer=False)
         copy_tables_by_id(src_conn, dst_conn, table_info, args.copy_batch_size)
 
 def main(args):

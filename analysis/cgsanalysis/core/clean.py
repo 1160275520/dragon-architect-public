@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import create_engine, MetaData, String, Integer
 from sqlalchemy.schema import Table, Column, ForeignKey, Index
 from sqlalchemy.sql import select, func, literal, case, or_, and_
@@ -245,6 +245,7 @@ def main(args):
         create_trace_wins_and_actions(conn, log_tables)
         create_single_player_action_player(conn, log_tables)
 
+        # FIXME this isn't actually getting created. it's also not actually used so, uh.
         ct.session_version.create(conn)
 
 def get_parser():

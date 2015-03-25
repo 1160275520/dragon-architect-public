@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 
 class GameInfo(object):
     def __init__(self, gid, name, dbFormatStr=None):

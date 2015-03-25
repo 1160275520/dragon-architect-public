@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import create_engine, MetaData, Table, String, Integer, ForeignKey, ForeignKeyConstraint
 from sqlalchemy.engine import reflection
 from sqlalchemy.dialects.mysql import TINYINT

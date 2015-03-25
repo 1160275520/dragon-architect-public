@@ -1,7 +1,7 @@
 """Operations that manipulate the specification tables, e.g., marking a cid for download.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 import argparse
 from . import schema as ct
 from cgsanalysis import gameinfo, cli
@@ -14,7 +14,7 @@ def mark_category_id(conn, gid, cid):
         conn.execute(ct.spec_category.insert().values(gid=gid, cid=cid))
 
 def mark_banned_uid(conn, uid):
-    uid = unicode(uid)
+    uid = str(uid)
 
     with conn.begin() as trans:
         conn.execute(ct.spec_banned_user.insert().values(uid=uid))

@@ -1,7 +1,7 @@
 """The global metadata object used by table definitions.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import MetaData
 from collections import defaultdict
 from sqlalchemy import Table

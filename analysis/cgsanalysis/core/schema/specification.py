@@ -5,7 +5,7 @@ All tables are prefixed with 'spec_', for example, 'spec_uid'.
 These tables are used by the transfer/create functions to determine which data to collect.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import Table, Column, Integer, Boolean, String, ForeignKey, Index
 from .base import metadata, register, SPEC
 from .logging import type_uid, type_username

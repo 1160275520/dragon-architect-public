@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import create_engine
 import getpass
 import json
@@ -27,21 +27,21 @@ class DBInfo(object):
 
 
 dbdev = DBInfo(
-    protocol = 'mysql',
+    protocol = 'mysql+pymysql',
     host = "dev.db.centerforgamescience.com",
     user = "cgs_gm_prd_u",
     has_password = True,
 )
 
 dbprd = DBInfo(
-    protocol = 'mysql',
+    protocol = 'mysql+pymysql',
     host = "prd.db.centerforgamescience.com",
     user = "cgs_gm_prd_u",
     has_password = True,
 )
 
 dbreplica = DBInfo(
-    protocol = 'mysql',
+    protocol = 'mysql+pymysql',
     host = "replica.db.centerforgamescience.com",
     user = "cgs_gm_prd_u",
     has_password = True,

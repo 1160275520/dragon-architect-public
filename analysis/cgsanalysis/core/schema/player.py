@@ -1,7 +1,7 @@
 """Schema for tables containing player log data (e.g., sessions, traces, actions).
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, BigInteger, ForeignKeyConstraint, Index
 from sqlalchemy.sql import select, and_
 from sqlalchemy.types import NullType

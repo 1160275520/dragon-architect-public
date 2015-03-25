@@ -1,4 +1,4 @@
-from __future__ import absolute_import, print_function, unicode_literals
+# Python 3.4+
 from sqlalchemy import Table
 from sqlalchemy.schema import ForeignKeyConstraint, AddConstraint, DropConstraint, CreateTable, Column
 from sqlalchemy.types import NullType, Integer
