@@ -66,7 +66,7 @@ def _visit_least(element, compiler, **kw):
     return compiler.process(func.min(*element.args))
 
 class greatest(ColumnElement):
-    """GREATEST in mysql/postgres, MAN in sqlite"""
+    """GREATEST in mysql/postgres, MAX in sqlite"""
     def __init__(self, *args):
         self.args = args
 
@@ -161,8 +161,8 @@ def create_temp_table_as_select_pkey(connection, metadata, tmp_table_name, colum
     Deals with sqlite BS by creating the temp table first then doing an insert.
     """
     table = Table(tmp_table_name, metadata, Column(column.name, get_fk_type(column), primary_key=True), prefixes=['TEMPORARY'])
-    if connection.engine.name == 'sqlite':
-        # sqlite doesn't suport this crap so have to manually create the table then do an insert
+    if connection.engine.name != 'mysql':
+        # sqlite/postgres doesn't suport this crap so have to manually create the table then do an insert
         table.create(connection)
         connection.execute(InsertFromSelect(table, [column.name], select))
     else:

@@ -204,7 +204,7 @@ def main(args):
 def get_parser():
     _DESC = """
     Transfer rows of the pageloads/quests/actions tables from the remote logging database to a local one.
-    Uses the spec_* tables to determine what to transfer, so run specify.py first.
+    Uses the spec_* tables to determine what to transfer, so run those commands first.
 
     The program will only transfer new data, so this can be run frequently and cheaply to collect newer data.
     """

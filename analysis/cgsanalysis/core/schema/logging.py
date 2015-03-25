@@ -1,6 +1,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from sqlalchemy import create_engine, MetaData, Table, String, Integer, ForeignKey, ForeignKeyConstraint
 from sqlalchemy.engine import reflection
+from sqlalchemy.dialects.mysql import TINYINT
 from . import base
 from cgsanalysis import gameinfo
 
