@@ -270,11 +270,9 @@ module.PackSelect = (function() {
     };
 
     self.create = function(packs, progress, onSelectCallback) {
-        console.log(packs);
         var selector = $(".packOptions");
         selector.empty();
         _.each(packs, function(pack) {
-            console.log(pack);
             if (pack.name && (!pack.prereq || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))) {
                 var m = makePack(pack, progress.is_pack_completed(pack));
                 $(m).on('click', function () {
@@ -802,12 +800,12 @@ module.WinMessage = (function() {
         $(div).addClass("dialog-content");
         var dialogContent = document.createElement('span');
         dialogContent.appendChild(document.createTextNode(msg));
-        dialogContent.style["text-align"] = "center";
-        dialogContent.style["display"] = "block";
+        $(dialogContent).css("text-align", "center");
+        $(dialogContent).css("display", "block");
         var btn = document.createElement('button');
-        btn.style["font-size"] = "20pt";
-        btn.style["margin"] = "0 auto";
-        btn.style["display"] = "block";
+        $(btn).css("font-size", "20pt");
+        $(btn).css("margin", "0 auto");
+        $(btn).css("display", "block");
         $(btn).addClass("control-btn");
         $(btn).html(btn_msg);
         var timeout = setTimeout(function () { module.Dialog.destroy(); cb(); }, 4000);
@@ -828,7 +826,7 @@ module.UnlockBlockMsg = (function() {
         var div = document.createElement('div');
         $(div).addClass("dialog-content");
         var btn = document.createElement('button');
-        btn.style["font-size"] = "16pt";
+        $(btn).css("font-size", "16pt");
         $(btn).addClass("control-btn");
         $(btn).html("Unlock this here");
         $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
@@ -838,6 +836,70 @@ module.UnlockBlockMsg = (function() {
         $("#dialog").stop(true, true);
         RuthefjordUI.Dialog.make(div, style);
         $("#dialog").fadeOut(4000, "easeInExpo", function() { module.Dialog.destroy(); });
+    }
+
+    return self;
+}());
+
+module.DebugFeatureInfo = (function() {
+    var self = {};
+    var nextFeatureIndex = 0;
+    self.features = [
+        ["#time-slider", "Drag this slider to go to the beginning and end of your program"],
+        ["NONE", "Click on any cube to see which code block placed it"],
+        ["#btn-step", "This button lets you run your program one block at a time"],
+        ["#speed-slider", "Drag this slider to speed up or slow down your program"]
+    ]
+
+    self.hasNext = function() {
+        return nextFeatureIndex < self.features.length;
+    }
+
+    self.showNext = function() {
+        if (nextFeatureIndex >= self.features.length) {
+            console.error("All debug features already covered!");
+            return;
+        }
+
+        var uiElem;
+        if (self.features[nextFeatureIndex][0] !== "NONE") {
+            uiElem = $(self.features[nextFeatureIndex][0]);
+        }
+        var msg = self.features[nextFeatureIndex][1];
+        nextFeatureIndex++;
+
+        var div = document.createElement('div');
+        $(div).addClass("dialog-content");
+        var dialogContent = document.createElement('span');
+        dialogContent.appendChild(document.createTextNode(msg));
+        $(dialogContent).css("text-align", "center");
+        $(dialogContent).css("display", "block");
+        $(dialogContent).css("padding-bottom", "20px");
+        
+        var arrow = $("#attention-arrow");
+        if (uiElem) {
+            arrow.css("display", "block");
+            module.Arrow.positionLeftOf(uiElem);
+            arrow.stop().animate({opacity: '100'});
+        }
+
+        var btn = document.createElement('button');
+        $(btn).css("margin", "0 auto");
+        $(btn).css("display", "block");
+        $(btn).addClass("control-btn");
+        $(btn).html("Got it!");
+        $(btn).on('click', function () { module.Dialog.destroy(); arrow.fadeOut(1000, "easeInExpo", function() { }); });
+
+        var style = {width: '300px', top: '400px', left: '200px', "font-size": "20pt"};
+        if (uiElem) {
+            var rect = uiElem[0].getBoundingClientRect();
+            style.top = rect.top + 'px';
+            style.left = (rect.left - 450) + 'px';
+        }
+
+        div.appendChild(dialogContent);
+        div.appendChild(btn);
+        RuthefjordUI.Dialog.make(div, style);
     }
 
     return self;

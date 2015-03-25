@@ -34,7 +34,8 @@ blocklyIframeLoaded = function() {
 
     Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
 
-    Blockly.addChangeListener(RuthefjordBlockly.makeCounter);
+    // block limit currently set to infinity, no need for counter; disabling it since it disrupts DebugFeaturesInfo's use of the arrow
+    // Blockly.addChangeListener(RuthefjordBlockly.makeCounter);
     Blockly.addChangeListener(RuthefjordBlockly.addToHistory);
 
     q_defer.resolve();

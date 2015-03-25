@@ -224,23 +224,33 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
-    public void AdvanceToNextInterestingStep() {
-        if (currentStepIndex < result.Steps.Length - 1) {
-            // skip to the first callstack change
-            int distance = 1;
-            var currentCallstack = result.Steps [currentStepIndex];
-            int stepsRemaining = (result.Steps.Length - 1) - currentStepIndex;
-            while (distance < stepsRemaining && Enumerable.SequenceEqual(currentCallstack, result.Steps [currentStepIndex + distance])) {
-                distance++;
+    public void AdvanceToNextInterestingStep ()
+    {
+        // can only happen in workshop mode if the program has steps remaining
+        if (EditMode.IsWorkshop && currentStepIndex < result.Steps.Length - 1) {
+            // run if we haven't yet
+            evalEntireProgram();
+            // sometimes evaling entire program fails, so check again anyway
+            if (result != null) {
+                setRunState(RunState.Paused);
+
+                // advance to the next step
+                // skip to the first callstack change
+                int distance = 1;
+                var currentCallstack = result.Steps [currentStepIndex];
+                int stepsRemaining = (result.Steps.Length - 1) - currentStepIndex;
+                while (distance < stepsRemaining && Enumerable.SequenceEqual(currentCallstack, result.Steps [currentStepIndex + distance])) {
+                    distance++;
+                }
+                Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance].First();
+                GetComponent<ExternalAPI>().NotifyStepHighlight(nextOnCallstack.Meta.Id);
+                // if the next thing on the callstack is the start of a stdlib procedure that performs a command
+                if (nextOnCallstack.Stmt.IsExecute && stdlibSteps.ContainsKey(nextOnCallstack.Stmt.AsExecute().Identifier)) {
+                    // skip the steps that don't change the state
+                    distance += stdlibSteps [nextOnCallstack.Stmt.AsExecute().Identifier];
+                }
+                setGameStateToStepIndex(currentStepIndex + distance);
             }
-            Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance].First();
-            GetComponent<ExternalAPI>().NotifyStepHighlight(nextOnCallstack.Meta.Id);
-            // if the next thing on the callstack is the start of a stdlib procedure that performs a command
-            if (nextOnCallstack.Stmt.IsExecute && stdlibSteps.ContainsKey(nextOnCallstack.Stmt.AsExecute().Identifier)) {
-                // skip the steps that don't change the state
-                distance += stdlibSteps [nextOnCallstack.Stmt.AsExecute().Identifier];
-            }
-            setGameStateToStepIndex(currentStepIndex + distance);
         }
     }
 

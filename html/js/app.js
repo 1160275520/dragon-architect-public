@@ -826,7 +826,8 @@ handler.onSandboxStart = function() {
                         "Any cubes you place will stick around <b>permanently</b>. " +
                         "Click on {workshop} to make it so you can test code without cubes sticking around. " +
                         "You can also clear away all of your code and cubes by clicking {clear}."
-                }
+                },
+                name: "sandbox"
             }
         };
 
@@ -840,6 +841,10 @@ handler.onSandboxStart = function() {
     if (sandboxProgAddon) {
         RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(JSON.parse(sandboxProgAddon)));
         sandboxProgAddon = "";
+    }
+
+    if (RUTHEFJORD_CONFIG.features.debugging_always && RuthefjordUI.DebugFeatureInfo.hasNext()) {
+        RuthefjordUI.DebugFeatureInfo.showNext();
     }
 
     // enforce workshop_only feature if necessary
@@ -888,7 +893,7 @@ handler.onProgramStateChange = function(data) {
         var rs = json.run_state;
         // console.log('on run state change: ' + rs);
         program_state.run_state = rs;
-        RuthefjordUI.StepButton.update(rs === 'paused' && rs !== 'finished');
+        RuthefjordUI.StepButton.update(rs !== 'finished' && program_state.edit_mode === 'workshop');
         RuthefjordUI.PauseButton.update(rs !== 'stopped' && rs !== 'finished', rs === 'paused');
         RuthefjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
