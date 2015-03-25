@@ -349,7 +349,7 @@ function setState_intro() {
 
     RuthefjordUI.State.goToIntro(function(){
         RuthefjordUI.Instructions.show({
-            summary: 'Welcome to Ruthefjord!',
+            summary: 'Welcome to Dragon Architect!',
             detail: d
         }, function() {
             current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
@@ -691,7 +691,7 @@ $(function() {
             } else {
                 RuthefjordUI.State.goToConsent();
                 $("#btn-consent-continue").on('click', function() {
-                    RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked);
+                    RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
                     RuthefjordUI.State.goToAlphaMsg();
                     $("#btn-alpha-continue").on('click', function() {
                         setState_title();
