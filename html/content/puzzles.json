@@ -2,8 +2,7 @@
     "dummy": {
         "library": {
             "granted": [
-                "time_slider",
-                "defproc"
+                "time_slider"
             ]
         }
     },
@@ -223,7 +222,7 @@
             "highlighted": ["controls_repeat"]
         },
         "instructions": {
-            "summary": "Help me fill in the blueprint by changing {repeat} to {repeat4}!",
+            "summary": "Help me fill in the blueprint by changing<br>{repeat} to {repeat4}!",
             "detail": "{repeat4} tells me to do everything inside 4 times."
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedProgram"},

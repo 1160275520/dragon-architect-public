@@ -666,6 +666,11 @@ $(function() {
             $('.tools-no-debug').hide();
         }
 
+        if (RUTHEFJORD_CONFIG.features.workshop_only) {
+            $('#btn-workshop').removeClass('sandboxModeUI');
+            $('#btn-workshop').hide();
+        }
+
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 
@@ -734,8 +739,10 @@ function start_editor(info) {
         var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
-        RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
-        RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
+        if (!RUTHEFJORD_CONFIG.features.debugging_always) {
+            RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
+            RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
+        }
         RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
         RuthefjordUI.DoneButton.setVisible(goals.some(function(g) { return g.type === "submit";}));
@@ -823,12 +830,21 @@ handler.onSandboxStart = function() {
             }
         };
 
+        if (RUTHEFJORD_CONFIG.features.workshop_only) {
+            info.puzzle.instructions.detail = "";
+        }
+
         start_editor(info);
     });
 
     if (sandboxProgAddon) {
         RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(JSON.parse(sandboxProgAddon)));
         sandboxProgAddon = "";
+    }
+
+    // enforce workshop_only feature if necessary
+    if (RUTHEFJORD_CONFIG.features.workshop_only) {
+        RuthefjordUnity.Call.set_program_state({edit_mode: 'workshop'});
     }
 
     // display the concrete syntax entry in dev mode

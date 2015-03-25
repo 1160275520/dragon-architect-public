@@ -642,10 +642,11 @@ module.CameraControls = (function() {
     self.cameraMode = "gamemode";
 
     self.setVisible = function(components) {
-        var isRotate = _.contains(components, 'camera_rotate');
-        var isTilt = _.contains(components, 'camera_tilt');
-        $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
-        $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
+        // making all camera controls always enabled
+        // var isRotate = _.contains(components, 'camera_rotate');
+        // var isTilt = _.contains(components, 'camera_tilt');
+        // $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
+        // $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
     }
 
     self.toggleMode = function() {

@@ -22,16 +22,14 @@
     "nodes": [
         "up.what_is_up",
         "up.what_is_down",
-        "up.bridge",
-        "up.rotate_camera"
+        "up.bridge"
     ],
     "edges": [
         ["up.what_is_up", "up.bridge"],
-        ["up.what_is_down", "up.bridge"],
-        ["up.bridge", "up.rotate_camera"]
+        ["up.what_is_down", "up.bridge"]
     ],
     "name": "Up, Up and Away",
-    "learn": ["Move upwards", "Move downwards", "Rotate the view"]
+    "learn": ["Move upwards", "Move downwards"]
 },
 "repeat":{
     "nodes": [
