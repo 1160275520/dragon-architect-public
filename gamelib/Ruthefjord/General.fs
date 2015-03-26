@@ -46,6 +46,11 @@ module Logger =
 
 [<AutoOpen>]
 module Global =
+    #if DEBUG
+    let BUILD_CONFIG = "debug"
+    #else
+    let BUILD_CONFIG = "release"
+    #endif
     /// Debug print an object (using System.Diagnostics.Debug.WriteLine).
     let inline dprint x = Logger.log (sprintf "%A" x)
     /// Debug print a string (using System.Diagnostics.Debug.WriteLine).

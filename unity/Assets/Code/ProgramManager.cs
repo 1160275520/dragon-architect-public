@@ -233,7 +233,6 @@ public class ProgramManager : MonoBehaviour {
             // sometimes evaling entire program fails, so check again anyway
             if (result != null) {
                 setRunState(RunState.Paused);
-
                 // advance to the next step
                 // skip to the first callstack change
                 int distance = 1;

@@ -294,7 +294,9 @@ public class AllTheGUI : MonoBehaviour
         }
 
         // fps display
-        makeFPS();
+        if (Ruthefjord.Global.BUILD_CONFIG == "debug") {
+            makeFPS();
+        }
     }
 
     private void displayConfirmClear()
