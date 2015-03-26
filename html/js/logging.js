@@ -75,6 +75,7 @@ var AID = {
 
     PlayerConsented: 101,
     PlayerLogin: 102,
+    PlayerExperimentalCondition: 103,
 
     // state changes
 
@@ -194,6 +195,21 @@ self.startQuest = function(qid, checksum) {
     self.activeQuestLogger = ql;
     return ql;
 };
+
+self.logPlayerLogin = function(loginId) {
+    var actionId = AID.PlayerLogin;
+    var actionDetail = {id:loginId};
+    var action = new cgs.UserAction(actionId, actionDetail);
+    user.logAction(action);
+}
+
+// TODO add logging of their condition for redundancy
+self.logExperimentalCondition = function(experimentId, conditionId) {
+    var actionId = AID.PlayerExperimentalCondition;
+    var actionDetail = {experiment:experimentId, condition:conditionId};
+    var action = new cgs.UserAction(actionId, actionDetail);
+    user.logAction(action);
+}
 
 self.logPlayerLogin = function(loginId) {
     var actionId = AID.PlayerLogin;
