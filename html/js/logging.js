@@ -218,9 +218,9 @@ self.logPlayerLogin = function(loginId) {
     user.logAction(action);
 }
 
-self.logStudentConsented = function(didPlayerConsent) {
+self.logStudentConsented = function(didPlayerConsent, tosId) {
     var actionId = AID.PlayerConsented;
-    var actionDetail = {did_consent:didPlayerConsent};
+    var actionDetail = {tos_id: tosId, did_consent:didPlayerConsent};
     var action = new cgs.UserAction(actionId, actionDetail);
     user.logAction(action);
 };
