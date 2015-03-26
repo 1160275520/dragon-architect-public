@@ -78,7 +78,7 @@ def fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multipl
     pageload    = log_tables[ct.log_pageload].src_table
     dquest      = log_tables[ct.log_quest].src_table
     action      = log_tables[ct.log_action].src_table
-    condition   = log_tables[ct.ab_condition].src_table
+    action_nq   = log_tables[ct.log_action_nq].src_table
 
     metadata = pageload.metadata
 
@@ -91,8 +91,7 @@ def fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multipl
     max_pageload =  _get_max_pkey(ct.log_pageload)
     max_quest =     _get_max_pkey(ct.log_quest)
     max_action =    _get_max_pkey(ct.log_action)
-    max_condition = _get_max_pkey(ct.ab_condition)
-    max_condition = 0 if max_condition is None else max_condition
+    max_action_nq = _get_max_pkey(ct.log_action_nq)
 
     # XXX cannot yet filter pageloads/quests by max ids because there may be additional quests/actions from old ones.
     # CAN filter actions by max action though, since there is not joining to be done on them.
@@ -103,12 +102,7 @@ def fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multipl
         select([pageload.c.log_pl_id]).where(pageload.c.uid == uid_table.c.uid)
     )
 
-    # XXX this max thing is probably suuuper wrong, need to figure better way to only fetch new data
-    tmp_condition_id = create_temp_table_as_select_fkey(src_conn, metadata, 'tmp_condition_id', condition.c.id,
-        select([condition.c.id]).where(condition.c.cgs_uid == uid_table.c.uid).where(condition.c.id > max_condition)
-    )
-
-
+    # grab dqids by uid (NOT pageload, there is no index on sessionid, only uid T_T)
     if is_multiplayer:
         # have to use 3 temp tables because MySQL sucks and only lets you refernce a temp table once per query
 
@@ -136,6 +130,13 @@ def fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multipl
         select([dquest.c.dqid]).select_from(tmp_quest_id.join(dquest)).where(dquest.c.dqid != None).distinct(),
     )
 
+    # grab non-quest actions by uid (again, because server's indexes are kinda crap and uid is the only option)
+    action_nq_sel = select([action_nq.c.log_no_quest_id]).where(action_nq.c.uid == uid_table.c.uid)
+    # restrict ourselves to only the new actions if possible
+    if max_action_nq is not None:
+        action_nq_sel = action_nq_sel.where(action_nq.c.log_no_quest_id > max_action_nq)
+    tmp_action_nq_id = create_temp_table_as_select_fkey(src_conn, metadata, 'tmp_action_nq_id', action_nq.c.log_no_quest_id, action_nq_sel)
+
     # then select actions by those dqids
     action_sel = select([action.c.log_id]).where(action.c.dqid == tmp_dqid.c.dqid)
     # restrict ourselves to only the new actions if possible
@@ -155,10 +156,10 @@ def fill_logging_id_tables(src_conn, dst_conn, log_tables, uid_table, is_multipl
         )
 
     return [
-        (log_tables[ct.log_pageload], tmp_pageload_id),
-        (log_tables[ct.log_quest],    tmp_quest_id),
-        (log_tables[ct.log_action],   tmp_action_id),
-        (log_tables[ct.ab_condition], tmp_condition_id),
+        (log_tables[ct.log_pageload],  tmp_pageload_id),
+        (log_tables[ct.log_quest],     tmp_quest_id),
+        (log_tables[ct.log_action],    tmp_action_id),
+        (log_tables[ct.log_action_nq], tmp_action_nq_id),
     ]
 
 def transfer_logging_by_cid(args, dst_engine, dst_conn, game, rowset, banned_uids):
@@ -214,10 +215,10 @@ def get_parser():
     parser.set_defaults(func=main)
 
     # the default number of rows to inset at a time in copy tables
-    # the default max packet size on ubuntu MySQL is 16MB O_o so have to do this in super tiny chunks to be safe
-    DEFAULT_BATCH_SIZE = 1000
+    # the default max packet size on ubuntu MySQL is 16MB O_o, but we're using postgres normally so eff that and make this pretty big.
+    DEFAULT_BATCH_SIZE = 20000
     parser.add_argument('-b', '--batch-size', dest='copy_batch_size', type=int, required=False, default=DEFAULT_BATCH_SIZE,
-        help="The max number of rows to insert at a time when copying tables. Default is %s to handle default MySQL configurations with low maximum packet sizes. Set this as high as possible for better performance." % DEFAULT_BATCH_SIZE
+        help="The max number of rows to insert at a time when copying tables. Default (%d rows) might be too high for unconfigured MySQL installations. Set this as high as possible for better performance." % DEFAULT_BATCH_SIZE
     )
 
     return parser

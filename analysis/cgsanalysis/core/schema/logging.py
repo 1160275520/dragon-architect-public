@@ -43,8 +43,9 @@ class LoggingTable(object):
 
         if dst_conn.engine.name != 'mysql':
             # first mess with the index names to avoid index name collisions on certain DMBSes.
+            # also apparently there is a 63-char max limit to truncate it
             for idx in table.indexes:
-                idx.name = table.name + "__idx_" + idx.name
+                idx.name = (table.name + "__idx_" + idx.name)[:63]
             # then also fudge any tinyints to booleans
             # XXX assumes all tinyints are booleans
             for col in table.c:
@@ -62,14 +63,13 @@ class LoggingTable(object):
 log_pageload    = ('log',  'player_pageload_log',          'log_pl_id')
 log_quest       = ('log',  'player_quests_log',            'log_q_id')
 log_action      = ('log',  'player_actions_log',           'log_id')
-log_nq_action   = ('log',  'player_actions_no_quests_log', 'log_no_quest_id')
-ab_condition    = ('ab',   'user_conditions_ab',           'id')
+log_action_nq   = ('log',  'player_actions_no_quest_log',  'log_no_quest_id')
 
 logging_table_names = [
     log_pageload,
     log_quest,
     log_action,
-    ab_condition,
+    log_action_nq,
 ]
 
 def _pk_of(table_def):
@@ -89,12 +89,13 @@ def load_logging_tables_from_local(dst_conn):
     return tables
 
 # tables from state.db....
+# XXX totally unused, probably forever
 
-state_members   = ('master', 'cgs_members')
-state_tosaccept = ('master', 'user_tos_acceptance')
-
-state_tables = [
-    state_members,
-    state_tosaccept,
-]
+#state_members   = ('master', 'cgs_members')
+#state_tosaccept = ('master', 'user_tos_acceptance')
+#
+#state_tables = [
+#    state_members,
+#    state_tosaccept,
+#]
 
