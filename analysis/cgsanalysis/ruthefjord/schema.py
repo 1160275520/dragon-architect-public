@@ -11,7 +11,7 @@ def _t(t):
     return t
 
 session_tos = _t(Table('rfl_session_tos', metadata,
-    Column('session_id', ct.session.c.id.type, ForeignKey(ct.session.c.id), primary_key=True),
+    Column('session_id', ct.session.c.id.type, ForeignKey(ct.session.c.id, ondelete="CASCADE"), primary_key=True),
     Column('tos_id', Integer, nullable=False),
     Column('did_accept', Boolean, nullable=False),
     info=dict(doc="""
@@ -20,7 +20,7 @@ session_tos = _t(Table('rfl_session_tos', metadata,
 ))
 
 session_login = _t(Table('rfl_session_login', metadata,
-    Column('session_id', ct.session.c.id.type, ForeignKey(ct.session.c.id), primary_key=True),
+    Column('session_id', ct.session.c.id.type, ForeignKey(ct.session.c.id, ondelete="CASCADE"), primary_key=True),
     Column('user_id', UUID, nullable=False),
     Index('rfl_session_login_idx__user_id', 'user_id', unique=False),
     info=dict(doc="""
@@ -29,7 +29,7 @@ session_login = _t(Table('rfl_session_login', metadata,
 ))
 
 session_experiment = _t(Table('rfl_session_experiment', metadata,
-    Column('session_id', ct.session.c.id.type, ForeignKey(ct.session.c.id), primary_key=True),
+    Column('session_id', ct.session.c.id.type, ForeignKey(ct.session.c.id, ondelete="CASCADE"), primary_key=True),
     Column('experiment_id', UUID, nullable=False),
     Column('condition', Integer, nullable=False),
     info=dict(doc="""

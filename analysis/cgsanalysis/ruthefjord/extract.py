@@ -63,6 +63,17 @@ def process_non_trace_actions(conn, log_tables):
         conn.execute(rt.session_login.insert(), player_logins)
         conn.execute(rt.session_experiment.insert(), experimental_conditions)
 
+def filter_tos(conn):
+    """Remove all data for a player if they did not accept the given TOS."""
+
+    # TODO implement
+
+    # a player is considered to have accepted a TOS iff
+    # they have accepted the TOS in every session for which we have data.
+    # If a single session is missing we assume no and block all their data.
+
+    raise NotImplementedError()
+
 def main(args):
     engine = cli.create_dst_engine(args)
 

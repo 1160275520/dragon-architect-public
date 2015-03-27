@@ -32,7 +32,7 @@ player = _t(Table('log_player', metadata,
 session = _t(Table('log_session', metadata,
     Column('id', Integer, primary_key=True),
     Column('log_pageload_id', BigInteger, _fk_of(logging.log_pageload), unique=True),
-    Column('player_id', player.c.id.type, ForeignKey(player.c.id), nullable=False),
+    Column('player_id', player.c.id.type, ForeignKey(player.c.id, ondelete="CASCADE"), nullable=False),
     Column('game_id', Integer, nullable=False),
     Column('category_id', Integer, nullable=False),
     Column('start_time', type_timestamp),
@@ -65,8 +65,8 @@ END_TYPE_UNKNOWN = 0
 END_TYPE_COMPLETE = 1
 
 trace_session = _t(Table('log_trace_session', metadata,
-    Column('trace_id', Integer, ForeignKey(trace.c.id), nullable=False, primary_key=True),
-    Column('session_id', session.c.id.type, ForeignKey(session.c.id), nullable=False, primary_key=True),
+    Column('trace_id', Integer, ForeignKey(trace.c.id, ondelete="CASCADE"), nullable=False, primary_key=True),
+    Column('session_id', session.c.id.type, ForeignKey(session.c.id, ondelete="CASCADE"), nullable=False, primary_key=True),
     # for single player this is redundant, but for multiplayer is will be different than the trace's log_quest_id
     Column('log_quest_id', BigInteger, _fk_of(logging.log_quest), unique=True),
     Column('session_sequence_index', Integer),
@@ -86,7 +86,7 @@ action_session = _t(Table('log_action_session', metadata,
     #Column('id', action.c.id.type, ForeignKey(action.c.id), primary_key=True),
     Column('id', Integer, nullable=False, primary_key=True),
     Column('log_action_nq_id', BigInteger, _fk_of(logging.log_action_nq), unique=True),
-    Column('session_id', session.c.id.type, ForeignKey(session.c.id), nullable=False),
+    Column('session_id', session.c.id.type, ForeignKey(session.c.id, ondelete="CASCADE"), nullable=False),
     Column('session_sequence_index', Integer),
     Index('action_session_idx__session_seq', 'session_id', 'session_sequence_index', unique=True),
     info=dict(doc='Actions that are NOT part of traces')
@@ -96,7 +96,7 @@ action_trace = _t(Table('log_action_trace', metadata,
     #Column('id', action.c.id.type, ForeignKey(action.c.id), primary_key=True),
     Column('id', Integer, nullable=False, primary_key=True),
     Column('log_action_id', BigInteger, _fk_of(logging.log_action), unique=True),
-    Column('trace_id', trace.c.id.type, ForeignKey(trace.c.id)),
+    Column('trace_id', trace.c.id.type, ForeignKey(trace.c.id, ondelete="CASCADE")),
     Column('trace_sequence_index', Integer),
     # relative time (in ms) of action since trace start, as reported by client
     Column('time_relative', BigInteger),
@@ -105,7 +105,7 @@ action_trace = _t(Table('log_action_trace', metadata,
 ))
 
 action_start = _t(Table('log_action_trace_start', metadata,
-    Column('id', action_trace.c.id.type, ForeignKey(action_trace.c.id), primary_key=True),
+    Column('id', action_trace.c.id.type, ForeignKey(action_trace.c.id, ondelete="CASCADE"), primary_key=True),
     info=dict(doc="""
     Subtype of action, the start action exists for every trace at time zero.
     Used so that tables that need an action_id can refer to games states
@@ -116,22 +116,16 @@ action_start = _t(Table('log_action_trace_start', metadata,
     """)
 ))
 
-## XXX TODO this should probably just be a column of action, no?
-#action_player = _t(Table('action_player', metadata,
-#    Column('action_id', action.c.id.type, ForeignKey(action.c.id), primary_key=True),
-#    Column('player_id', player.c.id.type, ForeignKey(player.c.id)),
-#))
-
 # this table is defined here since it's generic to all games,
 # even though "clean" does not actually populate it right now!
 player_accepted_tos = _t(Table('player_accepted_tos', metadata,
-    Column('player_id', player.c.id.type, ForeignKey(player.c.id), primary_key=True),
+    Column('player_id', player.c.id.type, ForeignKey(player.c.id, ondelete="CASCADE"), primary_key=True),
     Column('tos_id', Integer, primary_key=True),
-    Column('did_accept', Boolean, nullable=False),
     info=dict(doc="""
-    A many-to-many relation of which TOS a player has accepted/rejected.
+    A many-to-many relation of which TOS a player has accepted.
     Must filter players by this table (and the correct tos version)
     for any research data to be published!
+    Missing entires could be either missing data or explicit rejection.
     """)
 ))
 
