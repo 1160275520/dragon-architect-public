@@ -16,7 +16,7 @@ import argparse
 def create_log_table_indices(conn, log_tables):
     pageload = log_tables[ct.log_pageload].dst_table
     dquest = log_tables[ct.log_quest].dst_table
-    action_nq = log_tables[ct.log_quest].dst_table
+    action_nq = log_tables[ct.log_action_nq].dst_table
 
     # if these already exist, don't worry about it so just catch the failures
 
