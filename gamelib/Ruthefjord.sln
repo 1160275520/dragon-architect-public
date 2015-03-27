@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ruthefjord", "Ruthefjord\Ruthefjord.fsproj", "{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RuthefjordUnitTests", "RuthefjordUnitTests\RuthefjordUnitTests.fsproj", "{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}"
