@@ -160,16 +160,16 @@ public class ExternalAPI : MonoBehaviour
         var camera = FindObjectOfType<MyCamera>();
         switch (action) {
         case "zoomin":
-            camera.Zoom(0.5f);
+            camera.Zoom(0.8f);
             break;
         case "zoomout":
-            camera.Zoom(2.0f);
+            camera.Zoom(1.2f);
             break;
         case "rotateleft":
-            camera.Rotate(90);
+            camera.Rotate(45);
             break;
         case "rotateright":
-            camera.Rotate(-90);
+            camera.Rotate(-45);
             break;
         case "tiltup":
             camera.Tilt(10);

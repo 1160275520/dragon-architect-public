@@ -42,10 +42,6 @@ public class ProgramManager : MonoBehaviour {
 
     public bool IsSimulationRunning { get { return EditMode.IsPersistent || RunState.IsExecuting; } }
 
-    /// true iff the program manager should be checking if the program is dirty and re-evaluating it each frame
-    /// set this to false when the gui is changing the program state
-    public bool IsCheckingForProgramChanges { get; set; }
-
     private int currentStepIndex = 0;
 
     private int currentStateIndex {
@@ -180,19 +176,17 @@ public class ProgramManager : MonoBehaviour {
 
     private void setGameStateToStateIndex(int index, float transitionTimeSeconds) {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
-        index = Util.clamp(0, result.States.Length - 1, index);
         currentStateIndex = index;
-        var state = result.States[index];
+        var state = result.States[Util.clamp(0, result.States.Length - 1, index)];
         setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
     }
 
     private void setGameStateToStepIndex(int index) {
         var transitionTimeSeconds = 0.0f;
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
-        index = Util.clamp(0, result.Steps.Length - 1, index);
         this.currentStepIndex = index;
         // currentStateIndex will update after we set currentStepIndex
-        var state = result.States[this.currentStateIndex];
+        var state = result.States[Util.clamp(0, result.States.Length - 1, this.currentStateIndex)];
         setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
     }
 
@@ -273,6 +267,12 @@ public class ProgramManager : MonoBehaviour {
         get {
             if (result == null) return 0.0f;
             else return (float)currentStateIndex / result.States.Length;
+        }
+    }
+
+    public bool AtLastStep {
+        get {
+            return currentStepIndex >= result.Steps.Length - 1;
         }
     }
 

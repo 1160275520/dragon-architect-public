@@ -699,8 +699,8 @@ function Slider(elemName, selector, labels, allElems) {
             step: 0.01,
             tooltip: 'hide'
         });
-        slider.on("slide", function(slideEvent) {
-            onChangeCallback(slideEvent.value);
+        slider.on("change", function(changeEvent) {
+            onChangeCallback(changeEvent.value.newValue);
         });
         slider.on("slideStart", function(slideEvent) {
             var questLogger = RuthefjordLogging.activeQuestLogger;
@@ -729,7 +729,7 @@ function Slider(elemName, selector, labels, allElems) {
         if (x === undefined) {
             return slider.bootstrapSlider("getValue");
         } else {
-            slider.bootstrapSlider("setValue", x);
+            slider.bootstrapSlider("setValue", x, false, false);
         }
     };
 

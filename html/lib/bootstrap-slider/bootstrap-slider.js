@@ -660,7 +660,8 @@
 				ticks: [],
 				ticks_labels: [],
 				ticks_snap_bounds: 0,
-				scale: 'linear'
+				scale: 'linear',
+				focus: false
 			},
 
 			over: false,
@@ -674,7 +675,7 @@
 				return this.options.value[0];
 			},
 
-			setValue: function(val, triggerSlideEvent) {
+			setValue: function(val, triggerSlideEvent, triggerChangeEvent) {
 				if (!val) {
 					val = 0;
 				}
@@ -715,7 +716,7 @@
 				if(triggerSlideEvent === true) {
 					this._trigger('slide', newValue);
 				}
-				if(oldValue !== newValue) {
+				if( (oldValue !== newValue) && (triggerChangeEvent === true) ) {
 					this._trigger('change', {
 						oldValue: oldValue,
 						newValue: newValue
@@ -1014,8 +1015,6 @@
 					return false;
 				}
 
-				this._triggerFocusOnHandle();
-
 				this.offset = this._offset(this.sliderElem);
 				this.size = this.sliderElem[this.sizePos];
 
@@ -1062,9 +1061,13 @@
 				this._trigger('slideStart', newValue);
 
 				this._setDataVal(newValue);
-				this.setValue(newValue);
+				this.setValue(newValue, false, true);
 
 				this._pauseEvent(ev);
+
+				if (this.options.focus) {
+					this._triggerFocusOnHandle(this.dragged);
+				}
 
 				return true;
 			},
@@ -1114,7 +1117,7 @@
 
 				this._trigger('slideStart', val);
 				this._setDataVal(val);
-				this.setValue(val, true);
+				this.setValue(val, true, true);
 
 				this._trigger('slideStop', val);
 				this._setDataVal(val);
@@ -1145,7 +1148,7 @@
 				this._layout();
 
 				var val = this._calculateValue(true);
-				this.setValue(val, true);
+				this.setValue(val, true, true);
 
 				return false;
 			},

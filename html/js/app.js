@@ -372,11 +372,12 @@ function onProgramEdit() {
     var p = JSON.stringify(RuthefjordBlockly.getProgram());
 
     if (p !== program_state.last_program_sent) {
-        if (program_state.run_state === 'stopped') {
-            RuthefjordUnity.Call.set_program(p);
-            program_state.last_program_sent = p;
-            clearHighlights();
+        if (program_state.run_state === 'executing') {
+            RuthefjordUnity.Call.set_program_state({run_state: 'stopped'});
         }
+        RuthefjordUnity.Call.set_program(p);
+        program_state.last_program_sent = p;
+        clearHighlights();
     }
 
     if (current_scene === 'sandbox') {
@@ -678,7 +679,7 @@ $(function() {
         console.info('EVERYTHING IS READY!');
 
         // HACK this needs to wait for the packs to be loaded
-        console.log(game_info.packs);
+        // console.log(game_info.packs);
         _.each(game_info.packs, function(pack, id) {
             $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
@@ -882,9 +883,10 @@ handler.onProgramStateChange = function(data) {
     var json = JSON.parse(data);
 
     if ('edit_mode' in json) {
-        // console.log('on edit mode change');
         var em = json.edit_mode;
+        // console.log('on edit mode change: ' + em);
         program_state.edit_mode = em;
+        RuthefjordUI.StepButton.update(program_state.run_state !== 'finished' && em === 'workshop');
         RuthefjordUI.ModeButton.update(em === 'workshop');
         RuthefjordUI.TimeSlider.setEnabled(em === 'workshop');
         if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
@@ -973,6 +975,10 @@ handler.onDebugHighlight = function(id) {
     if (block) {
         Blockly.addClass_(block.svg_.svgGroup_, "blocklyDebugHighlight");
         block.svg_.svgGroup_.parentNode.appendChild(block.svg_.svgGroup_);
+        var questLogger = RuthefjordLogging.activeQuestLogger;
+        if (questLogger) {
+            questLogger.logDoUiAction("debug-cube-highlight", 'start', null);
+        }
     }
 }
 
