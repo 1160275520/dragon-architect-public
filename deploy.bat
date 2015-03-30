@@ -1,5 +1,5 @@
-set host=edbutler@volger.cs.washington.edu
-set webroot=/srv/www/ruthefjord
+set host=edbutler@gigantor.cs.washington.edu
+set webroot=/srv/www/dragonarchitect
 "C:\Program Files (x86)\Putty\plink.exe" %host% "rm -rf %webroot%/dist"
 "C:\Program Files (x86)\Putty\plink.exe" %host% "rm -rf %webroot%/latest"
 "C:\Program Files (x86)\Putty\pscp.exe" -r dist %host%:%webroot%/
