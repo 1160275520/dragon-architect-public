@@ -37,11 +37,21 @@ module.Player = (function(){
     var selector = '#unity-player embed, #unity-player, #main-view-game';
 
     self.hide = function() {
-        $(selector).css('width', '1px').css('height', '1px');
+        if (navigator.platform.startsWith('Mac') && bowser.firefox) {
+            $('#unity-player').css('z-index', '-1');
+            $('#main-view-game').css('background', '#b5b5b5');
+        } else {
+            $(selector).css('width', '1px').css('height', '1px');
+        }
     };
 
     self.show = function() {
-        $(selector).removeAttr('style');
+        if (navigator.platform.startsWith('Mac') && bowser.firefox) {
+            $('#unity-player').css('z-index', '0');
+            $('#main-view-game').css('background', '#ccebff');
+        } else {
+            $(selector).removeAttr('style');
+        }
     };
 
     return self;
