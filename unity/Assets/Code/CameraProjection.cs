@@ -8,7 +8,7 @@ public class CameraProjection : MonoBehaviour {
     public float bottom;
 #if !UNITY_WEBPLAYER
     void LateUpdate() {
-        Camera cam = camera;
+        Camera cam = GetComponent<Camera>();
         Matrix4x4 m = PerspectiveOffCenter(left, right, bottom, top, cam.nearClipPlane, cam.farClipPlane);
         cam.projectionMatrix = m;
     }

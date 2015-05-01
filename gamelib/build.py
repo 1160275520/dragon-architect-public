@@ -38,6 +38,6 @@ elif system == 'Darwin':
     check(subprocess.call([command, "build", config, "--target:Clean", slnfile]))
     check(subprocess.call([command, "build", config, "--target:Build", slnfile]))
 else:
-    sys.sterr.write("platform unsupported!\n")
+    sys.stderr.write("platform unsupported!\n")
     raise Exception('platform unsupported')
 
