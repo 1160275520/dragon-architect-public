@@ -4,17 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A</ProjectGuid>
+    <ProjectGuid>{8AC42BFA-8D32-4B3D-A51F-8ED54ED67A5A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Ruthefjord</RootNamespace>
     <AssemblyName>Ruthefjord</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <Name>Ruthefjord</Name>
     <TargetFSharpCoreVersion>2.3.0.0</TargetFSharpCoreVersion>
+    <UseMSBuildEngine>False</UseMSBuildEngine>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\Ruthefjord.XML</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -55,21 +56,6 @@
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll;$(OutputPath)FSharp.Core.dll" DestinationFolder="$(SolutionDir)../unity/Assets/Code/" />
   </Target>
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="../Makefile" IsAutotoolsProject="True" RelativeConfigureInPath=".">
-          <BuildFilesVar />
-          <DeployFilesVar />
-          <ResourcesVar />
-          <OthersVar />
-          <GacRefVar />
-          <AsmRefVar />
-          <ProjectRefVar />
-        </MonoDevelop.Autotools.MakefileInfo>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
   <ItemGroup>
     <Compile Include="IO.fs" />
     <Compile Include="General.fs" />
@@ -87,11 +73,11 @@
     <Compile Include="Scene.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="FSharp.Core, Version=2.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.12.1\lib\mono\2.0\FSharp.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
