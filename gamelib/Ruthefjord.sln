@@ -7,7 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Ruthefjord", "Ruthefjord\Ru
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RuthefjordUnitTests", "RuthefjordUnitTests\RuthefjordUnitTests.fsproj", "{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PerformanceTests", "PerformanceTests\PerformanceTests.fsproj", "{110C4F9D-6949-4426-9881-D8DBA168BDAA}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ProgramRunner", "ProgramRunner\ProgramRunner.fsproj", "{9FD9D33E-F8FF-41B0-A922-2B0DFDB7A1A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F949F7D5-C389-47CF-8B9E-5EF7AC8EC11D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{110C4F9D-6949-4426-9881-D8DBA168BDAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{110C4F9D-6949-4426-9881-D8DBA168BDAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{110C4F9D-6949-4426-9881-D8DBA168BDAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{110C4F9D-6949-4426-9881-D8DBA168BDAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FD9D33E-F8FF-41B0-A922-2B0DFDB7A1A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FD9D33E-F8FF-41B0-A922-2B0DFDB7A1A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FD9D33E-F8FF-41B0-A922-2B0DFDB7A1A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FD9D33E-F8FF-41B0-A922-2B0DFDB7A1A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
