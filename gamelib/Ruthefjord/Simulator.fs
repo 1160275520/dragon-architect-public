@@ -315,17 +315,27 @@ let private executeWithProcedureResultCache state (acc:MutableList<Robot.Command
 
     while not (IsDone state) do
         match popNextStatment state with
-        | Some ({Stmt=Execute e} as s) when e.Arguments.IsEmpty ->
-            if cachedResults.ContainsKey e.Identifier
-                then acc.AddRange cachedResults.[e.Identifier]
+        | Some {Stmt=Execute {Identifier=name; Arguments=argExpr}; Meta=meta} ->
+            let head = state.CallStack.Head
+            let argVals = List.map (evaluate head) argExpr
+            try
+                let proc = head.Environment.[name] :?> Procedure
+                let args = Seq.zip proc.Parameters argVals |> Seq.toList
+                let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
+                if cachedResults.ContainsKey calldata
+                then
+                    acc.AddRange cachedResults.[calldata]
                 else
                     let tmpState = isolatedState state.CallStack.Head.Environment
-                    executeStatement' tmpState s tmpList
+                    let env = tmpState.CallStack.Head.Environment.PushScope (args |> Map.ofList)
+                    tmpState.Push meta {tmpState.CallStack.Head with Environment=env; ToExecute=proc.Body}
                     executeAll tmpState tmpList
-                    cachedResults.Add (e.Identifier, tmpList.ToArray ())
+                    cachedResults.Add (calldata, tmpList.ToArray ())
                     acc.AddRange tmpList
                     tmpList.Clear ()
-
+            with
+            | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+            | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
         | Some s -> executeStatement' state s acc
         | None -> ()
 
