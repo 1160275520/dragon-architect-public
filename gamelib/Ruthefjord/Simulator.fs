@@ -306,44 +306,42 @@ type ProcedureCallData = {
     Args: obj list;
 }
 
-let rec private executeWithProcedureResultCache state (cachedResults:MutableDict<ProcedureCallData,Robot.Command2[]>) (acc:MutableList<Robot.Command2>) =
-    let isolatedState env =
-        {CallStack=[{Environment=env; ToExecute=[]; Robot=None}]; LastExecuted=[];}
+let private evalProcedureReference meta (head:CallStackState) name =
+    try
+        head.Environment.[name] :?> Procedure
+    with
+    | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+    | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
 
-    let tmpList = MutableList (200)
+let rec private executeWithProcedureResultCache state (cachedResults:MutableDict<ProcedureCallData,Robot.Command2[]>) (acc:MutableList<Robot.Command2>) =
+    let isolatedState env toExec =
+        {CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}
 
     while not (IsDone state) do
         match popNextStatment state with
         | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
             let head = state.CallStack.Head
+            let proc = evalProcedureReference meta head name
             let argVals = List.map (evaluate head) argExpr
-            try
-                let proc = head.Environment.[name] :?> Procedure
-                let args = Seq.zip proc.Parameters argVals |> Seq.toList
-                let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
-                if cachedResults.ContainsKey calldata
-                then
-                    acc.AddRange cachedResults.[calldata]
-                else
-                    let tmpState = isolatedState state.CallStack.Head.Environment
-                    let env = tmpState.CallStack.Head.Environment.PushScope (args |> Map.ofList)
-                    tmpState.Push meta {tmpState.CallStack.Head with Environment=env; ToExecute=proc.Body}
-                    executeWithProcedureResultCache tmpState cachedResults tmpList
-                    cachedResults.Add (calldata, tmpList.ToArray ())
-                    acc.AddRange tmpList
-                    tmpList.Clear ()
-            with
-            | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-            | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
+            let args = Seq.zip proc.Parameters argVals |> Seq.toList
+            let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
+            if cachedResults.ContainsKey calldata
+            then
+                acc.AddRange cachedResults.[calldata]
+            else
+                let tmpList = MutableList (20)
+                let tmpState = isolatedState (head.Environment.PushScope (args |> Map.ofList)) proc.Body
+                executeWithProcedureResultCache tmpState cachedResults tmpList
+                cachedResults.Add (calldata, tmpList.ToArray ())
+                acc.AddRange tmpList
         | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
-            let ntimes = evaluate state.CallStack.Head ntimesExpr |> valueAsInt meta
-            let tmpState = isolatedState state.CallStack.Head.Environment
-            let env = tmpState.CallStack.Head.Environment
-            tmpState.Push meta {tmpState.CallStack.Head with Environment=env; ToExecute=body}
+            let head = state.CallStack.Head
+            let ntimes = evaluate head ntimesExpr |> valueAsInt meta
+            let tmpList = MutableList (20)
+            let tmpState = isolatedState head.Environment body
             executeWithProcedureResultCache tmpState cachedResults tmpList
             for i = 1 to ntimes do
                 acc.AddRange tmpList
-            tmpList.Clear ()
         | Some s -> executeStatement' state s acc
         | None -> ()
 
