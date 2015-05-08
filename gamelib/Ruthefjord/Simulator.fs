@@ -232,6 +232,7 @@ type LazyStepResult = {
 }
 
 type private MutableList<'a> = System.Collections.Generic.List<'a>
+type private MutableDict<'k,'v> = System.Collections.Generic.Dictionary<'k,'v>
 
 let private executeStatement (state:State) (stmt:Statement): Robot.Command2 option =
     let head = state.CallStack.Head
@@ -305,9 +306,7 @@ type ProcedureCallData = {
     Args: obj list;
 }
 
-let private executeWithProcedureResultCache state (acc:MutableList<Robot.Command2>) =
-    let cachedResults = System.Collections.Generic.Dictionary ()
-
+let rec private executeWithProcedureResultCache state (cachedResults:MutableDict<ProcedureCallData,Robot.Command2[]>) (acc:MutableList<Robot.Command2>) =
     let isolatedState env =
         {CallStack=[{Environment=env; ToExecute=[]; Robot=None}]; LastExecuted=[];}
 
@@ -329,7 +328,7 @@ let private executeWithProcedureResultCache state (acc:MutableList<Robot.Command
                     let tmpState = isolatedState state.CallStack.Head.Environment
                     let env = tmpState.CallStack.Head.Environment.PushScope (args |> Map.ofList)
                     tmpState.Push meta {tmpState.CallStack.Head with Environment=env; ToExecute=proc.Body}
-                    executeAll tmpState tmpList
+                    executeWithProcedureResultCache tmpState cachedResults tmpList
                     cachedResults.Add (calldata, tmpList.ToArray ())
                     acc.AddRange tmpList
                     tmpList.Clear ()
@@ -342,7 +341,9 @@ let private executeWithProcedureResultCache state (acc:MutableList<Robot.Command
 let SimulateWithoutRobotOptimized program builtIns =
     let simstate = createState program builtIns None
     let commands = MutableList 1000
-    executeWithProcedureResultCache simstate commands
+    let cache = MutableDict ()
+    executeWithProcedureResultCache simstate cache commands
+    //printf "Cached: %A" <| (cache.Keys |> Seq.toList)
     commands.ToArray ()
 
 let SimulateWithoutRobot program builtIns =

@@ -39,10 +39,10 @@ let main argv =
         //let t = time (fun () -> Simulator.SimulateWithRobot program importedModules runner |> ignore) 10
         //printfn "Time with robot: %.3f" t
 
-        let t = time (fun () -> Simulator.SimulateWithoutRobot program importedModules |> ignore) 50
+        let t = time (fun () -> Simulator.SimulateWithoutRobot program importedModules |> ignore) 1
         printfn "Original:  %.3f" t
 
-        let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) 50
+        let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) 1
         printfn "Optimized: %.3f" t
 
     with e ->
