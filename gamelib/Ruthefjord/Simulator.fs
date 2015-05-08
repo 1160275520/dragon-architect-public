@@ -314,7 +314,7 @@ let rec private executeWithProcedureResultCache state (cachedResults:MutableDict
 
     while not (IsDone state) do
         match popNextStatment state with
-        | Some {Stmt=Execute {Identifier=name; Arguments=argExpr}; Meta=meta} ->
+        | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
             let head = state.CallStack.Head
             let argVals = List.map (evaluate head) argExpr
             try
@@ -335,6 +335,15 @@ let rec private executeWithProcedureResultCache state (cachedResults:MutableDict
             with
             | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
             | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
+        | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
+            let ntimes = evaluate state.CallStack.Head ntimesExpr |> valueAsInt meta
+            let tmpState = isolatedState state.CallStack.Head.Environment
+            let env = tmpState.CallStack.Head.Environment
+            tmpState.Push meta {tmpState.CallStack.Head with Environment=env; ToExecute=body}
+            executeWithProcedureResultCache tmpState cachedResults tmpList
+            for i = 1 to ntimes do
+                acc.AddRange tmpList
+            tmpList.Clear ()
         | Some s -> executeStatement' state s acc
         | None -> ()
 
