@@ -60,6 +60,7 @@
     <Compile Include="ProgramParsingTest.fs" />
     <Compile Include="ImperativeSimulatorTest.fs" />
     <Compile Include="WorldPuzzleSerializationTest.fs" />
+    <Compile Include="OptimizeTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

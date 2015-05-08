@@ -233,6 +233,114 @@ type LazyStepResult = {
 
 type private MutableList<'a> = System.Collections.Generic.List<'a>
 
+let private executeStatement (state:State) (stmt:Statement): Robot.Command2 option =
+    let head = state.CallStack.Head
+    match stmt.Stmt with
+    | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
+        let b =
+            try evaluate head cond :?> bool
+            with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
+        state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
+        None
+    | Repeat {Body=body; NumTimes=ntimesExpr} ->
+        let ntimes = evaluate head ntimesExpr |> valueAsInt stmt.Meta
+        let toAdd = List.concat (List.init ntimes (fun _ -> body))
+        state.Push stmt.Meta {head with ToExecute=toAdd}
+        None
+    | Function func ->
+        state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: state.CallStack.Tail
+        None
+    | Procedure proc ->
+        state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: state.CallStack.Tail
+        None
+    | Execute {Identifier=name; Arguments=argExpr} ->
+        let argVals = List.map (evaluate head) argExpr
+        try
+            let proc = head.Environment.[name] :?> Procedure
+            let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
+            let env = head.Environment.PushScope args
+            state.Push stmt.Meta {head with Environment=env; ToExecute=proc.Body}
+        with
+        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+        | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
+        None
+    | Command {Name=cmd; Arguments=args} ->
+        //if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
+        let args = List.map (evaluate head) args
+        Some {Name=cmd; Args=args}
+
+let private popNextStatment (state:State) =
+    match state.CallStack with
+    | [] -> None
+    | head :: tail ->
+        match head.ToExecute with
+        | [] ->
+            state.CallStack <- tail
+            None
+        | stmt :: next ->
+            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
+            head.ToExecute <- next
+
+            // update last executed
+            if state.LastExecuted.Length < state.CallStack.Length then
+                state.LastExecuted <- stmt :: state.LastExecuted
+            else
+                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
+
+            Some stmt
+
+let private executeStatement' state statement (acc:MutableList<Robot.Command2>) =
+    match executeStatement state statement with
+    | None -> ()
+    | (Some cmd) -> acc.Add cmd
+
+let private executeAll state (acc:MutableList<Robot.Command2>) =
+    while not (IsDone state) do
+        match popNextStatment state with
+        | Some s -> executeStatement' state s acc
+        | None -> ()
+
+type ProcedureCallData = {
+    Name: string;
+    Args: obj list;
+}
+
+let private executeWithProcedureResultCache state (acc:MutableList<Robot.Command2>) =
+    let cachedResults = System.Collections.Generic.Dictionary ()
+
+    let isolatedState env =
+        {CallStack=[{Environment=env; ToExecute=[]; Robot=None}]; LastExecuted=[];}
+
+    let tmpList = MutableList (200)
+
+    while not (IsDone state) do
+        match popNextStatment state with
+        | Some ({Stmt=Execute e} as s) when e.Arguments.IsEmpty ->
+            if cachedResults.ContainsKey e.Identifier
+                then acc.AddRange cachedResults.[e.Identifier]
+                else
+                    let tmpState = isolatedState state.CallStack.Head.Environment
+                    executeStatement' tmpState s tmpList
+                    executeAll tmpState tmpList
+                    cachedResults.Add (e.Identifier, tmpList.ToArray ())
+                    acc.AddRange tmpList
+                    tmpList.Clear ()
+
+        | Some s -> executeStatement' state s acc
+        | None -> ()
+
+let SimulateWithoutRobotOptimized program builtIns =
+    let simstate = createState program builtIns None
+    let commands = MutableList 1000
+    executeWithProcedureResultCache simstate commands
+    commands.ToArray ()
+
+let SimulateWithoutRobot program builtIns =
+    let simstate = createState program builtIns None
+    let commands = MutableList 1000
+    executeAll simstate commands
+    commands.ToArray ()
+
 let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
     let MAX_ITER = 100000
     let simstate = createState program builtIns (Some robot)

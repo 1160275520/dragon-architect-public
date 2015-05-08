@@ -13,6 +13,11 @@ type Command(t,a,s) =
     member x.Args: ImmArr<obj> = a
     member x.LastExecuted: Statement list = s
 
+type Command2 = {
+    Name: string;
+    Args: obj list;
+}
+
 type Query = {
     Name: string;
     Args: ImmArr<obj>;
