@@ -152,7 +152,7 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             let exec (pretendY, low) (c:Robot.Command2) = 
                 (x :> Robot.IRobotSimulator2).Execute c
                 match c.Name with
-                | "down" -> (pretendY - 1, min low (pretendY))
+                | "down" -> (pretendY - 1, min low (pretendY - 1))
                 | "up" -> (pretendY + 1, low)
                 | "cube" -> 
                     let cube = c.Args.[0] :?> int
@@ -164,8 +164,8 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             | false -> None
             | true -> 
                 let delta = {RobotDelta=(BasicRobotDelta.GetDelta robotStart robot); GridDelta=gridDelta.CurrentState}
-                robot = robotStart |> ignore
-                grid = gridStart |> ignore
+                robot <- robotStart
+                grid <- gridStart
                 Some(upcast delta)
 
 type LazyProgramRunner (program, builtIns, initialGrid:GridStateTracker, initialRobot:BasicRobot) =

@@ -6,6 +6,7 @@ open FsUnit.Xunit
 open System.Collections.Generic
 open System.IO
 open Ruthefjord
+open Ruthefjord.Robot
 
 [<Fact>]
 [<Trait("tag", "opt")>]
@@ -74,3 +75,136 @@ let ``grid as map correctness`` () =
     let grid2 = state2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
     grid1.Length |> should equal grid2.Length
     grid1 |> should equal grid2
+
+
+[<Fact>]
+[<Trait("id", "delta-pos")>]
+[<Trait("tag", "opt")>]
+let ``delta position`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = IntVec3.Zero
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="forward"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="forward"; Args=[]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal true
+    let delta = deltaOption.Value :?> BasicWorldStateDelta
+    delta.RobotDelta.Delta.Direction + initDir |> should equal initDir
+    delta.RobotDelta.Delta.Position |> should equal (new IntVec3(0, 0, 4))
+    delta.GridDelta.IsEmpty |> should equal true
+
+[<Fact>]
+[<Trait("id", "delta-dir")>]
+[<Trait("tag", "opt")>]
+let ``delta direction`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = IntVec3.Zero
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="forward"; Args=[]}
+        {Name="left"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="left"; Args=[]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal true
+    let delta = deltaOption.Value :?> BasicWorldStateDelta
+    delta.RobotDelta.Delta.Direction + initDir |> should equal -initDir
+    delta.RobotDelta.Delta.Position |> should equal (new IntVec3(-1, 0, 1))
+    delta.GridDelta.IsEmpty |> should equal true
+
+[<Fact>]
+[<Trait("id", "delta-cube")>]
+[<Trait("tag", "opt")>]
+let ``delta cube`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = IntVec3.Zero
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="forward"; Args=[]}
+        {Name="cube"; Args=[1]}
+        {Name="right"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="cube"; Args=[1]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal true
+    let delta = deltaOption.Value :?> BasicWorldStateDelta
+    delta.RobotDelta.Delta.Direction + initDir |> should equal (new IntVec3(initDir.Z, 0, -initDir.X))
+    delta.RobotDelta.Delta.Position |> should equal (new IntVec3(1, 0, 1))
+    (Map.toArray delta.GridDelta).Length |> should equal 2
+    delta.GridDelta.ContainsKey((new IntVec3(0, 0, 1))) |> should equal true
+    delta.GridDelta.ContainsKey((new IntVec3(1, 0, 1))) |> should equal true
+
+[<Fact>]
+[<Trait("id", "delta-vert-some")>]
+[<Trait("tag", "opt")>]
+let ``delta vertical some`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = IntVec3.Zero
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="up"; Args=[]}
+        {Name="down"; Args=[]}
+        {Name="up"; Args=[]}
+        {Name="up"; Args=[]}
+        {Name="down"; Args=[]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal true
+    let delta = deltaOption.Value :?> BasicWorldStateDelta
+    delta.RobotDelta.Delta.Direction + initDir |> should equal initDir
+    delta.RobotDelta.Delta.Position |> should equal (new IntVec3(0, 1, 0))
+
+[<Fact>]
+[<Trait("id", "delta-vert-some2")>]
+[<Trait("tag", "opt")>]
+let ``delta vertical some 2`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = new IntVec3(0, 5, 0)
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="down"; Args=[]}
+        {Name="down"; Args=[]}
+        {Name="down"; Args=[]}
+        {Name="down"; Args=[]}
+        {Name="down"; Args=[]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal true
+    let delta = deltaOption.Value :?> BasicWorldStateDelta
+    delta.RobotDelta.Delta.Direction + initDir |> should equal initDir
+    delta.RobotDelta.Delta.Position |> should equal (new IntVec3(0, -5, 0))
+
+[<Fact>]
+[<Trait("id", "delta-vert-none")>]
+[<Trait("tag", "opt")>]
+let ``delta vertical none`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = IntVec3.Zero
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="up"; Args=[]}
+        {Name="down"; Args=[]}
+        {Name="up"; Args=[]}
+        {Name="down"; Args=[]}
+        {Name="down"; Args=[]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal false
