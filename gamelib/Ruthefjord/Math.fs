@@ -19,7 +19,7 @@ type IntVec2 = struct
     override v.ToString () = sprintf "<%d,%d>" v.X v.Y
 end
 
-[<StructuralEquality;NoComparison>]
+[<StructuralEquality;StructuralComparison>]
 type IntVec3 = struct
     val X : int
     val Y : int

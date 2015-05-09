@@ -27,3 +27,9 @@ type IRobotSimulator =
     abstract member Execute : command:Command -> unit
     abstract member Query : query:Query -> obj
     abstract member CurrentState : obj
+
+type IRobotSimulator2 =
+    abstract member Execute : command:Command2 -> unit
+    abstract member GetDelta : command:Command2 list -> obj option
+    abstract member Query : query:Query -> obj
+    abstract member CurrentState : obj

@@ -1,4 +1,4 @@
-﻿// Learn more about F# at http://fsharp.net
+// Learn more about F# at http://fsharp.net
 // See the 'F# Tutorial' project for more help.
 
 open Ruthefjord
@@ -35,6 +35,10 @@ let main argv =
         let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
         let text = System.IO.File.ReadAllText filename
         let program = Parser.Parse (text, filename)
+//        let grid = GridStateTracker Seq.empty
+//        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+//        let runner = BasicImperativeRobotSimulator (robot, grid)
+//        let result = Simulator.SimulateWithRobot program importedModules runner
 
         //let t = time (fun () -> Simulator.SimulateWithRobot program importedModules runner |> ignore) 10
         //printfn "Time with robot: %.3f" t
@@ -46,6 +50,24 @@ let main argv =
 
         let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) numIter
         printfn "Optimized: %.3f" t
+
+        let numIter = 3
+
+        let t = time (fun () -> 
+                        let grid = GridStateTracker Seq.empty
+                        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+                        let runner = BasicImperativeRobotSimulator (robot, grid)
+                        Simulator.SimulateWithRobot program importedModules runner |> ignore) 3
+        printfn "Original with Robot: %.3f" t
+
+        let t = time (fun () -> 
+                        let grid2 = GridStateTracker2 Seq.empty
+                        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+                        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+                        Simulator.SimulateWithRobot2 program importedModules runner2 |> ignore) 3
+        printfn "Grid as Map with Robot: %.3f" t
+
+//        printfn "Number of states: %d" result.States.Length
 
     with e ->
         printfn "An error: %A" e.Message
