@@ -208,3 +208,35 @@ let ``delta vertical none`` () =
         ]
     let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
     deltaOption.IsSome |> should equal false
+
+[<Fact>]
+[<Trait("id", "delta-apply")>]
+[<Trait("tag", "opt")>]
+let ``delta apply`` () =
+    let initDir = IntVec3.UnitX
+    let initPos = new IntVec3(1,1,1)
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let dic = Dictionary<IntVec3, Cube2>()
+    dic.Add ((new IntVec3(2,2,1)), (1, {Name="cube"; Args=[1]}))
+    dic.Add ((new IntVec3(0,0,0)), (1, {Name="cube"; Args=[1]}))
+    let grid2 = GridStateTracker2 dic
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="up"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="cube"; Args=[1]}
+        {Name="right"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="cube"; Args=[1]}
+        ]
+    let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    deltaOption.IsSome |> should equal true
+    let delta = deltaOption.Value :?> BasicWorldStateDelta
+    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=(GridStateTracker2 dic).CurrentState}:BasicWorldState2
+    let endState = delta.ApplyTo(startState)
+    endState.Robot.Position |> should equal (new IntVec3(2,2,0))
+    endState.Robot.Direction |> should equal -IntVec3.UnitZ
+    (Map.toArray endState.Grid).Length |> should equal 3
+    endState.Grid.ContainsKey((new IntVec3(0, 0, 0))) |> should equal true
+    endState.Grid.ContainsKey((new IntVec3(2, 2, 1))) |> should equal true
+    endState.Grid.ContainsKey((new IntVec3(2, 2, 0))) |> should equal true

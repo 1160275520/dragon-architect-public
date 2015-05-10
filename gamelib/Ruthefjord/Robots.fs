@@ -53,7 +53,7 @@ type BasicRobotDelta = {
     Delta: BasicRobot;
 }
 with
-    member x.Apply(bot:BasicRobot) = {Position=bot.Position + x.Delta.Position; Direction=bot.Direction + x.Delta.Direction}
+    member x.ApplyTo(bot:BasicRobot) = {Position=bot.Position + x.Delta.Position; Direction=bot.Direction + x.Delta.Direction}
     static member GetDelta (a:BasicRobot) (b:BasicRobot) = {Delta={Position=b.Position - a.Position; Direction=b.Direction - a.Direction}}
 
 type BasicWorldState = {
@@ -70,6 +70,8 @@ type BasicWorldStateDelta = {
     RobotDelta:BasicRobotDelta;
     GridDelta:Map<IntVec3,Cube2>;
 }
+with
+    member x.ApplyTo(state:BasicWorldState2) = {Robot=x.RobotDelta.ApplyTo(state.Robot); Grid=MyMap.merge x.GridDelta state.Grid}
 
 type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
     let mutable robot = initialRobot
