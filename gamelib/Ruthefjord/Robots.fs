@@ -50,11 +50,18 @@ type BasicRobot = {
 }
 
 type BasicRobotDelta = {
-    Delta: BasicRobot;
+    PosDelta: IntVec3;
+    TurnCounter: int; // -1 for each left turn, +1 for each right turn
 }
 with
-    member x.ApplyTo(bot:BasicRobot) = {Position=bot.Position + x.Delta.Position; Direction=bot.Direction + x.Delta.Direction}
-    static member GetDelta (a:BasicRobot) (b:BasicRobot) = {Delta={Position=b.Position - a.Position; Direction=b.Direction - a.Direction}}
+    member x.ApplyTo bot = {Position=bot.Position + x.PosDelta; Direction=x.GetNewDir bot.Direction}
+    member x.GetNewDir (dir:IntVec3) = 
+        match x.TurnCounter % 4 with
+        | (-3 | 1) -> (new IntVec3(dir.Z, 0, -dir.X))
+        | (-2 | 2) -> (new IntVec3(-dir.X, 0, -dir.Z))
+        | (-1 | 3) -> (new IntVec3(-dir.Z, 0, dir.X))
+        | 0 -> dir
+    static member Combine a b = {PosDelta=a.PosDelta + b.PosDelta; TurnCounter=a.TurnCounter + b.TurnCounter}
 
 type BasicWorldState = {
     Robot: BasicRobot;
@@ -71,7 +78,12 @@ type BasicWorldStateDelta = {
     GridDelta:Map<IntVec3,Cube2>;
 }
 with
-    member x.ApplyTo(state:BasicWorldState2) = {Robot=x.RobotDelta.ApplyTo(state.Robot); Grid=MyMap.merge x.GridDelta state.Grid}
+    member x.ApplyTo(state:BasicWorldState2) = 
+        let newGrid = Map.fold (fun (grid:Map<IntVec3, Cube2>) delta cube -> grid.Add ((state.Robot.Position + delta), cube)) Map.empty x.GridDelta
+        {Robot=x.RobotDelta.ApplyTo(state.Robot); Grid=MyMap.merge newGrid state.Grid}
+    static member Combine a b = 
+        let gridB = Map.fold (fun (grid:Map<IntVec3, Cube2>) delta cube -> grid.Add ((a.RobotDelta.PosDelta + delta), cube)) Map.empty b.GridDelta
+        {RobotDelta=BasicRobotDelta.Combine a.RobotDelta b.RobotDelta; GridDelta=MyMap.merge a.GridDelta gridB}
 
 type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
     let mutable robot = initialRobot
@@ -151,21 +163,23 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             let robotStart = robot
             let gridStart = grid
             let gridDelta = GridStateTracker2.Empty()
-            let exec (pretendY, low) (c:Robot.Command2) = 
+            let exec (pretendY, low, turnCounter) (c:Robot.Command2) = 
                 (x :> Robot.IRobotSimulator2).Execute c
                 match c.Name with
-                | "down" -> (pretendY - 1, min low (pretendY - 1))
-                | "up" -> (pretendY + 1, low)
+                | "down" -> (pretendY - 1, min low (pretendY - 1), turnCounter)
+                | "up" -> (pretendY + 1, low, turnCounter)
+                | "left" -> (pretendY, low, turnCounter - 1)
+                | "right" -> (pretendY, low, turnCounter + 1)
                 | "cube" -> 
                     let cube = c.Args.[0] :?> int
-                    gridDelta.AddObject robot.Position (cube, c)
-                    (pretendY, low)
-                | _ -> (pretendY, low)
-            let low = snd (List.fold exec (robot.Position.Y, 0) commands)
-            match low >= 0 with
-            | false -> None
-            | true -> 
-                let delta = {RobotDelta=(BasicRobotDelta.GetDelta robotStart robot); GridDelta=gridDelta.CurrentState}
+                    gridDelta.AddObject (robot.Position - robotStart.Position) (cube, c)
+                    (pretendY, low, turnCounter)
+                | _ -> (pretendY, low, turnCounter)
+            let r = (List.fold exec (robot.Position.Y, 0, 0) commands)
+            match r with
+            | (low, _, _) when low < 0 -> None
+            | (_, _, turnCounter) -> 
+                let delta = {RobotDelta={PosDelta=robot.Position - robotStart.Position; TurnCounter=turnCounter}; GridDelta=gridDelta.CurrentState}
                 robot <- robotStart
                 grid <- gridStart
                 Some(upcast delta)
