@@ -9,13 +9,13 @@ open Ruthefjord.Ast.Imperative
 type Cube = int * Robot.Command
 type Cube2 = int * Robot.Command2
 
-type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
+type GridStateTracker(init: (IntVec3 * Cube) seq) =
 
     let MAX_CUBES = 8000
 
     let mutable cells = Dictionary()
     do
-        for kvp in init do cells.Add (kvp.Key, kvp.Value)
+        for (i,c) in init do cells.Add (i, c)
 
     static member Empty () = GridStateTracker []
 
@@ -29,11 +29,11 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
         let v = ref (0,null)
         if cells.TryGetValue (idx, v) then Some !v else None
 
-type GridStateTracker2(init: KeyValuePair<IntVec3, Cube2> seq) =
+type GridStateTracker2(init: (IntVec3 * Cube2) seq) =
 
     let MAX_CUBES = 8000
 
-    let mutable cells = Seq.fold (fun (m:Map<IntVec3, Cube2>) (kvp:KeyValuePair<IntVec3, Cube2>) -> m.Add (kvp.Key, kvp.Value)) Map.empty init
+    let mutable cells = Seq.fold (fun (m:Map<IntVec3, Cube2>) (i, c) -> m.Add (i, c)) Map.empty init
 
     static member Empty () = GridStateTracker2 []
 
@@ -133,6 +133,7 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
     static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
 
     member x.Grid with get () = grid and set g = grid <- g
+    member x.Robot with get () = robot and set r = robot <- r
 
     interface Robot.IRobotSimulator2 with
         member x.Execute command =
@@ -161,7 +162,7 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
 
         member x.GetDelta commands = 
             let robotStart = robot
-            let gridStart = grid
+            let gridStart = grid.CurrentState
             let gridDelta = GridStateTracker2.Empty()
             let exec (pretendY, low, turnCounter) (c:Robot.Command2) = 
                 (x :> Robot.IRobotSimulator2).Execute c
@@ -181,7 +182,7 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             | (_, _, turnCounter) -> 
                 let delta = {RobotDelta={PosDelta=robot.Position - robotStart.Position; TurnCounter=turnCounter}; GridDelta=gridDelta.CurrentState}
                 robot <- robotStart
-                grid <- gridStart
+                grid <- GridStateTracker2 (Map.toSeq gridStart)
                 Some(upcast delta)
 
 type LazyProgramRunner (program, builtIns, initialGrid:GridStateTracker, initialRobot:BasicRobot) =

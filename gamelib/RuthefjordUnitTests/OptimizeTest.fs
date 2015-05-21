@@ -3,7 +3,6 @@
 open Xunit
 open Xunit.Extensions
 open FsUnit.Xunit
-open System.Collections.Generic
 open System.IO
 open Ruthefjord
 open Ruthefjord.Robot
@@ -93,6 +92,9 @@ let ``delta position`` () =
         {Name="forward"; Args=[]}
         ]
     let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    runner2.Robot.Direction |> should equal initDir
+    runner2.Robot.Position |> should equal initPos 
+    runner2.Grid.CurrentState |> should equal (GridStateTracker2 Seq.empty).CurrentState
     deltaOption.IsSome |> should equal true
     let delta = deltaOption.Value :?> BasicWorldStateDelta
     delta.RobotDelta.TurnCounter |> should equal 0
@@ -120,6 +122,9 @@ let ``delta direction`` () =
         {Name="right"; Args=[]}
         ]
     let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    runner2.Robot.Direction |> should equal initDir
+    runner2.Robot.Position |> should equal initPos
+    runner2.Grid.CurrentState |> should equal (GridStateTracker2 Seq.empty).CurrentState
     deltaOption.IsSome |> should equal true
     let delta = deltaOption.Value :?> BasicWorldStateDelta
     delta.RobotDelta.TurnCounter |> should equal -2
@@ -144,6 +149,9 @@ let ``delta cube`` () =
         {Name="cube"; Args=[1]}
         ]
     let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
+    runner2.Robot.Direction |> should equal initDir
+    runner2.Robot.Position |> should equal initPos
+    runner2.Grid.CurrentState |> should equal (GridStateTracker2 Seq.empty).CurrentState
     deltaOption.IsSome |> should equal true
     let delta = deltaOption.Value :?> BasicWorldStateDelta
     delta.RobotDelta.TurnCounter |> should equal 1
@@ -225,10 +233,11 @@ let ``delta apply`` () =
     let initDir = IntVec3.UnitX
     let initPos = new IntVec3(1,1,1)
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
-    let dic = Dictionary<IntVec3, Cube2>()
-    dic.Add ((new IntVec3(2,2,1)), (1, {Name="cube"; Args=[1]}))
-    dic.Add ((new IntVec3(0,0,0)), (1, {Name="cube"; Args=[1]}))
-    let grid2 = GridStateTracker2 dic
+    let gridInit:(IntVec3 * Cube2) list = [
+        ((new IntVec3(2,2,1)), (1, {Name="cube"; Args=[1]}))
+        ((new IntVec3(0,0,0)), (1, {Name="cube"; Args=[1]}))
+    ]
+    let grid2 = GridStateTracker2 gridInit
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
     let commands:Command2 list = [
         {Name="up"; Args=[]}
@@ -241,7 +250,7 @@ let ``delta apply`` () =
     let deltaOption = (runner2 :> IRobotSimulator2).GetDelta commands
     deltaOption.IsSome |> should equal true
     let delta = deltaOption.Value :?> BasicWorldStateDelta
-    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=(GridStateTracker2 dic).CurrentState}:BasicWorldState2
+    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=(GridStateTracker2 gridInit).CurrentState}:BasicWorldState2
     let endState = delta.ApplyTo(startState)
     endState.Robot.Position |> should equal (new IntVec3(2,2,0))
     endState.Robot.Direction |> should equal -IntVec3.UnitZ

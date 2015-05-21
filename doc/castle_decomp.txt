@@ -93,7 +93,7 @@ define Tower()
     Forward(1)
     Right()
     Battlement()
-    Down(16) # tower height + 1 (from battlement)
+    Down(15) # tower height 
 
 define Roof()
     repeat 5 times # tower size - 1
