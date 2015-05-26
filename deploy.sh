@@ -1,7 +1,7 @@
 #!/bin/bash
 
-host=awb@wannacut.cs.washington.edu
-webroot=/srv/www/hackcraft
+host=awb@gigantor.cs.washington.edu
+webroot=/srv/www/dragonarchitect
 
 ssh $host rm -rf $webroot/dist
 ssh $host rm -rf $webroot/latest
