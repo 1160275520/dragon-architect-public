@@ -248,6 +248,7 @@ Blockly.Blocks['controls_repeat_locked'] = {
   }
 };
 
+// REPEAT
 Blockly.UnityJSON['controls_repeat'] = function(block, children) {
     return {
         meta: {id:Number(block.id)},
@@ -300,17 +301,6 @@ Blockly.Blocks['procedures_defnoreturn_locked'] = {
     this.hasStatements_ = hasStatements;
   }
 };
-
-// REPEAT
-Blockly.UnityJSON['controls_repeat'] = function(block, children) {
-    var times = block.getInlineInput("TIMES", "NUM");
-    return {
-        meta: {id:Number(block.id)},
-        numtimes: {type:"literal", value:times},
-        body: children.map(Blockly.UnityJSON.convertCallback),
-        type: "repeat"
-    };
-}
 
 // MATH_NUMBER
 Blockly.UnityJSON['math_number'] = function (block) {
