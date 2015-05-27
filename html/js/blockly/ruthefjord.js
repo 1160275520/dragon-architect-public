@@ -50,16 +50,20 @@ document.write('<script type="text/javascript" src="generated/' +
                BlocklyApps.LANG + '.js"></script>\n');
  */
 
+RuthefjordBlockly.makeNumXML = function(num) {
+    return '<block type="math_number"><field name="NUM">' + num + '</field></block>';
+}
+
 // list of custom block xml, in the order they should appear in the library
 // block name, standard xml, locked xml, pack name
 RuthefjordBlockly.Commands = [
-    ['move2',  '<block type="Forward"></block><block type="Left"></block><block type="Right"></block>'],
+    ['move2',  '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block><block type="Left"></block><block type="Right"></block>'],
     ['place',  '<block type="PlaceCube"></block>'],
     ['line',   '<block type="Line"></block>'],
-    ['up',  '<block type="Up"></block>', '<block type="Up_locked"></block>', 'up'],
-    ['down',  '<block type="Down"></block>', '<block type="Down_locked"></block>', 'up'],
+    ['up',  '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', '<block type="Up_locked"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', 'up'],
+    ['down',  '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', '<block type="Down_locked"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', 'up'],
     ['remove', '<block type="RemoveCube"></block>', '<block type="RemoveCube_locked"></block>', 'remove'],
-    ['repeat', '<block type="controls_repeat"></block>', '<block type="controls_repeat_locked"></block>', 'repeat'],
+    ['repeat', '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', '<block type="controls_repeat_locked"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', 'repeat'],
     ['defproc', '<block type="procedures_defnoreturn"></block>', '<block type="procedures_defnoreturn_locked"></block>', 'procedures']
 ];
 
@@ -202,6 +206,7 @@ RuthefjordBlockly.updateToolbox = function() {
     });
 
     toolXML += '</xml>';
+    // console.log(toolXML);
     Blockly.updateToolbox(toolXML);
 
     // lock blocks as necessary

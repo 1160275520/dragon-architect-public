@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     mut = parser.add_mutually_exclusive_group()
     mut.add_argument('-s', action='store_const', dest='action', const='set_deps', default='update_deps',
-        help="Instead of updating to the version listed in dependencies.json, use the versions of the already existing libraries and overwrite dependencies.json with the new vesrion. Will fail if other repositories are not clean (i.e., have local changes)."
+        help="Instead of updating to the version listed in dependencies.json, use the versions of the already existing libraries and overwrite dependencies.json with the new version. Will fail if other repositories are not clean (i.e., have local changes)."
     )
     mut.add_argument('-f', action='store_const', dest='action', const='force',
         help="Do not try to update the other repositories to the versions listed in dependencies.json nor write out new dependencies. Will not warn if repositories are not clean."
