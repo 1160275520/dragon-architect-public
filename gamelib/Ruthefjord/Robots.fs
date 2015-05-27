@@ -9,13 +9,13 @@ open Ruthefjord.Ast.Imperative
 type Cube = int * Robot.Command
 type Cube2 = int * Robot.Command2
 
-type GridStateTracker(init: (IntVec3 * Cube) seq) =
+type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
 
     let MAX_CUBES = 8000
 
     let mutable cells = Dictionary()
     do
-        for (i,c) in init do cells.Add (i, c)
+        for kvp in init do cells.Add (kvp.Key, kvp.Value)
 
     static member Empty () = GridStateTracker []
 
