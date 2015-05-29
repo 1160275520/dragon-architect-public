@@ -53,14 +53,14 @@ let main argv =
 
         let numIter = 3
 
-//        let t = time (fun () -> 
+//        let t = time (fun () ->
 //                        let grid = GridStateTracker Seq.empty
 //                        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 //                        let runner = BasicImperativeRobotSimulator (robot, grid)
 //                        Simulator.SimulateWithRobot program importedModules runner |> ignore) numIter
 //        printfn "Original with Robot: %.3f" t
 //
-//        let t = time (fun () -> 
+//        let t = time (fun () ->
 //                        let grid2 = GridStateTracker2 Seq.empty
 //                        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 //                        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
@@ -76,15 +76,15 @@ let main argv =
         System.Diagnostics.Debug.Assert(deltaOption.Value :? BasicWorldStateDelta);
         let delta = deltaOption.Value :?> BasicWorldStateDelta
         let startState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=(GridStateTracker2 Seq.empty).CurrentState}:BasicWorldState2
-        let t = time (fun () -> 
+        let t = time (fun () ->
                         for i = 1 to 10 do
                             for command in commands do
-                                (runner2 :> Robot.IRobotSimulator2).Execute command) numIter  
+                                (runner2 :> Robot.IRobotSimulator2).Execute command) numIter
         printfn "Execute every command 10 times: %.3f" t
-        let t = time (fun () -> 
+        let t = time (fun () ->
                         let mutable state = startState
                         for i = 1 to 10 do
-                            state <- delta.ApplyTo(state)) numIter  
+                            state <- delta.ApplyTo(state)) numIter
         printfn "Apply delta 10 times: %.3f" t
 
 //        printfn "Number of states: %d" result.States.Length

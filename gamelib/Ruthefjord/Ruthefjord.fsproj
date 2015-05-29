@@ -76,6 +76,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=2.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.12.1\lib\mono\2.0\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
       <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.12.1\lib\mono\gac\System\2.0.0.0__b77a5c561934e089\System.dll</HintPath>
