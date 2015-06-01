@@ -62,6 +62,7 @@
     <Compile Include="ImperativeSimulatorTest.fs" />
     <Compile Include="WorldPuzzleSerializationTest.fs" />
     <Compile Include="OptimizeTest.fs" />
+    <Compile Include="DebuggerTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsUnit.CustomMatchers">

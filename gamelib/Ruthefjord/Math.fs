@@ -1,6 +1,10 @@
 /// Some basic linear algebra types needed for the block simulation.
 namespace Ruthefjord
 
+module RMath =
+    let inline floori v =
+        int (floor v)
+
 [<StructuralEquality;NoComparison>]
 type IntVec2 = struct
     val X : int

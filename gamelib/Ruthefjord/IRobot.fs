@@ -13,6 +13,14 @@ type Command(t,a,s) =
     member x.Args: ImmArr<obj> = a
     member x.LastExecuted: Statement list = s
 
+    override x.Equals that =
+        match that with
+        | :? Command as y -> x.Name = y.Name && x.Args = y.Args
+        | _ -> false
+
+    override x.GetHashCode () =
+        x.Name.GetHashCode () ^^^ x.Args.GetHashCode ()
+
 type Command2 = {
     Name: string;
     Args: obj list;

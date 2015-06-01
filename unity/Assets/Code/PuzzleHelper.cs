@@ -92,7 +92,7 @@ public class PuzzleHelper : MonoBehaviour
     /// A predicate that should be used for almost all win condition checks, makes sure the program has been run and is in final state
     public bool GameIsRunningButDoneExecuting() {
         var progman = GetComponent<ProgramManager>();
-        return progman.RunState == RunState.Finished || progman.AtLastStep;
+        return progman.RunState == RunState.Finished;
     }
 
     public Func<bool> MakeGameIsRunningButDoneExecutingWithError(List<string> err) {

@@ -179,8 +179,8 @@ public class ExternalAPI : MonoBehaviour
             break;
         case "gamemode":
             Camera.allCameras.Where((c) => c.name == "Viewer").Single().depth = -1;
-            break; 
-        case "viewmode": 
+            break;
+        case "viewmode":
             Camera.allCameras.Where((c) => c.name == "Viewer").Single().depth = 1;
             break;
         }
@@ -230,7 +230,7 @@ public class ExternalAPI : MonoBehaviour
 
     public void EAPI_SetProgramExecutionTime(string parameter) {
         var x = float.Parse(parameter);
-        GetComponent<ProgramManager>().SetProgramStateBySlider(x);
+        GetComponent<ProgramManager>().SliderPosition = x;
     }
 
     public void EAPI_StepProgramExecution(string data) {
@@ -241,7 +241,8 @@ public class ExternalAPI : MonoBehaviour
     }
 
     public void EAPI_NextInterestingStep() {
-        GetComponent<ProgramManager>().AdvanceToNextInterestingStep();
+        //GetComponent<ProgramManager>().AdvanceToNextInterestingStep();
+        Debug.LogError("unimplemented!");
     }
 
     public System.Collections.IEnumerator EAPI_RenderFinal(string json) {
@@ -253,7 +254,7 @@ public class ExternalAPI : MonoBehaviour
         EAPI_SetProgramFromJson(data.GetField("program").AsString);
         var progman = GetComponent<ProgramManager>();
         progman.EditMode = EditMode.Workshop;
-        progman.SetProgramStateBySlider(1.0f);
+        progman.SliderPosition = 1.0f;
 
 
         // render to texture
@@ -265,7 +266,7 @@ public class ExternalAPI : MonoBehaviour
         tex.Apply();
         byte[] bytes = tex.EncodeToPNG();
 
-        // cleanup 
+        // cleanup
         Destroy(tex);
 
         // encode and ship data

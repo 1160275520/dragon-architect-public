@@ -28,7 +28,7 @@ let ``Simulator nop deserialized`` () =
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
     let states = (Simulator.SimulateWithRobot prog lib robot).States
 
-    states.Length |> should equal 1
+    states.Length |> should equal 2
     (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
 
 [<Fact>]
@@ -43,7 +43,7 @@ define foo()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
     let states = (Simulator.SimulateWithRobot prog lib robot).States
 
-    states.Length |> should equal 1
+    states.Length |> should equal 2
     (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
 
 [<Fact>]
@@ -103,7 +103,7 @@ let ``Simulator repeat`` () =
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
     let states = (Simulator.SimulateWithRobot prog lib robot).States
 
-    states.Length |> should equal 81
+    states.Length |> should equal 82
     (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 20
 
     let blocks = HashSet([for i in 1 .. 20 -> IntVec3 (i,0,i)])

@@ -1,4 +1,4 @@
-﻿module Ruthefjord.UnitTest.OptimizeTest
+module Ruthefjord.UnitTest.OptimizeTest
 
 open Xunit
 open Xunit.Extensions
@@ -64,7 +64,8 @@ let ``grid as map correctness`` () =
     let r1 = Simulator.SimulateWithRobot program importedModules runner
     let r2 = Simulator.SimulateWithRobot2 program importedModules runner2
 
-    r1.States.Length |> should equal (r2.States.Length + 1) // runner 2 doesn't include the initial state
+    // HACK it's actually off by 2 due to refactor, old sim now always adds a "final state" on the last step
+    r1.States.Length |> should equal (r2.States.Length + 2) // runner 2 doesn't include the initial state
     let final1 = r1.States.[r1.States.Length - 1]
     let final2 = r2.States.[r2.States.Length - 1]
     let state1 = final1.Data.WorldState :?> BasicWorldState

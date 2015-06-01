@@ -43,7 +43,7 @@ type GridStateTracker2(init: (IntVec3 * Cube2) seq) =
     member x.OverwriteObject idx cube = cells <- cells.Add (idx, cube)
     member x.RemoveObject idx = cells <- cells.Remove idx
     member x.GetObject idx = cells.TryFind idx
-         
+
 type BasicRobot = {
     Position: IntVec3;
     Direction: IntVec3;
@@ -55,7 +55,7 @@ type BasicRobotDelta = {
 }
 with
     member x.ApplyTo bot = {Position=bot.Position + x.PosDelta; Direction=x.GetNewDir bot.Direction}
-    member x.GetNewDir (dir:IntVec3) = 
+    member x.GetNewDir (dir:IntVec3) =
         match x.TurnCounter % 4 with
         | (-3 | 1) -> (new IntVec3(dir.Z, 0, -dir.X))
         | (-2 | 2) -> (new IntVec3(-dir.X, 0, -dir.Z))
@@ -78,10 +78,10 @@ type BasicWorldStateDelta = {
     GridDelta:Map<IntVec3,Cube2>;
 }
 with
-    member x.ApplyTo(state:BasicWorldState2) = 
+    member x.ApplyTo(state:BasicWorldState2) =
         let newGrid = Map.fold (fun (grid:Map<IntVec3, Cube2>) delta cube -> grid.Add ((state.Robot.Position + delta), cube)) Map.empty x.GridDelta
         {Robot=x.RobotDelta.ApplyTo(state.Robot); Grid=MyMap.merge newGrid state.Grid}
-    static member Combine a b = 
+    static member Combine a b =
         let gridB = Map.fold (fun (grid:Map<IntVec3, Cube2>) delta cube -> grid.Add ((a.RobotDelta.PosDelta + delta), cube)) Map.empty b.GridDelta
         {RobotDelta=BasicRobotDelta.Combine a.RobotDelta b.RobotDelta; GridDelta=MyMap.merge a.GridDelta gridB}
 
@@ -91,6 +91,9 @@ type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
 
     let pos() = robot.Position
     let dir() = robot.Direction
+
+    static member FromWorldState (ws:BasicWorldState) =
+        BasicImperativeRobotSimulator (ws.Robot, GridStateTracker ws.Grid)
 
     static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
 
@@ -119,7 +122,7 @@ type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
             | "isblockatpos" -> upcast ((grid.GetObject robot.Position).IsSome)
             | _ -> upcast ()
 
-        member x.CurrentState = 
+        member x.CurrentState =
             let state:BasicWorldState = {Robot=robot; Grid=grid.CurrentState}
             upcast state
 
@@ -156,22 +159,22 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             | "isblockatpos" -> upcast ((grid.GetObject robot.Position).IsSome)
             | _ -> upcast ()
 
-        member x.CurrentState = 
+        member x.CurrentState =
             let state:BasicWorldState2 = {Robot=robot; Grid=grid.CurrentState}
             upcast state
 
-        member x.GetDelta commands = 
+        member x.GetDelta commands =
             let robotStart = robot
             let gridStart = grid.CurrentState
             let gridDelta = GridStateTracker2.Empty()
-            let exec (pretendY, low, turnCounter) (c:Robot.Command2) = 
+            let exec (pretendY, low, turnCounter) (c:Robot.Command2) =
                 (x :> Robot.IRobotSimulator2).Execute c
                 match c.Name with
                 | "down" -> (pretendY - 1, min low (pretendY - 1), turnCounter)
                 | "up" -> (pretendY + 1, low, turnCounter)
                 | "left" -> (pretendY, low, turnCounter - 1)
                 | "right" -> (pretendY, low, turnCounter + 1)
-                | "cube" -> 
+                | "cube" ->
                     let cube = c.Args.[0] :?> int
                     gridDelta.AddObject (robot.Position - robotStart.Position) (cube, c)
                     (pretendY, low, turnCounter)
@@ -179,25 +182,8 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             let r = (List.fold exec (robot.Position.Y, 0, 0) commands)
             match r with
             | (low, _, _) when low < 0 -> None
-            | (_, _, turnCounter) -> 
+            | (_, _, turnCounter) ->
                 let delta = {RobotDelta={PosDelta=robot.Position - robotStart.Position; TurnCounter=turnCounter}; GridDelta=gridDelta.CurrentState}
                 robot <- robotStart
                 grid <- GridStateTracker2 (Map.toSeq gridStart)
                 Some(upcast delta)
-
-type LazyProgramRunner (program, builtIns, initialGrid:GridStateTracker, initialRobot:BasicRobot) =
-
-    let MAX_ITER = 20000
-
-    let runner = BasicImperativeRobotSimulator (initialRobot, initialGrid)
-    let simulator = Simulator.LazySimulator (program, builtIns, runner)
-    let mutable numSteps = 0
-
-    member x.InitialState = simulator.InitialState
-
-    member x.IsDone = simulator.IsDone || numSteps >= MAX_ITER
-
-    member x.UpdateOneStep (grid:GridStateTracker) =
-        runner.Grid <- grid
-        numSteps <- numSteps + 1
-        simulator.StepUntilSomething ()

@@ -36,6 +36,10 @@ module ImmArr =
     let map f (x:ImmArr<'a>) = x.Map f
     let toArray (x:ImmArr<'a>) = x.ToArray ()
 
+module MyArray =
+    let last (arr:'a[]) =
+        arr.[arr.Length - 1]
+
 module MyList =
     let rec skip n (list:'a list) =
         if n <= 0 then list else skip (n - 1) list.Tail
