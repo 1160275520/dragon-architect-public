@@ -34,6 +34,8 @@ type IntVec3 = struct
     static member (+) (a:IntVec3, b:IntVec3) = IntVec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
     static member (-) (a:IntVec3, b:IntVec3) = IntVec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
     static member (~-) (v:IntVec3) = IntVec3(-v.X, -v.Y, -v.Z)
+    static member (*) (v:IntVec3, s:int) = IntVec3(v.X * s, v.Y * s, v.Z * s)
+    static member (*) (s:int, v:IntVec3) = IntVec3(s * v.X, s * v.Y, s * v.Z)
 
     static member Zero = IntVec3(0,0,0)
     static member UnitX = IntVec3(1,0,0)
