@@ -662,7 +662,8 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
                 let proc = ctx.Environment.[name] :?> Procedure
                 let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
                 let env = ctx.Environment.PushScope args
-                executeBlock {ctx with Environment=env} proc.Body
+                let newCtx = executeBlock {ctx with Environment=env} proc.Body
+                {Environment=ctx.Environment; State=newCtx.State}
             with
             | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
             | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
