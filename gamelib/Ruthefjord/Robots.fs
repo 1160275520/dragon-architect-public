@@ -67,7 +67,11 @@ type BasicRobotPositionDelta = {
     MinY: int;
 }
 with
-    static member ApplyDelta bot d = bot.Position + d.ParallelDelta * bot.Direction + d.PerpenDelta * bot.DirRightTurn + IntVec3(0, d.YDelta, 0)
+    static member ApplyDelta bot d = 
+        if bot.Position.Y + d.MinY < 0 then
+            None
+        else
+            Some (bot.Position + d.ParallelDelta * bot.Direction + d.PerpenDelta * bot.DirRightTurn + IntVec3(0, d.YDelta, 0))
 
     static member Empty = {ParallelDelta=0; YDelta=0; PerpenDelta=0; MinY=0}
 
@@ -87,10 +91,10 @@ with
     
     static member Combine (a:BasicRobotPositionDelta) (b:BasicRobotPositionDelta) tc =
         match tc % 4 with // tc = turn counter, +1 for every right turn, -1 for every left turn
-        | (-3 | 1) -> {ParallelDelta=a.ParallelDelta + b.PerpenDelta; PerpenDelta=a.PerpenDelta + b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY b.MinY + a.YDelta}
-        | (-2 | 2) -> {ParallelDelta=a.ParallelDelta - b.ParallelDelta; PerpenDelta=a.PerpenDelta - b.PerpenDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY b.MinY + a.YDelta}
-        | (-1 | 3) -> {ParallelDelta=a.ParallelDelta - b.PerpenDelta; PerpenDelta=a.PerpenDelta - b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY b.MinY + a.YDelta}
-        | _ -> {ParallelDelta=a.ParallelDelta + b.ParallelDelta; PerpenDelta=a.PerpenDelta + b.PerpenDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY b.MinY + a.YDelta}
+        | (-3 | 1) -> {ParallelDelta=a.ParallelDelta + b.PerpenDelta; PerpenDelta=a.PerpenDelta + b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
+        | (-2 | 2) -> {ParallelDelta=a.ParallelDelta - b.ParallelDelta; PerpenDelta=a.PerpenDelta - b.PerpenDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
+        | (-1 | 3) -> {ParallelDelta=a.ParallelDelta - b.PerpenDelta; PerpenDelta=a.PerpenDelta - b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
+        | _ -> {ParallelDelta=a.ParallelDelta + b.ParallelDelta; PerpenDelta=a.PerpenDelta + b.PerpenDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
 
 
 type BasicRobotDelta = {
@@ -102,10 +106,12 @@ with
     member x.PerpenDelta = x.PosDelta.PerpenDelta
     member x.YDelta = x.PosDelta.YDelta
     // to apply PosDelta, we move the X in the current direction and move Z in the current direction turned ot the right
-    static member ApplyDelta bot d = {Position=BasicRobotPositionDelta.ApplyDelta bot d.PosDelta;
-                            Direction=BasicRobotDelta.GetNewDir bot.Direction d.TurnCounter}
+    static member ApplyDelta bot d = 
+        match BasicRobotPositionDelta.ApplyDelta bot d.PosDelta with
+        | None -> None
+        | Some delta -> Some ({Position=delta; Direction=BasicRobotDelta.GetNewDir bot.Direction d.TurnCounter})
     
-    static member private GetNewDir (dir:IntVec3) tc =
+    static member GetNewDir (dir:IntVec3) tc =
         match tc % 4 with
         | (-3 | 1) -> (new IntVec3(dir.Z, 0, -dir.X))
         | (-2 | 2) -> (new IntVec3(-dir.X, 0, -dir.Z))
@@ -160,14 +166,19 @@ type BasicWorldStateDelta = {
 }
 with
     static member ApplyDelta (state:BasicWorldState2) d =
-        let newGrid = Map.fold (fun (grid:Map<IntVec3, Cube2>) (delta:BasicRobotPositionDelta) (cubeDelta:CubeDelta) ->
+        let newGrid = Map.fold (fun (grid:Map<IntVec3 option, Cube2>) (delta:BasicRobotPositionDelta) (cubeDelta:CubeDelta) ->
                                     match cubeDelta.Status with
                                     | CubeStatus.Add -> grid.Add ((BasicRobotPositionDelta.ApplyDelta state.Robot delta), cubeDelta.Cube)
                                     | CubeStatus.Remove -> grid.Remove (BasicRobotPositionDelta.ApplyDelta state.Robot delta)
                                     | _ -> invalidOp "unrecognized cube status"
                                 )
-                                state.Grid d.GridDelta
-        {Robot=BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta; Grid=newGrid}
+                                (Map.ofSeq (Seq.map (fun (k,v) -> (Some(k),v)) (Map.toSeq state.Grid))) d.GridDelta
+        if newGrid.ContainsKey None then
+            None
+        else
+            match BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta with
+            | None -> None
+            | Some bot -> Some({Robot=bot; Grid=(Map.ofSeq (Seq.map (fun ((k:IntVec3 option),v) -> (k.Value,v)) (Map.toSeq newGrid)))})
 
     static member Empty = {RobotDelta=BasicRobotDelta.Empty; GridDelta=Map.empty}
 
@@ -180,6 +191,10 @@ with
             let cube = command.Args.[0] :?> int
             {RobotDelta=BasicRobotDelta.Create command; GridDelta=(Map.empty).Add (BasicRobotPositionDelta.Create command, {Status=CubeStatus.Remove; Cube=(cube, command)})}
         | _ -> {RobotDelta=BasicRobotDelta.Create command; GridDelta=Map.empty}
+
+    static member Create (commands:Robot.Command2 list) =
+        let f = fun delta (c:Robot.Command2) -> BasicWorldStateDelta.Combine delta (BasicWorldStateDelta.Create c)
+        List.fold f BasicWorldStateDelta.Empty commands
 
     static member Combine a b =
         let gridB = Map.fold (fun (grid:Map<BasicRobotPositionDelta, CubeDelta>) (delta:BasicRobotPositionDelta) (cubeDelta:CubeDelta) ->
@@ -279,7 +294,7 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             let state:BasicWorldState2 = {Robot=robot; Grid=grid.CurrentState}
             upcast state
 
-        member x.ApplyDelta delta =
-            let result = BasicWorldStateDelta.ApplyDelta ((x :> Robot.IRobotSimulator2).CurrentState :?> BasicWorldState2) (delta :?> BasicWorldStateDelta)
-            robot <- result.Robot
-            grid <- GridStateTracker2 (Map.toSeq result.Grid)
+//        member x.ApplyDelta delta =
+//            let result = BasicWorldStateDelta.ApplyDelta ((x :> Robot.IRobotSimulator2).CurrentState :?> BasicWorldState2) (delta :?> BasicWorldStateDelta)
+//            robot <- result.Robot
+//            grid <- GridStateTracker2 (Map.toSeq result.Grid)

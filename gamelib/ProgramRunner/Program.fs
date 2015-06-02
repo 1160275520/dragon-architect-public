@@ -51,7 +51,7 @@ let main argv =
         let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) numIter
         printfn "Optimized: %.3f" t
 
-        let numIter = 3
+//        let numIter = 3
 
 //        let t = time (fun () ->
 //                        let grid = GridStateTracker Seq.empty
@@ -87,16 +87,16 @@ let main argv =
 //                            state <- delta.ApplyTo(state)) numIter
 //        printfn "Apply delta 10 times: %.3f" t
 
-        let grid = GridStateTracker Seq.empty
-        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-        let runner = BasicImperativeRobotSimulator (robot, grid)
-        let grid2 = GridStateTracker2 Seq.empty
-        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-
-        let t = time (fun () -> Simulator.SimulateWithRobot program importedModules runner |> ignore) numIter
-        printfn "Simulate unoptimized: %.3f" t
-        let t = time (fun () -> Simulator.SimulateWithRobot3 program importedModules runner2 |> ignore) numIter
-        printfn "Simulate optimized: %.3f" t
+//        let grid = GridStateTracker Seq.empty
+//        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+//        let runner = BasicImperativeRobotSimulator (robot, grid)
+//        let grid2 = GridStateTracker2 Seq.empty
+//        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+//
+//        let t = time (fun () -> Simulator.SimulateWithRobot program importedModules runner |> ignore) numIter
+//        printfn "Simulate unoptimized: %.3f" t
+//        let t = time (fun () -> Simulator.SimulateWithRobot3 program importedModules runner2 |> ignore) numIter
+//        printfn "Simulate optimized: %.3f" t
 
 //        printfn "Number of states: %d" result.States.Length
 

@@ -715,70 +715,70 @@ let rec private executeWithProcedureResultCache2 (state:State2) (cachedResults:M
         | Some s -> executeStatement2' state s acc
         | None -> ()
 
-let private executeToFinalState (state:State2) (cachedCommands:MutableDict<ProcedureCallData,Robot.Command2[]>) (cachedDeltas:MutableDict<Robot.Command2[],obj>) =
-    let isolatedState env toExec bot =
-        {CallStack=[{Environment=env; ToExecute=toExec; Robot=bot}]; LastExecuted=[];}:State2
-    while not (IsDone2 state) do
-        let head = state.CallStack.Head
-        let robot = head.Robot.Value
-        match popNextStatment2 state with
-        | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
-            let proc = evalProcedureReference2 meta head name
-            let argVals = List.map (evaluate2 head) argExpr
-            let args = Seq.zip proc.Parameters argVals |> Seq.toList
-            let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
-            if cachedCommands.ContainsKey calldata
-            then
-                if cachedDeltas.ContainsKey cachedCommands.[calldata]
-                then
-                    robot.ApplyDelta cachedDeltas.[cachedCommands.[calldata]]
-                else
-                    // commands cached, but no delta means delta could not be generated, and we should execute all commands manually
-                    for c in cachedCommands.[calldata] do
-                        robot.Execute c
-            else
-                // first time we've encountered this procedure
-                // get the commands for it
-                let tmpMutList = MutableList (20)
-                let env = head.Environment.PushScope (args |> Map.ofList)
-                let tmpState = isolatedState env proc.Body head.Robot
-                executeWithProcedureResultCache2 tmpState cachedCommands tmpMutList
-                cachedCommands.Add (calldata, tmpMutList.ToArray ())
-                let tmpList = Array.toList (tmpMutList.ToArray ())
-                // try and generate a delta and then update the state
-                match robot.GetDelta tmpList with
-                | Some delta ->
-                    cachedDeltas.Add (tmpMutList.ToArray (), delta)
-                    robot.ApplyDelta delta
-                | None ->
-                    for c in tmpList do
-                        robot.Execute c
-        | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
-            let ntimes = evaluate2 head ntimesExpr |> valueAsInt meta
-            let tmpState = isolatedState head.Environment body head.Robot
-            let tmpMutList = MutableList (20)
-            executeWithProcedureResultCache2 tmpState cachedCommands tmpMutList
-            let tmpArr = tmpMutList.ToArray ()
-            if cachedDeltas.ContainsKey tmpArr
-            then // we've seen this loop body before, apply cached delta ntimes
-                for i = 1 to ntimes do
-                    robot.ApplyDelta cachedDeltas.[tmpArr]
-            else // loop body is unseen, or a delta can't be generated
-                let tmpList = Array.toList tmpArr
-                match robot.GetDelta tmpList with
-                | Some delta ->
-                    cachedDeltas.Add (tmpArr, delta)
-                    for i = 1 to ntimes do
-                        robot.ApplyDelta cachedDeltas.[tmpArr]
-                | None ->
-                    for i = 1 to ntimes do
-                        for c in tmpList do
-                            robot.Execute c
-        | Some s ->
-            match executeStatement2 state s with
-            | None -> ()
-            | (Some cmd) -> robot.Execute cmd
-        | None -> ()
+//let private executeToFinalState (state:State2) (cachedCommands:MutableDict<ProcedureCallData,Robot.Command2[]>) (cachedDeltas:MutableDict<Robot.Command2[],obj>) =
+//    let isolatedState env toExec bot =
+//        {CallStack=[{Environment=env; ToExecute=toExec; Robot=bot}]; LastExecuted=[];}:State2
+//    while not (IsDone2 state) do
+//        let head = state.CallStack.Head
+//        let robot = head.Robot.Value
+//        match popNextStatment2 state with
+//        | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
+//            let proc = evalProcedureReference2 meta head name
+//            let argVals = List.map (evaluate2 head) argExpr
+//            let args = Seq.zip proc.Parameters argVals |> Seq.toList
+//            let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
+//            if cachedCommands.ContainsKey calldata
+//            then
+//                if cachedDeltas.ContainsKey cachedCommands.[calldata]
+//                then
+//                    robot.ApplyDelta cachedDeltas.[cachedCommands.[calldata]]
+//                else
+//                    // commands cached, but no delta means delta could not be generated, and we should execute all commands manually
+//                    for c in cachedCommands.[calldata] do
+//                        robot.Execute c
+//            else
+//                // first time we've encountered this procedure
+//                // get the commands for it
+//                let tmpMutList = MutableList (20)
+//                let env = head.Environment.PushScope (args |> Map.ofList)
+//                let tmpState = isolatedState env proc.Body head.Robot
+//                executeWithProcedureResultCache2 tmpState cachedCommands tmpMutList
+//                cachedCommands.Add (calldata, tmpMutList.ToArray ())
+//                let tmpList = Array.toList (tmpMutList.ToArray ())
+//                // try and generate a delta and then update the state
+//                match robot.GetDelta tmpList with
+//                | Some delta ->
+//                    cachedDeltas.Add (tmpMutList.ToArray (), delta)
+//                    robot.ApplyDelta delta
+//                | None ->
+//                    for c in tmpList do
+//                        robot.Execute c
+//        | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
+//            let ntimes = evaluate2 head ntimesExpr |> valueAsInt meta
+//            let tmpState = isolatedState head.Environment body head.Robot
+//            let tmpMutList = MutableList (20)
+//            executeWithProcedureResultCache2 tmpState cachedCommands tmpMutList
+//            let tmpArr = tmpMutList.ToArray ()
+//            if cachedDeltas.ContainsKey tmpArr
+//            then // we've seen this loop body before, apply cached delta ntimes
+//                for i = 1 to ntimes do
+//                    robot.ApplyDelta cachedDeltas.[tmpArr]
+//            else // loop body is unseen, or a delta can't be generated
+//                let tmpList = Array.toList tmpArr
+//                match robot.GetDelta tmpList with
+//                | Some delta ->
+//                    cachedDeltas.Add (tmpArr, delta)
+//                    for i = 1 to ntimes do
+//                        robot.ApplyDelta cachedDeltas.[tmpArr]
+//                | None ->
+//                    for i = 1 to ntimes do
+//                        for c in tmpList do
+//                            robot.Execute c
+//        | Some s ->
+//            match executeStatement2 state s with
+//            | None -> ()
+//            | (Some cmd) -> robot.Execute cmd
+//        | None -> ()
 
 let SimulateWithoutRobotOptimized program builtIns =
     let simstate = createState program builtIns None
@@ -848,12 +848,12 @@ let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
         steps.Add simstate.LastExecuted
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult2
 
-let SimulateWithRobot3 program builtIns (robot:Robot.IRobotSimulator2) =
-    let simstate = createState2 program builtIns (Some robot)
-    let commandCache = MutableDict ()
-    let deltaCache = MutableDict ()
-    executeToFinalState simstate commandCache deltaCache
-    robot.CurrentState
+//let SimulateWithRobot3 program builtIns (robot:Robot.IRobotSimulator2) =
+//    let simstate = createState2 program builtIns (Some robot)
+//    let commandCache = MutableDict ()
+//    let deltaCache = MutableDict ()
+//    executeToFinalState simstate commandCache deltaCache
+//    robot.CurrentState
 
 type LazySimulator (program, builtIns, robot) =
     let state = createState program builtIns (Some robot)
