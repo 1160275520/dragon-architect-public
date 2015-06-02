@@ -3,7 +3,7 @@
 define Line(x)
     repeat x times
         Forward(1)
-        PlaceBlock(1)
+        PlaceCube(1)
     Left()
     Left()
     Forward(x)
