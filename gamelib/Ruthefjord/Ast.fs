@@ -150,3 +150,8 @@ module Imperative =
                 | _ -> None
 
         List.tryPick tfs prog.Body
+
+    let findStatementWithId id prog =
+        match tryFindStatement (fun s -> s.Meta.Id = id) prog with
+        | None -> invalidArg "id" (sprintf "program does not contain statement with id %d!" id)
+        | Some s -> s

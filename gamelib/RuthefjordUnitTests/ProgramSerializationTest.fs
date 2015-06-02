@@ -45,3 +45,20 @@ let ``Serialization simple test`` () =
     let json = J.Parse simpleTestProgram
     let prog = S.ProgramOfJson json
     S.ProgramOfJson (S.JsonOfProgram prog) |> should equal prog
+
+[<Fact>]
+let ``find statement with id`` () =
+    let json = J.Parse simpleTestProgram
+    let prog = S.ProgramOfJson json
+
+    let stmt21 = A.tryFindStatement (fun s -> s.Meta.Id = 21) prog
+    stmt21.IsSome |> should equal true
+    stmt21.Value |> should equal (A.findStatementWithId 21 prog)
+    stmt21.Value.Meta.Id |> should equal 21
+    (match stmt21.Value.Stmt with A.Execute _ -> true | _ -> false) |> should equal true
+
+    let stmt23 = A.tryFindStatement (fun s -> s.Meta.Id = 23) prog
+    stmt23.IsSome |> should equal true
+    stmt23.Value |> should equal (A.findStatementWithId 23 prog)
+    stmt23.Value.Meta.Id |> should equal 23
+    (match stmt23.Value.Stmt with A.Execute _ -> true | _ -> false) |> should equal true
