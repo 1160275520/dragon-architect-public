@@ -29,13 +29,15 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
         let v = ref (0,null)
         if cells.TryGetValue (idx, v) then Some !v else None
 
-type GridStateTracker2(init: (IntVec3 * Cube2) seq) =
+type GridStateTracker2(init: Map<IntVec3, Cube2>) =
 
     let MAX_CUBES = 8000
 
-    let mutable cells = Seq.fold (fun (m:Map<IntVec3, Cube2>) (i, c) -> m.Add (i, c)) Map.empty init
+    let mutable cells = init
 
     static member Empty () = GridStateTracker2 []
+
+    new (init: (IntVec3 * Cube2) seq) = GridStateTracker2 (Map.ofSeq init)
 
     member x.CurrentState = cells
 

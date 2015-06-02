@@ -72,11 +72,20 @@ let ``integration correctness`` () =
     let grid2 = r2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
     grid2 |> should equal grid1
 
-[<Fact>]
+let testPrograms =
+    [
+        "castle_decomp.txt";
+        "AARON.txt";
+        "flower.txt";
+        "smile.txt";
+    ] |> Seq.map (fun s -> [|s :> obj|])
+
+[<Theory>]
+[<PropertyData("testPrograms")>]
 [<Trait("id", "gridasmap")>]
 [<Trait("tag", "opt")>]
-let ``grid as map correctness`` () =
-    let filename = "../../../../doc/castle_decomp.txt"
+let ``grid as map correctness`` (testProg:string) =
+    let filename = "../../../../doc/" + testProg
     let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
     let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
     let text = System.IO.File.ReadAllText filename
