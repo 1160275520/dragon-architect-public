@@ -560,9 +560,9 @@ let private concretizeStatement (ctx:Context<_>) (stmt:Statement) : ConcreteStat
     | Repeat {Body=body; NumTimes=ntimesExpr} ->
         let ntimes = evaluate3 ctx ntimesExpr |> valueAsInt stmt.Meta
         Some (CRepeat (stmt.Meta.Id, ntimes))
-    (*| Execute {Identifier=name; Arguments=argExpr} ->
+    | Execute {Identifier=name; Arguments=argExpr} ->
         let argVals = List.map (fun e -> (evaluate3 ctx e) :?> int) argExpr
-        Some (CExecute (name, argVals))*)
+        Some (CExecute (name, argVals))
     | Command {Name=cmd; Arguments=args} ->
         let args = List.map (evaluate3 ctx) args
         Some (CCommand {Name=cmd; Args=args})
@@ -590,7 +590,7 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
         | None ->
             (executeWithoutCache ctx stmt, sfuncs.Empty)
         | Some concrete ->
-            let result = getCached concrete
+            let result = getCached ctx concrete
             let s = ctx.State
             let d = result.Delta
             match sfuncs.ApplyDelta ctx.State result.Delta with
@@ -599,33 +599,43 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
                 // even if we fail to apply it, it's still the correct delta
                 (executeWithoutCache ctx stmt, result.Delta)
 
-    and getCached (concrete:ConcreteStatement): CacheData<'StateDelta> =
+    and getCached (ctx:Context<_>) (concrete:ConcreteStatement): CacheData<'StateDelta> =
         let (b,v) = cache.TryGetValue concrete
         if b
         then v
         else
-            let cr = createCached concrete
+            let cr = createCached ctx concrete
             cache.Add (concrete, cr)
             cr
 
-    and createCached (concrete:ConcreteStatement) =
+    and createCached (ctx:Context<_>) (concrete:ConcreteStatement) =
         match concrete with
         | CRepeat (nodeId, numTimes) ->
-            let bodyResult = getCached (CRepeatBody nodeId)
+            let bodyResult = getCached ctx (CRepeatBody nodeId)
             let delta = Seq.init numTimes (fun _ -> bodyResult.Delta) |> Seq.fold sfuncs.Combine sfuncs.Empty
             {Delta=delta}
         | CRepeatBody nodeId ->
             let stmt = (findStatementWithId nodeId fullProgram).Stmt.AsRepeat ()
-            let delta = createDeltaForBlock stmt.Body
+            let delta = createDeltaForBlock ctx stmt.Body
+            {Delta=delta}
+        | CExecute (name, argVals) ->
+            let proc = ctx.Environment.[name] :?> Procedure
+            let args = Seq.zip proc.Parameters (Seq.map (fun x -> x :> obj) argVals) |> Map.ofSeq
+            let env = ctx.Environment.PushScope args
+            let delta = createDeltaForBlock {ctx with Environment=env} proc.Body
             {Delta=delta}
         | CCommand cmd ->
             let delta = sfuncs.Create cmd
             {Delta=delta}
-        | _ -> invalidArg "" ""
 
-    and createDeltaForBlock (block:Statement list) =
-        // FIXME
-        sfuncs.Empty
+    and createDeltaForBlock (ctx:Context<_>) (block:Statement list) =
+        let mutable tmpCtx = ctx
+        let mutable delta = sfuncs.Empty
+        for s in block do
+            let c, d = executeWithCache tmpCtx s
+            tmpCtx <- c
+            delta <- sfuncs.Combine delta d
+        delta
 
     and executeWithoutCache (ctx:Context<'State>) (stmt:Statement) =
         match stmt.Stmt with
@@ -661,9 +671,9 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
             let cmd: Robot.Command2 = {Name=cmd; Args=args}
             {ctx with State=sfuncs.ApplyCommand ctx.State cmd}
 
-    and executeBlock (ctx:Context<'State>) (list:Statement list) =
+    and executeBlock (ctx:Context<'State>) (block:Statement list) =
         let mutable tmpCtx = ctx
-        for s in list do
+        for s in block do
             tmpCtx <- fst (executeWithCache tmpCtx s)
         tmpCtx
 
