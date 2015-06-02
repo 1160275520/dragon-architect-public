@@ -53,19 +53,19 @@ module Imperative =
     | Procedure of Procedure
     | Execute of Execute
     | Command of Command
-        member x.AsProcedure() = 
+        member x.AsProcedure() =
             match x with
             | Procedure p -> p;
             | _ -> invalidOp "can't convert to procedure";
-        member x.AsExecute() = 
+        member x.AsExecute() =
             match x with
             | Execute e -> e;
             | _ -> invalidOp "can't convert to execute";
-        member x.AsCommand() = 
+        member x.AsCommand() =
             match x with
             | Command c -> c;
             | _ -> invalidOp "can't convert to command";
-        member x.AsRepeat() = 
+        member x.AsRepeat() =
             match x with
             | Repeat r -> r;
             | _ -> invalidOp "can't convert to repeat";
@@ -105,7 +105,7 @@ module Imperative =
     }
 
     let mapMeta f (prog:Program) =
-        
+
         let rec mapExpr (expr:Expression) =
             let newE =
                 match expr.Expr with
@@ -129,8 +129,24 @@ module Imperative =
                     Procedure {p with Body=List.map mapStmt p.Body}
                 | Execute e ->
                     Execute {e with Arguments=List.map mapExpr e.Arguments}
-                | Command c -> 
+                | Command c ->
                     Command {c with Arguments=List.map mapExpr c.Arguments}
             {Stmt=newS; Meta=f stmt.Meta}
 
         {Body=List.map mapStmt prog.Body}
+
+    let tryFindStatement f (prog:Program) =
+        let rec tfs (stmt:Statement) =
+            if f stmt
+            then Some stmt
+            else
+                match stmt.Stmt with
+                | Conditional c ->
+                    List.append c.Then c.Else |> List.tryPick tfs
+                | Repeat r ->
+                    List.tryPick tfs r.Body
+                | Procedure p ->
+                    List.tryPick tfs p.Body
+                | _ -> None
+
+        List.tryPick tfs prog.Body

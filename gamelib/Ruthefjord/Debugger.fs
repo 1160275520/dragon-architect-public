@@ -73,6 +73,19 @@ module Debugger =
         | EditMode.Persistent -> upcast PersistentDebugger init
         | EditMode.Workshop -> upcast WorkshopDebugger init
 
+    let private apply (state:BasicWorldState2) (cmd:Robot.Command2) =
+        let sim = (BasicImperativeRobotSimulator2.FromWorldState state)
+        (sim :> Robot.IRobotSimulator2).Execute cmd
+        (sim :> Robot.IRobotSimulator2).CurrentState :?> BasicWorldState2
+
+    let stateFunctions: Simulator.StateFunctions<BasicWorldState2, unit> = {
+        Empty = ();
+        Combine = fun () () -> ();
+        Create = fun _ -> ();
+        ApplyDelta = fun _ () -> None;
+        ApplyCommand = apply;
+    }
+
 type ProgramRunner() =
     let mutable isRunning = false
     let mutable totalTime = 0.0f

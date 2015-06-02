@@ -40,6 +40,12 @@ module MyArray =
     let last (arr:'a[]) =
         arr.[arr.Length - 1]
 
+    let repeat<'a> nTimes (arr: 'a[]) =
+        let lst = System.Collections.Generic.List ()
+        for i = 1 to nTimes do
+            lst.AddRange arr
+        lst.ToArray ()
+
 module MyList =
     let rec skip n (list:'a list) =
         if n <= 0 then list else skip (n - 1) list.Tail

@@ -171,6 +171,9 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
     let pos() = robot.Position
     let dir() = robot.Direction
 
+    static member FromWorldState (ws:BasicWorldState2) =
+        BasicImperativeRobotSimulator2 (ws.Robot, GridStateTracker2 ws.Grid)
+
     static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
 
     member x.Grid with get () = grid and set g = grid <- g

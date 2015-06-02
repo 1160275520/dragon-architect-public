@@ -29,6 +29,34 @@ let ``command sanity check 2`` () =
 
     r1 |> should equal r2
 
+let makeInitData () =
+    let filename = "../../../../doc/smile.txt"
+    let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
+    let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
+    let text = System.IO.File.ReadAllText filename
+    let program = Parser.Parse (text, filename)
+    let grid = GridStateTracker Seq.empty
+    let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+
+    {
+        Program = program;
+        BuiltIns = importedModules;
+        State = {Robot=robot; Grid=grid.CurrentState}
+    }
+
+[<Fact>]
+[<Trait("tag", "opt")>]
+let ``yet another optimization test`` () =
+    let initData = makeInitData ()
+    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let runner = BasicImperativeRobotSimulator2.FromWorldState initState
+    let expected = Simulator.SimulateWithRobot2 initData.Program initData.BuiltIns runner
+
+    let cache = Simulator.Dict ()
+    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
+
+    ()
+
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``optimize correctness`` () =
@@ -72,20 +100,11 @@ let ``integration correctness`` () =
     let grid2 = r2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
     grid2 |> should equal grid1
 
-let testPrograms =
-    [
-        "castle_decomp.txt";
-        "AARON.txt";
-        "flower.txt";
-        "smile.txt";
-    ] |> Seq.map (fun s -> [|s :> obj|])
-
-[<Theory>]
-[<PropertyData("testPrograms")>]
+[<Fact>]
 [<Trait("id", "gridasmap")>]
 [<Trait("tag", "opt")>]
-let ``grid as map correctness`` (testProg:string) =
-    let filename = "../../../../doc/" + testProg
+let ``grid as map correctness`` () =
+    let filename = "../../../../doc/castle_decomp.txt"
     let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
     let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
     let text = System.IO.File.ReadAllText filename

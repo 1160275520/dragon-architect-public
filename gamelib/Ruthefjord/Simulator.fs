@@ -56,6 +56,7 @@ type private CallStackState2 = {
 let private MAX_CALLSTACK = 1000
 
 type private State = {
+    Program: Program;
     mutable CallStack: CallStackState list;
     mutable LastExecuted: Statement list;
 }
@@ -83,7 +84,7 @@ let private valueAsInt meta (o:obj) =
 
 let private createState (program:Program) builtInValues robot =
     let env = {Globals=builtInValues; Locals=Map.empty}
-    ({CallStack=[{Environment=env; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}:State)
+    ({Program=program; CallStack=[{Environment=env; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}:State)
 
 let private createState2 (program:Program) builtInValues robot =
     let env = {Globals=builtInValues; Locals=Map.empty}
@@ -504,6 +505,147 @@ let private evalProcedureReference meta (head:CallStackState) name =
     | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
     | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
 
+type ConcreteStatement =
+// procedure name, args
+// HACK this only works for integer parameters, boo yah
+| CExecute of string * int list
+// ast id
+| CRepeatBody of int
+// ast id, numTimes
+| CRepeat of int * int
+| CCommand of Robot.Command2
+
+type Dict<'a,'b> = System.Collections.Generic.Dictionary<'a,'b>
+
+type private Context<'State> = {
+    Environment: Environment;
+    State: 'State;
+}
+
+let rec private evaluate3<'S> (ctx: Context<'S>) (expr: Expression) =
+    match expr.Expr with
+    | Literal x -> x
+    // HACK this should probably make sure it's not a function or procedure...
+    | Identifier name ->
+        try ctx.Environment.[name]
+        with :? System.Collections.Generic.KeyNotFoundException ->
+            runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+    | Evaluate {Identifier=name; Arguments=argExpr} ->
+        let argVals = List.map (evaluate3 ctx) argExpr
+        try
+            let func = ctx.Environment.[name] :?> Function
+            let args = Seq.zip func.Parameters argVals |> Map.ofSeq
+            let env = ctx.Environment.PushScope args
+            evaluate3 {ctx with Environment=env} func.Body
+        with
+        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+        | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
+    | Query query ->
+        raise (System.NotSupportedException "queries not supported for this evaluation algo")
+
+type StateFunctions<'State, 'StateDelta> = {
+    Empty: 'StateDelta;
+    Combine: 'StateDelta -> 'StateDelta -> 'StateDelta;
+    Create: Robot.Command2 -> 'StateDelta;
+    ApplyDelta: 'State -> 'StateDelta -> 'State option;
+    ApplyCommand: 'State -> Robot.Command2 -> 'State
+}
+
+type CacheData<'StateDelta> = {
+    Delta: 'StateDelta;
+}
+
+let concretizeStatement (s:Statement) : ConcreteStatement option =
+    None
+
+let private isolatedState prog env toExec =
+    {Program=prog; CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
+
+let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sfuncs:StateFunctions<'State, 'StateDelta>) (cache: Dict<ConcreteStatement, CacheData<'StateDelta>>) (startState:'State) =
+
+    let rec executeWithCache (ctx:Context<'State>) (stmt:Statement) =
+        match concretizeStatement stmt with
+        // assumes commands are concretizable statements, and thus any non-concretizable statement has no delta
+        | None ->
+            (executeWithoutCache ctx stmt, sfuncs.Empty)
+        | Some concrete ->
+            let result = getCached concrete
+            match sfuncs.ApplyDelta ctx.State result.Delta with
+            | Some s -> ({ctx with State=s}, result.Delta)
+            | None ->
+                // even if we fail to apply it, it's still the correct delta
+                (executeWithoutCache ctx stmt, result.Delta)
+
+    and getCached (concrete:ConcreteStatement): CacheData<'StateDelta> =
+        let mutable v = Unchecked.defaultof<_>
+        if cache.TryGetValue (concrete, ref v)
+        then v
+        else
+            let cr = createCached concrete
+            cache.Add (concrete, cr)
+            cr
+
+    and createCached (concrete:ConcreteStatement) =
+        match concrete with
+        | CRepeat (nodeId, numTimes) ->
+            let bodyResult = getCached (CRepeatBody nodeId)
+            let delta = Seq.init numTimes (fun _ -> bodyResult.Delta) |> Seq.fold sfuncs.Combine sfuncs.Empty
+            {Delta=delta}
+        | CRepeatBody nodeId ->
+            let stmt = (tryFindStatement (fun s -> s.Meta.Id = nodeId) program |> Option.get).Stmt.AsRepeat ()
+            let delta = createDeltaForBlock stmt.Body
+            {Delta=delta}
+        | CCommand cmd ->
+            let delta = sfuncs.Create cmd
+            {Delta=delta}
+        | _ -> invalidArg "" ""
+
+    and createDeltaForBlock (block:Statement list) =
+        invalidOp ""
+
+    and executeWithoutCache (ctx:Context<'State>) (stmt:Statement) =
+        match stmt.Stmt with
+        | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
+            let b =
+                try evaluate3 ctx cond :?> bool
+                with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
+            if b
+            then executeBlock ctx thenb
+            else executeBlock ctx elseb
+        | Repeat {Body=body; NumTimes=ntimesExpr} ->
+            let ntimes = evaluate3 ctx ntimesExpr |> valueAsInt stmt.Meta
+            let mutable tmpCtx = ctx
+            for i = 1 to ntimes do
+                tmpCtx <- executeBlock tmpCtx body
+            tmpCtx
+        | Function func ->
+            {ctx with Environment=ctx.Environment.AddGlobal (func.Name, func)}
+        | Procedure proc ->
+            {ctx with Environment=ctx.Environment.AddGlobal (proc.Name, proc)}
+        | Execute {Identifier=name; Arguments=argExpr} ->
+            let argVals = List.map (evaluate3 ctx) argExpr
+            try
+                let proc = ctx.Environment.[name] :?> Procedure
+                let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
+                let env = ctx.Environment.PushScope args
+                executeBlock {ctx with Environment=env} proc.Body
+            with
+            | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+            | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
+        | Command {Name=cmd; Arguments=args} ->
+            let args = List.map (evaluate3 ctx) args
+            let cmd: Robot.Command2 = {Name=cmd; Args=args}
+            {ctx with State=sfuncs.ApplyCommand ctx.State cmd}
+
+    and executeBlock (ctx:Context<'State>) (list:Statement list) =
+        let mutable tmpCtx = ctx
+        for s in list do
+            tmpCtx <- fst (executeWithCache tmpCtx s)
+        tmpCtx
+
+    let ctx = {Environment={Globals=globals; Locals=Map.empty}; State=startState}
+    (executeBlock ctx program.Body).State
+
 let private evalProcedureReference2 meta (head:CallStackState2) name =
     try
         head.Environment.[name] :?> Procedure
@@ -513,7 +655,7 @@ let private evalProcedureReference2 meta (head:CallStackState2) name =
 
 let rec private executeWithProcedureResultCache (state:State) (cachedResults:MutableDict<ProcedureCallData,Robot.Command2[]>) (acc:MutableList<Robot.Command2>) =
     let isolatedState env toExec =
-        {CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
+        {Program={Body=[]}; CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
     while not (IsDone state) do
         match popNextStatment state with
         | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
@@ -590,11 +732,11 @@ let private executeToFinalState (state:State2) (cachedCommands:MutableDict<Proce
                 if cachedDeltas.ContainsKey cachedCommands.[calldata]
                 then
                     robot.ApplyDelta cachedDeltas.[cachedCommands.[calldata]]
-                else 
+                else
                     // commands cached, but no delta means delta could not be generated, and we should execute all commands manually
                     for c in cachedCommands.[calldata] do
                         robot.Execute c
-            else 
+            else
                 // first time we've encountered this procedure
                 // get the commands for it
                 let tmpMutList = MutableList (20)
@@ -605,10 +747,10 @@ let private executeToFinalState (state:State2) (cachedCommands:MutableDict<Proce
                 let tmpList = Array.toList (tmpMutList.ToArray ())
                 // try and generate a delta and then update the state
                 match robot.GetDelta tmpList with
-                | Some delta -> 
+                | Some delta ->
                     cachedDeltas.Add (tmpMutList.ToArray (), delta)
                     robot.ApplyDelta delta
-                | None -> 
+                | None ->
                     for c in tmpList do
                         robot.Execute c
         | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
@@ -628,11 +770,11 @@ let private executeToFinalState (state:State2) (cachedCommands:MutableDict<Proce
                     cachedDeltas.Add (tmpArr, delta)
                     for i = 1 to ntimes do
                         robot.ApplyDelta cachedDeltas.[tmpArr]
-                | None -> 
+                | None ->
                     for i = 1 to ntimes do
                         for c in tmpList do
                             robot.Execute c
-        | Some s -> 
+        | Some s ->
             match executeStatement2 state s with
             | None -> ()
             | (Some cmd) -> robot.Execute cmd
