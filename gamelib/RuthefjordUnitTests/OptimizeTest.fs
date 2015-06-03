@@ -62,6 +62,24 @@ let ``yet another optimization test`` () =
 
 [<Fact>]
 [<Trait("tag", "opt")>]
+let ``dictionary-based delta integration test`` () =
+    let initData = makeInitData ("../../../../doc/pyramid.txt")
+    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let initState3: BasicWorldState3 = {Robot=initData.State.Robot; Grid=System.Collections.Generic.Dictionary()}
+    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
+    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let cache = Simulator.Dict ()
+    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions2 cache initState3
+
+    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
+    actual.Robot |> should equal endState.Robot
+    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
+    let grid2 = actual.Grid |> Seq.toArray |> (Array.map (fun kv -> kv.Key)) |> Array.sort
+    grid2 |> should equal grid1
+
+[<Fact>]
+[<Trait("tag", "opt")>]
 let ``jump to state test`` () =
     let checkEqual (bws2:BasicWorldState2) (bws1:BasicWorldState) =
         bws2.Robot |> should equal bws1.Robot
@@ -76,7 +94,7 @@ let ``jump to state test`` () =
 
     let cache = Simulator.Dict ()
 
-    let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctionsNoOp cache initState n
+    let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctions cache initState n
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
 

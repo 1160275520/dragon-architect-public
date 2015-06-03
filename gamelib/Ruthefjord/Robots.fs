@@ -160,12 +160,19 @@ with
         | "remove" -> {state with Grid=state.Grid.Remove state.Robot.Position}
         | _ -> invalidOp "unrecognized command"
 
+type BasicWorldState3 = {
+    Robot: BasicRobot;
+    Grid: Dictionary<IntVec3, Cube2>;
+} with
+    static member ApplyCommand (state:BasicWorldState3) (command:Robot.Command2) =
+        invalidOp ""
+
 type BasicWorldStateDelta = {
     RobotDelta:BasicRobotDelta;
     GridDelta:Map<BasicRobotPositionDelta,CubeDelta>;
 }
 with
-    static member ApplyDelta (state:BasicWorldState2) d =
+    static member ApplyDelta (state:BasicWorldState2) d : BasicWorldState2 option =
         let newGrid = Map.fold (fun (grid:Map<IntVec3 option, Cube2>) (delta:BasicRobotPositionDelta) (cubeDelta:CubeDelta) ->
                                     match cubeDelta.Status with
                                     | CubeStatus.Add -> grid.Add ((BasicRobotPositionDelta.ApplyDelta state.Robot delta), cubeDelta.Cube)
@@ -179,6 +186,30 @@ with
             match BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta with
             | None -> None
             | Some bot -> Some({Robot=bot; Grid=(Map.ofSeq (Seq.map (fun ((k:IntVec3 option),v) -> (k.Value,v)) (Map.toSeq newGrid)))})
+
+    static member ApplyDelta3 (state:BasicWorldState3) d : BasicWorldState3 option =
+        let newCubes = System.Collections.Generic.List (d.GridDelta.Count)
+
+        let isValid = ref true
+        d.GridDelta |> Map.iter (fun delta cubeDelta ->
+            match BasicRobotPositionDelta.ApplyDelta state.Robot delta with
+            | None -> isValid := false
+            | Some p -> newCubes.Add (p, cubeDelta)
+            | _ -> invalidOp "unrecognized cube status"
+        )
+        if !isValid then
+            match BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta with
+            | None -> None
+            | Some bot ->
+                for p, c in newCubes do
+                    match c.Status with
+                    | CubeStatus.Add -> if not (state.Grid.ContainsKey p) then state.Grid.Add (p, c.Cube)
+                    | CubeStatus.Remove -> state.Grid.Remove p |> ignore
+                    | _ -> invalidOp "unrecognized cube status"
+
+                Some ({Robot=bot; Grid=state.Grid})
+        else
+            None
 
     static member Empty = {RobotDelta=BasicRobotDelta.Empty; GridDelta=Map.empty}
 

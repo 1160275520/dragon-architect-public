@@ -94,6 +94,14 @@ module Debugger =
         ApplyCommand = fun state c -> BasicWorldState2.ApplyCommand state c;
     }
 
+    let stateFunctions2: Simulator.StateFunctions<BasicWorldState3, BasicWorldStateDelta> = {
+        Empty = BasicWorldStateDelta.Empty;
+        Combine = fun a b -> BasicWorldStateDelta.Combine a b;
+        Create = fun c -> BasicWorldStateDelta.Create c;
+        ApplyDelta = fun bot delta -> BasicWorldStateDelta.ApplyDelta3 bot delta;
+        ApplyCommand = fun state c -> BasicWorldState3.ApplyCommand state c;
+    }
+
 type ProgramRunner() =
     let mutable isRunning = false
     let mutable totalTime = 0.0f
