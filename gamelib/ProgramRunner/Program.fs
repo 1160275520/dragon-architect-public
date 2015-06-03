@@ -45,13 +45,11 @@ let main argv =
 
         let numIter = 50
 
-        let t = time (fun () -> Simulator.SimulateWithoutRobot program importedModules |> ignore) numIter
+        let t = time (fun () -> Simulator.SimulateWithoutRobot program importedModules |> ignore) 3
         printfn "Original:  %.3f" t
 
-        let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) numIter
+        let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) 3
         printfn "Optimized: %.3f" t
-
-//        let numIter = 3
 
 //        let t = time (fun () ->
 //                        let grid = GridStateTracker Seq.empty
@@ -68,37 +66,35 @@ let main argv =
 //        printfn "Grid as Map with Robot: %.3f" t
 
 //        let commands = Simulator.SimulateWithoutRobotOptimized program importedModules
-//        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-//        let grid2 = GridStateTracker2 Seq.empty
-//        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-//        let deltaOption = (runner2 :> Robot.IRobotSimulator2).GetDelta (List.ofArray commands)
-//        System.Diagnostics.Debug.Assert(deltaOption.IsSome);
-//        System.Diagnostics.Debug.Assert(deltaOption.Value :? BasicWorldStateDelta);
-//        let delta = deltaOption.Value :?> BasicWorldStateDelta
+//
+//        let delta = BasicWorldStateDelta.Create (List.ofArray commands)
 //        let startState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=(GridStateTracker2 Seq.empty).CurrentState}:BasicWorldState2
 //        let t = time (fun () ->
+//                        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+//                        let grid2 = GridStateTracker2 Seq.empty
+//                        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
 //                        for i = 1 to 10 do
 //                            for command in commands do
-//                                (runner2 :> Robot.IRobotSimulator2).Execute command) numIter
+//                                (runner2 :> Robot.IRobotSimulator2).Execute command) 3
 //        printfn "Execute every command 10 times: %.3f" t
 //        let t = time (fun () ->
 //                        let mutable state = startState
 //                        for i = 1 to 10 do
-//                            state <- delta.ApplyTo(state)) numIter
+//                            state <- (BasicWorldStateDelta.ApplyDelta state delta).Value) 3
 //        printfn "Apply delta 10 times: %.3f" t
 
-//        let grid = GridStateTracker Seq.empty
-//        let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-//        let runner = BasicImperativeRobotSimulator (robot, grid)
-//        let grid2 = GridStateTracker2 Seq.empty
-//        let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-//
-//        let t = time (fun () -> Simulator.SimulateWithRobot program importedModules runner |> ignore) numIter
-//        printfn "Simulate unoptimized: %.3f" t
-//        let t = time (fun () -> Simulator.SimulateWithRobot3 program importedModules runner2 |> ignore) numIter
-//        printfn "Simulate optimized: %.3f" t
-
-//        printfn "Number of states: %d" result.States.Length
+        let t = time (fun () -> 
+            let grid = GridStateTracker Seq.empty
+            let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+            let runner = BasicImperativeRobotSimulator (robot, grid)
+            Simulator.SimulateWithRobot program importedModules runner |> ignore) 3
+        printfn "Simulate unoptimized: %.3f" t
+        let t = time (fun () -> 
+            let cache = Simulator.Dict ()
+            let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+            let initState: BasicWorldState2 = {Robot=robot; Grid=Map.empty}
+            Simulator.RunOptimized37 program importedModules Debugger.stateFunctions cache initState |> ignore) 3
+        printfn "Simulate optimized: %.3f" t
 
     with e ->
         printfn "An error: %A" e.Message
