@@ -743,6 +743,10 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
         let ctx = {Environment={Globals=globals; Locals=Map.empty}; State=startState}
         (executeBlock ctx program.Body).State
 
+    member x.RunToState (startState:'State) (numStates:int) =
+        let ctx = {Environment={Globals=globals; Locals=Map.empty}; State=startState}
+        (fst (executeToStateIndexBlock ctx program.Body numStates)).State
+
 let RunOptimized37 p b f c s = OptimizedRunner(p,b,f,c).RunToFinal s
 
 let private evalProcedureReference2 meta (head:CallStackState2) name =
