@@ -714,18 +714,18 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             let mutable tmpCtx = ctx
             for i = 1 to numTimes do
                 if remaining > 0 then
-                    let c, r = executeToStateIndexConcrete ctx cbody remaining
+                    let c, r = executeToStateIndexConcrete tmpCtx cbody remaining
                     tmpCtx <- c
                     remaining <- remaining - r
-            tmpCtx, remaining
+            (tmpCtx, statesRemaining - remaining)
         | CRepeatBody (nodeId, lmap) ->
             let stmt = (findStatementWithId nodeId fullProgram).Stmt.AsRepeat ()
-            executeToStateIndexBlock ctx stmt.Body 0
+            executeToStateIndexBlock ctx stmt.Body statesRemaining
         | CExecute (name, argVals) ->
             let proc = ctx.Environment.[name] :?> Procedure
             let args = Seq.zip proc.Parameters (Seq.map (fun x -> x :> obj) argVals) |> Map.ofSeq
             let env = ctx.Environment.PushScope args
-            executeToStateIndexBlock {ctx with Environment=env} proc.Body 0
+            executeToStateIndexBlock {ctx with Environment=env} proc.Body statesRemaining
         | _ -> invalidOp ""
 
     and executeToStateIndexBlock (ctx:Context<'State>) (block:Statement list) (statesRemaining:int) =
@@ -748,6 +748,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
         (fst (executeToStateIndexBlock ctx program.Body numStates)).State
 
 let RunOptimized37 p b f c s = OptimizedRunner(p,b,f,c).RunToFinal s
+let RunToState p b f c s n = OptimizedRunner(p,b,f,c).RunToState s n
 
 let private evalProcedureReference2 meta (head:CallStackState2) name =
     try
