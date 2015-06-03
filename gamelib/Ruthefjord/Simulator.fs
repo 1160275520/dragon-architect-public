@@ -505,14 +505,22 @@ let private evalProcedureReference meta (head:CallStackState) name =
     | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
     | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
 
+type LocalMap = Map<string,int>
+
+let valMapToLocalMap (vals:ValueMap) =
+    vals |> Map.map (fun k v -> v :?> int)
+
+let localMapToValMap (vals:Map<string,int>) =
+    vals |> Map.map (fun k v -> v :> obj)
+
 type ConcreteStatement =
 // procedure name, args
 // HACK this only works for integer parameters, boo yah
 | CExecute of string * int list
 // ast id
-| CRepeatBody of int
+| CRepeatBody of int * LocalMap
 // ast id, numTimes
-| CRepeat of int * int
+| CRepeat of int * LocalMap * int
 | CCommand of Robot.Command2
 
 type Dict<'a,'b> = System.Collections.Generic.Dictionary<'a,'b>
@@ -559,7 +567,7 @@ let private concretizeStatement (ctx:Context<_>) (stmt:Statement) : ConcreteStat
     match stmt.Stmt with
     | Repeat {Body=body; NumTimes=ntimesExpr} ->
         let ntimes = evaluate3 ctx ntimesExpr |> valueAsInt stmt.Meta
-        Some (CRepeat (stmt.Meta.Id, ntimes))
+        Some (CRepeat (stmt.Meta.Id, valMapToLocalMap ctx.Environment.Locals, ntimes))
     | Execute {Identifier=name; Arguments=argExpr} ->
         let argVals = List.map (fun e -> (evaluate3 ctx e) :?> int) argExpr
         Some (CExecute (name, argVals))
@@ -610,11 +618,12 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
 
     and createCached (ctx:Context<_>) (concrete:ConcreteStatement) =
         match concrete with
-        | CRepeat (nodeId, numTimes) ->
-            let bodyResult = getCached ctx (CRepeatBody nodeId)
+        | CRepeat (nodeId, lmap, numTimes) ->
+            // assumes context has the correct local map already
+            let bodyResult = getCached ctx (CRepeatBody (nodeId, lmap))
             let delta = Seq.init numTimes (fun _ -> bodyResult.Delta) |> Seq.fold sfuncs.Combine sfuncs.Empty
             {Delta=delta}
-        | CRepeatBody nodeId ->
+        | CRepeatBody (nodeId, lmap) ->
             let stmt = (findStatementWithId nodeId fullProgram).Stmt.AsRepeat ()
             let delta = createDeltaForBlock ctx stmt.Body
             {Delta=delta}
