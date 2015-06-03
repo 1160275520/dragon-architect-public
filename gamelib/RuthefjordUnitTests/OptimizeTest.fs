@@ -62,6 +62,38 @@ let ``yet another optimization test`` () =
 
 [<Fact>]
 [<Trait("tag", "opt")>]
+let ``jump to state test`` () =
+    let checkEqual (bws2:BasicWorldState2) (bws1:BasicWorldState) =
+        bws2.Robot |> should equal bws1.Robot
+        let grid1 = bws1.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
+        let grid2 = bws2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
+        grid2 |> should equal grid1
+
+    let initData = makeInitData ("../../../../doc/pyramid.txt")
+    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
+    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let cache = Simulator.Dict ()
+
+    let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctionsNoOp cache initState n
+
+    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
+
+    let checkIndex n =
+        checkEqual (rts n) (expected.States.[n].Data.WorldState :?> BasicWorldState)
+
+    rts 0 |> should equal initState
+    checkEqual (rts 10000000) endState
+    for i = 1 to expected.States.Length - 1 do
+        if i % 50 = 1 then
+            checkIndex i
+    checkIndex 2
+    checkIndex 3
+    checkIndex 4
+
+[<Fact>]
+[<Trait("tag", "opt")>]
 let ``optimize correctness`` () =
     let filename = "../../../../doc/castle_decomp.txt"
     let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
@@ -170,7 +202,7 @@ let ``delta position`` () =
         ]
     let delta = BasicWorldStateDelta.Create commands
     runner2.Robot.Direction |> should equal initDir
-    runner2.Robot.Position |> should equal initPos 
+    runner2.Robot.Position |> should equal initPos
     runner2.Grid.CurrentState |> should equal (GridStateTracker2 Seq.empty).CurrentState
     delta.RobotDelta.TurnCounter |> should equal 0
     BasicRobotDelta.GetNewDir initDir delta.RobotDelta.TurnCounter |> should equal initDir
