@@ -561,6 +561,7 @@ type StateFunctions<'State, 'StateDelta> = {
 
 type CacheData<'StateDelta> = {
     Delta: 'StateDelta;
+    NumStates: int;
 }
 
 let private concretizeStatement (ctx:Context<_>) (stmt:Statement) : ConcreteStatement option =
@@ -579,7 +580,7 @@ let private concretizeStatement (ctx:Context<_>) (stmt:Statement) : ConcreteStat
 let private isolatedState prog env toExec =
     {Program=prog; CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
 
-let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sfuncs:StateFunctions<'State, 'StateDelta>) (cache: Dict<ConcreteStatement, CacheData<'StateDelta>>) (startState:'State) =
+type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sfuncs:StateFunctions<'State, 'StateDelta>, cache: Dict<ConcreteStatement, CacheData<'StateDelta>>) =
     let fullProgram: Program =
         let stmts =
             [
@@ -596,16 +597,16 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
         match concretizeStatement ctx stmt with
         // assumes commands are concretizable statements, and thus any non-concretizable statement has no delta
         | None ->
-            (executeWithoutCache ctx stmt, sfuncs.Empty)
+            (executeWithoutCache ctx stmt, {Delta=sfuncs.Empty; NumStates=0})
         | Some concrete ->
             let result = getCached ctx concrete
             let s = ctx.State
             let d = result.Delta
             match sfuncs.ApplyDelta ctx.State result.Delta with
-            | Some s -> ({ctx with State=s}, result.Delta)
+            | Some s -> ({ctx with State=s}, result)
             | None ->
                 // even if we fail to apply it, it's still the correct delta
-                (executeWithoutCache ctx stmt, result.Delta)
+                (executeWithoutCache ctx stmt, result)
 
     and getCached (ctx:Context<_>) (concrete:ConcreteStatement): CacheData<'StateDelta> =
         let (b,v) = cache.TryGetValue concrete
@@ -622,29 +623,29 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
             // assumes context has the correct local map already
             let bodyResult = getCached ctx (CRepeatBody (nodeId, lmap))
             let delta = Seq.init numTimes (fun _ -> bodyResult.Delta) |> Seq.fold sfuncs.Combine sfuncs.Empty
-            {Delta=delta}
+            {Delta=delta; NumStates=bodyResult.NumStates * numTimes}
         | CRepeatBody (nodeId, lmap) ->
             let stmt = (findStatementWithId nodeId fullProgram).Stmt.AsRepeat ()
-            let delta = createDeltaForBlock ctx stmt.Body
-            {Delta=delta}
+            createDeltaForBlock ctx stmt.Body
         | CExecute (name, argVals) ->
             let proc = ctx.Environment.[name] :?> Procedure
             let args = Seq.zip proc.Parameters (Seq.map (fun x -> x :> obj) argVals) |> Map.ofSeq
             let env = ctx.Environment.PushScope args
-            let delta = createDeltaForBlock {ctx with Environment=env} proc.Body
-            {Delta=delta}
+            createDeltaForBlock {ctx with Environment=env} proc.Body
         | CCommand cmd ->
             let delta = sfuncs.Create cmd
-            {Delta=delta}
+            {Delta=delta; NumStates=1}
 
     and createDeltaForBlock (ctx:Context<_>) (block:Statement list) =
         let mutable tmpCtx = ctx
         let mutable delta = sfuncs.Empty
+        let mutable numStates = 0
         for s in block do
             let c, d = executeWithCache tmpCtx s
             tmpCtx <- c
-            delta <- sfuncs.Combine delta d
-        delta
+            delta <- sfuncs.Combine delta d.Delta
+            numStates <- numStates + d.NumStates
+        {Delta=delta; NumStates=numStates}
 
     and executeWithoutCache (ctx:Context<'State>) (stmt:Statement) =
         match stmt.Stmt with
@@ -687,8 +688,62 @@ let RunOptimized37<'State, 'StateDelta> (program:Program) (globals:ValueMap) (sf
             tmpCtx <- fst (executeWithCache tmpCtx s)
         tmpCtx
 
-    let ctx = {Environment={Globals=globals; Locals=Map.empty}; State=startState}
-    (executeBlock ctx program.Body).State
+    let rec executeToStateIndex (ctx:Context<'State>) (stmt:Statement) (statesRemaining:int) =
+        match statesRemaining, concretizeStatement ctx stmt with
+        // no states remaining means stop running things
+        | 0, _ -> (ctx, 0)
+        // any non-concretizable statements take up no states
+        | _, None -> (fst (executeWithCache ctx stmt), 0)
+        | _, Some concrete ->
+            let result = getCached ctx concrete
+            // if we have extra states remaining, just run it
+            if result.NumStates <= statesRemaining
+            then
+                (fst (executeWithCache ctx stmt), result.NumStates)
+                // otherwise, we need to recurse into the statement
+            else
+                executeToStateIndexConcrete ctx concrete statesRemaining
+
+    and executeToStateIndexConcrete (ctx:Context<'State>) (concrete:ConcreteStatement) (statesRemaining:int) =
+        match concrete with
+        | CRepeat (nodeId, lmap, numTimes) ->
+            // assumes context has the correct local map already
+            let cbody = CRepeatBody (nodeId, lmap)
+            let bodyResult = getCached ctx cbody
+            let mutable remaining = statesRemaining
+            let mutable tmpCtx = ctx
+            for i = 1 to numTimes do
+                if remaining > 0 then
+                    let c, r = executeToStateIndexConcrete ctx cbody remaining
+                    tmpCtx <- c
+                    remaining <- remaining - r
+            tmpCtx, remaining
+        | CRepeatBody (nodeId, lmap) ->
+            let stmt = (findStatementWithId nodeId fullProgram).Stmt.AsRepeat ()
+            executeToStateIndexBlock ctx stmt.Body 0
+        | CExecute (name, argVals) ->
+            let proc = ctx.Environment.[name] :?> Procedure
+            let args = Seq.zip proc.Parameters (Seq.map (fun x -> x :> obj) argVals) |> Map.ofSeq
+            let env = ctx.Environment.PushScope args
+            executeToStateIndexBlock {ctx with Environment=env} proc.Body 0
+        | _ -> invalidOp ""
+
+    and executeToStateIndexBlock (ctx:Context<'State>) (block:Statement list) (statesRemaining:int) =
+        let mutable tmpCtx = ctx
+        let mutable remaining = statesRemaining
+        for s in block do
+            if remaining > 0 then
+                let c, n = executeToStateIndex tmpCtx s remaining
+                tmpCtx <- c
+                remaining <- remaining - n
+
+        (tmpCtx, statesRemaining - remaining)
+
+    member x.RunToFinal (startState:'State) =
+        let ctx = {Environment={Globals=globals; Locals=Map.empty}; State=startState}
+        (executeBlock ctx program.Body).State
+
+let RunOptimized37 p b f c s = OptimizedRunner(p,b,f,c).RunToFinal s
 
 let private evalProcedureReference2 meta (head:CallStackState2) name =
     try
