@@ -29,8 +29,7 @@ let ``command sanity check 2`` () =
 
     r1 |> should equal r2
 
-let makeInitData () =
-    let filename = "../../../../doc/pyramid.txt"
+let makeInitData (filename) =
     let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
     let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
     let text = System.IO.File.ReadAllText filename
@@ -47,13 +46,13 @@ let makeInitData () =
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``yet another optimization test`` () =
-    let initData = makeInitData ()
+    let initData = makeInitData ("../../../../doc/pyramid.txt")
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
     let cache = Simulator.Dict ()
-    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
+    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctionsNoOp cache initState
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
     actual.Robot |> should equal endState.Robot
@@ -78,31 +77,51 @@ let ``optimize correctness`` () =
 
     r1 |> should equal r2
 
-//[<Fact>]
-//[<Trait("tag", "opt")>]
-//[<Trait("id", "integ")>]
-//let ``integration correctness`` () =
-//    let filename = "../../../../doc/castle_decomp.txt"
-//    let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
-//    let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
-//    let text = System.IO.File.ReadAllText filename
-//    let program = Parser.Parse (text, filename)
-//    let grid = GridStateTracker Seq.empty
-//    let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-//    let runner = BasicImperativeRobotSimulator (robot, grid)
-//    let grid2 = GridStateTracker2 Seq.empty
-//    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-//
-//    let r1 = Simulator.SimulateWithRobot program importedModules runner
-//    let r2 = Simulator.SimulateWithRobot3 program importedModules runner2 :?> BasicWorldState2
-//
-//    //let r1 = r1 |> Seq.skip 40 |> Seq.take 3 |> List.ofSeq
-//    //let r2 = r2 |> Seq.skip 40 |> Seq.take 3 |> List.ofSeq
-//    let endState = r1.States.[r1.States.Length - 1].Data.WorldState :?> BasicWorldState
-//    r2.Robot |> should equal endState.Robot
-//    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-//    let grid2 = r2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
-//    grid2 |> should equal grid1
+[<Fact>]
+[<Trait("id", "integ")>]
+[<Trait("tag", "opt")>]
+let ``integration test`` () =
+    let initData = makeInitData ("../../../../doc/AARON.txt")
+    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
+    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let cache = Simulator.Dict ()
+    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
+
+    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
+    actual.Robot |> should equal endState.Robot
+    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
+    let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
+    grid2 |> should equal grid1
+
+    let initData = makeInitData ("../../../../doc/pyramid.txt")
+    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
+    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let cache = Simulator.Dict ()
+    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
+
+    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
+    actual.Robot |> should equal endState.Robot
+    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
+    let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
+    grid2 |> should equal grid1
+
+    let initData = makeInitData ("../../../../doc/castle_decomp.txt")
+    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
+    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let cache = Simulator.Dict ()
+    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
+
+    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
+    actual.Robot |> should equal endState.Robot
+    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
+    let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
+    grid2 |> should equal grid1
 
 [<Fact>]
 [<Trait("id", "gridasmap")>]
@@ -292,6 +311,35 @@ let ``delta turn around`` () =
     es.IsSome |> should equal true
     let endState = es.Value
     endState |> should equal {startState with Robot={Position=IntVec3(0,0,3); Direction= -initDir}}
+
+[<Fact>]
+[<Trait("id", "delta-L")>]
+[<Trait("tag", "opt")>]
+let ``delta L`` () =
+    let initDir = IntVec3.UnitZ
+    let initPos = IntVec3.Zero
+    let robot:BasicRobot = {Position=initPos; Direction=initDir}
+    let grid2 = GridStateTracker2 Seq.empty
+    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
+    let commands:Command2 list = [
+        {Name="left"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="forward"; Args=[]}
+        {Name="forward"; Args=[]}
+        ]
+    let deltaIter = BasicWorldStateDelta.Create commands
+    let delta = BasicWorldStateDelta.Combine deltaIter deltaIter
+    delta.RobotDelta.TurnCounter |> should equal -2
+    BasicRobotDelta.GetNewDir initDir delta.RobotDelta.TurnCounter |> should equal (new IntVec3(-initDir.X, 0, -initDir.Z))
+    delta.RobotDelta.ParallelDelta |> should equal -4
+    delta.RobotDelta.PerpenDelta |> should equal -4
+    delta.RobotDelta.YDelta |> should equal 0
+    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=grid2.CurrentState}:BasicWorldState2
+    let es = BasicWorldStateDelta.ApplyDelta startState delta
+    es.IsSome |> should equal true
+    let endState = es.Value
+    endState |> should equal {startState with Robot={Position=IntVec3(-4,0,-4); Direction= -initDir}}
 
 [<Fact>]
 [<Trait("id", "delta-apply")>]

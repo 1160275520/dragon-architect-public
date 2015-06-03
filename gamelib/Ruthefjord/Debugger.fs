@@ -78,12 +78,20 @@ module Debugger =
         (sim :> Robot.IRobotSimulator2).Execute cmd
         (sim :> Robot.IRobotSimulator2).CurrentState :?> BasicWorldState2
 
-    let stateFunctions: Simulator.StateFunctions<BasicWorldState2, unit> = {
+    let stateFunctionsNoOp: Simulator.StateFunctions<BasicWorldState2, unit> = {
         Empty = ();
         Combine = fun () () -> ();
         Create = fun _ -> ();
         ApplyDelta = fun _ () -> None;
         ApplyCommand = apply;
+    }
+
+    let stateFunctions: Simulator.StateFunctions<BasicWorldState2, BasicWorldStateDelta> = {
+        Empty = BasicWorldStateDelta.Empty;
+        Combine = fun a b -> BasicWorldStateDelta.Combine a b;
+        Create = fun c -> BasicWorldStateDelta.Create c;
+        ApplyDelta = fun bot delta -> BasicWorldStateDelta.ApplyDelta bot delta;
+        ApplyCommand = fun state c -> BasicWorldState2.ApplyCommand state c;
     }
 
 type ProgramRunner() =

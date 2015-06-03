@@ -91,9 +91,9 @@ with
     
     static member Combine (a:BasicRobotPositionDelta) (b:BasicRobotPositionDelta) tc =
         match tc % 4 with // tc = turn counter, +1 for every right turn, -1 for every left turn
-        | (-3 | 1) -> {ParallelDelta=a.ParallelDelta + b.PerpenDelta; PerpenDelta=a.PerpenDelta + b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
+        | (-3 | 1) -> {ParallelDelta=a.ParallelDelta - b.PerpenDelta; PerpenDelta=a.PerpenDelta + b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
         | (-2 | 2) -> {ParallelDelta=a.ParallelDelta - b.ParallelDelta; PerpenDelta=a.PerpenDelta - b.PerpenDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
-        | (-1 | 3) -> {ParallelDelta=a.ParallelDelta - b.PerpenDelta; PerpenDelta=a.PerpenDelta - b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
+        | (-1 | 3) -> {ParallelDelta=a.ParallelDelta + b.PerpenDelta; PerpenDelta=a.PerpenDelta - b.ParallelDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
         | _ -> {ParallelDelta=a.ParallelDelta + b.ParallelDelta; PerpenDelta=a.PerpenDelta + b.PerpenDelta; YDelta=a.YDelta + b.YDelta; MinY=min a.MinY (b.MinY + a.YDelta)}
 
 
