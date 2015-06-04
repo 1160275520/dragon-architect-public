@@ -12,6 +12,9 @@ let exit code =
     failwith "unreachable"
 
 let time fn numIter =
+    // run it twice to trigger the JIT
+    fn ()
+    fn ()
     let sw = System.Diagnostics.Stopwatch ()
     sw.Start ()
     for i = 1 to numIter do
@@ -43,13 +46,13 @@ let main argv =
         //let t = time (fun () -> Simulator.SimulateWithRobot program importedModules runner |> ignore) 10
         //printfn "Time with robot: %.3f" t
 
-        let numIter = 1
-
-        let t = time (fun () -> Simulator.SimulateWithoutRobot program importedModules |> ignore) numIter
-        printfn "Original:  %.3f" t
-
-        let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) numIter
-        printfn "Optimized: %.3f" t
+//        let numIter = 1
+//
+//        let t = time (fun () -> Simulator.SimulateWithoutRobot program importedModules |> ignore) numIter
+//        printfn "Original:  %.3f" t
+//
+//        let t = time (fun () -> Simulator.SimulateWithoutRobotOptimized program importedModules |> ignore) numIter
+//        printfn "Optimized: %.3f" t
 
 //        let t = time (fun () ->
 //                        let grid = GridStateTracker Seq.empty
@@ -91,6 +94,12 @@ let main argv =
 
         let numSamples = 5
 
+        let numStates =
+            let grid = GridStateTracker Seq.empty
+            let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+            let runner = BasicImperativeRobotSimulator (robot, grid)
+            (Simulator.SimulateWithRobot program importedModules runner).States.Length
+
         let t = time (fun () ->
             let grid = GridStateTracker Seq.empty
             let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
@@ -121,18 +130,40 @@ let main argv =
             let initState: BasicWorldState2 = {Robot=robot; Grid=Map.empty}
             Simulator.RunOptimized37 program importedModules Debugger.stateFunctionsNoOp cache initState |> ignore) numSamples
         printfn "Simulate optimized NOP: %.3f" t
-        let t = time (fun () ->
-            let cache = Simulator.Dict ()
-            let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-            let initState: BasicWorldState2 = {Robot=robot; Grid=Map.empty}
-            Simulator.RunOptimized37 program importedModules Debugger.stateFunctions cache initState |> ignore) numSamples
-        printfn "Simulate optimized MAP: %.3f" t
+//        let t = time (fun () ->
+//            let cache = Simulator.Dict ()
+//            let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+//            let initState: BasicWorldState2 = {Robot=robot; Grid=Map.empty}
+//            Simulator.RunOptimized37 program importedModules Debugger.stateFunctions cache initState |> ignore) numSamples
+//        printfn "Simulate optimized MAP: %.3f" t
+
         let t = time (fun () ->
             let cache = Simulator.Dict ()
             let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
             let initState: BasicWorldState3 = {Robot=robot; Grid=System.Collections.Generic.Dictionary()}
             Simulator.RunOptimized37 program importedModules Debugger.stateFunctions2 cache initState |> ignore) numSamples
         printfn "Simulate optimized HTB: %.3f" t
+
+        let t =
+            time (fun () ->
+                let cache = Simulator.Dict ()
+                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+                let initState () : BasicWorldState3 = {Robot=robot; Grid=System.Collections.Generic.Dictionary()}
+                for i = 1 to 50 do
+                    Simulator.RunOptimized37 program importedModules Debugger.stateFunctions2 cache (initState ()) |> ignore
+            ) numSamples
+        printfn "Simulate opt x50 HTB: %.3f" t
+
+        let t =
+            time (fun () ->
+                let cache = Simulator.Dict ()
+                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+                let initState () : BasicWorldState3 = {Robot=robot; Grid=System.Collections.Generic.Dictionary()}
+                for i = 1 to 50 do
+                    let n = RMath.floori (((float i) / 50.0) * (float (numStates - 1)))
+                    Simulator.RunToState program importedModules Debugger.stateFunctions2 cache (initState ()) n |> ignore
+            ) numSamples
+        printfn "Simulate jump x50 HTB: %.3f" t
 
     with e ->
         printfn "An error: %A" e.Message
