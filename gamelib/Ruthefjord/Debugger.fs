@@ -102,6 +102,13 @@ module Debugger =
         ApplyCommand = fun state c -> BasicWorldState3.ApplyCommand state c;
     }
 
+    /// Only use for correctness unit tests! This is not performant!
+    let runToCannonicalState program (grid:IGrid<_>) globals (startState:CanonicalWorldState) : CanonicalWorldState =
+        grid.SetFromCanonical startState.Grid
+        let simulator = BasicRobotSimulator (grid, startState.Robot)
+        Simulator.ExecuteToEnd program simulator globals |> ignore
+        simulator.AsCanonicalState
+
 type ProgramRunner() =
     let mutable isRunning = false
     let mutable totalTime = 0.0f

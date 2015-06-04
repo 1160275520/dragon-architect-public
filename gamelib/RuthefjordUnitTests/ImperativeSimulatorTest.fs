@@ -61,8 +61,116 @@ let ``Simulator simple deserialized`` () =
     let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
     blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
+let repeatTestProg = """
+repeat 10 times
+    Forward(1)
+    Right()
+    Forward(1)
+    PlaceCube(1)
+    Forward(1)
+    Left()
+    Forward(1)
+    PlaceCube(1)
+"""
+
+let referencePrograms : (string * CanonicalWorldState * CanonicalWorldState) list = [
+    // procedure
+    ("""
+define Foo()
+    Up(1)
+    PlaceCube(1)
+
+Forward(5)
+repeat 10 times
+    Foo()
+
+    """, {
+        Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ};
+        Grid=Map.empty;
+    }, {
+        Robot={Position=IntVec3 (0, 10, 5); Direction=IntVec3.UnitZ};
+        Grid=[for i in 1 .. 10 -> (IntVec3 (0,i,5), 1)] |> Map.ofSeq;
+    });
+
+    // basic repeat
+    (repeatTestProg, {
+        Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ};
+        Grid=Map.empty;
+    }, {
+        Robot={Position=IntVec3 (20, 0, 20); Direction=IntVec3.UnitZ}
+        Grid=[for i in 1 .. 20 -> (IntVec3 (i,0,i), 1)] |> Map.ofSeq;
+    });
+
+    // repeat with translated robot
+    (repeatTestProg, {
+        Robot={Position=IntVec3 (1, 1, 0); Direction=IntVec3.UnitZ};
+        Grid=Map.empty;
+    }, {
+        Robot={Position=IntVec3 (21, 1, 20); Direction=IntVec3.UnitZ}
+        Grid=[for i in 1 .. 20 -> (IntVec3 (i+1,1,i), 1)] |> Map.ofSeq;
+    });
+
+    // repeat with rotated robot
+    (repeatTestProg, {
+        Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitX};
+        Grid=Map.empty;
+    }, {
+        Robot={Position=IntVec3 (20, 0, -20); Direction=IntVec3.UnitX}
+        Grid=[for i in 1 .. 20 -> (IntVec3 (i,0,-i), 1)] |> Map.ofSeq;
+    });
+
+    // repeat with starting grid
+    (repeatTestProg, {
+        Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ};
+        Grid=[(IntVec3 (0,30,0), 1)] |> Map.ofSeq;
+    }, {
+        Robot={Position=IntVec3 (20, 0, 20); Direction=IntVec3.UnitZ}
+        Grid=List.append [(IntVec3 (0,30,0), 1)] [for i in 1 .. 20 -> (IntVec3 (i,0,i), 1)] |> Map.ofSeq;
+    });
+
+    // repeat with redundant starting grid
+    (repeatTestProg, {
+        Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ};
+        Grid=[for i in 1 .. 20 -> (IntVec3 (i,0,i), 1)] |> Map.ofSeq;
+    }, {
+        Robot={Position=IntVec3 (20, 0, 20); Direction=IntVec3.UnitZ}
+        Grid=[for i in 1 .. 20 -> (IntVec3 (i,0,i), 1)] |> Map.ofSeq;
+    });
+]
+
+let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWorldState) =
+    let prog = Parser.Parse (text, "prog")
+    let lib = loadBuiltIns ()
+    let actual = Debugger.runToCannonicalState prog (HashTableGrid ()) lib start
+    actual.Grid |> should equal expected.Grid
+    actual.Robot |> should equal expected.Robot
+
 [<Fact>]
-let ``Simulator simple parsed`` () =
+let ``Simulator HT Ref Test 1`` () =
+    checkReferenceProgram referencePrograms.[0]
+
+[<Fact>]
+let ``Simulator HT Ref Test 2`` () =
+    checkReferenceProgram referencePrograms.[1]
+
+[<Fact>]
+let ``Simulator HT Ref Test 3`` () =
+    checkReferenceProgram referencePrograms.[2]
+
+[<Fact>]
+let ``Simulator HT Ref Test 4`` () =
+    checkReferenceProgram referencePrograms.[3]
+
+[<Fact>]
+let ``Simulator HT Ref Test 5`` () =
+    checkReferenceProgram referencePrograms.[4]
+
+[<Fact>]
+let ``Simulator HT Ref Test 6`` () =
+    checkReferenceProgram referencePrograms.[5]
+
+[<Fact>]
+let ``OLD Simulator simple parsed`` () =
     let text = """
 define Foo()
     Up(1)
@@ -84,20 +192,8 @@ repeat 10 times
     let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
     blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
-let repeatTestProg = """
-repeat 10 times
-    Forward(1)
-    Right()
-    Forward(1)
-    PlaceCube(1)
-    Forward(1)
-    Left()
-    Forward(1)
-    PlaceCube(1)
-"""
-
 [<Fact>]
-let ``Simulator repeat`` () =
+let ``OLD Simulator repeat`` () =
     let prog = Parser.Parse (repeatTestProg, "prog")
     let lib = loadBuiltIns ()
     let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])

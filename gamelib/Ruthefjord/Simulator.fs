@@ -21,7 +21,7 @@ let private runtimeErrorWE exn (meta:Ast.Imperative.Meta) (code: ErrorCode) msg 
 
 type ValueMap = Map<string,obj>
 
-type private Environment = {
+type Environment = {
     Globals: ValueMap;
     Locals: ValueMap;
 }
@@ -40,6 +40,9 @@ with
     member x.PushScope locals =
         // disregard locals from parent scope, only inherit globals
         {x with Locals=locals}
+
+    static member Create globals =
+        {Globals=globals; Locals=Map.empty}
 
 type private CallStackState = {
     mutable ToExecute: Statement list;
@@ -109,6 +112,57 @@ let rec private evaluate (env: Environment) (expr: Expression) =
         | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
     | Query query ->
         raise (System.NotSupportedException "queries not supported for this evaluation algo")
+
+type private Context<'S> = {
+    Simulator: Robot.IRobotSimulator<'S>;
+    Environment: Environment;
+}
+
+let rec private executeStatementToEnd (ctx:Context<_>) (stmt:Statement) =
+    match stmt.Stmt with
+    | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
+        let b =
+            try evaluate ctx.Environment cond :?> bool
+            with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
+        if b
+        then executeBlockToEnd ctx thenb
+        else executeBlockToEnd ctx elseb
+    | Repeat {Body=body; NumTimes=ntimesExpr} ->
+        let ntimes = evaluate ctx.Environment ntimesExpr |> valueAsInt stmt.Meta
+        let mutable tmpCtx = ctx
+        for i = 1 to ntimes do
+            tmpCtx <- executeBlockToEnd tmpCtx body
+        tmpCtx
+    | Function func ->
+        {ctx with Environment=ctx.Environment.AddGlobal (func.Name, func)}
+    | Procedure proc ->
+        {ctx with Environment=ctx.Environment.AddGlobal (proc.Name, proc)}
+    | Execute {Identifier=name; Arguments=argExpr} ->
+        let argVals = List.map (evaluate ctx.Environment) argExpr
+        try
+            let proc = ctx.Environment.[name] :?> Procedure
+            let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
+            let env = ctx.Environment.PushScope args
+            // ignore the new context, we want the old environment and the mutable state is already reference by the current context
+            executeBlockToEnd {ctx with Environment=env} proc.Body |> ignore
+            ctx
+        with
+        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+        | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
+    | Command {Name=cmd; Arguments=args} ->
+        let args = List.map (evaluate ctx.Environment) args
+        ctx.Simulator.Execute {Name=cmd; Args=args}
+        ctx
+
+and private executeBlockToEnd (ctx:Context<_>) (block:Statement list) =
+    let mutable tmpCtx = ctx
+    for s in block do
+        tmpCtx <- (executeStatementToEnd tmpCtx s)
+    tmpCtx
+
+let ExecuteToEnd (program:Program) robotSimulator globals =
+    executeBlockToEnd {Environment=Environment.Create globals; Simulator=robotSimulator} program.Body |> ignore
+    robotSimulator.CurrentState
 
 let rec private evaluateOLD (csstate: CallStackState) (expr: Expression) =
     match expr.Expr with

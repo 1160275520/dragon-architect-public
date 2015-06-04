@@ -16,6 +16,85 @@ type CubeDelta = {
     Status: CubeStatus;
 }
 
+module private Impl =
+    let MAX_CUBES = 100000
+    let kvp2pair (kvp:KeyValuePair<_,_>) = (kvp.Key, kvp.Value)
+    let pair2kvp (a, b) = KeyValuePair (a, b)
+
+type BasicRobot = {
+    Position: IntVec3;
+    Direction: IntVec3;
+}
+with
+    member r.DirRightTurn = IntVec3(r.Direction.Z, 0, -r.Direction.X)
+
+type WorldState<'Grid> = {
+    Robot: BasicRobot;
+    Grid: 'Grid;
+}
+
+// Representation of the world state that is intended for unit tests and equality comparisions,
+// it's not very efficient and not what the robots use internally.
+type CanonicalWorldState = WorldState<Map<IntVec3, int>>
+
+type IGrid<'Grid> =
+    abstract AddObject : IntVec3 -> int -> unit
+    abstract RemoveObject : IntVec3 -> unit
+    abstract Current: 'Grid
+    abstract AsCanonical : Map<IntVec3, int>
+    abstract SetFromCanonical : Map<IntVec3, int> -> unit
+
+[<Sealed>]
+type HashTableGrid() =
+    let mutable cubes = Dictionary ()
+    interface IGrid<KeyValuePair<IntVec3, int> array> with
+        member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes.Add (idx, cube)
+        member x.RemoveObject idx = cubes.Remove idx |> ignore
+        member x.Current = Seq.toArray cubes
+        member x.AsCanonical = Seq.map Impl.kvp2pair cubes |> Map.ofSeq
+        member x.SetFromCanonical grid = cubes <- Dictionary grid
+
+[<Sealed>]
+type TreeMapGrid() =
+    let mutable cubes = Map.empty
+    interface IGrid<Map<IntVec3, int>> with
+        member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes <- cubes.Add (idx, cube)
+        member x.RemoveObject idx = cubes <- cubes.Remove idx
+        member x.Current = cubes
+        member x.AsCanonical = cubes
+        member x.SetFromCanonical grid = cubes <- grid
+
+[<Sealed>]
+type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
+    let mutable robot = startRobot
+
+    member x.FromCanonicalState (grid, (state:CanonicalWorldState)) =
+        let sim = BasicRobotSimulator (grid, state.Robot)
+        grid.SetFromCanonical state.Grid
+        sim
+
+    member x.AsCanonicalState = {Robot=robot; Grid=grid.AsCanonical}
+
+    interface Robot.IRobotSimulator<WorldState<'Grid>> with
+        member x.Execute command =
+            let p = robot.Position
+            let d = robot.Direction
+            match command.Name with
+            | "forward" -> robot <- {robot with Position=p + d}
+            | "up" -> robot <- {robot with Position=p + IntVec3.UnitY}
+            | "down" -> if p.Y > 0 then robot <- {robot with Position=p - IntVec3.UnitY}
+            | "left" -> robot <- {robot with Direction=IntVec3 (-d.Z, 0, d.X)}
+            | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
+            | "cube" ->
+                let cube = command.Args.[0] :?> int
+                grid.AddObject p cube
+            | "remove" -> grid.RemoveObject p
+            | _ -> ()
+
+        member x.Query query = raise (System.NotSupportedException ())
+
+        member x.CurrentState = {Robot=robot; Grid=grid.Current}
+
 type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
 
     let MAX_CUBES = 800000
@@ -52,13 +131,6 @@ type GridStateTracker2(init: Map<IntVec3, Cube2>) =
     member x.OverwriteObject idx cube = cells <- cells.Add (idx, cube)
     member x.RemoveObject idx = cells <- cells.Remove idx
     member x.GetObject idx = cells.TryFind idx
-
-type BasicRobot = {
-    Position: IntVec3;
-    Direction: IntVec3;
-}
-with
-    member r.DirRightTurn = IntVec3(r.Direction.Z, 0, -r.Direction.X)
 
 type BasicRobotPositionDelta = {
     ParallelDelta: int;
