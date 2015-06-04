@@ -927,6 +927,22 @@ let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
 
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult
 
+let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulator) : StateResult =
+    let MAX_ITER = 100000
+    let simstate = createState program builtIns (Some robot)
+
+    let mutable numSteps = 0
+    while not (IsDone simstate) && numSteps < MAX_ITER do
+        numSteps <- numSteps + 1
+        match tryStep simstate with
+        | Choice1Of2 None -> ()
+        | Choice1Of2 (Some cmd) ->
+            robot.Execute cmd
+        | Choice2Of2 error -> ()
+
+    {Command=null; WorldState=robot.CurrentState}
+
+
 let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
     let MAX_ITER = 100000
     let simstate = createState2 program builtIns (Some robot)
@@ -951,6 +967,21 @@ let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
 
         steps.Add simstate.LastExecuted
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult2
+
+let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulator2) =
+    let MAX_ITER = 100000
+    let simstate = createState2 program builtIns (Some robot)
+
+    let mutable numSteps = 0
+    while not (IsDone2 simstate) && numSteps < MAX_ITER do
+        numSteps <- numSteps + 1
+        match tryStep2 simstate with
+        | Choice1Of2 None -> ()
+        | Choice1Of2 (Some cmd) ->
+            robot.Execute cmd
+        | Choice2Of2 error -> ()
+
+    robot.CurrentState
 
 //let SimulateWithRobot3 program builtIns (robot:Robot.IRobotSimulator2) =
 //    let simstate = createState2 program builtIns (Some robot)
