@@ -90,7 +90,27 @@ let private createState2 (program:Program) builtInValues robot =
     let env = {Globals=builtInValues; Locals=Map.empty}
     ({CallStack=[{Environment=env; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}:State2)
 
-let rec private evaluate (csstate: CallStackState) (expr: Expression) =
+let rec private evaluate (env: Environment) (expr: Expression) =
+    match expr.Expr with
+    | Literal x -> x
+    // HACK this should probably make sure it's not a function or procedure...
+    | Identifier name ->
+        try env.[name]
+        with :? System.Collections.Generic.KeyNotFoundException ->
+            runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+    | Evaluate {Identifier=name; Arguments=argExpr} ->
+        let argVals = List.map (evaluate env) argExpr
+        try
+            let func = env.[name] :?> Function
+            let args = Seq.zip func.Parameters argVals |> Map.ofSeq
+            evaluate (env.PushScope args) func.Body
+        with
+        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
+        | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
+    | Query query ->
+        raise (System.NotSupportedException "queries not supported for this evaluation algo")
+
+let rec private evaluateOLD (csstate: CallStackState) (expr: Expression) =
     match expr.Expr with
     | Literal x -> x
     // HACK this should probably make sure it's not a function or procedure...
@@ -99,12 +119,12 @@ let rec private evaluate (csstate: CallStackState) (expr: Expression) =
         with :? System.Collections.Generic.KeyNotFoundException ->
             runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
     | Evaluate {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluate csstate) argExpr
+        let argVals = List.map (evaluateOLD csstate) argExpr
         try
             let func = csstate.Environment.[name] :?> Function
             let args = Seq.zip func.Parameters argVals |> Map.ofSeq
             let env = csstate.Environment.PushScope args
-            evaluate {csstate with Environment=env} func.Body
+            evaluateOLD {csstate with Environment=env} func.Body
         with
         | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
         | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
@@ -112,7 +132,7 @@ let rec private evaluate (csstate: CallStackState) (expr: Expression) =
         match csstate.Robot with
         | None -> runtimeError expr.Meta ErrorCode.RobotUnavailable "Queries not allowed; robot not available"
         | Some robot ->
-            let args = List.map (evaluate csstate) query.Arguments
+            let args = List.map (evaluateOLD csstate) query.Arguments
             try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
             with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
 
@@ -163,12 +183,12 @@ let private step (state:State) =
             match stmt.Stmt with
             | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
                 let b =
-                    try evaluate head cond :?> bool
+                    try evaluateOLD head cond :?> bool
                     with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
                 state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
                 None
             | Repeat {Body=body; NumTimes=ntimesExpr} ->
-                let ntimes = evaluate head ntimesExpr |> valueAsInt stmt.Meta
+                let ntimes = evaluateOLD head ntimesExpr |> valueAsInt stmt.Meta
                 let toAdd = List.concat (List.init ntimes (fun _ -> body))
                 state.Push stmt.Meta {head with ToExecute=toAdd}
                 None
@@ -179,7 +199,7 @@ let private step (state:State) =
                 state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: tail
                 None
             | Execute {Identifier=name; Arguments=argExpr} ->
-                let argVals = List.map (evaluate head) argExpr
+                let argVals = List.map (evaluateOLD head) argExpr
                 try
                     let proc = head.Environment.[name] :?> Procedure
                     let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
@@ -191,7 +211,7 @@ let private step (state:State) =
                 None
             | Command {Name=cmd; Arguments=args} ->
                 if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
-                let args = List.map (evaluate head) args
+                let args = List.map (evaluateOLD head) args
                 Some (Robot.CommandOLD (cmd, ImmArr.ofSeq args, state.LastExecuted))
 
 let private step2 (state:State2) =
@@ -383,31 +403,11 @@ type ConcreteStatement =
 | CRepeat of int * LocalMap * int
 | CCommand of Robot.Command
 
-type private Context<'State> = {
+
+type private ContextOLD<'State> = {
     Environment: Environment;
     State: 'State;
 }
-
-let rec private evaluate3<'S> (ctx: Context<'S>) (expr: Expression) =
-    match expr.Expr with
-    | Literal x -> x
-    // HACK this should probably make sure it's not a function or procedure...
-    | Identifier name ->
-        try ctx.Environment.[name]
-        with :? System.Collections.Generic.KeyNotFoundException ->
-            runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-    | Evaluate {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluate3 ctx) argExpr
-        try
-            let func = ctx.Environment.[name] :?> Function
-            let args = Seq.zip func.Parameters argVals |> Map.ofSeq
-            let env = ctx.Environment.PushScope args
-            evaluate3 {ctx with Environment=env} func.Body
-        with
-        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-        | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
-    | Query query ->
-        raise (System.NotSupportedException "queries not supported for this evaluation algo")
 
 type StateFunctions<'State, 'StateDelta> = {
     Empty: 'StateDelta;
@@ -422,16 +422,16 @@ type CacheData<'StateDelta> = {
     NumStates: int;
 }
 
-let private concretizeStatement (ctx:Context<_>) (stmt:Statement) : ConcreteStatement option =
+let private concretizeStatement (ctx:ContextOLD<_>) (stmt:Statement) : ConcreteStatement option =
     match stmt.Stmt with
     | Repeat {Body=body; NumTimes=ntimesExpr} ->
-        let ntimes = evaluate3 ctx ntimesExpr |> valueAsInt stmt.Meta
+        let ntimes = evaluate ctx.Environment ntimesExpr |> valueAsInt stmt.Meta
         Some (CRepeat (stmt.Meta.Id, valMapToLocalMap ctx.Environment.Locals, ntimes))
     | Execute {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (fun e -> (evaluate3 ctx e) :?> int) argExpr
+        let argVals = List.map (fun e -> (evaluate ctx.Environment e) :?> int) argExpr
         Some (CExecute (name, argVals))
     | Command {Name=cmd; Arguments=args} ->
-        let args = List.map (evaluate3 ctx) args
+        let args = List.map (evaluate ctx.Environment) args
         Some (CCommand {Name=cmd; Args=args})
     | _ -> None
 
@@ -451,7 +451,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             ]
         {Body=stmts}
 
-    let rec executeWithCache (ctx:Context<'State>) (stmt:Statement) =
+    let rec executeWithCache (ctx:ContextOLD<'State>) (stmt:Statement) =
         match concretizeStatement ctx stmt with
         // assumes commands are concretizable statements, and thus any non-concretizable statement has no delta
         | None ->
@@ -466,7 +466,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
                 // even if we fail to apply it, it's still the correct delta
                 (executeWithoutCache ctx stmt, result)
 
-    and getCached (ctx:Context<_>) (concrete:ConcreteStatement): CacheData<'StateDelta> =
+    and getCached (ctx:ContextOLD<_>) (concrete:ConcreteStatement): CacheData<'StateDelta> =
         let (b,v) = cache.TryGetValue concrete
         if b
         then v
@@ -475,7 +475,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             cache.Add (concrete, cr)
             cr
 
-    and createCached (ctx:Context<_>) (concrete:ConcreteStatement) =
+    and createCached (ctx:ContextOLD<_>) (concrete:ConcreteStatement) =
         match concrete with
         | CRepeat (nodeId, lmap, numTimes) ->
             // assumes context has the correct local map already
@@ -494,7 +494,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             let delta = sfuncs.Create cmd
             {Delta=delta; NumStates=1}
 
-    and createDeltaForBlock (ctx:Context<_>) (block:Statement list) =
+    and createDeltaForBlock (ctx:ContextOLD<_>) (block:Statement list) =
         let mutable tmpCtx = ctx
         let mutable delta = sfuncs.Empty
         let mutable numStates = 0
@@ -505,17 +505,17 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             numStates <- numStates + d.NumStates
         {Delta=delta; NumStates=numStates}
 
-    and executeWithoutCache (ctx:Context<'State>) (stmt:Statement) =
+    and executeWithoutCache (ctx:ContextOLD<'State>) (stmt:Statement) =
         match stmt.Stmt with
         | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
             let b =
-                try evaluate3 ctx cond :?> bool
+                try evaluate ctx.Environment cond :?> bool
                 with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
             if b
             then executeBlock ctx thenb
             else executeBlock ctx elseb
         | Repeat {Body=body; NumTimes=ntimesExpr} ->
-            let ntimes = evaluate3 ctx ntimesExpr |> valueAsInt stmt.Meta
+            let ntimes = evaluate ctx.Environment ntimesExpr |> valueAsInt stmt.Meta
             let mutable tmpCtx = ctx
             for i = 1 to ntimes do
                 tmpCtx <- executeBlock tmpCtx body
@@ -525,7 +525,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
         | Procedure proc ->
             {ctx with Environment=ctx.Environment.AddGlobal (proc.Name, proc)}
         | Execute {Identifier=name; Arguments=argExpr} ->
-            let argVals = List.map (evaluate3 ctx) argExpr
+            let argVals = List.map (evaluate ctx.Environment) argExpr
             try
                 let proc = ctx.Environment.[name] :?> Procedure
                 let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
@@ -536,17 +536,17 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
             | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
         | Command {Name=cmd; Arguments=args} ->
-            let args = List.map (evaluate3 ctx) args
+            let args = List.map (evaluate ctx.Environment) args
             let cmd: Robot.Command = {Name=cmd; Args=args}
             {ctx with State=sfuncs.ApplyCommand ctx.State cmd}
 
-    and executeBlock (ctx:Context<'State>) (block:Statement list) =
+    and executeBlock (ctx:ContextOLD<'State>) (block:Statement list) =
         let mutable tmpCtx = ctx
         for s in block do
             tmpCtx <- fst (executeWithCache tmpCtx s)
         tmpCtx
 
-    let rec executeToStateIndex (ctx:Context<'State>) (stmt:Statement) (statesRemaining:int) =
+    let rec executeToStateIndex (ctx:ContextOLD<'State>) (stmt:Statement) (statesRemaining:int) =
         match statesRemaining, concretizeStatement ctx stmt with
         // no states remaining means stop running things
         | 0, _ -> (ctx, 0)
@@ -562,7 +562,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             else
                 executeToStateIndexConcrete ctx concrete statesRemaining
 
-    and executeToStateIndexConcrete (ctx:Context<'State>) (concrete:ConcreteStatement) (statesRemaining:int) =
+    and executeToStateIndexConcrete (ctx:ContextOLD<'State>) (concrete:ConcreteStatement) (statesRemaining:int) =
         match concrete with
         | CRepeat (nodeId, lmap, numTimes) ->
             // assumes context has the correct local map already
@@ -586,7 +586,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             executeToStateIndexBlock {ctx with Environment=env} proc.Body statesRemaining
         | _ -> invalidOp ""
 
-    and executeToStateIndexBlock (ctx:Context<'State>) (block:Statement list) (statesRemaining:int) =
+    and executeToStateIndexBlock (ctx:ContextOLD<'State>) (block:Statement list) (statesRemaining:int) =
         let mutable tmpCtx = ctx
         let mutable remaining = statesRemaining
         for s in block do
