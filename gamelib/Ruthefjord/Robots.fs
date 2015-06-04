@@ -18,7 +18,7 @@ type CubeDelta = {
 
 type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
 
-    let MAX_CUBES = 8000
+    let MAX_CUBES = 800000
 
     let mutable cells = Dictionary()
     do
@@ -38,7 +38,7 @@ type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
 
 type GridStateTracker2(init: Map<IntVec3, Cube2>) =
 
-    let MAX_CUBES = 8000
+    let MAX_CUBES = 800000
 
     let mutable cells = init
 
