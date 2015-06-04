@@ -140,17 +140,22 @@ repeat 10 times
 
 let referenceProgramsTheory = TestUtil.TupleToTheory referencePrograms
 
-let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWorldState) =
+let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWorldState, grid:IGrid<_>) =
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
-    let actual = Debugger.runToCannonicalState prog (HashTableGrid ()) lib start
+    let actual = Debugger.runToCannonicalState prog grid lib start
     actual.Grid |> should equal expected.Grid
     actual.Robot |> should equal expected.Robot
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
 let ``Simulator Reference Test HashTable`` (text, start, expected) =
-    checkReferenceProgram (text, start, expected)
+    checkReferenceProgram (text, start, expected, HashTableGrid ())
+
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``Simulator Reference Test TreeMap`` (text, start, expected) =
+    checkReferenceProgram (text, start, expected, TreeMapGrid ())
 
 [<Fact>]
 let ``OLD Simulator simple parsed`` () =
