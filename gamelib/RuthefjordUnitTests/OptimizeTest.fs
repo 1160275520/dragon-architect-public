@@ -81,27 +81,28 @@ let ``dictionary-based delta integration test`` () =
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``jump to state test`` () =
-    let checkEqual (bws2:BasicWorldState2) (bws1:BasicWorldState) =
+    let checkEqual (bws2:BasicWorldState3) (bws1:BasicWorldState) =
         bws2.Robot |> should equal bws1.Robot
         let grid1 = bws1.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-        let grid2 = bws2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
+        let grid2 = bws2.Grid |> Seq.toArray |> (Array.map (fun kv -> kv.Key)) |> Array.sort
         grid2 |> should equal grid1
 
     let initData = makeInitData ("../../../../doc/pyramid.txt")
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
+    let initState3 () : BasicWorldState3 = {Robot=initData.State.Robot; Grid=System.Collections.Generic.Dictionary()}
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
     let cache = Simulator.Dict ()
 
-    let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctions cache initState n
+    let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctions2 cache (initState3 ()) n
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
 
     let checkIndex n =
         checkEqual (rts n) (expected.States.[n].Data.WorldState :?> BasicWorldState)
 
-    rts 0 |> should equal initState
+    (rts 0).Grid.Count |> should equal (initState3 ()).Grid.Count
     checkEqual (rts 10000000) endState
     for i = 1 to expected.States.Length - 1 do
         if i % 50 = 1 then
