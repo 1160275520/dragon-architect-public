@@ -138,6 +138,8 @@ repeat 10 times
     });
 ]
 
+let referenceProgramsTheory = TestUtil.TupleToTheory referencePrograms
+
 let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWorldState) =
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
@@ -145,29 +147,10 @@ let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWo
     actual.Grid |> should equal expected.Grid
     actual.Robot |> should equal expected.Robot
 
-[<Fact>]
-let ``Simulator HT Ref Test 1`` () =
-    checkReferenceProgram referencePrograms.[0]
-
-[<Fact>]
-let ``Simulator HT Ref Test 2`` () =
-    checkReferenceProgram referencePrograms.[1]
-
-[<Fact>]
-let ``Simulator HT Ref Test 3`` () =
-    checkReferenceProgram referencePrograms.[2]
-
-[<Fact>]
-let ``Simulator HT Ref Test 4`` () =
-    checkReferenceProgram referencePrograms.[3]
-
-[<Fact>]
-let ``Simulator HT Ref Test 5`` () =
-    checkReferenceProgram referencePrograms.[4]
-
-[<Fact>]
-let ``Simulator HT Ref Test 6`` () =
-    checkReferenceProgram referencePrograms.[5]
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``Simulator Reference Test HashTable`` (text, start, expected) =
+    checkReferenceProgram (text, start, expected)
 
 [<Fact>]
 let ``OLD Simulator simple parsed`` () =

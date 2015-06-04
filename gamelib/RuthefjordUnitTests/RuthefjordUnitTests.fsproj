@@ -61,6 +61,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="app.config" />
+    <Compile Include="TestUtil.fs" />
     <Compile Include="JsonTest.fs" />
     <Compile Include="ProgramSerializationTest.fs" />
     <Compile Include="ProgramParsingTest.fs" />
