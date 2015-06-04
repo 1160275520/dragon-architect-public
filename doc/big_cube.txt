@@ -1,0 +1,26 @@
+#lang imperative:1.0
+
+define Line(x)
+    repeat x times
+        Forward(1)
+        PlaceCube(1)
+    Left()
+    Left()
+    Forward(x)
+    Left()
+    Left()
+
+define Layer(dim)
+    repeat dim times
+        Line(dim)
+        Left()
+        Forward(1)
+        Right()
+
+repeat 50 times
+    Layer(50)
+    Right()
+    Forward(50)
+    Left()
+    Up(1)
+
