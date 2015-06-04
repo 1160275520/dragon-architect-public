@@ -96,19 +96,19 @@ let main argv =
         let foo = System.Collections.Generic.List (10000000)
 
         let numStates =
-            let grid = GridStateTracker Seq.empty
+            let grid = GridStateTracker2 Seq.empty
             let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-            let runner = BasicImperativeRobotSimulator (robot, grid)
-            (Simulator.SimulateWithRobot program importedModules runner).States.Length
+            let runner = BasicImperativeRobotSimulator2 (robot, grid)
+            (Simulator.SimulateWithRobot2 program importedModules runner).States.Length
 
-        let t =
-            time (fun () ->
-                let grid = GridStateTracker Seq.empty
-                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-                let runner = BasicImperativeRobotSimulator (robot, grid)
-                Simulator.SimulateWithRobot program importedModules runner |> (fun s -> foo.Add s.States.Length)
-            ) numSamples
-        printfn "Simulate unoptimized HTB ALL: %.3f" t
+//        let t =
+//            time (fun () ->
+//                let grid = GridStateTracker Seq.empty
+//                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+//                let runner = BasicImperativeRobotSimulator (robot, grid)
+//                Simulator.SimulateWithRobot program importedModules runner |> (fun s -> foo.Add s.States.Length)
+//            ) numSamples
+//        printfn "Simulate unoptimized HTB ALL: %.3f" t
         let t =
             time (fun () ->
                 let grid = GridStateTracker Seq.empty
@@ -133,14 +133,14 @@ let main argv =
                 Simulator.SimulateWithRobot2LastStateOnly program importedModules runner |> (fun s -> foo.Add (s :?> BasicWorldState2).Robot.Position.X)
             ) numSamples
         printfn "Simulate unoptimized MAP LSO: %.3f" t
-        let t =
-            time (fun () ->
-                let cache = Simulator.Dict ()
-                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-                let initState: BasicWorldState2 = {Robot=robot; Grid=Map.empty}
-                Simulator.RunOptimized37 program importedModules Debugger.stateFunctionsNoOp cache initState |> (fun s -> foo.Add s.Robot.Position.X)
-            ) numSamples
-        printfn "Simulate optimized NOP: %.3f" t
+//        let t =
+//            time (fun () ->
+//                let cache = Simulator.Dict ()
+//                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+//                let initState: BasicWorldState2 = {Robot=robot; Grid=Map.empty}
+//                Simulator.RunOptimized37 program importedModules Debugger.stateFunctionsNoOp cache initState |> (fun s -> foo.Add s.Robot.Position.X)
+//            ) numSamples
+//        printfn "Simulate optimized NOP: %.3f" t
 //        let t = time (fun () ->
 //            let cache = Simulator.Dict ()
 //            let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}

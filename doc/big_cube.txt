@@ -17,10 +17,10 @@ define Layer(dim)
         Forward(1)
         Right()
 
-repeat 50 times
-    Layer(50)
+repeat 40 times
+    Layer(40)
     Right()
-    Forward(50)
+    Forward(40)
     Left()
     Up(1)
 

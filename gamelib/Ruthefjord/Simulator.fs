@@ -899,7 +899,7 @@ let SimulateWithoutRobot program builtIns =
     commands.ToArray ()
 
 let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
-    let MAX_ITER = 100000
+    let MAX_ITER = 100000000
     let simstate = createState program builtIns (Some robot)
 
     let steps = MutableList ()
@@ -928,7 +928,7 @@ let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult
 
 let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulator) : StateResult =
-    let MAX_ITER = 100000
+    let MAX_ITER = 100000000
     let simstate = createState program builtIns (Some robot)
 
     let mutable numSteps = 0
@@ -944,7 +944,7 @@ let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulator)
 
 
 let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
-    let MAX_ITER = 100000
+    let MAX_ITER = 100000000
     let simstate = createState2 program builtIns (Some robot)
 
     let steps = MutableList ()
@@ -969,7 +969,7 @@ let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult2
 
 let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulator2) =
-    let MAX_ITER = 100000
+    let MAX_ITER = 100000000
     let simstate = createState2 program builtIns (Some robot)
 
     let mutable numSteps = 0
