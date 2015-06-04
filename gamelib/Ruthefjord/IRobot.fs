@@ -31,6 +31,18 @@ type Query = {
     Args: ImmArr<obj>;
 }
 
+type IRobotSimulator<'State> =
+    abstract Execute : Command -> unit
+    abstract Query : Query -> obj
+    abstract CurrentState: 'State
+
+type IRobotDeltaSimulator<'State, 'StateDelta> =
+    inherit IRobotSimulator<'State>
+    abstract EmptyDelta : 'StateDelta;
+    abstract CombineDelta : 'StateDelta -> 'StateDelta -> 'StateDelta;
+    abstract CreateDelta : Command -> 'StateDelta;
+    abstract TryApplyDelta : 'StateDelta -> bool;
+
 type IRobotSimulatorOLD =
     abstract member Execute : command:CommandOLD -> unit
     abstract member Query : query:Query -> obj

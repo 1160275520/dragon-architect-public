@@ -365,125 +365,6 @@ type StepResult = {
 type private MutableList<'a> = System.Collections.Generic.List<'a>
 type private MutableDict<'k,'v> = System.Collections.Generic.Dictionary<'k,'v>
 
-let private executeStatement (state:State) (stmt:Statement): Robot.Command option =
-    let head = state.CallStack.Head
-    match stmt.Stmt with
-    | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
-        let b =
-            try evaluate head cond :?> bool
-            with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
-        state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
-        None
-    | Repeat {Body=body; NumTimes=ntimesExpr} ->
-        let ntimes = evaluate head ntimesExpr |> valueAsInt stmt.Meta
-        let toAdd = List.concat (List.init ntimes (fun _ -> body))
-        state.Push stmt.Meta {head with ToExecute=toAdd}
-        None
-    | Function func ->
-        state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: state.CallStack.Tail
-        None
-    | Procedure proc ->
-        state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: state.CallStack.Tail
-        None
-    | Execute {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluate head) argExpr
-        try
-            let proc = head.Environment.[name] :?> Procedure
-            let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
-            let env = head.Environment.PushScope args
-            state.Push stmt.Meta {head with Environment=env; ToExecute=proc.Body}
-        with
-        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-        | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
-        None
-    | Command {Name=cmd; Arguments=args} ->
-        //if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
-        let args = List.map (evaluate head) args
-        Some {Name=cmd; Args=args}
-
-let private executeStatement2 (state:State2) (stmt:Statement): Robot.Command option =
-    let head = state.CallStack.Head
-    match stmt.Stmt with
-    | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
-        let b =
-            try evaluate2 head cond :?> bool
-            with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
-        state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
-        None
-    | Repeat {Body=body; NumTimes=ntimesExpr} ->
-        let ntimes = evaluate2 head ntimesExpr |> valueAsInt stmt.Meta
-        let toAdd = List.concat (List.init ntimes (fun _ -> body))
-        state.Push stmt.Meta {head with ToExecute=toAdd}
-        None
-    | Function func ->
-        state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: state.CallStack.Tail
-        None
-    | Procedure proc ->
-        state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: state.CallStack.Tail
-        None
-    | Execute {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluate2 head) argExpr
-        try
-            let proc = head.Environment.[name] :?> Procedure
-            let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
-            let env = head.Environment.PushScope args
-            state.Push stmt.Meta {head with Environment=env; ToExecute=proc.Body}
-        with
-        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-        | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
-        None
-    | Command {Name=cmd; Arguments=args} ->
-        //if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
-        let args = List.map (evaluate2 head) args
-        Some {Name=cmd; Args=args}
-
-let private popNextStatment (state:State) =
-    match state.CallStack with
-    | [] -> None
-    | head :: tail ->
-        match head.ToExecute with
-        | [] ->
-            state.CallStack <- tail
-            None
-        | stmt :: next ->
-            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
-            head.ToExecute <- next
-
-            // update last executed
-            if state.LastExecuted.Length < state.CallStack.Length then
-                state.LastExecuted <- stmt :: state.LastExecuted
-            else
-                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
-
-            Some stmt
-
-let private popNextStatment2 (state:State2) =
-    match state.CallStack with
-    | [] -> None
-    | head :: tail ->
-        match head.ToExecute with
-        | [] ->
-            state.CallStack <- tail
-            None
-        | stmt :: next ->
-            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
-            head.ToExecute <- next
-
-            // update last executed
-            if state.LastExecuted.Length < state.CallStack.Length then
-                state.LastExecuted <- stmt :: state.LastExecuted
-            else
-                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
-
-            Some stmt
-
-let private evalProcedureReference meta (head:CallStackState) name =
-    try
-        head.Environment.[name] :?> Procedure
-    with
-    | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-    | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
-
 type LocalMap = Map<string,int>
 
 let valMapToLocalMap (vals:ValueMap) =
@@ -501,8 +382,6 @@ type ConcreteStatement =
 // ast id, numTimes
 | CRepeat of int * LocalMap * int
 | CCommand of Robot.Command
-
-type Dict<'a,'b> = System.Collections.Generic.Dictionary<'a,'b>
 
 type private Context<'State> = {
     Environment: Environment;
@@ -559,7 +438,7 @@ let private concretizeStatement (ctx:Context<_>) (stmt:Statement) : ConcreteStat
 let private isolatedState prog env toExec =
     {Program=prog; CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
 
-type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sfuncs:StateFunctions<'State, 'StateDelta>, cache: Dict<ConcreteStatement, CacheData<'StateDelta>>) =
+type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sfuncs:StateFunctions<'State, 'StateDelta>, cache: MutableDict<ConcreteStatement, CacheData<'StateDelta>>) =
     let fullProgram: Program =
         let stmts =
             [
@@ -820,13 +699,6 @@ let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulato
         | Choice2Of2 error -> ()
 
     robot.CurrentState
-
-//let SimulateWithRobot3 program builtIns (robot:Robot.IRobotSimulator2) =
-//    let simstate = createState2 program builtIns (Some robot)
-//    let commandCache = MutableDict ()
-//    let deltaCache = MutableDict ()
-//    executeToFinalState simstate commandCache deltaCache
-//    robot.CurrentState
 
 type LazySimulator (program, builtIns, robot) =
     let state = createState program builtIns (Some robot)

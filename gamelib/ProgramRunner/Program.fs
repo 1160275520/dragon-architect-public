@@ -150,7 +150,7 @@ let main argv =
 
         let t =
             time (fun () ->
-                let cache = Simulator.Dict ()
+                let cache = Simulator.MutableDict ()
                 let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
                 let initState: BasicWorldState3 = {Robot=robot; Grid=System.Collections.Generic.Dictionary()}
                 Simulator.RunOptimized37 program importedModules Debugger.stateFunctions2 cache initState |> (fun s -> foo.Add s.Robot.Position.X)
@@ -159,7 +159,7 @@ let main argv =
 
         let t =
             time (fun () ->
-                let cache = Simulator.Dict ()
+                let cache = Simulator.MutableDict ()
                 let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
                 let initState () : BasicWorldState3 = {Robot=robot; Grid=System.Collections.Generic.Dictionary()}
                 for i = 1 to 50 do
@@ -169,7 +169,7 @@ let main argv =
 
         let t =
             time (fun () ->
-                let cache = Simulator.Dict ()
+                let cache = Simulator.MutableDict ()
                 let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
                 let initState () : BasicWorldState3 = {Robot=robot; Grid=System.Collections.Generic.Dictionary()}
                 for i = 1 to 50 do

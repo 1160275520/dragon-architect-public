@@ -37,7 +37,7 @@ let ``yet another optimization test`` () =
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    let cache = Simulator.Dict ()
+    let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctionsNoOp cache initState
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
@@ -55,7 +55,7 @@ let ``dictionary-based delta integration test`` () =
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    let cache = Simulator.Dict ()
+    let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions2 cache initState3
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
@@ -79,7 +79,7 @@ let ``jump to state test`` () =
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    let cache = Simulator.Dict ()
+    let cache = Simulator.MutableDict ()
 
     let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctions2 cache (initState3 ()) n
 
@@ -106,7 +106,7 @@ let ``integration test`` () =
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    let cache = Simulator.Dict ()
+    let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
@@ -120,7 +120,7 @@ let ``integration test`` () =
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    let cache = Simulator.Dict ()
+    let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
@@ -134,7 +134,7 @@ let ``integration test`` () =
     let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
     let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    let cache = Simulator.Dict ()
+    let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
 
     let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
