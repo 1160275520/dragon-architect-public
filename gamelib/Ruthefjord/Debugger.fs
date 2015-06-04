@@ -73,10 +73,10 @@ module Debugger =
         | EditMode.Persistent -> upcast PersistentDebugger init
         | EditMode.Workshop -> upcast WorkshopDebugger init
 
-    let private apply (state:BasicWorldState2) (cmd:Robot.Command2) =
+    let private apply (state:BasicWorldState2) (cmd:Robot.Command) =
         let sim = (BasicImperativeRobotSimulator2.FromWorldState state)
-        (sim :> Robot.IRobotSimulator2).Execute cmd
-        (sim :> Robot.IRobotSimulator2).CurrentState :?> BasicWorldState2
+        (sim :> Robot.IRobotSimulatorOLD2).Execute cmd
+        (sim :> Robot.IRobotSimulatorOLD2).CurrentState :?> BasicWorldState2
 
     let stateFunctionsNoOp: Simulator.StateFunctions<BasicWorldState2, unit> = {
         Empty = ();

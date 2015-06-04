@@ -8,20 +8,20 @@ open Ruthefjord
 open Ruthefjord.Ast.Imperative
 
 [<AllowNullLiteral>]
-type Command(t,a,s) =
+type CommandOLD(t,a,s) =
     member x.Name: string = t
     member x.Args: ImmArr<obj> = a
     member x.LastExecuted: Statement list = s
 
     override x.Equals that =
         match that with
-        | :? Command as y -> x.Name = y.Name && x.Args = y.Args
+        | :? CommandOLD as y -> x.Name = y.Name && x.Args = y.Args
         | _ -> false
 
     override x.GetHashCode () =
         x.Name.GetHashCode () ^^^ x.Args.GetHashCode ()
 
-type Command2 = {
+type Command = {
     Name: string;
     Args: obj list;
 }
@@ -31,13 +31,13 @@ type Query = {
     Args: ImmArr<obj>;
 }
 
-type IRobotSimulator =
-    abstract member Execute : command:Command -> unit
+type IRobotSimulatorOLD =
+    abstract member Execute : command:CommandOLD -> unit
     abstract member Query : query:Query -> obj
     abstract member CurrentState : obj
 
-type IRobotSimulator2 =
-    abstract member Execute : command:Command2 -> unit
+type IRobotSimulatorOLD2 =
+    abstract member Execute : command:Command -> unit
 //    abstract member ApplyDelta : obj -> unit
     abstract member Query : query:Query -> obj
     abstract member CurrentState : obj

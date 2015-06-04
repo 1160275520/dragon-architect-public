@@ -10,24 +10,10 @@ open Ruthefjord.Robot
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``command sanity check`` () =
-    let c1: Robot.Command2 = {Name="foo"; Args=["bar" :> obj]}
-    let c2: Robot.Command2 = {Name="foo"; Args=["bar" :> obj]}
+    let c1: Robot.Command = {Name="foo"; Args=["bar" :> obj]}
+    let c2: Robot.Command = {Name="foo"; Args=["bar" :> obj]}
 
     c1 |> should equal c2
-
-[<Fact>]
-[<Trait("tag", "opt")>]
-let ``command sanity check 2`` () =
-    let filename = "../../../../doc/castle_decomp.txt"
-    let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
-    let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
-    let text = System.IO.File.ReadAllText filename
-    let program = Parser.Parse (text, filename)
-
-    let r1 = Simulator.SimulateWithoutRobot program importedModules
-    let r2 = Simulator.SimulateWithoutRobot program importedModules
-
-    r1 |> should equal r2
 
 let makeInitData (filename) =
     let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
@@ -110,23 +96,6 @@ let ``jump to state test`` () =
     checkIndex 2
     checkIndex 3
     checkIndex 4
-
-[<Fact>]
-[<Trait("tag", "opt")>]
-let ``optimize correctness`` () =
-    let filename = "../../../../doc/castle_decomp.txt"
-    let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
-    let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
-    let text = System.IO.File.ReadAllText filename
-    let program = Parser.Parse (text, filename)
-
-    let r1 = List.ofArray <| Simulator.SimulateWithoutRobotOptimized program importedModules
-    let r2 = List.ofArray <| Simulator.SimulateWithoutRobot program importedModules
-
-    //let r1 = r1 |> Seq.skip 40 |> Seq.take 3 |> List.ofSeq
-    //let r2 = r2 |> Seq.skip 40 |> Seq.take 3 |> List.ofSeq
-
-    r1 |> should equal r2
 
 [<Fact>]
 [<Trait("id", "integ")>]
@@ -213,7 +182,7 @@ let ``delta position`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="forward"; Args=[]}
         {Name="forward"; Args=[]}
@@ -239,7 +208,7 @@ let ``delta direction`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="left"; Args=[]}
         {Name="forward"; Args=[]}
@@ -269,7 +238,7 @@ let ``delta cube`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="cube"; Args=[1]}
         {Name="right"; Args=[]}
@@ -298,7 +267,7 @@ let ``delta vertical some`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="up"; Args=[]}
         {Name="down"; Args=[]}
         {Name="up"; Args=[]}
@@ -321,7 +290,7 @@ let ``delta vertical some 2`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="down"; Args=[]}
         {Name="down"; Args=[]}
         {Name="down"; Args=[]}
@@ -344,7 +313,7 @@ let ``delta turn around`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="forward"; Args=[]}
         {Name="forward"; Args=[]}
@@ -372,7 +341,7 @@ let ``delta L`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="left"; Args=[]}
         {Name="forward"; Args=[]}
         {Name="forward"; Args=[]}
@@ -405,7 +374,7 @@ let ``delta apply`` () =
     ]
     let grid2 = GridStateTracker2 gridInit
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="up"; Args=[]}
         {Name="forward"; Args=[]}
         {Name="cube"; Args=[1]}
@@ -434,7 +403,7 @@ let ``delta robot combine`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="up"; Args=[]}
         {Name="down"; Args=[]}
@@ -448,7 +417,7 @@ let ``delta robot combine`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="left"; Args=[]}
         {Name="forward"; Args=[]}
         {Name="left"; Args=[]}
@@ -476,7 +445,7 @@ let ``delta combine`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="cube"; Args=[1]}
         {Name="up"; Args=[]}
@@ -491,7 +460,7 @@ let ``delta combine`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="cube"; Args=[1]}
         {Name="left"; Args=[]}
         {Name="forward"; Args=[]}
@@ -525,7 +494,7 @@ let ``delta combine apply`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="forward"; Args=[]}
         {Name="cube"; Args=[1]}
         {Name="up"; Args=[]}
@@ -540,7 +509,7 @@ let ``delta combine apply`` () =
     let robot:BasicRobot = {Position=initPos; Direction=initDir}
     let grid2 = GridStateTracker2 Seq.empty
     let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command2 list = [
+    let commands:Command list = [
         {Name="cube"; Args=[1]}
         {Name="left"; Args=[]}
         {Name="forward"; Args=[]}

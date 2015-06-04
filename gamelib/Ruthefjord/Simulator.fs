@@ -44,13 +44,13 @@ with
 type private CallStackState = {
     mutable ToExecute: Statement list;
     Environment: Environment;
-    Robot: Robot.IRobotSimulator option
+    Robot: Robot.IRobotSimulatorOLD option
 }
 
 type private CallStackState2 = {
     mutable ToExecute: Statement list;
     Environment: Environment;
-    Robot: Robot.IRobotSimulator2 option
+    Robot: Robot.IRobotSimulatorOLD2 option
 }
 
 let private MAX_CALLSTACK = 1000
@@ -192,7 +192,7 @@ let private step (state:State) =
             | Command {Name=cmd; Arguments=args} ->
                 if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
                 let args = List.map (evaluate head) args
-                Some (Robot.Command (cmd, ImmArr.ofSeq args, state.LastExecuted))
+                Some (Robot.CommandOLD (cmd, ImmArr.ofSeq args, state.LastExecuted))
 
 let private step2 (state:State2) =
     match state.CallStack with
@@ -244,7 +244,7 @@ let private step2 (state:State2) =
             | Command {Name=cmd; Arguments=args} ->
                 if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
                 let args = List.map (evaluate2 head) args
-                Some (({Name=cmd; Args=args}:Robot.Command2))
+                Some (({Name=cmd; Args=args}:Robot.Command))
 
 let private makeInternalError e =
     RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)
@@ -308,13 +308,13 @@ type Result<'a> = {
 
 [<ReferenceEquality;NoComparison>]
 type StateResult = {
-    Command: Robot.Command;
+    Command: Robot.CommandOLD;
     WorldState: obj;
 }
 
 [<ReferenceEquality;NoComparison>]
 type StateResult2 = {
-    Command: Robot.Command2;
+    Command: Robot.Command;
     WorldState: obj;
 }
 
@@ -365,7 +365,7 @@ type StepResult = {
 type private MutableList<'a> = System.Collections.Generic.List<'a>
 type private MutableDict<'k,'v> = System.Collections.Generic.Dictionary<'k,'v>
 
-let private executeStatement (state:State) (stmt:Statement): Robot.Command2 option =
+let private executeStatement (state:State) (stmt:Statement): Robot.Command option =
     let head = state.CallStack.Head
     match stmt.Stmt with
     | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
@@ -401,7 +401,7 @@ let private executeStatement (state:State) (stmt:Statement): Robot.Command2 opti
         let args = List.map (evaluate head) args
         Some {Name=cmd; Args=args}
 
-let private executeStatement2 (state:State2) (stmt:Statement): Robot.Command2 option =
+let private executeStatement2 (state:State2) (stmt:Statement): Robot.Command option =
     let head = state.CallStack.Head
     match stmt.Stmt with
     | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
@@ -477,27 +477,6 @@ let private popNextStatment2 (state:State2) =
 
             Some stmt
 
-let private executeStatement' state statement (acc:MutableList<Robot.Command2>) =
-    match executeStatement state statement with
-    | None -> ()
-    | (Some cmd) -> acc.Add cmd
-
-let private executeStatement2' state statement (acc:MutableList<Robot.Command2>) =
-    match executeStatement2 state statement with
-    | None -> ()
-    | (Some cmd) -> acc.Add cmd
-
-let private executeAll state (acc:MutableList<Robot.Command2>) =
-    while not (IsDone state) do
-        match popNextStatment state with
-        | Some s -> executeStatement' state s acc
-        | None -> ()
-
-type ProcedureCallData = {
-    Name: string;
-    Args: obj list;
-}
-
 let private evalProcedureReference meta (head:CallStackState) name =
     try
         head.Environment.[name] :?> Procedure
@@ -521,7 +500,7 @@ type ConcreteStatement =
 | CRepeatBody of int * LocalMap
 // ast id, numTimes
 | CRepeat of int * LocalMap * int
-| CCommand of Robot.Command2
+| CCommand of Robot.Command
 
 type Dict<'a,'b> = System.Collections.Generic.Dictionary<'a,'b>
 
@@ -554,9 +533,9 @@ let rec private evaluate3<'S> (ctx: Context<'S>) (expr: Expression) =
 type StateFunctions<'State, 'StateDelta> = {
     Empty: 'StateDelta;
     Combine: 'StateDelta -> 'StateDelta -> 'StateDelta;
-    Create: Robot.Command2 -> 'StateDelta;
+    Create: Robot.Command -> 'StateDelta;
     ApplyDelta: 'State -> 'StateDelta -> 'State option;
-    ApplyCommand: 'State -> Robot.Command2 -> 'State
+    ApplyCommand: 'State -> Robot.Command -> 'State
 }
 
 type CacheData<'StateDelta> = {
@@ -679,7 +658,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
             | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
         | Command {Name=cmd; Arguments=args} ->
             let args = List.map (evaluate3 ctx) args
-            let cmd: Robot.Command2 = {Name=cmd; Args=args}
+            let cmd: Robot.Command = {Name=cmd; Args=args}
             {ctx with State=sfuncs.ApplyCommand ctx.State cmd}
 
     and executeBlock (ctx:Context<'State>) (block:Statement list) =
@@ -757,148 +736,7 @@ let private evalProcedureReference2 meta (head:CallStackState2) name =
     | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
     | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
 
-let rec private executeWithProcedureResultCache (state:State) (cachedResults:MutableDict<ProcedureCallData,Robot.Command2[]>) (acc:MutableList<Robot.Command2>) =
-    let isolatedState env toExec =
-        {Program={Body=[]}; CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
-    while not (IsDone state) do
-        match popNextStatment state with
-        | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
-            let head = state.CallStack.Head
-            let proc = evalProcedureReference meta head name
-            let argVals = List.map (evaluate head) argExpr
-            let args = Seq.zip proc.Parameters argVals |> Seq.toList
-            let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
-            if cachedResults.ContainsKey calldata
-            then
-                acc.AddRange cachedResults.[calldata]
-            else
-                let tmpList = MutableList (20)
-                let tmpState = isolatedState (head.Environment.PushScope (args |> Map.ofList)) proc.Body
-                executeWithProcedureResultCache tmpState cachedResults tmpList
-                cachedResults.Add (calldata, tmpList.ToArray ())
-                acc.AddRange tmpList
-        | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
-            let head = state.CallStack.Head
-            let ntimes = evaluate head ntimesExpr |> valueAsInt meta
-            let tmpList = MutableList (20)
-            let tmpState = isolatedState head.Environment body
-            executeWithProcedureResultCache tmpState cachedResults tmpList
-            for i = 1 to ntimes do
-                acc.AddRange tmpList
-        | Some s -> executeStatement' state s acc
-        | None -> ()
-
-let rec private executeWithProcedureResultCache2 (state:State2) (cachedResults:MutableDict<ProcedureCallData,Robot.Command2[]>) (acc:MutableList<Robot.Command2>) =
-    let isolatedState env toExec =
-        {CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State2
-    while not (IsDone2 state) do
-        match popNextStatment2 state with
-        | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
-            let head = state.CallStack.Head
-            let proc = evalProcedureReference2 meta head name
-            let argVals = List.map (evaluate2 head) argExpr
-            let args = Seq.zip proc.Parameters argVals |> Seq.toList
-            let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
-            if cachedResults.ContainsKey calldata
-            then
-                acc.AddRange cachedResults.[calldata]
-            else
-                let tmpList = MutableList (20)
-                let tmpState = isolatedState (head.Environment.PushScope (args |> Map.ofList)) proc.Body
-                executeWithProcedureResultCache2 tmpState cachedResults tmpList
-                cachedResults.Add (calldata, tmpList.ToArray ())
-                acc.AddRange tmpList
-        | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
-            let head = state.CallStack.Head
-            let ntimes = evaluate2 head ntimesExpr |> valueAsInt meta
-            let tmpList = MutableList (20)
-            let tmpState = isolatedState head.Environment body
-            executeWithProcedureResultCache2 tmpState cachedResults tmpList
-            for i = 1 to ntimes do
-                acc.AddRange tmpList
-        | Some s -> executeStatement2' state s acc
-        | None -> ()
-
-//let private executeToFinalState (state:State2) (cachedCommands:MutableDict<ProcedureCallData,Robot.Command2[]>) (cachedDeltas:MutableDict<Robot.Command2[],obj>) =
-//    let isolatedState env toExec bot =
-//        {CallStack=[{Environment=env; ToExecute=toExec; Robot=bot}]; LastExecuted=[];}:State2
-//    while not (IsDone2 state) do
-//        let head = state.CallStack.Head
-//        let robot = head.Robot.Value
-//        match popNextStatment2 state with
-//        | Some {Meta=meta; Stmt=Execute {Identifier=name; Arguments=argExpr}} ->
-//            let proc = evalProcedureReference2 meta head name
-//            let argVals = List.map (evaluate2 head) argExpr
-//            let args = Seq.zip proc.Parameters argVals |> Seq.toList
-//            let calldata: ProcedureCallData = {Name=name; Args=args |> List.map snd}
-//            if cachedCommands.ContainsKey calldata
-//            then
-//                if cachedDeltas.ContainsKey cachedCommands.[calldata]
-//                then
-//                    robot.ApplyDelta cachedDeltas.[cachedCommands.[calldata]]
-//                else
-//                    // commands cached, but no delta means delta could not be generated, and we should execute all commands manually
-//                    for c in cachedCommands.[calldata] do
-//                        robot.Execute c
-//            else
-//                // first time we've encountered this procedure
-//                // get the commands for it
-//                let tmpMutList = MutableList (20)
-//                let env = head.Environment.PushScope (args |> Map.ofList)
-//                let tmpState = isolatedState env proc.Body head.Robot
-//                executeWithProcedureResultCache2 tmpState cachedCommands tmpMutList
-//                cachedCommands.Add (calldata, tmpMutList.ToArray ())
-//                let tmpList = Array.toList (tmpMutList.ToArray ())
-//                // try and generate a delta and then update the state
-//                match robot.GetDelta tmpList with
-//                | Some delta ->
-//                    cachedDeltas.Add (tmpMutList.ToArray (), delta)
-//                    robot.ApplyDelta delta
-//                | None ->
-//                    for c in tmpList do
-//                        robot.Execute c
-//        | Some {Meta=meta; Stmt=Repeat {Body=body; NumTimes=ntimesExpr}} ->
-//            let ntimes = evaluate2 head ntimesExpr |> valueAsInt meta
-//            let tmpState = isolatedState head.Environment body head.Robot
-//            let tmpMutList = MutableList (20)
-//            executeWithProcedureResultCache2 tmpState cachedCommands tmpMutList
-//            let tmpArr = tmpMutList.ToArray ()
-//            if cachedDeltas.ContainsKey tmpArr
-//            then // we've seen this loop body before, apply cached delta ntimes
-//                for i = 1 to ntimes do
-//                    robot.ApplyDelta cachedDeltas.[tmpArr]
-//            else // loop body is unseen, or a delta can't be generated
-//                let tmpList = Array.toList tmpArr
-//                match robot.GetDelta tmpList with
-//                | Some delta ->
-//                    cachedDeltas.Add (tmpArr, delta)
-//                    for i = 1 to ntimes do
-//                        robot.ApplyDelta cachedDeltas.[tmpArr]
-//                | None ->
-//                    for i = 1 to ntimes do
-//                        for c in tmpList do
-//                            robot.Execute c
-//        | Some s ->
-//            match executeStatement2 state s with
-//            | None -> ()
-//            | (Some cmd) -> robot.Execute cmd
-//        | None -> ()
-
-let SimulateWithoutRobotOptimized program builtIns =
-    let simstate = createState program builtIns None
-    let commands = MutableList 1000
-    let cache = MutableDict ()
-    executeWithProcedureResultCache simstate cache commands
-    //printf "Cached: %A" <| (cache.Keys |> Seq.toList)
-    commands.ToArray ()
-
-let SimulateWithoutRobot program builtIns =
-    let simstate = createState program builtIns None
-    let commands = MutableList 1000
-    executeAll simstate commands
-    commands.ToArray ()
-
-let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
+let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulatorOLD) =
     let MAX_ITER = 100000000
     let simstate = createState program builtIns (Some robot)
 
@@ -927,7 +765,7 @@ let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulator) =
 
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult
 
-let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulator) : StateResult =
+let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulatorOLD) : StateResult =
     let MAX_ITER = 100000000
     let simstate = createState program builtIns (Some robot)
 
@@ -943,7 +781,7 @@ let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulator)
     {Command=null; WorldState=robot.CurrentState}
 
 
-let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
+let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulatorOLD2) =
     let MAX_ITER = 100000000
     let simstate = createState2 program builtIns (Some robot)
 
@@ -968,7 +806,7 @@ let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulator2) =
         steps.Add simstate.LastExecuted
     {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult2
 
-let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulator2) =
+let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulatorOLD2) =
     let MAX_ITER = 100000000
     let simstate = createState2 program builtIns (Some robot)
 
