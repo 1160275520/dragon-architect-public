@@ -155,7 +155,14 @@ let loadSampleProgram (progName) : Ast.Imperative.Program * CanonicalWorldState 
 
 let samplePrograms = [
     "AARON";
+    "pyramid";
+    "smile";
+    "castle_decomp";
+    "colorful_simple_house";
+    "twisty-tower"
 ]
+
+let sampleProgramsSeq = TestUtil.SingleToTheory samplePrograms
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
@@ -197,12 +204,16 @@ Forward(6)
     states.Length |> should equal expected.Length
     states |> List.ofArray |> should equal expected
 
-[<Fact>]
-let ``Simulator All States Sample Programs`` () =
+[<Theory>]
+[<PropertyData("sampleProgramsSeq")>]
+let ``Simulator Final State All States Equivalence On Sample Programs`` (progName:string) =
     let lib = loadBuiltIns ()
-    let prog, start = loadSampleProgram samplePrograms.[0]
+    let prog, start = loadSampleProgram progName
     let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
+    let final = Debugger.runToCannonicalState prog (TreeMapGrid ()) lib start
+    states.[0].Grid.Count |> should equal 0
     states.Length |> should greaterThan 2
+    Seq.last states |> should equal final
 
 [<Fact>]
 let ``OLD Simulator simple parsed`` () =

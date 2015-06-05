@@ -3,7 +3,8 @@
 // use a class, we want to abuse function overloading
 [<AbstractClass; Sealed>]
 type TestUtil private () =
-
+    static member SingleToTheory seq =
+        seq |> Seq.map (fun x -> [|x :> obj|])
     static member TupleToTheory seq =
         seq |> Seq.map (fun (a,b) -> [|a :> obj; b :> obj|])
     static member TupleToTheory seq =
