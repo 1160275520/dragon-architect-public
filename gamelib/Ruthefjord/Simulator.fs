@@ -257,20 +257,17 @@ let private createNewProgramState (program:Program) robotSimulator globals =
         CallStackLimit = 3000;
     }
 
-/// Execute a single statement (or pop that state stack).
-/// Intended primarily for a lazy simulation, or a reference implementation for computing all states.
-let private executeNextStatement (state:ProgramState<_>) : Statement option * Robot.Command option =
+let private popNextStatement (state:ProgramState<_>) : Statement option =
     match state.CallStack with
-    | [] -> (None, None)
+    | [] -> None
     | head :: tail ->
         match head.ToExecute with
         | [] ->
             state.CallStack <- tail
-            (None, None)
+            None
         | stmt :: next ->
             // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
             state.CallStack <- {head with ToExecute=next} :: tail
-            let env = head.Environment
 
             // update last executed
             if state.LastExecuted.Length < state.CallStack.Length then
@@ -278,43 +275,55 @@ let private executeNextStatement (state:ProgramState<_>) : Statement option * Ro
             else
                 state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
 
-            let mutable cmdopt = None
+            Some stmt
 
-            match stmt.Stmt with
-            | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
-                let b =
-                    try evaluate env cond :?> bool
-                    with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
-                state.PushCallStack stmt.Meta {head with ToExecute=if b then thenb else elseb}
-            | Repeat {Body=body; NumTimes=ntimesExpr} ->
-                let ntimes = evaluate env ntimesExpr |> valueAsInt stmt.Meta
-                if ntimes > 0 then
-                    // lazily unroll repeat by adding a fake repeat for ntimes - 1 once the stack returns
-                    // HACK use the same meta so that statement highlighting works correctly
-                    let after = {Stmt=Repeat {Body=body; NumTimes=Expression.Create (Literal (ntimes - 1))}; Meta=stmt.Meta}
-                    // modify call stack in two operations. want to use PushCallStack to catch stack overflows.
-                    state.CallStack <- {head with ToExecute=after :: next} :: tail
-                    state.PushCallStack stmt.Meta {head with ToExecute=body}
-            | Function func ->
-                state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: tail
-            | Procedure proc ->
-                state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: tail
-            | Execute exec ->
-                let env, proc = prepareExecute stmt.Meta exec head.Environment
-                state.PushCallStack stmt.Meta {head with Environment=env; ToExecute=proc.Body}
-            | Command {Name=name; Arguments=args} ->
-                let args = List.map (evaluate head.Environment) args
-                let command: Robot.Command = {Name=name; Args=args}
-                state.Simulator.Execute command
-                cmdopt <- Some command
+/// Execute a single statement (or pop that state stack).
+/// Intended primarily for a lazy simulation, or a reference implementation for computing all states.
+let private executeNextStatement (state:ProgramState<_>) (stmt:Statement) : Robot.Command option =
+    let mutable cmdopt = None
+    let head = state.CallStack.Head
+    let env = state.CallStack.Head.Environment
 
-            (Some stmt, cmdopt)
+    match stmt.Stmt with
+    | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
+        let b =
+            try evaluate env cond :?> bool
+            with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
+        state.PushCallStack stmt.Meta {head with ToExecute=if b then thenb else elseb}
+    | Repeat {Body=body; NumTimes=ntimesExpr} ->
+        let ntimes = evaluate env ntimesExpr |> valueAsInt stmt.Meta
+        if ntimes > 0 then
+            // lazily unroll repeat by adding a fake repeat for ntimes - 1 once the stack returns
+            // HACK use the same meta so that statement highlighting works correctly
+            let after = {Stmt=Repeat {Body=body; NumTimes=Expression.Create (Literal (ntimes - 1))}; Meta=stmt.Meta}
+            // modify call stack in two operations. want to use PushCallStack to catch stack overflows.
+            state.CallStack <- {head with ToExecute=after :: head.ToExecute} :: state.CallStack.Tail
+            state.PushCallStack stmt.Meta {head with ToExecute=body}
+    | Function func ->
+        state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: state.CallStack.Tail
+    | Procedure proc ->
+        state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: state.CallStack.Tail
+    | Execute exec ->
+        let env, proc = prepareExecute stmt.Meta exec head.Environment
+        state.PushCallStack stmt.Meta {head with Environment=env; ToExecute=proc.Body}
+    | Command {Name=name; Arguments=args} ->
+        let args = List.map (evaluate head.Environment) args
+        let command: Robot.Command = {Name=name; Args=args}
+        state.Simulator.Execute command
+        cmdopt <- Some command
+
+    cmdopt
 
 let private tryExecuteNextStatement (state:ProgramState<_>) =
-    try Choice1Of2 (executeNextStatement state)
-    with
-    | :? CodeException as e -> Choice2Of2 (e.Error :?> RuntimeError)
-    | e -> Choice2Of2 (makeInternalError e)
+    match popNextStatement state with
+    | Some stmt ->
+        let r =
+            try stmt, executeNextStatement state stmt, None
+            with
+            | :? CodeException as e -> stmt, None, Some (e.Error :?> RuntimeError)
+            | e -> stmt, None, Some (makeInternalError e)
+        Some r
+    | None -> None
 
 let private executeSteps onStep (state:ProgramState<_>) =
     let mutable doExecute = true
@@ -337,7 +346,7 @@ let CollectAllStates program robotSimulator globals maxSteps =
     ps |> executeSteps (fun result ->
         steps := 1 + !steps
         match result with
-        | Choice1Of2 (_, (Some c as cmd)) ->
+        | Some (_, (Some c as cmd), _) ->
             states.Add {State=robotSimulator.CurrentState; Command=cmd; LastExecuted=ps.LastExecuted}
         | _ -> ()
         maxSteps > !steps

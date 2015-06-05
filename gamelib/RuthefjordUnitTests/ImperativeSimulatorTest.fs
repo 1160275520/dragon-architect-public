@@ -147,6 +147,16 @@ let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWo
     actual.Grid |> should equal expected.Grid
     actual.Robot |> should equal expected.Robot
 
+let loadSampleProgram (progName) : Ast.Imperative.Program * CanonicalWorldState =
+    let text = System.IO.File.ReadAllText (sprintf "../../../../doc/%s.txt" progName)
+    let program = Parser.Parse (text, progName)
+    let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+    (program, {Robot=robot; Grid=Map.empty})
+
+let samplePrograms = [
+    "AARON";
+]
+
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
 let ``Simulator Reference Test HashTable`` (text, start, expected) =
@@ -156,6 +166,20 @@ let ``Simulator Reference Test HashTable`` (text, start, expected) =
 [<PropertyData("referenceProgramsTheory")>]
 let ``Simulator Reference Test TreeMap`` (text, start, expected) =
     checkReferenceProgram (text, start, expected, TreeMapGrid ())
+
+let runAllStatesAndGetFinal prog grid lib start =
+    let states = Debugger.getAllCannonicalStates prog grid lib start
+    states.[states.Length - 1]
+
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``Simulator All States Reference TreeMap`` (text, start, expected:CanonicalWorldState) =
+    let prog = Parser.Parse (text, "prog")
+    let lib = loadBuiltIns ()
+    let actual = runAllStatesAndGetFinal prog (TreeMapGrid ()) lib start
+
+    actual.Grid |> should equal expected.Grid
+    actual.Robot |> should equal expected.Robot
 
 [<Fact>]
 let ``Simulator All States Test`` () =
@@ -172,6 +196,13 @@ Forward(6)
 
     states.Length |> should equal expected.Length
     states |> List.ofArray |> should equal expected
+
+[<Fact>]
+let ``Simulator All States Sample Programs`` () =
+    let lib = loadBuiltIns ()
+    let prog, start = loadSampleProgram samplePrograms.[0]
+    let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
+    states.Length |> should greaterThan 2
 
 [<Fact>]
 let ``OLD Simulator simple parsed`` () =

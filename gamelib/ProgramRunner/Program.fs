@@ -127,6 +127,14 @@ let main argv =
         printfn "Simulate unoptimized MAP ALL: %.3f" t
         let t =
             time (fun () ->
+                let grid = TreeMapGrid ()
+                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
+                let runner = BasicRobotSimulator (grid, robot)
+                Simulator.CollectAllStates program runner importedModules None |> (fun s -> foo.Add s.Length)
+            ) numSamples
+        printfn "Simulate unoptimized MP2 ALL: %.3f" t
+        let t =
+            time (fun () ->
                 let grid = GridStateTracker2 Seq.empty
                 let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
                 let runner = BasicImperativeRobotSimulator2 (robot, grid)

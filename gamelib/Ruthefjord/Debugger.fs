@@ -113,7 +113,7 @@ module Debugger =
     let getAllCannonicalStates program (grid:IGrid<_>) globals (startState:CanonicalWorldState) : CanonicalWorldState array =
         grid.SetFromCanonical startState.Grid
         let simulator = BasicRobotSimulator (grid, startState.Robot)
-        let states = Simulator.CollectAllStates program simulator globals (Some 100)
+        let states = Simulator.CollectAllStates program simulator globals None
         states |> Array.map (fun s -> simulator.ConvertToCanonical s.State)
 
 type ProgramRunner() =
