@@ -109,6 +109,13 @@ module Debugger =
         Simulator.ExecuteToEnd program simulator globals |> ignore
         simulator.AsCanonicalState
 
+    /// Only use for correctness unit tests! This is not performant!
+    let getAllCannonicalStates program (grid:IGrid<_>) globals (startState:CanonicalWorldState) : CanonicalWorldState array =
+        grid.SetFromCanonical startState.Grid
+        let simulator = BasicRobotSimulator (grid, startState.Robot)
+        let states = Simulator.CollectAllStates program simulator globals (Some 100)
+        states |> Array.map (fun s -> simulator.ConvertToCanonical s.State)
+
 type ProgramRunner() =
     let mutable isRunning = false
     let mutable totalTime = 0.0f

@@ -12,6 +12,7 @@ module Imperative =
         Attributes: Json.JsonValue;
     }
     with
+        static member New id = {Id=id; Attributes=Json.Null}
         override x.ToString() = sprintf "id = %d" x.Id
 
     type ExpressionT =
@@ -28,6 +29,7 @@ module Imperative =
         Expr: ExpressionT;
     }
     with
+        static member Create e = {Expr=e; Meta=Meta.New 0}
         override x.ToString() = sprintf "%O: %O" x.Meta x.Expr
     and Evaluate = {
         Identifier: string;
@@ -74,6 +76,7 @@ module Imperative =
         Meta: Meta;
     }
     with
+        static member Create s = {Stmt=s; Meta=Meta.New 0}
         override x.ToString() = sprintf "%O: %O" x.Meta x.Stmt
     and Conditional = {
         Condition: Expression;

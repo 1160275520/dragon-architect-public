@@ -158,6 +158,22 @@ let ``Simulator Reference Test TreeMap`` (text, start, expected) =
     checkReferenceProgram (text, start, expected, TreeMapGrid ())
 
 [<Fact>]
+let ``Simulator All States Test`` () =
+    let text = """
+Forward(6)
+"""
+    let start:CanonicalWorldState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=Map.empty}
+    let prog = Parser.Parse (text, "prog")
+    let lib = loadBuiltIns ()
+    let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
+
+    let expected: CanonicalWorldState list = [for i in 1 .. 6 -> {Robot={Position=IntVec3 (0,0,i); Direction=IntVec3.UnitZ}; Grid=Map.empty}]
+    let expected = start :: expected @ [Seq.last expected]
+
+    states.Length |> should equal expected.Length
+    states |> List.ofArray |> should equal expected
+
+[<Fact>]
 let ``OLD Simulator simple parsed`` () =
     let text = """
 define Foo()

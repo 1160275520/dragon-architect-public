@@ -16,10 +16,16 @@ type ErrorCode =
 
 let private runtimeError (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
     raise (CodeException (RuntimeError (int code, meta.Id, msg, null)))
+
 let private runtimeErrorWE exn (meta:Ast.Imperative.Meta) (code: ErrorCode) msg =
     raise (CodeException (RuntimeError (int code, meta.Id, msg, exn)))
 
+let private makeInternalError e =
+    RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)
+
 type ValueMap = Map<string,obj>
+type private MutableList<'a> = System.Collections.Generic.List<'a>
+type private MutableDict<'k,'v> = System.Collections.Generic.Dictionary<'k,'v>
 
 type Environment = {
     Globals: ValueMap;
@@ -44,13 +50,13 @@ with
     static member Create globals =
         {Globals=globals; Locals=Map.empty}
 
-type private CallStackState = {
+type private CallStackStateOLD = {
     mutable ToExecute: Statement list;
     Environment: Environment;
     Robot: Robot.IRobotSimulatorOLD option
 }
 
-type private CallStackState2 = {
+type private CallStackStateOLD2 = {
     mutable ToExecute: Statement list;
     Environment: Environment;
     Robot: Robot.IRobotSimulatorOLD2 option
@@ -60,7 +66,7 @@ let private MAX_CALLSTACK = 1000
 
 type private State = {
     Program: Program;
-    mutable CallStack: CallStackState list;
+    mutable CallStack: CallStackStateOLD list;
     mutable LastExecuted: Statement list;
 }
 with
@@ -69,7 +75,7 @@ with
         x.CallStack <- css :: x.CallStack
 
 type private State2 = {
-    mutable CallStack: CallStackState2 list;
+    mutable CallStack: CallStackStateOLD2 list;
     mutable LastExecuted: Statement list;
 }
 with
@@ -118,6 +124,21 @@ type private Context<'S> = {
     Environment: Environment;
 }
 
+/// Do the intial work for executing a procedure that is common to all implementations.
+/// Namely, evaluate the arguments, find the procedure, and add the parameters into the environment.
+let rec private prepareExecute meta (exec:Execute) env =
+    let argVals = List.map (evaluate env) exec.Arguments
+    try
+        let proc = env.[exec.Identifier] :?> Procedure
+        let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
+        (env.PushScope args, proc)
+    with
+    | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." exec.Identifier)
+    | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
+
+/// Fully execute a statement, with no explicit stack.
+/// Intended primarily as un-optimized reference implementation.
+/// NOTE: Does NOT contain any limitations on callstack depth or program execution length!
 let rec private executeStatementToEnd (ctx:Context<_>) (stmt:Statement) =
     match stmt.Stmt with
     | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
@@ -137,18 +158,11 @@ let rec private executeStatementToEnd (ctx:Context<_>) (stmt:Statement) =
         {ctx with Environment=ctx.Environment.AddGlobal (func.Name, func)}
     | Procedure proc ->
         {ctx with Environment=ctx.Environment.AddGlobal (proc.Name, proc)}
-    | Execute {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluate ctx.Environment) argExpr
-        try
-            let proc = ctx.Environment.[name] :?> Procedure
-            let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
-            let env = ctx.Environment.PushScope args
-            // ignore the new context, we want the old environment and the mutable state is already reference by the current context
-            executeBlockToEnd {ctx with Environment=env} proc.Body |> ignore
-            ctx
-        with
-        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-        | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
+    | Execute exec ->
+        let env, proc = prepareExecute stmt.Meta exec ctx.Environment
+        executeBlockToEnd {ctx with Environment=env} proc.Body |> ignore
+        // ignore the new context, we want the old environment and the mutable state is already reference by the current context
+        ctx
     | Command {Name=cmd; Arguments=args} ->
         let args = List.map (evaluate ctx.Environment) args
         ctx.Simulator.Execute {Name=cmd; Args=args}
@@ -160,11 +174,14 @@ and private executeBlockToEnd (ctx:Context<_>) (block:Statement list) =
         tmpCtx <- (executeStatementToEnd tmpCtx s)
     tmpCtx
 
+/// Fully execute a program, with no explicit stack.
+/// Intended primarily as un-optimized reference implementation.
+/// NOTE: Does NOT contain any limitations on callstack depth or program execution length!
 let ExecuteToEnd (program:Program) robotSimulator globals =
     executeBlockToEnd {Environment=Environment.Create globals; Simulator=robotSimulator} program.Body |> ignore
     robotSimulator.CurrentState
 
-let rec private evaluateOLD (csstate: CallStackState) (expr: Expression) =
+let rec private evaluateOLD (csstate: CallStackStateOLD) (expr: Expression) =
     match expr.Expr with
     | Literal x -> x
     // HACK this should probably make sure it's not a function or procedure...
@@ -190,7 +207,7 @@ let rec private evaluateOLD (csstate: CallStackState) (expr: Expression) =
             try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
             with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
 
-let rec private evaluate2 (csstate: CallStackState2) (expr: Expression) =
+let rec private evaluate2 (csstate: CallStackStateOLD2) (expr: Expression) =
     match expr.Expr with
     | Literal x -> x
     // HACK this should probably make sure it's not a function or procedure...
@@ -215,6 +232,121 @@ let rec private evaluate2 (csstate: CallStackState2) (expr: Expression) =
             let args = List.map (evaluate2 csstate) query.Arguments
             try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
             with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
+
+type private CallStackState = {
+    ToExecute: Statement list;
+    Environment: Environment;
+}
+
+type private ProgramState<'S> = {
+    mutable CallStack: CallStackState list;
+    mutable LastExecuted: Statement list;
+    Simulator: Robot.IRobotSimulator<'S>;
+    /// maximum number of level allowed on the callstack
+    CallStackLimit: int;
+} with
+    member x.PushCallStack meta css =
+        if x.CallStack.Length >= x.CallStackLimit then runtimeError meta ErrorCode.StackOverflow "max callstack length exceeded"
+        x.CallStack <- css :: x.CallStack
+
+let private createNewProgramState (program:Program) robotSimulator globals =
+    {
+        CallStack = [{ToExecute=program.Body; Environment=Environment.Create globals}];
+        LastExecuted = [];
+        Simulator = robotSimulator;
+        CallStackLimit = 3000;
+    }
+
+/// Execute a single statement (or pop that state stack).
+/// Intended primarily for a lazy simulation, or a reference implementation for computing all states.
+let private executeNextStatement (state:ProgramState<_>) : Statement option * Robot.Command option =
+    match state.CallStack with
+    | [] -> (None, None)
+    | head :: tail ->
+        match head.ToExecute with
+        | [] ->
+            state.CallStack <- tail
+            (None, None)
+        | stmt :: next ->
+            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
+            state.CallStack <- {head with ToExecute=next} :: tail
+            let env = head.Environment
+
+            // update last executed
+            if state.LastExecuted.Length < state.CallStack.Length then
+                state.LastExecuted <- stmt :: state.LastExecuted
+            else
+                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
+
+            let mutable cmdopt = None
+
+            match stmt.Stmt with
+            | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
+                let b =
+                    try evaluate env cond :?> bool
+                    with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
+                state.PushCallStack stmt.Meta {head with ToExecute=if b then thenb else elseb}
+            | Repeat {Body=body; NumTimes=ntimesExpr} ->
+                let ntimes = evaluate env ntimesExpr |> valueAsInt stmt.Meta
+                if ntimes > 0 then
+                    // lazily unroll repeat by adding a fake repeat for ntimes - 1 once the stack returns
+                    // HACK use the same meta so that statement highlighting works correctly
+                    let after = {Stmt=Repeat {Body=body; NumTimes=Expression.Create (Literal (ntimes - 1))}; Meta=stmt.Meta}
+                    // modify call stack in two operations. want to use PushCallStack to catch stack overflows.
+                    state.CallStack <- {head with ToExecute=after :: next} :: tail
+                    state.PushCallStack stmt.Meta {head with ToExecute=body}
+            | Function func ->
+                state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: tail
+            | Procedure proc ->
+                state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: tail
+            | Execute exec ->
+                let env, proc = prepareExecute stmt.Meta exec head.Environment
+                state.PushCallStack stmt.Meta {head with Environment=env; ToExecute=proc.Body}
+            | Command {Name=name; Arguments=args} ->
+                let args = List.map (evaluate head.Environment) args
+                let command: Robot.Command = {Name=name; Args=args}
+                state.Simulator.Execute command
+                cmdopt <- Some command
+
+            (Some stmt, cmdopt)
+
+let private tryExecuteNextStatement (state:ProgramState<_>) =
+    try Choice1Of2 (executeNextStatement state)
+    with
+    | :? CodeException as e -> Choice2Of2 (e.Error :?> RuntimeError)
+    | e -> Choice2Of2 (makeInternalError e)
+
+let private executeSteps onStep (state:ProgramState<_>) =
+    let mutable doExecute = true
+    while doExecute && not state.CallStack.IsEmpty do
+        doExecute <- onStep (tryExecuteNextStatement state)
+
+type StateData<'S> = {
+     State: 'S;
+     LastExecuted: Statement list;
+     Command: Robot.Command option;
+}
+
+let CollectAllStates program robotSimulator globals maxSteps =
+    let ps = createNewProgramState program robotSimulator globals
+    let states = MutableList ()
+    states.Add {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+    let maxSteps = match maxSteps with Some m -> m | None -> System.Int32.MaxValue
+
+    let steps = ref 0
+    ps |> executeSteps (fun result ->
+        steps := 1 + !steps
+        match result with
+        | Choice1Of2 (_, (Some c as cmd)) ->
+            states.Add {State=robotSimulator.CurrentState; Command=cmd; LastExecuted=ps.LastExecuted}
+        | _ -> ()
+        maxSteps > !steps
+    )
+    // always add a final state after the last step (assume the last thing was NOT a command)
+    // this will make it line up with other implementations that add a final state after the last step
+    states.Add {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+
+    states.ToArray ()
 
 let private step (state:State) =
     match state.CallStack with
@@ -319,9 +451,6 @@ let private step2 (state:State2) =
                 if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
                 let args = List.map (evaluate2 head) args
                 Some (({Name=cmd; Args=args}:Robot.Command))
-
-let private makeInternalError e =
-    RuntimeError (int ErrorCode.InternalError, -1, "Internal runtime error.", e)
 
 let private internalError e =
     raise (CodeException (makeInternalError e))
@@ -435,9 +564,6 @@ type StepResult = {
     State: StateResult;
     Errors: RuntimeError[];
 }
-
-type private MutableList<'a> = System.Collections.Generic.List<'a>
-type private MutableDict<'k,'v> = System.Collections.Generic.Dictionary<'k,'v>
 
 type LocalMap = Map<string,int>
 
@@ -662,7 +788,7 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
 let RunOptimized37 p b f c s = OptimizedRunner(p,b,f,c).RunToFinal s
 let RunToState p b f c s n = OptimizedRunner(p,b,f,c).RunToState s n
 
-let private evalProcedureReference2 meta (head:CallStackState2) name =
+let private evalProcedureReference2 meta (head:CallStackStateOLD2) name =
     try
         head.Environment.[name] :?> Procedure
     with

@@ -35,14 +35,16 @@ type WorldState<'Grid> = {
 
 // Representation of the world state that is intended for unit tests and equality comparisions,
 // it's not very efficient and not what the robots use internally.
-type CanonicalWorldState = WorldState<Map<IntVec3, int>>
+type CanonicalGrid = Map<IntVec3, int>
+type CanonicalWorldState = WorldState<CanonicalGrid>
 
 type IGrid<'Grid> =
     abstract AddObject : IntVec3 -> int -> unit
     abstract RemoveObject : IntVec3 -> unit
     abstract Current: 'Grid
-    abstract AsCanonical : Map<IntVec3, int>
-    abstract SetFromCanonical : Map<IntVec3, int> -> unit
+    abstract SetFromCanonical : CanonicalGrid -> unit
+    // convert the given state (probably returned by this.Current) to canonical form
+    abstract ConvertToCanonical : 'Grid -> CanonicalGrid
 
 [<Sealed>]
 type HashTableGrid() =
@@ -51,8 +53,8 @@ type HashTableGrid() =
         member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes.Add (idx, cube)
         member x.RemoveObject idx = cubes.Remove idx |> ignore
         member x.Current = Seq.toArray cubes
-        member x.AsCanonical = Seq.map Impl.kvp2pair cubes |> Map.ofSeq
         member x.SetFromCanonical grid = cubes <- Dictionary grid
+        member x.ConvertToCanonical cubes = Array.map Impl.kvp2pair cubes |> Map.ofArray
 
 [<Sealed>]
 type TreeMapGrid() =
@@ -61,8 +63,8 @@ type TreeMapGrid() =
         member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes <- cubes.Add (idx, cube)
         member x.RemoveObject idx = cubes <- cubes.Remove idx
         member x.Current = cubes
-        member x.AsCanonical = cubes
         member x.SetFromCanonical grid = cubes <- grid
+        member x.ConvertToCanonical cubes = cubes
 
 [<Sealed>]
 type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
@@ -73,7 +75,8 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
         grid.SetFromCanonical state.Grid
         sim
 
-    member x.AsCanonicalState = {Robot=robot; Grid=grid.AsCanonical}
+    member x.AsCanonicalState = {Robot=robot; Grid=grid.ConvertToCanonical grid.Current}
+    member x.ConvertToCanonical (state:WorldState<'Grid>) = {Robot=state.Robot; Grid=grid.ConvertToCanonical state.Grid}
 
     interface Robot.IRobotSimulator<WorldState<'Grid>> with
         member x.Execute command =
