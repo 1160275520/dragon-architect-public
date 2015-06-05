@@ -84,7 +84,7 @@ public class MyCamera : MonoBehaviour
             RaycastHit hitInfo = new RaycastHit();
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             bool hit = Physics.Raycast(ray, out hitInfo);
-            if (hit) 
+            if (hit)
             {
                 clearCubeHighlight();
                 if (hitInfo.transform.gameObject.name.StartsWith("Cube") && FindObjectOfType<ProgramManager>().EditMode.IsWorkshop) {
@@ -95,7 +95,7 @@ public class MyCamera : MonoBehaviour
                     FindObjectOfType<ExternalAPI>().NotifyDebugHighlight(id);
                 }
             }
-        } 
+        }
     }
 
     public void clearCubeHighlight() {
@@ -146,7 +146,7 @@ public class MyCamera : MonoBehaviour
     }
 
     public void Zoom(float scale) {
-        if ((relCameraPosMag > 5 && scale < 1) || (relCameraPosMag < 100 && scale > 1)) { // limits on how far or close camera can zoom           
+        if ((relCameraPosMag > 5 && scale < 1) || (relCameraPosMag < 100 && scale > 1)) { // limits on how far or close camera can zoom
             relCameraPos *= scale;
             relCameraPosMag = relCameraPos.magnitude - 0.5f;
         }
