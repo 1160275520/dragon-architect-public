@@ -9,6 +9,9 @@
 \section*{The Problem}
 Programming tools for novices such as Scratch have different requirements than typical IDEs. Our tool \emph{Dragon Architect} supports several features aimed to assist novices that have interesting ramifications for optimization. For example, Dragon Architect supports a scrubbing tool that allows the user to move forward and backward in execution by dragging a slider. This tool requires the system to store the program state for all points in time in program execution. The na\"{i}ve implementation, storing an array of all program states, quickly runs into scalability issues as program size increases. Core to the design of our tool is to provide both a \emph{low floor} and \emph{high ceiling}, which is important for both supporting a wide range of skill levels, and engaging students over an extended progression. Hence, Dragon Architect needs to support complex programs just as naturally as it does simple ones. 
 
+\section*{Related Work}
+In our brief search of the literature, the closest previous work we found dealt with navigating program execution as a timeline for both novices~\cite{ko2004designing} and professional web development~\cite{burg2013interactive}.
+
 \section*{Our Progress}
 
 Program execution in Dragon Architect takes place in two phases. First, the language is simulated to produce a list of basic commands for the dragon. The commands include moving the dragon one space up, down, or forward, turning left or right, and placing a cube at the dragon's current location. In the second phase, these commands are applied to change the state of the world. The state consists of the dragon's current position and orientation, and the locations of any cubes that have been placed. The system actually stores every single world state over the course of the simulation, to allow the student to randomly access and view any state in the middle of the computation. Our project includes optimizations both at the program simulation phase to more efficiently compute commands, and at the world simulation phase to more efficiently compute the world state and store all intermediate states.
@@ -24,7 +27,8 @@ With preliminary testing on one example program, each of these optimizations has
 \section*{Timeline}
 We're on track with where we thought we'd be. Our immediate task is to integrate the various optimizations we have already implemented, and to develop additional sample input programs to better characterize the performance improvements. We also need to integrate these optimizations with the debugging tools that pretend the program was run on the unoptimized model. Finally, we need to produce a few more benchmark programs and gather timing information to evaluate the various optimizations.
 
+\bibliographystyle{plain}
+\bibliography{501-final-report}
+
 \end{document}
-
-
 
