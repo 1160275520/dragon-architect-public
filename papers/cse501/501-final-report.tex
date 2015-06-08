@@ -26,6 +26,13 @@ In our brief search of the literature, the closest previous work we found dealt 
 
 We first discuss technical details of the language and runtime environment used in \da. The grammar is given by \todo{A GRAMMAR THING}. To summarize, execution in \da{} consists of running a simple imperative language to compute a list of commands for the dragon in the 3d world, and this list of commands is applied to compute a new world state. An example program and resulting world state is shown in Figure~\todo{asdfasdf}.
 
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=\textwidth]{images/full_castle}
+  \caption{A screenshot of the \da{} application with an example program that builds a castle. The student edits the code on the left, and the result is displayed on the right.}
+  \label{fig:full-program}
+\end{figure*}
+
 We elide a fully formal description of \da's language semantics and instead briefly describe how programs behave. The \texttt{command} statements describe operations for the dragon to perform in the 3d world. Because our language currently does not have any conditionals, this list of commands does not depend on the world state, or even what the semantics of the world are. Thus, program execution can be thought of as two phases, one in which the list of commands is computed, and another in which the list of commands is applied to the world state to compute the final world state. This is summarized in Figure~\todo{FIGURE}.
 
 The other statements in \da{} behave similarly to constructs in most other imperative programming languages, and we omit a full description for brevity. The only local context allowed is through procedure arguments, so the only identifiers in scope are local procedure parameters and the global procedures names.
