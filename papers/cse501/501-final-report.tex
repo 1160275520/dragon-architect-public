@@ -1,6 +1,8 @@
 \documentclass{sig-alternate}
 \usepackage{url}
 \usepackage{color}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \toappear{}
 
 \newcommand{\da}{\emph{Dragon Architect}}
@@ -94,6 +96,122 @@ Regarding division of labor, we have been working collaboratively on Dragon Arch
 
 \bibliographystyle{plain}
 \bibliography{501-final-report}
+
+\appendix
+
+\begin{verbatim}
+define Line(x)
+    repeat x times
+        PlaceCube(1)
+        Forward(1)
+
+define Gate()
+    repeat 3 times # gate wall thickness
+        repeat 9 times # gate height
+            Line(7)
+            Forward(6) # gate width
+            Line(7)
+            Up(1)
+            Right()
+            Right()
+            Forward(1)
+        repeat 1 times # wall above gate height
+            Layer()
+        Right()
+        Forward(1)
+        Down(10) # gate wall height
+        Left()
+    Up(10) # gate wall height
+    Left()
+    Forward(1)
+    Right()
+    repeat 2 times # gate battlement height
+        Layer()
+    Down(12) # gate height + gate battlement height
+    Right()
+    Forward(4)
+    Right()
+    Forward(1)
+
+define Wall()
+    repeat 3 times # wall thickness
+        repeat 10 times # wall height
+            Layer()
+        Right()
+        Forward(1)
+        Down(10) # wall height
+        Left()
+    Up(10) # wall height
+    Left()
+    Forward(1)
+    Right()
+    repeat 2 times # wall battlement height
+        Layer()
+    Down(12) # wall + battlement height
+    Right()
+    Forward(4)
+    Right()
+    Forward(1)
+
+define Layer()
+    Line(20)
+    Up(1)
+    Right()
+    Right()
+    Forward(1)
+
+define Tower()
+    repeat 15 times # tower height
+        repeat 4 times
+            Line(6)
+            Right()
+        Up(1)
+    Down(1)
+    Forward(1)
+    Right()
+    Forward(1)
+    Roof()
+    Up(1)
+    Right()
+    Forward(6) # tower size
+    Right()
+    Forward(1)
+    Right()
+    Battlement()
+    Down(15) # tower height 
+
+define Roof()
+    repeat 5 times # tower size - 1
+        Line(5)
+        Left()
+        Forward(1)
+        Left()
+        Forward(5) # tower size - 1
+        Left()
+        Left()
+
+define Battlement()
+    repeat 4 times
+        repeat 3 times # tower size ÷ 2
+            PlaceCube(1)
+            Up(1)
+            PlaceCube(1)
+            Forward(1)
+            Down(1)
+            PlaceCube(1)
+            Forward(1)
+        Right()
+
+repeat 3 times
+    Wall()
+    Tower()
+    Right()
+    Forward(26)
+    Left()
+    Left()
+Gate()
+Tower()
+\end{verbatim}
 
 \end{document}
 
