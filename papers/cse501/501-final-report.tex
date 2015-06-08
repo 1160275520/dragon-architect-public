@@ -3,6 +3,7 @@
 \usepackage{color}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{syntax}
 \toappear{}
 
 \newcommand{\da}{\emph{Dragon Architect}}
@@ -11,7 +12,7 @@
 \begin{document}
 \title{Optimizing in a Novice Programming Environment}
 \author{Eric Butler, Aaron Bauer}
-\maketitle{}.
+\maketitle{}
 
 \section{Introduction}
 
@@ -26,12 +27,33 @@ In our brief search of the literature, the closest previous work we found dealt 
 
 \section{Background}
 
-We first discuss technical details of the language and runtime environment used in \da. The grammar is given by \todo{A GRAMMAR THING}. To summarize, execution in \da{} consists of running a simple imperative language to compute a list of commands for the dragon in the 3d world, and this list of commands is applied to compute a new world state. An example program and resulting world state is shown in Figure~\todo{asdfasdf}.
+We first discuss technical details of the language and runtime environment used in \da. To summarize, execution in \da{} consists of running a simple imperative language to compute a list of commands for the dragon in the 3d world, and this list of commands is applied to compute a new world state. An example program and resulting world state is shown in Figure~\ref{fig:full-program}. The summary of the grammar is given by \todo{A GRAMMAR THING}, though there are actually both a textual concrete representation (shown the in the appendix) and a visual block-based representation.
+
+\begin{grammar}
+
+<expr> ::= <ident> | <integer>
+
+<arglist> ::= <expr> `,' <arglist> | <expr>
+
+<args> ::= `(' `)' | `(' <arglist> `)'
+
+<paramlist> ::= <ident> `,' <paramlist> | <ident>
+
+<params> ::= `(' `)' | `(' <paramlist> `)'
+
+<stat> ::= <ident> <args>
+\alt `repeat' <expr> `times' <block>
+\alt `command' <ident> <args>
+\alt `define' <ident> <paramlist> <block>
+
+<block> ::= <statement> <block> | <statement>
+
+\end{grammar}
 
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=\textwidth]{images/full_castle}
-  \caption{A screenshot of the \da{} application with an example program that builds a castle. The student edits the code on the left, and the result is displayed on the right.}
+  \includegraphics[width=\textwidth]{images/full-castle}
+  \caption{A screenshot of the \da{} application with an example program that builds a castle. The student edits the code on the left, and the result is displayed on the right. A textual representation of an equivalent program is given in the appendix.}
   \label{fig:full-program}
 \end{figure*}
 
