@@ -11,8 +11,12 @@
 
 \begin{document}
 \title{Optimizing in a Novice Programming Environment}
-\author{Eric Butler, Aaron Bauer}
+\author{Eric Butler \and Aaron Bauer}
 \maketitle{}
+
+\begin{abstract}
+\todo{abstract}
+\end{abstract}
 
 \section{Introduction}
 
@@ -23,7 +27,11 @@ For example, our system supports debugging tool that allows users to move the pr
 Fortunately, ample optimization opportunities exist. The design of \da{}'s language is intentionally very simple, to increase accessibility for novices. As a consequence, large programs are both very repetitive and deterministic. To try to improve performance on larger programs, we investigated and created two dynamic optimization techniques. One aggressively caches and reuses results for procedure calls and loop bodies, and the other computes a small number of \emph{checkpoints} instead of every state, resimulating from the nearest checkpoint when necessary. Our evaluation shows \todo{SOMEHTING PROBABLY?}
 
 \section{Related Work}
-In our brief search of the literature, the closest previous work we found dealt with navigating program execution as a timeline for both novices~\cite{ko2004designing} and professional web development~\cite{burg2013interactive}.
+There has been a great deal of previous work on programming environments for novices, including prominent examples like Scratch ~\cite{resnick2009scratch} and Alice~\cite{cooper2000alice}. We are not aware, however, of any existing work on optmizations in this kind of environment. 
+
+There is a long history of work on static analysis (e.g.,~\cite{cousot1977abstract}), but given that our programs take no input and are deterministic, performing dynamic analysis is clearly preferable. The many techniques developed for just-in-time (JIT) compilation~\cite{aycock2003brief} are more appropriate, but are intend for far more complex programming models than the simple one in \da.
+
+The concept behind our time slider bar is not novel, as previous work as has dealt with navigating program execution as a timeline for both novices~\cite{ko2004designing} and professional web development~\cite{burg2013interactive}. Our environment differs considerably from those in previous work, however, so we have designed optimizations specifically suited to the opportunities and constraints in \da.
 
 \section{Background}
 
@@ -86,7 +94,7 @@ Because we need to execute the program immediately, there is no benefit to doing
 
 World state deltas consist of two components: (1) a delta on the position and direction of the dragon and (2) a delta on the cubes present in the world. Deltas are created from a sequence of commands, and are independent of a specific starting state. They simply represent the change to an arbitrary state that would result if that sequence of commands is applied. 
 
-Taking the position delta first, a na\"{i}ve approach (and, indeed, our initial approach) would be to represent it as an absolute delta in terms of the x-, y-, and z-dimensions. This is incompatible, however, with the nature of our language. Our language does not have movement commands like \texttt{move N spaces in the x direction} that specify an absolute direction. Instead it has a \texttt{forward} command whose effect is relative to the dragon's current heading. 
+Taking the position delta first, a na\"{i}ve approach (and, indeed, our initial approach) would be to represent it as an absolute delta in terms of the x-, y-, and z-dimensions. This is incompatible, however, with the nature of our language. Our language does not have movement commands like \texttt{move in the x direction} that specify an absolute direction. Instead it has a \texttt{forward} command whose effect is relative to the dragon's current heading. 
 
 This means a position delta must be represented such that it can be relative to any given initial direction. Our solution is to represent a position delta as a distance parallel to the initial direction, and a distance perpendicular to the initial direction. When it comes time to apply the position delta to a concrete state, this information is combined with the dragon's initial direction to generate the delta in absolute terms. This only accounts for the dragon's position in the x-z plane. The two other pieces of the dragon's state, its direction and y-position, are represented separately. 
 
