@@ -12,3 +12,5 @@ clean:
 openwin: paper
 	explorer.exe 501-final-report.pdf
 
+openmac: paper
+	open 501-final-report.pdf
