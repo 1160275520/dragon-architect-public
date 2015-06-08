@@ -17,49 +17,8 @@ let loadBuiltIns () =
 [<Fact>]
 let ``builtins import`` () =
     let lib = loadBuiltIns ()
-
     lib.Count |> should equal 8
     lib.ContainsKey "Forward" |> should equal true
-
-[<Fact>]
-let ``Simulator nop deserialized`` () =
-    let prog = Serialization.Load ProgramSerializationTest.emptyTestProgram
-    let lib = loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = (Simulator.SimulateWithRobot prog lib robot).States
-
-    states.Length |> should equal 2
-    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
-
-[<Fact>]
-let ``Simulator nop parsed`` () =
-    let text = """
-define foo()
-    bar()
-
-    """
-    let prog = Parser.Parse (text, "prog")
-    let lib = loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = (Simulator.SimulateWithRobot prog lib robot).States
-
-    states.Length |> should equal 2
-    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
-
-[<Fact>]
-let ``Simulator simple deserialized`` () =
-    // tests Forward, Call F1, Up, PlaceCube
-
-    let prog = Serialization.Load ProgramSerializationTest.simpleTestProgram
-    let lib = loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = (Simulator.SimulateWithRobot prog lib robot).States
-
-    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
-    (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 10
-
-    let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
-    blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
 
 let repeatTestProg = """
 repeat 10 times
@@ -158,6 +117,7 @@ let samplePrograms = [
     "pyramid";
     "smile";
     "castle_decomp";
+    "castle_updated";
     "colorful_simple_house";
     "twisty-tower"
 ]
@@ -166,12 +126,12 @@ let sampleProgramsSeq = TestUtil.SingleToTheory samplePrograms
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
-let ``Simulator Reference Test HashTable`` (text, start, expected) =
+let ``Reference Test HashTable`` (text, start, expected) =
     checkReferenceProgram (text, start, expected, HashTableGrid ())
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
-let ``Simulator Reference Test TreeMap`` (text, start, expected) =
+let ``Reference Test TreeMap`` (text, start, expected) =
     checkReferenceProgram (text, start, expected, TreeMapGrid ())
 
 let runAllStatesAndGetFinal prog grid lib start =
@@ -180,7 +140,7 @@ let runAllStatesAndGetFinal prog grid lib start =
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
-let ``Simulator All States Reference TreeMap`` (text, start, expected:CanonicalWorldState) =
+let ``All States Reference TreeMap`` (text, start, expected:CanonicalWorldState) =
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
     let actual = runAllStatesAndGetFinal prog (TreeMapGrid ()) lib start
@@ -189,7 +149,7 @@ let ``Simulator All States Reference TreeMap`` (text, start, expected:CanonicalW
     actual.Robot |> should equal expected.Robot
 
 [<Fact>]
-let ``Simulator All States Test`` () =
+let ``All States Test`` () =
     let text = """
 Forward(6)
 """
@@ -206,7 +166,7 @@ Forward(6)
 
 [<Theory>]
 [<PropertyData("sampleProgramsSeq")>]
-let ``Simulator Final State All States Equivalence On Sample Programs`` (progName:string) =
+let ``Final State All States Equivalence On Sample Programs`` (progName:string) =
     let lib = loadBuiltIns ()
     let prog, start = loadSampleProgram progName
     let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
@@ -216,37 +176,10 @@ let ``Simulator Final State All States Equivalence On Sample Programs`` (progNam
     Seq.last states |> should equal final
 
 [<Fact>]
-let ``OLD Simulator simple parsed`` () =
-    let text = """
-define Foo()
-    Up(1)
-    PlaceCube(1)
-
-Forward(5)
-repeat 10 times
-    Foo()
-
-    """
-    let prog = Parser.Parse (text, "prog")
+let ``Equivalent castle programs`` () =
     let lib = loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = (Simulator.SimulateWithRobot prog lib robot).States
-
-    (states.[0].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 0
-    (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 10
-
-    let blocks = HashSet([for i in 1 .. 10 -> IntVec3 (0,i,5)])
-    blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
-
-[<Fact>]
-let ``OLD Simulator repeat`` () =
-    let prog = Parser.Parse (repeatTestProg, "prog")
-    let lib = loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = (Simulator.SimulateWithRobot prog lib robot).States
-
-    states.Length |> should equal 82
-    (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.Length |> should equal 20
-
-    let blocks = HashSet([for i in 1 .. 20 -> IntVec3 (i,0,i)])
-    blocks.SetEquals ((states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid |> Seq.map (fun kvp -> kvp.Key)) |> should equal true
+    let prog1, start = loadSampleProgram "castle_decomp"
+    let prog2, _ = loadSampleProgram "castle_updated"
+    let final1 = Debugger.runToCannonicalState prog1 (HashTableGrid ()) lib start
+    let final2 = Debugger.runToCannonicalState prog2 (HashTableGrid ()) lib start
+    final1 |> should equal final2
