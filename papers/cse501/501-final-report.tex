@@ -1,0 +1,30 @@
+\documentclass{sig-alternate}
+\usepackage{url}
+\toappear{}
+\begin{document}
+\title{Milestone Report for Program Analysis for a Novice Programming Environment}
+\author{Aaron Bauer, Eric Butler}
+\maketitle{}
+
+\section*{The Problem}
+Programming tools for novices such as Scratch have different requirements than typical IDEs. Our tool \emph{Dragon Architect} supports several features aimed to assist novices that have interesting ramifications for optimization. For example, Dragon Architect supports a scrubbing tool that allows the user to move forward and backward in execution by dragging a slider. This tool requires the system to store the program state for all points in time in program execution. The na\"{i}ve implementation, storing an array of all program states, quickly runs into scalability issues as program size increases. Core to the design of our tool is to provide both a \emph{low floor} and \emph{high ceiling}, which is important for both supporting a wide range of skill levels, and engaging students over an extended progression. Hence, Dragon Architect needs to support complex programs just as naturally as it does simple ones. 
+
+\section*{Our Progress}
+
+Program execution in Dragon Architect takes place in two phases. First, the language is simulated to produce a list of basic commands for the dragon. The commands include moving the dragon one space up, down, or forward, turning left or right, and placing a cube at the dragon's current location. In the second phase, these commands are applied to change the state of the world. The state consists of the dragon's current position and orientation, and the locations of any cubes that have been placed. The system actually stores every single world state over the course of the simulation, to allow the student to randomly access and view any state in the middle of the computation. Our project includes optimizations both at the program simulation phase to more efficiently compute commands, and at the world simulation phase to more efficiently compute the world state and store all intermediate states.
+
+So far, we have implemented a few optimizations. We've implemented caching and reusing computations in loop iterations and procedure boundaries. Specifically, we only simulate the body of a loop or procedure once, and then reuse this produced list of basic commands for all future iterations or calls.  
+
+We've implemented a better state representation using immutable data structures. Our previous implementation using mutable data structures resulted in an expensive copying operation after each command. Cloning the immutable data structure has proved far less expensive.
+
+Finally, we've created a \emph{state delta} that allows us to express large chunks of repeated results. A list of commands can be converted into the resulting change in world state. This delta can then be applied instead of re-simulating the same commands. This isn't always possible in our current implementation, however, because we don't allow the dragon to move below the surface of the world (i.e., below y=0). If a program would move the dragon below the surface, our system refuses to generate a delta for it.
+
+With preliminary testing on one example program, each of these optimizations has independently produced speedups of approximately an order of magnitude. Further experimentation and more example programs are needed, but this is a promising initial result.
+
+\section*{Timeline}
+We're on track with where we thought we'd be. Our immediate task is to integrate the various optimizations we have already implemented, and to develop additional sample input programs to better characterize the performance improvements. We also need to integrate these optimizations with the debugging tools that pretend the program was run on the unoptimized model. Finally, we need to produce a few more benchmark programs and gather timing information to evaluate the various optimizations.
+
+\end{document}
+
+
+
