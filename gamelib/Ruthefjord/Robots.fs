@@ -69,6 +69,7 @@ type TreeMapGrid() =
 [<Sealed>]
 type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
     let mutable robot = startRobot
+    let mutable numCommands = 0
 
     member x.FromCanonicalState (grid, (state:CanonicalWorldState)) =
         let sim = BasicRobotSimulator (grid, state.Robot)
@@ -78,8 +79,11 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
     member x.AsCanonicalState = {Robot=robot; Grid=grid.ConvertToCanonical grid.Current}
     member x.ConvertToCanonical (state:WorldState<'Grid>) = {Robot=state.Robot; Grid=grid.ConvertToCanonical state.Grid}
 
+    member x.NumberOfCommandsExecuted = numCommands
+
     interface Robot.IRobotSimulator<WorldState<'Grid>> with
         member x.Execute command =
+            numCommands <- numCommands + 1
             let p = robot.Position
             let d = robot.Direction
             match command.Name with

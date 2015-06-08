@@ -357,6 +357,30 @@ let CollectAllStates program robotSimulator globals maxSteps =
 
     states.ToArray ()
 
+let CollectEventNStates program robotSimulator globals jumpDist maxSteps =
+    let ps = createNewProgramState program robotSimulator globals
+    let states = MutableList ()
+    states.Add {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+    let maxSteps = match maxSteps with Some m -> m | None -> System.Int32.MaxValue
+
+    let steps = ref 0
+    let counter = ref 0
+    ps |> executeSteps (fun result ->
+        steps := 1 + !steps
+        match result with
+        | Some (_, (Some c as cmd), _) ->
+            counter := 1 + !counter
+            if (!counter) % jumpDist = 0 then
+                states.Add {State=robotSimulator.CurrentState; Command=cmd; LastExecuted=ps.LastExecuted}
+        | _ -> ()
+        maxSteps > !steps
+    )
+    // always add a final state after the last step (assume the last thing was NOT a command)
+    // this will make it line up with other implementations that add a final state after the last step
+    states.Add {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+
+    states.ToArray ()
+
 let private step (state:State) =
     match state.CallStack with
     | [] -> None
