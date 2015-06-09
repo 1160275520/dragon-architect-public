@@ -96,3 +96,22 @@ let ``checkpoint debugger`` () =
 
     for i = 0 to expected.StateCount - 1 do
         check i
+
+[<Fact>]
+let ``caching debugger`` () =
+    let initData = makeInitData ()
+    let expected: IDebugger = upcast WorkshopDebugger (initData, None)
+    let actual: IDebugger = upcast CachingWorkshopDebugger (initData, None)
+
+    //actual.StateCount |> should equal expected.StateCount
+
+    let check i =
+        actual.JumpToState i
+        expected.JumpToState i
+        let e = expected.CurrentStep.State
+        let a = actual.CurrentStep.State
+        actual.CurrentStateIndex |> should equal expected.CurrentStateIndex
+        actual.CurrentStep.State |> should equal expected.CurrentStep.State
+
+    for i = 0 to expected.StateCount - 1 do
+        check i

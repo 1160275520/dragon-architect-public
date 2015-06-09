@@ -98,6 +98,45 @@ type CheckpointingWorkshopDebugger (init: DebuggerInitialData, checkpointDistanc
                 current <- Simulator.ExecuteNSteps {progState with Simulator=newSim} (newIndex - chkIndex)
             index <- newIndex
 
+type CachingWorkshopDebugger (init: DebuggerInitialData, maxSteps) =
+    let nie () = raise (System.NotImplementedException ())
+
+    let cache = Simulator.MutableDict ()
+    let initGrid = init.State.Grid |> Map.map (fun k v -> (v,{Robot.Command.Name="block"; Robot.Command.Args=[v:>obj]}))
+    let initState () : BasicWorldState3 =
+        {Robot=init.State.Robot; Grid=System.Collections.Generic.Dictionary initGrid}
+
+    let stateFunctions2: Simulator.StateFunctions<BasicWorldState3, BasicWorldStateDelta> = {
+        Empty = BasicWorldStateDelta.Empty;
+        Combine = fun a b -> BasicWorldStateDelta.Combine a b;
+        Create = fun c -> BasicWorldStateDelta.Create c;
+        ApplyDelta = fun bot delta -> BasicWorldStateDelta.ApplyDelta3 bot delta;
+        ApplyCommand = fun state c -> BasicWorldState3.ApplyCommand state c;
+    }
+
+    do Simulator.RunOptimized37 init.Program init.BuiltIns stateFunctions2 cache (initState ()) |> ignore
+
+    let mutable index = 0
+    let jumpTo newIndex =
+        index <- newIndex
+        Simulator.RunToState init.Program init.BuiltIns stateFunctions2 cache (initState ()) newIndex
+    let mutable current = jumpTo 0
+    let total = 0
+
+    interface IDebugger with
+        member x.IsDone = index = total - 1
+        member x.CurrentStep =
+            let grid = current.Grid |> Seq.map (fun kvp -> (kvp.Key, fst kvp.Value)) |> Map.ofSeq
+            let state: CanonicalWorldState = {Robot=current.Robot; Grid=grid}
+            {State=state; LastExecuted=[]; Command=None}
+        member x.AdvanceOneState () =
+            current <- jumpTo (index + 1)
+        member x.AdvanceOneLine () = nie ()
+
+        member x.CurrentStateIndex = index
+        member x.StateCount = total
+        member x.JumpToState newIndex =
+            current <- jumpTo newIndex
 
 module Debugger =
     let create (mode, init) : IDebugger =
