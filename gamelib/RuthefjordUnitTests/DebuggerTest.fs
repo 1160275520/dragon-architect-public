@@ -113,5 +113,11 @@ let ``caching debugger`` () =
         actual.CurrentStateIndex |> should equal expected.CurrentStateIndex
         actual.CurrentStep.State |> should equal expected.CurrentStep.State
 
+    check 75
+    check 24
+    check 50
+    check 49
+    check 51
+
     for i = 0 to expected.StateCount - 1 do
         check i

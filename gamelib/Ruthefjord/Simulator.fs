@@ -678,7 +678,7 @@ let private concretizeStatement (ctx:ContextOLD<_>) (stmt:Statement) : ConcreteS
         let ntimes = evaluate ctx.Environment ntimesExpr |> valueAsInt stmt.Meta
         Some (CRepeat (stmt.Meta.Id, valMapToLocalMap ctx.Environment.Locals, ntimes))
     | Execute {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (fun e -> (evaluate ctx.Environment e) :?> int) argExpr
+        let argVals = List.map (fun e -> (evaluate ctx.Environment e) |> valueAsInt stmt.Meta) argExpr
         Some (CExecute (name, argVals))
     | Command {Name=cmd; Arguments=args} ->
         let args = List.map (evaluate ctx.Environment) args

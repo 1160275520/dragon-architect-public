@@ -142,7 +142,7 @@ module Debugger =
     let create (mode, init) : IDebugger =
         match mode with
         | EditMode.Persistent -> upcast PersistentDebugger init
-        | EditMode.Workshop -> upcast WorkshopDebugger (init, Some 1000000)
+        | EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, 50, Some 1000000)
 
     let private apply (state:BasicWorldState2) (cmd:Robot.Command) =
         let sim = (BasicImperativeRobotSimulator2.FromWorldState state)
