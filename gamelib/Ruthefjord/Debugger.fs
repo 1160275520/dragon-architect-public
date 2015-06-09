@@ -87,6 +87,9 @@ type CheckpointingWorkshopDebugger (init: DebuggerInitialData, checkpointDistanc
         member x.CurrentStateIndex = index
         member x.StateCount = fst3 (MyArray.last result) + 1
         member x.JumpToState newIndex =
+            if newIndex >= (x :> IDebugger).StateCount then
+                invalidArg "newIndex" (sprintf "index %d out of bounds, max is %d!" newIndex (x :> IDebugger).StateCount)
+
             // hack handle last case
             if newIndex = (x :> IDebugger).StateCount - 1 then
                 current <- thd3 (MyArray.last result)
@@ -179,6 +182,11 @@ module Debugger =
         let simulator = BasicRobotSimulator (grid, startState.Robot)
         Simulator.ExecuteToEnd program simulator globals |> ignore
         simulator.AsCanonicalState
+
+    let makeSimulator (grid:IGrid<'a>) (init:CanonicalWorldState) =
+        let sim = BasicRobotSimulator (grid, init.Robot)
+        grid.SetFromCanonical init.Grid
+        sim
 
     /// Only use for correctness unit tests! This is not performant!
     let getAllCannonicalStates program (grid:IGrid<_>) globals (startState:CanonicalWorldState) : CanonicalWorldState array =
