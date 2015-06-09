@@ -21,7 +21,7 @@
 \maketitle{}
 
 \begin{abstract}
-\todo{abstract}
+\da{}, our programming system for novices, encounters performance problems when handling large user programs. This is primarily due to a slider bar that allows the user to scrub throughout a program's execution, for which we inefficiently precompute all program states. To improve performance on large programs we implemented and evaluated two dynamic optmizations. The first precomputes as few states as possible, and instead caches results from procedure calls and loop bodies as \emph{deltas} on the world state. The second precomputes a fixed number of states, and uses them as checkpoints to compute intermediate states quickly. Our evaluation shows both are \todo{WHATEVER IT SHOWS}.
 \end{abstract}
 
 \section{Introduction}
@@ -114,7 +114,7 @@ Our original na\"{i}ve implementation of the time slider bar works by actually s
 
 \section{Technique} 
 
-In addition to the existing, na\"{i}ve implementation, we implemented two new approaches to simulating program in \da. The goal for all of these techniques is to support jumping to arbitrary point in execution (where each command is one step) and getting the world state for that point. The original implementation did this by simply keeping a copy of the world state for every single command executed, which was very simple but scales very poorly for large programs. For the purposes of this project, ``large'' programs mean those with more than 100,000 commands. The example castle program in Appendix~\ref{app:castle-code} is over 200,000 commands, for example.
+In addition to the existing, na\"{i}ve implementation, we implemented two new approaches to simulating program in \da. The goal for all of these techniques is to support jumping to arbitrary point in execution (where each command is one step) and getting the world state for that point. The original implementation did this by simply keeping a copy of the world state for every single command executed, which was very simple but scales very poorly for large programs. For the purposes of this project, ``large'' programs mean those with more than 100,000 commands. The example castle program in Appendix~\ref{app:castle-code} is almost 10,000 commands, for example.
 
 \subsection{Checkpointed Simulation}
 The first approach we implemented was mostly intended as a baseline for comparison. Instead of storing literally every state, this approach stores a set of \emph{checkpoint} states along with the simulation context for that state. In order to jump to an arbitrary state, the simulator starts executing from the nearest checkpoint before the desired state and runs the simulation as normal to that state. We expected this approach to see a speed-up approximately proportional to the ratio of number of checkpoints to total number of states, since the na\"{i}ve implementation's runtime was dominated by copying states.
@@ -157,6 +157,7 @@ To evaluate our optimizations, we compared their performance on a suite of bench
 
 \section{Conclusion}
 jumping to arbitrary states is tricky
+checkpointing is competitive on all but the largest programs, and is tremendously less complex
 
 \section{Distribution of Work}
 Regarding division of labor, we have been working collaboratively on Dragon Architect for 14 months. We each implemented several independent optimizations and test cases, and worked together to combine these optimizations into our final algorithm.
