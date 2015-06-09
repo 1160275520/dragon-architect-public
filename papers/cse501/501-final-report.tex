@@ -155,7 +155,19 @@ A point of execution is defined by the number of previous commands (or, equivale
 \section{Evaluation}
 To evaluate our optimizations, we compared their performance on a suite of benchmark programs to the performance of various unoptmized versions. For both convenience and completeness, we created the benchmark programs ourselves rather than use specific programs created by users of our system. To date, no group of students have used \da{} for much more than an hour, and so none have progressed to creating programs of the size and complexity needed to sufficienty evaluate our optimizations. The set of benchmarks we created are representative, however, of the types of things students often attempt to build, and the way in which students tend to try and enter very large numbers in every input. 
 
-\todo{results}
+We looked at two different metrics: time to compute the final state, and time to jump to a set of arbitrary states. We meausre the latter as this is our primary goal: to support faster jumping to arbitrary states. We would expect both the checkpoint method and caching method to outperform the na\"{i}ve method. However, theoretically, the caching method could be faster even at finding the final state that a straight-forward execution, so we also tested it's performance in computing the final state only.
+
+Measurements were performed on \todo{MY COMPUTER SPECS}.
+
+\subsection{Computing Final State Only}
+We compared the caching method to two baselines: normal simulation of the pogram using both a hashtable and tree map for the world state data structure. We use the hashtable for the primary baseline since it outperforms the tree map on all programs. The results as summarized in Figure~\todo{SDFasdfasdf}. The general trend is that our optimized technique performs slightly more poorly for small programs, but vastly outperforms the baseline for the larger programs.
+
+\subsection{Jumping to Arbitrary States}
+The metric in this comparision is the total time it takes each method to jump to 100 uniformly random points of execution. The baseline method is the na\"{i}ve algorithm of calculating an array of every state, again one for each data structure. Unlike the previous test, we use the tree map for the primary baseline, because it outperforms the hash table on bigger programs.
+
+We tested both the checkpointing and caching algorithms. The checkpoint method supports both data structures, so we tested both. Furthermore, the checkpiont method is paramaterized in the number of checkpoints, so we tested several different configurations. The caching method only supports hash tables and is not parameterized.
+
+\todo{RESULTS AND DISCUSSION}
 
 \section{Conclusion}
 jumping to arbitrary states is tricky
