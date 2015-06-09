@@ -4,10 +4,16 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{syntax}
+\usepackage{caption}
+\usepackage[final]{listings}
 \toappear{}
 
 \newcommand{\da}{\emph{Dragon Architect}}
 \newcommand{\todo}[1]{{\color{red} TODO: #1}}
+
+\newenvironment{BNF}
+  {\captionsetup{type=lstlisting}}
+  {}
 
 \begin{document}
 \title{Optimizing in a Novice Programming Environment}
@@ -35,10 +41,12 @@ The concept behind our time slider bar is not novel, as previous work as has dea
 
 \section{Background}
 
-We first discuss technical details of the language and runtime environment used in \da. To summarize, execution in \da{} consists of running a simple imperative language to compute a list of commands for the dragon in the 3d world, and this list of commands is applied to compute a new world state. An example program and resulting world state is shown in Figure~\ref{fig:full-program}. The summary of the grammar is given by \todo{A GRAMMAR THING}, though there are actually both a textual concrete representation (shown the in the appendix) and a visual block-based representation.
+We first discuss technical details of the language and runtime environment used in \da. To summarize, execution in \da{} consists of running a simple imperative language to compute a list of commands for the dragon in the 3d world, and this list of commands is applied to compute a new world state. An example program and resulting world state is shown in Figure~\ref{fig:full-program}. The summary of the grammar is given by Listing~\ref{lst:grammar}, though there is actually both a textual concrete representation (shown the in the appendix) and a visual block-based representation.
 
+\begin{BNF}
+\caption{\da{} grammar}
+\label{lst:grammar}
 \begin{grammar}
-
 <expr> ::= <ident> | <integer>
 
 <arglist> ::= <expr> `,' <arglist> | <expr>
@@ -49,14 +57,14 @@ We first discuss technical details of the language and runtime environment used 
 
 <params> ::= `(' `)' | `(' <paramlist> `)'
 
-<stat> ::= <ident> <args>
+<statement> ::= <ident> <args>
 \alt `repeat' <expr> `times' <block>
 \alt `command' <ident> <args>
-\alt `define' <ident> <paramlist> <block>
+\alt `define' <ident> <params> <block>
 
 <block> ::= <statement> <block> | <statement>
-
 \end{grammar}
+\end{BNF}
 
 \begin{figure*}[t!]
   \centering
@@ -65,13 +73,37 @@ We first discuss technical details of the language and runtime environment used 
   \label{fig:full-program}
 \end{figure*}
 
-We elide a fully formal description of \da's language semantics and instead briefly describe how programs behave. The \texttt{command} statements describe operations for the dragon to perform in the 3d world. Because our language currently does not have any conditionals, this list of commands does not depend on the world state, or even what the semantics of the world are. Thus, program execution can be thought of as two phases, one in which the list of commands is computed, and another in which the list of commands is applied to the world state to compute the final world state. This is summarized in Figure~\todo{FIGURE}.
+We elide a fully formal description of \da's language semantics and instead briefly describe how programs behave. The \texttt{command} statements describe operations for the dragon to perform in the 3d world. Because our language currently does not have any conditionals, this list of commands does not depend on the world state, or even what the semantics of the world are. Thus, program execution can be thought of as two phases, one in which the list of commands is computed, and another in which the list of commands is applied to the world state to compute the final world state. This is summarized in Figure~\ref{fig:phases}.
+
+\begin{figure*}[ht!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/phases}
+  \caption{\todo{caption}}
+  \label{fig:phases}
+\end{figure*}
 
 The other statements in \da{} behave similarly to constructs in most other imperative programming languages, and we omit a full description for brevity. The only local context allowed is through procedure arguments, so the only identifiers in scope are local procedure parameters and the global procedures names.
 
-The world state consists of the dragon's current position and orientation, and the locations of any cubes that have been placed.  The behavior of each of the basic commands on the world state is given by \todo{SOME THING}. Each command is relative to the dragon's current position. Commands are intended to represent ``atomic'' operations in the world, and they are the unit that counts as a single step for the purpose of the time slider bar. That is why, for example, the \texttt{forward} command takes no arguments and only allows moving one step at a time. In practice, users do not use the \texttt{Command} statement directly; it's uses are hidden behind a standard library of procedures, such as \texttt{Forward(x:int)}, which uses a repeat loop to issue $x$ \texttt{forward} commands.
+The world state consists of the dragon's current position and orientation, and the locations of any cubes that have been placed.  The behavior of each of the basic commands on the world state is given by Tabel~\ref{tab:commands}. Each command is relative to the dragon's current position. Commands are intended to represent ``atomic'' operations in the world, and they are the unit that counts as a single step for the purpose of the time slider bar. That is why, for example, the \texttt{forward} command takes no arguments and only allows moving one step at a time. In practice, users do not use the \texttt{Command} statement directly; it's uses are hidden behind a standard library of procedures, such as \texttt{Forward(x:int)}, which uses a repeat loop to issue $x$ \texttt{forward} commands.
 
 Our original na\"{i}ve implementation of the time slider bar works by actually storing every single world state over the course of the simulation. This allows the student to randomly access and view any state in the middle of the computation. Figure~\ref{fig:time-slider} shows the time slider in action. Throughout the evaluation, we test two different representations for world states: a mutable hash-table and an immutable tree-map. The former has dramatically better performance when computing only a single state, but the latter is much faster and more memory-efficient for computing all states, because the hash-table must be copied every step. However, as the evaluation shows, these data structures have very different performance characteristics on our new techniques.
+
+\begin{table}[ht!]
+  \centering
+  \begin{tabular}{|c|p{6cm}|}
+    \hline
+    Command & Behavior \\\hline
+    \texttt{forward} & move one space in the direction the dragon is facing \\\hline
+    \texttt{left} & turn the dragon to the left \\\hline
+    \texttt{right} & turn the dragon to the right \\\hline
+    \texttt{up} & move the dragon one space higher \\\hline
+    \texttt{down} & move the dragon one space lower \\\hline
+    \texttt{cube} & place a cube at the dragon's location \\\hline
+    \texttt{remove} & remove a cube at the dragon's location \\\hline
+  \end{tabular}
+  \caption{The behavior of \da{}'s basic commands.}
+  \label{tab:commands}
+\end{table}
 
 \begin{figure}[ht!]
   \centering
@@ -82,7 +114,7 @@ Our original na\"{i}ve implementation of the time slider bar works by actually s
 
 \section{Technique} 
 
-In addition to the existing, na\"{i}ve implementation, we implemented two new approaches to simulating program in \da. The goal for all of these techniques is to support jumping to arbitrary point in execution (where each command is one step) and getting the world state for that point. The original implementation did this by simply keeping a copy of the world state for every single command executed, which was very simple but scales very poorly for large programs. For the purposes of this project, ``large'' programs mean those with more than 100,000 commands. The example castle program in Figure~\todo{figure} is over 200,000 commands, for example.
+In addition to the existing, na\"{i}ve implementation, we implemented two new approaches to simulating program in \da. The goal for all of these techniques is to support jumping to arbitrary point in execution (where each command is one step) and getting the world state for that point. The original implementation did this by simply keeping a copy of the world state for every single command executed, which was very simple but scales very poorly for large programs. For the purposes of this project, ``large'' programs mean those with more than 100,000 commands. The example castle program in Appendix~\ref{app:castle-code} is over 200,000 commands, for example.
 
 \subsection{Checkpointed Simulation}
 The first approach we implemented was mostly intended as a baseline for comparison. Instead of storing literally every state, this approach stores a set of \emph{checkpoint} states along with the simulation context for that state. In order to jump to an arbitrary state, the simulator starts executing from the nearest checkpoint before the desired state and runs the simulation as normal to that state. We expected this approach to see a speed-up approximately proportional to the ratio of number of checkpoints to total number of states, since the na\"{i}ve implementation's runtime was dominated by copying states.
@@ -119,11 +151,9 @@ Optimized evaluation of a statement proceeds as follows. If the statement is not
 describe the algroithm
 
 \section{Evaluation}
-made a bunch of benchmarks
-not directly from children
-because they haven't had much time to write very complex programs
-but inspired by children, because they like to use big numbers
-ran several comparisons
+To evaluate our optimizations, we compared their performance on a suite of benchmark programs to the performance of various unoptmized versions. For both convenience and completeness, we created the benchmark programs ourselves rather than use specific programs created by users of our system. To date, no group of students have used \da{} for much more than an hour, and so none have progressed to creating programs of the size and complexity needed to sufficienty evaluate our optimizations. The set of benchmarks we created are representative, however, of the types of things students often attempt to build, and the way in which students tend to try and enter very large numbers in every input. 
+
+\todo{results}
 
 \section{Conclusion}
 jumping to arbitrary states is tricky
@@ -136,6 +166,8 @@ Regarding division of labor, we have been working collaboratively on Dragon Arch
 
 \appendix
 
+\section{The Castle Program}
+\label{app:castle-code}
 \begin{verbatim}
 define Line(x)
     repeat x times
