@@ -42,11 +42,10 @@ type PersistentDebugger (init: DebuggerInitialData) =
         member x.StateCount = nse ()
         member x.JumpToState _ = nse ()
 
-type WorkshopDebugger (init: DebuggerInitialData, maxSteps) =
+type WorkshopDebugger<'a> (init: DebuggerInitialData, grid: IGrid<'a>, maxSteps) =
     let nie () = raise (System.NotImplementedException ())
 
     let simulator =
-        let grid = TreeMapGrid () :> IGrid<_>
         grid.SetFromCanonical init.State.Grid
         BasicRobotSimulator (grid, init.State.Robot)
     let result = Simulator.CollectAllStates init.Program simulator init.BuiltIns maxSteps
@@ -55,7 +54,9 @@ type WorkshopDebugger (init: DebuggerInitialData, maxSteps) =
 
     interface IDebugger with
         member x.IsDone = index = result.Length - 1
-        member x.CurrentStep = result.[index]
+        member x.CurrentStep =
+            let current = result.[index]
+            {State=simulator.ConvertToCanonical current.State; LastExecuted=current.LastExecuted; Command=current.Command}
         member x.AdvanceOneState () = index <- index + 1
         member x.AdvanceOneLine () = nie ()
 
@@ -63,16 +64,15 @@ type WorkshopDebugger (init: DebuggerInitialData, maxSteps) =
         member x.StateCount = result.Length
         member x.JumpToState newIndex = index <- newIndex
 
-type CheckpointingWorkshopDebugger (init: DebuggerInitialData, checkpointDistance, maxSteps) =
+type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a>, checkpointDistance, maxSteps) =
     let nie () = raise (System.NotImplementedException ())
 
     let makeSim (state:CanonicalWorldState) =
-        let grid = TreeMapGrid () :> IGrid<_>
         grid.SetFromCanonical state.Grid
         BasicRobotSimulator (grid, state.Robot)
 
+    let simulator = makeSim init.State
     let result =
-        let simulator = makeSim init.State
         Simulator.CollectEveryNStates init.Program simulator init.BuiltIns checkpointDistance maxSteps
 
     let mutable index = 0
@@ -80,7 +80,8 @@ type CheckpointingWorkshopDebugger (init: DebuggerInitialData, checkpointDistanc
 
     interface IDebugger with
         member x.IsDone = index = result.Length - 1
-        member x.CurrentStep = current
+        member x.CurrentStep =
+            {State=simulator.ConvertToCanonical current.State; LastExecuted=current.LastExecuted; Command=current.Command}
         member x.AdvanceOneState () = (x :> IDebugger).JumpToState (index + 1)
         member x.AdvanceOneLine () = nie ()
 
@@ -97,7 +98,7 @@ type CheckpointingWorkshopDebugger (init: DebuggerInitialData, checkpointDistanc
                 // find closest checkpoint
                 let onePast = result |> Array.findIndex (fun (i,_,_) -> i > newIndex)
                 let chkIndex, progState, stateData = result.[onePast - 1]
-                let newSim = makeSim stateData.State
+                let newSim = makeSim (simulator.ConvertToCanonical stateData.State)
                 current <- Simulator.ExecuteNSteps {progState with Simulator=newSim} (newIndex - chkIndex)
             index <- newIndex
 
@@ -145,7 +146,7 @@ module Debugger =
     let create (mode, init) : IDebugger =
         match mode with
         | EditMode.Persistent -> upcast PersistentDebugger init
-        | EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, 50, Some 1000000)
+        | EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 50, Some 1000000)
 
     let private apply (state:BasicWorldState2) (cmd:Robot.Command) =
         let sim = (BasicImperativeRobotSimulator2.FromWorldState state)

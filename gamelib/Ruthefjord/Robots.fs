@@ -280,7 +280,6 @@ with
             match BasicRobotPositionDelta.ApplyDelta state.Robot delta with
             | None -> isValid := false
             | Some p -> newCubes.Add (p, cubeDelta)
-            | _ -> invalidOp "unrecognized cube status"
         )
         if !isValid then
             match BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta with

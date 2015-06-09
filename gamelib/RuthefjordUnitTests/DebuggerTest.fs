@@ -40,7 +40,8 @@ let ``basic persistent debugger`` () =
 
 [<Fact>]
 let ``basic workshop debugger`` () =
-    runBasicTest (fun id -> upcast WorkshopDebugger (id, None))
+    runBasicTest (fun id -> upcast WorkshopDebugger (id, TreeMapGrid (), None))
+    runBasicTest (fun id -> upcast WorkshopDebugger (id, HashTableGrid (), None))
 
 [<Fact>]
 let ``persistent debugger unsupported operations`` () =
@@ -53,7 +54,7 @@ let ``persistent debugger unsupported operations`` () =
 [<Fact>]
 let ``workshop debugger jumping`` () =
     let initData = makeInitData ()
-    let debugger: IDebugger = upcast WorkshopDebugger (initData, None)
+    let debugger: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
     let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
     let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
@@ -78,8 +79,8 @@ let ``workshop debugger jumping`` () =
 [<Fact>]
 let ``checkpoint debugger`` () =
     let initData = makeInitData ()
-    let expected: IDebugger = upcast WorkshopDebugger (initData, None)
-    let actual: IDebugger = upcast CheckpointingWorkshopDebugger (initData, 50, None)
+    let expected: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
+    let actual: IDebugger = upcast CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 50, None)
 
     actual.StateCount |> should equal expected.StateCount
 
@@ -94,13 +95,47 @@ let ``checkpoint debugger`` () =
         actual.CurrentStateIndex |> should equal expected.CurrentStateIndex
         actual.CurrentStep.State |> should equal expected.CurrentStep.State
 
+    check 75
+    check 24
+    check 50
+    check 49
+    check 51
+
+    for i = 0 to expected.StateCount - 1 do
+        check i
+
+[<Fact>]
+let ``checkpoint debugger 2`` () =
+    let initData = makeInitData ()
+    let expected: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
+    let actual: IDebugger = upcast CheckpointingWorkshopDebugger (initData, HashTableGrid (), 50, None)
+
+    actual.StateCount |> should equal expected.StateCount
+
+    // ensure we're actually testing multiple checkpoints
+    expected.StateCount |> should greaterThan 101
+
+    let check i =
+        actual.JumpToState i
+        expected.JumpToState i
+        let e = expected.CurrentStep.State
+        let a = actual.CurrentStep.State
+        actual.CurrentStateIndex |> should equal expected.CurrentStateIndex
+        actual.CurrentStep.State |> should equal expected.CurrentStep.State
+
+    check 75
+    check 24
+    check 50
+    check 49
+    check 51
+
     for i = 0 to expected.StateCount - 1 do
         check i
 
 [<Fact>]
 let ``caching debugger`` () =
     let initData = makeInitData ()
-    let expected: IDebugger = upcast WorkshopDebugger (initData, None)
+    let expected: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
     let actual: IDebugger = upcast CachingWorkshopDebugger (initData, None)
 
     //actual.StateCount |> should equal expected.StateCount
