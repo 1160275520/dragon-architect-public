@@ -42,14 +42,14 @@ type PersistentDebugger (init: DebuggerInitialData) =
         member x.StateCount = nse ()
         member x.JumpToState _ = nse ()
 
-type WorkshopDebugger (init: DebuggerInitialData) =
+type WorkshopDebugger (init: DebuggerInitialData, maxSteps) =
     let nie () = raise (System.NotImplementedException ())
 
     let simulator =
         let grid = TreeMapGrid () :> IGrid<_>
         grid.SetFromCanonical init.State.Grid
         BasicRobotSimulator (grid, init.State.Robot)
-    let result = Simulator.CollectAllStates init.Program simulator init.BuiltIns (Some 10000000)
+    let result = Simulator.CollectAllStates init.Program simulator init.BuiltIns maxSteps
 
     let mutable index = 0
 
@@ -63,11 +63,47 @@ type WorkshopDebugger (init: DebuggerInitialData) =
         member x.StateCount = result.Length
         member x.JumpToState newIndex = index <- newIndex
 
+type CheckpointingWorkshopDebugger (init: DebuggerInitialData, checkpointDistance, maxSteps) =
+    let nie () = raise (System.NotImplementedException ())
+
+    let makeSim (state:CanonicalWorldState) =
+        let grid = TreeMapGrid () :> IGrid<_>
+        grid.SetFromCanonical state.Grid
+        BasicRobotSimulator (grid, state.Robot)
+
+    let result =
+        let simulator = makeSim init.State
+        Simulator.CollectEveryNStates init.Program simulator init.BuiltIns checkpointDistance maxSteps
+
+    let mutable index = 0
+    let mutable _, _, current = result.[0]
+
+    interface IDebugger with
+        member x.IsDone = index = result.Length - 1
+        member x.CurrentStep = current
+        member x.AdvanceOneState () = (x :> IDebugger).JumpToState (index + 1)
+        member x.AdvanceOneLine () = nie ()
+
+        member x.CurrentStateIndex = index
+        member x.StateCount = fst3 (MyArray.last result) + 1
+        member x.JumpToState newIndex =
+            // hack handle last case
+            if newIndex = (x :> IDebugger).StateCount - 1 then
+                current <- thd3 (MyArray.last result)
+            else
+                // find closest checkpoint
+                let onePast = result |> Array.findIndex (fun (i,_,_) -> i > newIndex)
+                let chkIndex, progState, stateData = result.[onePast - 1]
+                let newSim = makeSim stateData.State
+                current <- Simulator.ExecuteNSteps {progState with Simulator=newSim} (newIndex - chkIndex)
+            index <- newIndex
+
+
 module Debugger =
     let create (mode, init) : IDebugger =
         match mode with
         | EditMode.Persistent -> upcast PersistentDebugger init
-        | EditMode.Workshop -> upcast WorkshopDebugger init
+        | EditMode.Workshop -> upcast WorkshopDebugger (init, Some 1000000)
 
     let private apply (state:BasicWorldState2) (cmd:Robot.Command) =
         let sim = (BasicImperativeRobotSimulator2.FromWorldState state)

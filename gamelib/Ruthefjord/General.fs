@@ -56,6 +56,10 @@ module Global =
     /// Debug print a string (using System.Diagnostics.Debug.WriteLine).
     let inline dprints x = Logger.log x
 
+    let fst3 (x,_,_) = x
+    let snd3 (_,x,_) = x
+    let thd3 (_,_,x) = x
+
 module Util =
     let parseEnum<'a> s = Enum.Parse (typeof<'a>, s) :?> 'a
 

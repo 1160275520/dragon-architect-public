@@ -233,12 +233,12 @@ let rec private evaluate2 (csstate: CallStackStateOLD2) (expr: Expression) =
             try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
             with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
 
-type private CallStackState = {
+type CallStackState = {
     ToExecute: Statement list;
     Environment: Environment;
 }
 
-type private ProgramState<'S> = {
+type ProgramState<'S> = {
     mutable CallStack: CallStackState list;
     mutable LastExecuted: Statement list;
     Simulator: Robot.IRobotSimulator<'S>;
@@ -248,6 +248,8 @@ type private ProgramState<'S> = {
     member x.PushCallStack meta css =
         if x.CallStack.Length >= x.CallStackLimit then runtimeError meta ErrorCode.StackOverflow "max callstack length exceeded"
         x.CallStack <- css :: x.CallStack
+
+    member x.Copy = {x with CallStackLimit=x.CallStackLimit}
 
 let private createNewProgramState (program:Program) robotSimulator globals =
     {
@@ -336,6 +338,20 @@ type StateData<'S> = {
      Command: Robot.Command option;
 }
 
+let ExecuteNSteps state numSteps =
+    let steps = ref 0
+    let command = ref None
+    if numSteps > 0 then
+        state |> executeSteps (fun result ->
+            match result with
+            | Some (_, (Some c as cmd), _) ->
+                steps := 1 + !steps
+                command := cmd
+            | _ -> ()
+            numSteps > !steps
+        )
+    {State=state.Simulator.CurrentState; Command= !command; LastExecuted=state.LastExecuted}
+
 let CollectAllStates program robotSimulator globals maxSteps =
     let ps = createNewProgramState program robotSimulator globals
     let states = MutableList ()
@@ -357,10 +373,10 @@ let CollectAllStates program robotSimulator globals maxSteps =
 
     states.ToArray ()
 
-let CollectEventNStates program robotSimulator globals jumpDist maxSteps =
+let CollectEveryNStates program robotSimulator globals jumpDist maxSteps =
     let ps = createNewProgramState program robotSimulator globals
     let states = MutableList ()
-    states.Add {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+    states.Add (0, ps.Copy, {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted})
     let maxSteps = match maxSteps with Some m -> m | None -> System.Int32.MaxValue
 
     let steps = ref 0
@@ -371,13 +387,13 @@ let CollectEventNStates program robotSimulator globals jumpDist maxSteps =
         | Some (_, (Some c as cmd), _) ->
             counter := 1 + !counter
             if (!counter) % jumpDist = 0 then
-                states.Add {State=robotSimulator.CurrentState; Command=cmd; LastExecuted=ps.LastExecuted}
+                states.Add (!counter, ps.Copy, {State=robotSimulator.CurrentState; Command=cmd; LastExecuted=ps.LastExecuted})
         | _ -> ()
         maxSteps > !steps
     )
     // always add a final state after the last step (assume the last thing was NOT a command)
     // this will make it line up with other implementations that add a final state after the last step
-    states.Add {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+    states.Add (1 + !counter, ps.Copy, {State=robotSimulator.CurrentState; Command=None; LastExecuted=ps.LastExecuted})
 
     states.ToArray ()
 

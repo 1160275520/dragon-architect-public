@@ -54,7 +54,7 @@ let main argv =
         let ns2 =
             let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
             let runner = BasicRobotSimulator (TreeMapGrid (), robot)
-            Simulator.CollectEventNStates program runner importedModules deltaStateCount None |> (fun s -> s.Length)
+            Simulator.CollectEveryNStates program runner importedModules deltaStateCount None |> (fun s -> s.Length)
         printf "NS2: %d\n" ns2
 
 //        let t =
@@ -84,7 +84,7 @@ let main argv =
             time (fun () ->
                 let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
                 let runner = BasicRobotSimulator (HashTableGrid (), robot)
-                Simulator.CollectEventNStates program runner importedModules deltaStateCount None |> (fun s -> foo.Add s.Length)
+                Simulator.CollectEveryNStates program runner importedModules deltaStateCount None |> (fun s -> foo.Add s.Length)
             ) numSamples
         printfn "Simulate unoptimized HT2 50x: %.3f" t
 //        let t =
@@ -106,7 +106,7 @@ let main argv =
 //            time (fun () ->
 //                let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 //                let runner = BasicRobotSimulator (TreeMapGrid (), robot)
-//                Simulator.CollectEventNStates program runner importedModules deltaStateCount None |> (fun s -> foo.Add s.Length)
+//                Simulator.CollectEveryNStates program runner importedModules deltaStateCount None |> (fun s -> foo.Add s.Length)
 //            ) numSamples
 //        printfn "Simulate unoptimized MP2 50x: %.3f" t
 //        let t =

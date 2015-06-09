@@ -40,7 +40,7 @@ let ``basic persistent debugger`` () =
 
 [<Fact>]
 let ``basic workshop debugger`` () =
-    runBasicTest (fun id -> upcast WorkshopDebugger id)
+    runBasicTest (fun id -> upcast WorkshopDebugger (id, None))
 
 [<Fact>]
 let ``persistent debugger unsupported operations`` () =
@@ -53,7 +53,7 @@ let ``persistent debugger unsupported operations`` () =
 [<Fact>]
 let ``workshop debugger jumping`` () =
     let initData = makeInitData ()
-    let debugger: IDebugger = upcast WorkshopDebugger initData
+    let debugger: IDebugger = upcast WorkshopDebugger (initData, None)
     let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
     let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
@@ -74,3 +74,25 @@ let ``workshop debugger jumping`` () =
     debugger.AdvanceOneState ()
     debugger.CurrentStateIndex |> should equal 11
     checkIndex (result.States.Length - 1)
+
+[<Fact>]
+let ``checkpoint debugger`` () =
+    let initData = makeInitData ()
+    let expected: IDebugger = upcast WorkshopDebugger (initData, None)
+    let actual: IDebugger = upcast CheckpointingWorkshopDebugger (initData, 50, None)
+
+    actual.StateCount |> should equal expected.StateCount
+
+    // ensure we're actually testing multiple checkpoints
+    expected.StateCount |> should greaterThan 101
+
+    let check i =
+        actual.JumpToState i
+        expected.JumpToState i
+        let e = expected.CurrentStep.State
+        let a = actual.CurrentStep.State
+        actual.CurrentStateIndex |> should equal expected.CurrentStateIndex
+        actual.CurrentStep.State |> should equal expected.CurrentStep.State
+
+    for i = 0 to expected.StateCount - 1 do
+        check i
