@@ -71,11 +71,6 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
     let mutable robot = startRobot
     let mutable numCommands = 0
 
-    member x.FromCanonicalState (grid, (state:CanonicalWorldState)) =
-        let sim = BasicRobotSimulator (grid, state.Robot)
-        grid.SetFromCanonical state.Grid
-        sim
-
     member x.AsCanonicalState = {Robot=robot; Grid=grid.ConvertToCanonical grid.Current}
     member x.ConvertToCanonical (state:WorldState<'Grid>) = {Robot=state.Robot; Grid=grid.ConvertToCanonical state.Grid}
 
