@@ -28,7 +28,6 @@ type PersistentDebugger (init: DebuggerInitialData) =
         BasicRobotSimulator (grid, init.State.Robot)
 
     let simulator = Simulator.LazySimulator (init.Program, init.BuiltIns, robot)
-
     let mutable current = simulator.InitialState
 
     interface IDebugger with
@@ -46,35 +45,23 @@ type PersistentDebugger (init: DebuggerInitialData) =
 type WorkshopDebugger (init: DebuggerInitialData) =
     let nie () = raise (System.NotImplementedException ())
 
-    let result = Simulator.SimulateWithRobot init.Program init.BuiltIns (BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical init.State))
+    let simulator =
+        let grid = TreeMapGrid () :> IGrid<_>
+        grid.SetFromCanonical init.State.Grid
+        BasicRobotSimulator (grid, init.State.Robot)
+    let result = Simulator.CollectAllStates init.Program simulator init.BuiltIns (Some 10000000)
+
     let mutable index = 0
 
-    do
-        // HACK correct implementation of IsDone relies on this property
-        if (MyArray.last result.States).StepIndex <> result.Steps.Length - 1 then
-            invalidArg "init" "final step does not include a state change!"
-
-    let jumpToState i =
-        index <- result.States.[i].StepIndex
-
-    let currentStateIndex () =
-        // find the first state _past_ the current step index, and subtract 1
-        match result.States |> Array.tryFindIndex (fun s -> s.StepIndex > index) with
-        | Some i -> i - 1
-        | None -> result.States.Length - 1
-
     interface IDebugger with
-        member x.IsDone = index = result.Steps.Length - 1
-        //member x.CurrentStep = {Stack=result.Steps.[index]; State=result.States.[currentStateIndex ()].Data; Errors=Array.empty}
-        member x.CurrentStep =
-            let sd = result.States.[currentStateIndex ()].Data
-            {State=(sd.WorldState :?> BasicWorldState).AsCanonical; LastExecuted=[]; Command=Robot.CommandOLD.ToCommand sd.Command}
-        member x.AdvanceOneState () = jumpToState (currentStateIndex () + 1)
+        member x.IsDone = index = result.Length - 1
+        member x.CurrentStep = result.[index]
+        member x.AdvanceOneState () = index <- index + 1
         member x.AdvanceOneLine () = nie ()
 
-        member x.CurrentStateIndex = currentStateIndex ()
-        member x.StateCount = result.States.Length
-        member x.JumpToState newIndex = jumpToState newIndex
+        member x.CurrentStateIndex = index
+        member x.StateCount = result.Length
+        member x.JumpToState newIndex = index <- newIndex
 
 module Debugger =
     let create (mode, init) : IDebugger =
