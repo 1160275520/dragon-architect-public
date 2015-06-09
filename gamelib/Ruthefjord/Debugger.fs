@@ -71,7 +71,10 @@ type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a
         grid.SetFromCanonical state.Grid
         BasicRobotSimulator (grid, state.Robot)
 
-    let simulator = makeSim init.State
+    let simulator =
+        grid.SetFromCanonical init.State.Grid
+        BasicRobotSimulator (grid, init.State.Robot)
+
     let result =
         Simulator.CollectEveryNStates init.Program simulator init.BuiltIns checkpointDistance maxSteps
 
@@ -98,7 +101,8 @@ type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a
                 // find closest checkpoint
                 let onePast = result |> Array.findIndex (fun (i,_,_) -> i > newIndex)
                 let chkIndex, progState, stateData = result.[onePast - 1]
-                let newSim = makeSim (simulator.ConvertToCanonical stateData.State)
+                grid.Set stateData.State.Grid
+                let newSim = BasicRobotSimulator (grid, stateData.State.Robot)
                 current <- Simulator.ExecuteNSteps {progState with Simulator=newSim} (newIndex - chkIndex)
             index <- newIndex
 

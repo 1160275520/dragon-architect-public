@@ -71,7 +71,7 @@ let main argv =
 
             let runToEnd grid =
                 let runner = Debugger.makeSimulator (HashTableGrid ()) start
-                Simulator.ExecuteToEnd program runner importedModules |> (fun s -> foo.Add s.Grid.Length)
+                Simulator.ExecuteToEnd program runner importedModules |> (fun s -> foo.Add s.Grid.Count)
 
             test "ToEnd HT" (fun () -> runToEnd (HashTableGrid ()))
             test "ToEnd TM" (fun () -> runToEnd (TreeMapGrid ()))
@@ -85,32 +85,44 @@ let main argv =
             ()
 
         | TestType.Jump ->
+
+            let random = System.Random 387234678
+            let jumps = Array.init 100 (fun _ -> random.Next numStates)
+
             let initData = {Program=program; BuiltIns=importedModules; State=start}
 
             let numJumps = 99
 
             let jumpTest (debugger:#IDebugger) =
                 for i = 0 to numJumps do
-                    let n = RMath.floori (((float i) / (float numJumps)) * (float (numStates - 1)))
+                    let n = jumps.[i]
                     debugger.JumpToState n
                     foo.Add debugger.CurrentStateIndex
 
             if numStates < 10000 then
                 test "Naive  HT" (fun () -> jumpTest (WorkshopDebugger (initData, HashTableGrid (), None)))
                 test "Naive  TM" (fun () -> jumpTest (WorkshopDebugger (initData, TreeMapGrid (), None)))
+
             if numStates < 300000 then
                 test "Chk20  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 20, None)))
-                test "Chk20  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 20, None)))
                 test "Chk40  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 40, None)))
-                test "Chk40  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 40, None)))
             test "Chk60  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 60, None)))
-            test "Chk60  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 60, None)))
             test "Chk80  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 80, None)))
-            test "Chk80  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 80, None)))
             test "Chk100 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 100, None)))
-            test "Chk100 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 100, None)))
             test "Chk120 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 120, None)))
+            test "Chk140 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 140, None)))
+            test "Chk160 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 160, None)))
+
+            if numStates < 300000 then
+                test "Chk20  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 20, None)))
+                test "Chk40  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 40, None)))
+            test "Chk60  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 60, None)))
+            test "Chk80  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 80, None)))
+            test "Chk100 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 100, None)))
             test "Chk120 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 120, None)))
+            test "Chk140 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 140, None)))
+            test "Chk160 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 160, None)))
+
             test "Cache    " (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
 
         | _ -> invalidOp ""

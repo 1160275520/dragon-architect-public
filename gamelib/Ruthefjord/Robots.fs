@@ -43,18 +43,20 @@ type IGrid<'Grid> =
     abstract RemoveObject : IntVec3 -> unit
     abstract Current: 'Grid
     abstract SetFromCanonical : CanonicalGrid -> unit
+    abstract Set: 'Grid -> unit
     // convert the given state (probably returned by this.Current) to canonical form
     abstract ConvertToCanonical : 'Grid -> CanonicalGrid
 
 [<Sealed>]
 type HashTableGrid() =
     let mutable cubes = Dictionary ()
-    interface IGrid<KeyValuePair<IntVec3, int> array> with
+    interface IGrid<Dictionary<IntVec3, int>> with
         member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes.Add (idx, cube)
         member x.RemoveObject idx = cubes.Remove idx |> ignore
-        member x.Current = Seq.toArray cubes
+        member x.Current = Dictionary cubes
         member x.SetFromCanonical grid = cubes <- Dictionary grid
-        member x.ConvertToCanonical cubes = Array.map Impl.kvp2pair cubes |> Map.ofArray
+        member x.Set grid = cubes <- Dictionary grid
+        member x.ConvertToCanonical cubes = Seq.map Impl.kvp2pair cubes |> Map.ofSeq
 
 [<Sealed>]
 type TreeMapGrid() =
@@ -64,6 +66,7 @@ type TreeMapGrid() =
         member x.RemoveObject idx = cubes <- cubes.Remove idx
         member x.Current = cubes
         member x.SetFromCanonical grid = cubes <- grid
+        member x.Set grid = cubes <- grid
         member x.ConvertToCanonical cubes = cubes
 
 [<Sealed>]
