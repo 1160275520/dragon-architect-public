@@ -20,13 +20,12 @@ let makeInitData (filename) =
     let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
     let text = System.IO.File.ReadAllText filename
     let program = Parser.Parse (text, filename)
-    let grid = GridStateTracker Seq.empty
     let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 
     {
         Program = program;
         BuiltIns = importedModules;
-        State = {Robot=robot; Grid=grid.CurrentState}
+        State = {Robot=robot; Grid=Map.empty}
     }
 
 [<Fact>]

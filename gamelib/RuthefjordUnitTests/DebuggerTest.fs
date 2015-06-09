@@ -13,13 +13,12 @@ let makeInitData () =
     let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
     let text = System.IO.File.ReadAllText filename
     let program = Parser.Parse (text, filename)
-    let grid = GridStateTracker Seq.empty
     let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
 
     {
         Program = program;
         BuiltIns = importedModules;
-        State = {Robot=robot; Grid=grid.CurrentState}
+        State = {Robot=robot; Grid=Map.empty}
     }
 
 let runBasicTest (makeDebugger: DebuggerInitialData -> IDebugger) =
@@ -30,7 +29,7 @@ let runBasicTest (makeDebugger: DebuggerInitialData -> IDebugger) =
     while not debugger.IsDone do
         debugger.AdvanceOneState ()
 
-    let runner = BasicImperativeRobotSimulator.FromWorldState initData.State
+    let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
     let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
     debugger.CurrentStep.State.WorldState |> should equal result.States.[result.States.Length - 1].Data.WorldState
@@ -55,7 +54,7 @@ let ``persistent debugger unsupported operations`` () =
 let ``workshop debugger jumping`` () =
     let initData = makeInitData ()
     let debugger: IDebugger = upcast WorkshopDebugger initData
-    let runner = BasicImperativeRobotSimulator.FromWorldState initData.State
+    let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
     let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
     debugger.StateCount |> should equal result.States.Length

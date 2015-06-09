@@ -148,7 +148,7 @@ public class ProgramManager : MonoBehaviour {
         var initData = new DebuggerInitialData(
             this.Manipulator.Program,
             this.importedModules,
-            new BasicWorldState(this.robot.Robot, ImmArr.ofArray(GetComponent<Grid>().AllCellsWithCommands)));
+            new BasicWorldState(this.robot.Robot, ImmArr.ofArray(GetComponent<Grid>().AllCellsWithCommands)).AsCanonical);
         this.debugger = Debugger.create(this.editMode, initData);
         this.runner.Reset(this.debugger);
         this.lastStatementExecutionTime = Time.time;

@@ -15,14 +15,14 @@ end
 type DebuggerInitialData = {
     Program: Ast.Imperative.Program;
     BuiltIns: Simulator.ValueMap;
-    State: BasicWorldState;
+    State: CanonicalWorldState;
 }
 
 type PersistentDebugger (init: DebuggerInitialData) =
     let nie () = raise (System.NotImplementedException ())
     let nse () = raise (System.NotSupportedException ("persistent debugger does not support workshop-only commands"))
 
-    let simulator = Simulator.LazySimulator (init.Program, init.BuiltIns, BasicImperativeRobotSimulator.FromWorldState init.State)
+    let simulator = Simulator.LazySimulator (init.Program, init.BuiltIns, BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical init.State))
     let mutable current = simulator.InitialState
 
     interface IDebugger with
@@ -40,7 +40,7 @@ type PersistentDebugger (init: DebuggerInitialData) =
 type WorkshopDebugger (init: DebuggerInitialData) =
     let nie () = raise (System.NotImplementedException ())
 
-    let result = Simulator.SimulateWithRobot init.Program init.BuiltIns (BasicImperativeRobotSimulator.FromWorldState init.State)
+    let result = Simulator.SimulateWithRobot init.Program init.BuiltIns (BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical init.State))
     let mutable index = 0
 
     do
