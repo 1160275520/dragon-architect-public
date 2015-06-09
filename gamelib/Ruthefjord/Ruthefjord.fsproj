@@ -31,6 +31,11 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\Ruthefjord.XML</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="AfterBuild" command="cp ${TargetFile} /Users/awb/Documents/Research/ruthefjord/unity/Assets/Code" externalConsole="True" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
