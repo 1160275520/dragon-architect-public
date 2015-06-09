@@ -7,6 +7,8 @@ using Microsoft.FSharp.Core;
 using Ruthefjord;
 using Ruthefjord.Ast;
 
+using CanonicalWorldState = Ruthefjord.WorldState<Microsoft.FSharp.Collections.FSharpMap<Ruthefjord.IntVec3, int>>;
+
 public enum ProgramStepType
 {
     Statement,
@@ -48,7 +50,7 @@ public class ProgramManager : MonoBehaviour {
     private float lastStatementExecutionTime = 0.0f;
 
     private IEnumerable<Imperative.Statement> lastExecuted;
-    private Simulator.StateResult currentState;
+    private BasicWorldState currentState;
 
     private Microsoft.FSharp.Collections.FSharpMap<string, object> importedModules;
 
@@ -167,19 +169,19 @@ public class ProgramManager : MonoBehaviour {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
         debugger.JumpToState(index);
         var cs = debugger.CurrentStep;
-        setGameState(cs.State, cs.Stack, 0.0f);
+        setGameState(cs.State, cs.Command, cs.LastExecuted, 0.0f);
     }
 
-
-    private void setGameState(Simulator.StateResult state, IEnumerable<Imperative.Statement> stack, float transitionTimeSeconds) {
+    private void setGameState(CanonicalWorldState cws, FSharpOption<Ruthefjord.Robot.Command> commandOpt, IEnumerable<Imperative.Statement> stack, float transitionTimeSeconds) {
         Profiler.BeginSample("ProgramManager.setGameState");
+        var state = BasicWorldState.FromCanonical(cws);
         if (state != currentState) {
             FindObjectOfType<MyCamera>().clearCubeHighlight();
             currentState = state;
             var grid = GetComponent<Grid>();
-            var ws = state.WorldState as BasicWorldState;
-            robot.SetRobot(ws.Robot, state.Command, transitionTimeSeconds);
-            grid.SetGrid(ws.Grid);
+            var cmd = OptionModule.IsSome(commandOpt) ? commandOpt.Value : null;
+            robot.SetRobot(state.Robot, cmd, transitionTimeSeconds);
+            grid.SetGrid(state.Grid);
             lastExecuted = stack;
             GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
         }
@@ -249,7 +251,7 @@ public class ProgramManager : MonoBehaviour {
             if (numSteps > 0) {
                 this.lastStatementExecutionTime = Time.time;
                 var cs = debugger.CurrentStep;
-                setGameState(cs.State, cs.Stack, dt);
+                setGameState(cs.State, cs.Command, cs.LastExecuted, dt);
             }
         }
 	}

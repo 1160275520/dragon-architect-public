@@ -7,6 +7,11 @@ open System.Collections.Generic
 open Ruthefjord
 open Ruthefjord.Ast.Imperative
 
+type Command = {
+    Name: string;
+    Args: obj list;
+}
+
 [<AllowNullLiteral>]
 type CommandOLD(t,a,s) =
     member x.Name: string = t
@@ -21,10 +26,11 @@ type CommandOLD(t,a,s) =
     override x.GetHashCode () =
         x.Name.GetHashCode () ^^^ x.Args.GetHashCode ()
 
-type Command = {
-    Name: string;
-    Args: obj list;
-}
+    static member ToCommand (x:CommandOLD) =
+        if x = null then
+            None
+        else
+            Some {Name=x.Name; Args=List.ofSeq x.Args}
 
 type Query = {
     Name: string;

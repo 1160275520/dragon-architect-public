@@ -381,6 +381,27 @@ let CollectEventNStates program robotSimulator globals jumpDist maxSteps =
 
     states.ToArray ()
 
+type LazySimulator<'S> (program, globals, robot:Robot.IRobotSimulator<'S>) =
+    let ps = createNewProgramState program robot globals
+    let initialState = {State=robot.CurrentState; Command=None; LastExecuted=ps.LastExecuted}
+
+    member x.IsDone = ps.CallStack.IsEmpty
+
+    member x.InitialState = initialState
+
+    /// Step the simulation until either a state change or an error.
+    member x.AdvanceOneCommand () =
+        let cmd = ref None
+        // run until next command
+        ps |> executeSteps (fun result ->
+            match result with
+            | Some (_, (Some _ as c), _) ->
+                cmd := c
+                false
+            | _ -> true
+        )
+        {State=robot.CurrentState; Command= !cmd; LastExecuted=ps.LastExecuted}
+
 let private step (state:State) =
     match state.CallStack with
     | [] -> None
@@ -912,21 +933,6 @@ let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulato
         | Choice2Of2 error -> ()
 
     robot.CurrentState
-
-type LazySimulator (program, builtIns, robot) =
-    let state = createState program builtIns (Some robot)
-    let initialState = {Stack=state.LastExecuted; State={Command=null; WorldState=robot.CurrentState}; Errors=Array.empty}
-
-    member x.IsDone = IsDone state
-
-    member x.InitialState = initialState
-
-    /// Step the simulation until either a state change or an error.
-    member x.AdvanceOneCommand () =
-        let cmd = ExecuteUntilCommand state
-        robot.Execute cmd
-        {Stack=state.LastExecuted; State={Command=cmd; WorldState=robot.CurrentState}; Errors=Array.empty}
-        //{Command=cmd; WorldState=robot.CurrentState}
 
 type EmptyRobotSimulator () =
     interface Robot.IRobotSimulator<int> with

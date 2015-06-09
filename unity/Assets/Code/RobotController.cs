@@ -72,7 +72,7 @@ public class RobotController : MonoBehaviour {
         yield break;
     }
 
-    public void SetRobot(BasicRobot robot, CommandOLD com, float secondsPerCommand) {
+    public void SetRobot(BasicRobot robot, Command com, float secondsPerCommand) {
         Profiler.BeginSample("RobotController.SetRobot");
         // increment the counter to kill off the other coroutines
         counter++;

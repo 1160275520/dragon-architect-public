@@ -3,7 +3,7 @@ namespace Ruthefjord
 type IDebugger = interface
     // generic operations
     abstract IsDone : bool
-    abstract CurrentStep : Simulator.StepResult
+    abstract CurrentStep : Simulator.StateData<CanonicalWorldState>
     abstract AdvanceOneState : unit -> unit
     abstract AdvanceOneLine : unit -> unit
     // workshop-only operations
@@ -22,12 +22,18 @@ type PersistentDebugger (init: DebuggerInitialData) =
     let nie () = raise (System.NotImplementedException ())
     let nse () = raise (System.NotSupportedException ("persistent debugger does not support workshop-only commands"))
 
-    let simulator = Simulator.LazySimulator (init.Program, init.BuiltIns, BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical init.State))
+    let robot =
+        let grid = HashTableGrid () :> IGrid<_>
+        grid.SetFromCanonical init.State.Grid
+        BasicRobotSimulator (grid, init.State.Robot)
+
+    let simulator = Simulator.LazySimulator (init.Program, init.BuiltIns, robot)
+
     let mutable current = simulator.InitialState
 
     interface IDebugger with
         member x.IsDone = simulator.IsDone
-        member x.CurrentStep = current
+        member x.CurrentStep = {State=robot.AsCanonicalState; LastExecuted=current.LastExecuted; Command=current.Command}
         member x.AdvanceOneState () =
             current <- simulator.AdvanceOneCommand ()
         member x.AdvanceOneLine () =
@@ -59,7 +65,10 @@ type WorkshopDebugger (init: DebuggerInitialData) =
 
     interface IDebugger with
         member x.IsDone = index = result.Steps.Length - 1
-        member x.CurrentStep = {Stack=result.Steps.[index]; State=result.States.[currentStateIndex ()].Data; Errors=Array.empty}
+        //member x.CurrentStep = {Stack=result.Steps.[index]; State=result.States.[currentStateIndex ()].Data; Errors=Array.empty}
+        member x.CurrentStep =
+            let sd = result.States.[currentStateIndex ()].Data
+            {State=(sd.WorldState :?> BasicWorldState).AsCanonical; LastExecuted=[]; Command=Robot.CommandOLD.ToCommand sd.Command}
         member x.AdvanceOneState () = jumpToState (currentStateIndex () + 1)
         member x.AdvanceOneLine () = nie ()
 

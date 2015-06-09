@@ -32,7 +32,7 @@ let runBasicTest (makeDebugger: DebuggerInitialData -> IDebugger) =
     let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
     let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
 
-    debugger.CurrentStep.State.WorldState |> should equal result.States.[result.States.Length - 1].Data.WorldState
+    debugger.CurrentStep.State |> should equal (result.States.[result.States.Length - 1].Data.WorldState :?> BasicWorldState).AsCanonical
 
 [<Fact>]
 let ``basic persistent debugger`` () =
@@ -61,7 +61,7 @@ let ``workshop debugger jumping`` () =
 
     let checkIndex i =
         debugger.JumpToState i
-        debugger.CurrentStep.State.WorldState |> should equal result.States.[i].Data.WorldState
+        debugger.CurrentStep.State |> should equal (result.States.[i].Data.WorldState :?> BasicWorldState).AsCanonical
         debugger.CurrentStateIndex |> should equal i
         debugger.IsDone |> should equal (i = result.States.Length - 1)
 
