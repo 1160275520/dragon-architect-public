@@ -29,6 +29,18 @@ let makeInitData (filename) =
     }
 
 [<Fact>]
+let ``no-op detla simulation`` () =
+    let initData = makeInitData ("../../../../doc/line.txt")
+    let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+
+    let cache = Simulator.MutableDict ()
+    let simulator = Debugger.makeSimulator (TreeMapGrid ()) initData.State
+    Simulator.RunOptimized initData.Program initData.BuiltIns simulator cache
+    let actual = simulator.AsCanonicalState
+
+    actual |> should equal expected
+
+[<Fact>]
 [<Trait("tag", "opt")>]
 let ``yet another optimization test`` () =
     let initData = makeInitData ("../../../../doc/pyramid.txt")

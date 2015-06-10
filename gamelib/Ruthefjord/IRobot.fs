@@ -45,14 +45,9 @@ type IRobotSimulator<'State> =
 type IRobotDeltaSimulator<'State, 'StateDelta> =
     inherit IRobotSimulator<'State>
     abstract EmptyDelta : 'StateDelta;
-    abstract CombineDelta : 'StateDelta -> 'StateDelta -> 'StateDelta;
     abstract CreateDelta : Command -> 'StateDelta;
+    abstract CombineDelta : 'StateDelta -> 'StateDelta -> 'StateDelta;
     abstract TryApplyDelta : 'StateDelta -> bool;
-
-type IRobotSimulatorOLD =
-    abstract member Execute : command:CommandOLD -> unit
-    abstract member Query : query:Query -> obj
-    abstract member CurrentState : obj
 
 type IRobotSimulatorOLD2 =
     abstract member Execute : command:Command -> unit

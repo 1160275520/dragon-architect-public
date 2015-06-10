@@ -1,0 +1,5 @@
+#lang imperative:1.0
+
+define x ()
+    pass
+

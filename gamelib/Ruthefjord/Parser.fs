@@ -56,7 +56,7 @@ let lex (program, filename) =
     let keywords =
         Set.ofArray [|
             "define"; "function";
-            "set"; "var"; "let"; "mutable"; "to"; "in"; 
+            "set"; "var"; "let"; "mutable"; "to"; "in";
             "if"; "elif"; "else"; "end"; "then";
             "repeat"; "times"; "pass";
             "choice"; "match"; "case"; "of";
@@ -409,14 +409,14 @@ let PrettyPrintTo (w:System.IO.TextWriter) (program:Program) =
         | Function f ->
             w.Write "function "
             w.Write f.Name
-            f.Parameters |> printList w.Write 
+            f.Parameters |> printList w.Write
             w.Write ' '
             printExpr f.Body
             w.Write "\n\n"
         | Procedure p ->
             w.Write "define "
             w.Write p.Name
-            p.Parameters |> printList w.Write 
+            p.Parameters |> printList w.Write
             w.Write '\n'
             printBody p.Body
             w.Write '\n'

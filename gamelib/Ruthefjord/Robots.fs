@@ -81,7 +81,7 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
 
     member x.NumberOfCommandsExecuted = numCommands
 
-    interface Robot.IRobotSimulator<WorldState<'Grid>> with
+    interface Robot.IRobotDeltaSimulator<WorldState<'Grid>, int> with
         member x.Execute command =
             numCommands <- numCommands + 1
             let p = robot.Position
@@ -101,6 +101,11 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
         member x.Query query = raise (System.NotSupportedException ())
 
         member x.CurrentState = {Robot=robot; Grid=grid.Current}
+
+        member x.EmptyDelta = 0
+        member x.CreateDelta _ = 0
+        member x.CombineDelta _ _  = 0
+        member x.TryApplyDelta _ = false
 
 type GridStateTracker2(init: Map<IntVec3, Cube2>) =
 

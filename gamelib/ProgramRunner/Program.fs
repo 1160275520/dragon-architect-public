@@ -51,7 +51,7 @@ let main argv =
         let program = Parser.Parse (text, filename)
         let start: CanonicalWorldState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=Map.empty}
 
-        let numSamples = 2
+        let numSamples = 5
         let foo = System.Collections.Generic.List (10000000)
 
         let numStates =
