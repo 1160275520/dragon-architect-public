@@ -101,10 +101,10 @@ repeat 10 times
 
 let referenceProgramsTheory = TestUtil.TupleToTheory referencePrograms
 
-let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWorldState, grid:IGrid<_>) =
+let checkReferenceProgram (runSim:DebuggerInitialData -> CanonicalWorldState) (text, start:CanonicalWorldState, expected:CanonicalWorldState) =
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
-    let actual = Debugger.runToCannonicalState prog grid lib start
+    let actual = runSim {Program=prog; BuiltIns=lib; State=start}
     actual.Grid |> should equal expected.Grid
     actual.Robot |> should equal expected.Robot
 
@@ -126,54 +126,53 @@ let samplePrograms = [
     "twisty-tower"
 ]
 
-let sampleProgramsSeq = TestUtil.SingleToTheory samplePrograms
+let sampleProgramsTheory = TestUtil.SingleToTheory samplePrograms
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
 let ``Reference Test HashTable`` (text, start, expected) =
-    checkReferenceProgram (text, start, expected, HashTableGrid ())
+    (text, start, expected) |> checkReferenceProgram (fun init ->
+        Debugger.runToCannonicalState (HashTableGrid ()) init
+    )
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
 let ``Reference Test TreeMap`` (text, start, expected) =
-    checkReferenceProgram (text, start, expected, TreeMapGrid ())
-
-let runAllStatesAndGetFinal prog grid lib start =
-    let states = Debugger.getAllCannonicalStates prog grid lib start
-    states.[states.Length - 1]
+    (text, start, expected) |> checkReferenceProgram (fun init ->
+        Debugger.runToCannonicalState (TreeMapGrid ()) init
+    )
 
 [<Theory>]
 [<PropertyData("referenceProgramsTheory")>]
 let ``All States Reference TreeMap`` (text, start, expected:CanonicalWorldState) =
-    let prog = Parser.Parse (text, "prog")
-    let lib = loadBuiltIns ()
-    let actual = runAllStatesAndGetFinal prog (TreeMapGrid ()) lib start
-
-    actual.Grid |> should equal expected.Grid
-    actual.Robot |> should equal expected.Robot
+    (text, start, expected) |> checkReferenceProgram (fun init ->
+        MyArray.last (Debugger.getAllCannonicalStates (TreeMapGrid ()) init)
+    )
 
 [<Fact>]
 let ``All States Test`` () =
     let text = """
 Forward(6)
 """
-    let start:CanonicalWorldState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=Map.empty}
-    let prog = Parser.Parse (text, "prog")
-    let lib = loadBuiltIns ()
-    let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
+    let init = {
+        Program = Parser.Parse (text, "prog");
+        BuiltIns = loadBuiltIns ();
+        State = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=Map.empty};
+    }
+    let states = Debugger.getAllCannonicalStates (TreeMapGrid ()) init
 
     let expected: CanonicalWorldState list = [for i in 1 .. 6 -> {Robot={Position=IntVec3 (0,0,i); Direction=IntVec3.UnitZ}; Grid=Map.empty}]
-    let expected = start :: expected @ [Seq.last expected]
+    let expected = init.State :: expected @ [Seq.last expected]
 
     states.Length |> should equal expected.Length
     states |> List.ofArray |> should equal expected
 
 [<Theory>]
-[<PropertyData("sampleProgramsSeq")>]
+[<PropertyData("sampleProgramsTheory")>]
 let ``Final State All States Equivalence On Sample Programs`` (progName:string) =
-    let {Program=prog; BuiltIns=lib; State=start} = loadSampleProgram progName
-    let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
-    let final = Debugger.runToCannonicalState prog (TreeMapGrid ()) lib start
+    let init = loadSampleProgram progName
+    let states = Debugger.getAllCannonicalStates (TreeMapGrid ()) init
+    let final = Debugger.runToCannonicalState (TreeMapGrid ()) init
     states.[0].Grid.Count |> should equal 0
     states.Length |> should greaterThanOrEqualTo 2
     Seq.last states |> should equal final
@@ -181,8 +180,8 @@ let ``Final State All States Equivalence On Sample Programs`` (progName:string) 
 [<Fact>]
 let ``Equivalent castle programs`` () =
     let lib = loadBuiltIns ()
-    let {Program=prog1; BuiltIns=lib; State=start} = loadSampleProgram "castle_decomp"
-    let {Program=prog2} = loadSampleProgram "castle_updated"
-    let final1 = Debugger.runToCannonicalState prog1 (HashTableGrid ()) lib start
-    let final2 = Debugger.runToCannonicalState prog2 (HashTableGrid ()) lib start
+    let init1 = loadSampleProgram "castle_decomp"
+    let init2 = loadSampleProgram "castle_updated"
+    let final1 = Debugger.runToCannonicalState (HashTableGrid ()) init1
+    let final2 = Debugger.runToCannonicalState (HashTableGrid ()) init2
     final1 |> should equal final2

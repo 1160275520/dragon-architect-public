@@ -173,23 +173,21 @@ module Debugger =
         ApplyCommand = fun state c -> BasicWorldState3.ApplyCommand state c;
     }
 
-    /// Only use for correctness unit tests! This is not performant!
-    let runToCannonicalState program (grid:IGrid<_>) globals (startState:CanonicalWorldState) : CanonicalWorldState =
-        grid.SetFromCanonical startState.Grid
-        let simulator = BasicRobotSimulator (grid, startState.Robot)
-        Simulator.ExecuteToEnd program simulator globals |> ignore
-        simulator.AsCanonicalState
-
     let makeSimulator (grid:IGrid<'a>) (init:CanonicalWorldState) =
         let sim = BasicRobotSimulator (grid, init.Robot)
         grid.SetFromCanonical init.Grid
         sim
 
     /// Only use for correctness unit tests! This is not performant!
-    let getAllCannonicalStates program (grid:IGrid<_>) globals (startState:CanonicalWorldState) : CanonicalWorldState array =
-        grid.SetFromCanonical startState.Grid
-        let simulator = BasicRobotSimulator (grid, startState.Robot)
-        let states = Simulator.CollectAllStates program simulator globals None
+    let runToCannonicalState (grid:IGrid<_>) (init:DebuggerInitialData) : CanonicalWorldState =
+        let simulator = makeSimulator grid init.State
+        Simulator.ExecuteToEnd init.Program simulator init.BuiltIns |> ignore
+        simulator.AsCanonicalState
+
+    /// Only use for correctness unit tests! This is not performant!
+    let getAllCannonicalStates (grid:IGrid<_>) (init:DebuggerInitialData) : CanonicalWorldState array =
+        let simulator = makeSimulator grid init.State
+        let states = Simulator.CollectAllStates init.Program simulator init.BuiltIns None
         states |> Array.map (fun s -> simulator.ConvertToCanonical s.State)
 
 type ProgramRunner() =

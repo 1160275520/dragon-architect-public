@@ -17,39 +17,64 @@ let ``command sanity check`` () =
 
     c1 |> should equal c2
 
-[<Fact>]
-let ``no-op detla simulation`` () =
-    let initData = IST.loadSampleProgram "line"
-    let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+let referenceProgramsTheory = IST.referenceProgramsTheory
+let sampleProgramsTheory = IST.sampleProgramsTheory
 
+let checkOptimizedReference makeSim reference =
+    reference |> IST.checkReferenceProgram (fun init ->
+        let cache = Simulator.MutableDict ()
+        let simulator: #IGridWorldSimulator<_,_> = makeSim init
+        Simulator.RunOptimized init.Program init.BuiltIns simulator cache
+        simulator.AsCanonicalState
+    )
+
+let checkOptimizedSampleProgram makeSim progName =
     let cache = Simulator.MutableDict ()
-    let simulator = Debugger.makeSimulator (TreeMapGrid ()) initData.State
-    Simulator.RunOptimized initData.Program initData.BuiltIns simulator cache
+    let init = IST.loadSampleProgram progName
+    let simulator: #IGridWorldSimulator<_,_> = makeSim init
+
+    let expected = Debugger.runToCannonicalState (HashTableGrid ()) init
+    Simulator.RunOptimized init.Program init.BuiltIns simulator cache
     let actual = simulator.AsCanonicalState
 
     actual |> should equal expected
 
-[<Fact>]
-let ``detla simulation`` () =
-    let initData = IST.loadSampleProgram "line"
-    let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``no-op delta reference`` (text, start, expected) =
+    (text, start, expected) |> checkOptimizedReference (fun init ->
+        Debugger.makeSimulator (TreeMapGrid ()) init.State
+    )
 
-    let cache = Simulator.MutableDict ()
-    let simulator = DeltaRobotSimulator (initData.State.Robot)
-    Simulator.RunOptimized initData.Program initData.BuiltIns simulator cache
-    let actual = simulator.AsCanonicalState
+[<Theory>]
+[<PropertyData("sampleProgramsTheory")>]
+let ``no-op delta samples`` progName =
+    progName |> checkOptimizedSampleProgram (fun init ->
+        Debugger.makeSimulator (TreeMapGrid ()) init.State
+    )
 
-    actual |> should equal expected
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``delta reference`` (text, start, expected) =
+    (text, start, expected) |> checkOptimizedReference (fun init ->
+        DeltaRobotSimulator (init.State.Grid, init.State.Robot)
+    )
+
+[<Theory>]
+[<PropertyData("sampleProgramsTheory")>]
+let ``delta samples`` progName =
+    progName |> checkOptimizedSampleProgram (fun init ->
+        DeltaRobotSimulator (init.State.Grid, init.State.Robot)
+    )
 
 // copy of the normal delta simulator, except Execute throw an exception.
 // for testing to ensure optimized simulators actually use the deltas exclusively
-type NoFallbackDeltaRobotSimulator (robot) =
-    let sim = DeltaRobotSimulator(robot)
-    let isim = sim :> Robot.IRobotDeltaSimulator<_,_>
+type NoFallbackDeltaRobotSimulator (state) =
+    let sim = DeltaRobotSimulator(state)
+    let isim = sim :> IGridWorldSimulator<_,_>
 
-    member x.AsCanonicalState = sim.AsCanonicalState
-
-    interface Robot.IRobotDeltaSimulator<WorldState<DictGrid>, BasicWorldStateDelta> with
+    interface IGridWorldSimulator<DictGrid, BasicWorldStateDelta> with
+        member x.AsCanonicalState = isim.AsCanonicalState
         member x.Execute command = invalidOp ""
         member x.Query query = isim.Query query
         member x.CurrentState = isim.CurrentState
@@ -59,17 +84,19 @@ type NoFallbackDeltaRobotSimulator (robot) =
         member x.TryApplyDelta delta = isim.TryApplyDelta delta
 
 // delta simulation on normal program should never hit the fallback code
-[<Fact>]
-let ``detla simulation no fallback`` () =
-    let initData = IST.loadSampleProgram "line"
-    let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``no fallback delta reference`` (text, start, expected) =
+    (text, start, expected) |> checkOptimizedReference (fun init ->
+        NoFallbackDeltaRobotSimulator (init.State.Grid, init.State.Robot)
+    )
 
-    let cache = Simulator.MutableDict ()
-    let simulator = NoFallbackDeltaRobotSimulator (initData.State.Robot)
-    Simulator.RunOptimized initData.Program initData.BuiltIns simulator cache
-    let actual = simulator.AsCanonicalState
-
-    actual |> should equal expected
+[<Theory>]
+[<PropertyData("sampleProgramsTheory")>]
+let ``no fallback delta samples`` progName =
+    progName |> checkOptimizedSampleProgram (fun init ->
+        NoFallbackDeltaRobotSimulator (init.State.Grid, init.State.Robot)
+    )
 
 [<Fact>]
 [<Trait("tag", "opt")>]
@@ -77,7 +104,7 @@ let ``yet another optimization test`` () =
     let initData = IST.loadSampleProgram "pyramid"
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
 
-    let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+    let expected = Debugger.getAllCannonicalStates (TreeMapGrid ()) initData
     let endState = expected.[expected.Length - 1]
     let grid1 = MyMap.keys endState.Grid |> Array.ofSeq |> Array.sort
 
@@ -95,7 +122,7 @@ let ``dictionary-based delta integration test`` () =
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
     let initState3: BasicWorldState3 = {Robot=initData.State.Robot; Grid=System.Collections.Generic.Dictionary()}
 
-    let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+    let expected = Debugger.getAllCannonicalStates (TreeMapGrid ()) initData
     let endState = expected.[expected.Length - 1]
     let grid1 = MyMap.keys endState.Grid |> Array.ofSeq |> Array.sort
 

@@ -17,7 +17,7 @@ let runBasicTest (makeDebugger: DebuggerInitialData -> IDebugger) =
     while not debugger.IsDone do
         debugger.AdvanceOneState ()
 
-    let expected = Debugger.runToCannonicalState initData.Program (HashTableGrid ()) initData.BuiltIns initData.State
+    let expected = Debugger.runToCannonicalState (HashTableGrid ()) initData
 
     debugger.CurrentStep.State |> should equal expected
 
@@ -42,7 +42,7 @@ let ``persistent debugger unsupported operations`` () =
 let ``workshop debugger jumping`` () =
     let initData = IST.loadSampleProgram "smile"
     let debugger: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
-    let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+    let expected = Debugger.getAllCannonicalStates (TreeMapGrid ()) initData
 
     debugger.StateCount |> should equal expected.Length
 

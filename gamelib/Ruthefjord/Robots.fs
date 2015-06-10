@@ -73,6 +73,10 @@ type TreeMapGrid() =
         member x.Set grid = cubes <- grid
         member x.ConvertToCanonical cubes = cubes
 
+type IGridWorldSimulator<'Grid, 'Delta> =
+    inherit Robot.IRobotDeltaSimulator<WorldState<'Grid>, 'Delta>
+    abstract AsCanonicalState : CanonicalWorldState
+
 [<Sealed>]
 type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
     let mutable robot = startRobot
@@ -80,12 +84,14 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
 
     static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
 
-    member x.AsCanonicalState = {Robot=robot; Grid=grid.ConvertToCanonical grid.Current}
     member x.ConvertToCanonical (state:WorldState<'Grid>) = {Robot=state.Robot; Grid=grid.ConvertToCanonical state.Grid}
 
     member x.NumberOfCommandsExecuted = numCommands
+    member x.AsCanonicalState = {Robot=robot; Grid=grid.ConvertToCanonical grid.Current}
 
-    interface Robot.IRobotDeltaSimulator<WorldState<'Grid>, int> with
+    interface IGridWorldSimulator<'Grid, int> with
+        member x.AsCanonicalState = x.AsCanonicalState
+
         member x.Execute command =
             numCommands <- numCommands + 1
             let p = robot.Position
@@ -374,18 +380,20 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
             upcast state
 
 [<Sealed>]
-type DeltaRobotSimulator (startRobot:BasicRobot) =
+type DeltaRobotSimulator (startGrid: CanonicalGrid, startRobot:BasicRobot) =
     let mutable robot = startRobot
     let mutable numCommands = 0
     let grid = HashTableGrid ()
+    do (grid:>IGrid<_>).SetFromCanonical startGrid
 
     static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
 
-    member x.AsCanonicalState : CanonicalWorldState = {Robot=robot; Grid=(grid:>IGrid<_>).ConvertToCanonical (grid:>IGrid<_>).Current}
 
     member x.NumberOfCommandsExecuted = numCommands
 
-    interface Robot.IRobotDeltaSimulator<WorldState<DictGrid>, BasicWorldStateDelta> with
+    interface IGridWorldSimulator<DictGrid, BasicWorldStateDelta> with
+        member x.AsCanonicalState : CanonicalWorldState = {Robot=robot; Grid=(grid:>IGrid<_>).ConvertToCanonical (grid:>IGrid<_>).Current}
+
         member x.Execute command =
             numCommands <- numCommands + 1
             let p = robot.Position

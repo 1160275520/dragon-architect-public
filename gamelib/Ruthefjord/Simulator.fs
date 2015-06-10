@@ -582,7 +582,7 @@ type private ContextOpt = {
     Environment: Environment;
 }
 
-type OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulator:Robot.IRobotDeltaSimulator<'S,'D>, cache: MutableDict<ConcreteStatement, CacheData<'D>>) =
+type private OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulator:Robot.IRobotDeltaSimulator<'S,'D>, cache: MutableDict<ConcreteStatement, CacheData<'D>>) =
     let concretizeStatement (ctx:ContextOpt) (stmt:Statement) : ConcreteStatement option =
         match stmt.Stmt with
         | Repeat {Body=body; NumTimes=ntimesExpr} ->
@@ -747,8 +747,8 @@ type OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulator:Robot
     *)
 
     member x.RunToFinal () =
-        let ctx = {Environment={Globals=globals; Locals=Map.empty}}
-        executeBlock ctx program.Body |> ignore
+        let ctx = {Environment=topLevelEnvironment}
+        executeBlock ctx topLevelBlock |> ignore
 
     (*
     member x.RunToState () (numStates:int) =
