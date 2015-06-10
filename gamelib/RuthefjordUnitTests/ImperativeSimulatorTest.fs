@@ -19,6 +19,8 @@ let ``builtins import`` () =
     let lib = loadBuiltIns ()
     lib.Count |> should equal 8
     lib.ContainsKey "Forward" |> should equal true
+    lib.ContainsKey "Up" |> should equal true
+    lib.ContainsKey "PlaceCube" |> should equal true
 
 let repeatTestProg = """
 repeat 10 times
@@ -106,13 +108,15 @@ let checkReferenceProgram (text, start:CanonicalWorldState, expected:CanonicalWo
     actual.Grid |> should equal expected.Grid
     actual.Robot |> should equal expected.Robot
 
-let loadSampleProgram (progName) : Ast.Imperative.Program * CanonicalWorldState =
+let loadSampleProgram progName : DebuggerInitialData =
     let text = System.IO.File.ReadAllText (sprintf "../../../../doc/%s.txt" progName)
     let program = Parser.Parse (text, progName)
     let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-    (program, {Robot=robot; Grid=Map.empty})
+    {Program=program; BuiltIns=loadBuiltIns(); State={Robot=robot; Grid=Map.empty}}
 
 let samplePrograms = [
+    "empty";
+    "line";
     "AARON";
     "pyramid";
     "smile";
@@ -167,19 +171,18 @@ Forward(6)
 [<Theory>]
 [<PropertyData("sampleProgramsSeq")>]
 let ``Final State All States Equivalence On Sample Programs`` (progName:string) =
-    let lib = loadBuiltIns ()
-    let prog, start = loadSampleProgram progName
+    let {Program=prog; BuiltIns=lib; State=start} = loadSampleProgram progName
     let states = Debugger.getAllCannonicalStates prog (TreeMapGrid ()) lib start
     let final = Debugger.runToCannonicalState prog (TreeMapGrid ()) lib start
     states.[0].Grid.Count |> should equal 0
-    states.Length |> should greaterThan 2
+    states.Length |> should greaterThanOrEqualTo 2
     Seq.last states |> should equal final
 
 [<Fact>]
 let ``Equivalent castle programs`` () =
     let lib = loadBuiltIns ()
-    let prog1, start = loadSampleProgram "castle_decomp"
-    let prog2, _ = loadSampleProgram "castle_updated"
+    let {Program=prog1; BuiltIns=lib; State=start} = loadSampleProgram "castle_decomp"
+    let {Program=prog2} = loadSampleProgram "castle_updated"
     let final1 = Debugger.runToCannonicalState prog1 (HashTableGrid ()) lib start
     let final2 = Debugger.runToCannonicalState prog2 (HashTableGrid ()) lib start
     final1 |> should equal final2

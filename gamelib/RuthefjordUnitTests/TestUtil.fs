@@ -1,5 +1,7 @@
 ﻿namespace Ruthefjord.UnitTest
 
+open Ruthefjord
+
 // use a class, we want to abuse function overloading
 [<AbstractClass; Sealed>]
 type TestUtil private () =

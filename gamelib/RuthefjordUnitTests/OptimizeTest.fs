@@ -7,6 +7,8 @@ open System.IO
 open Ruthefjord
 open Ruthefjord.Robot
 
+module IST = ImperativeSimulatorTest
+
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``command sanity check`` () =
@@ -15,22 +17,9 @@ let ``command sanity check`` () =
 
     c1 |> should equal c2
 
-let makeInitData (filename) =
-    let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
-    let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
-    let text = System.IO.File.ReadAllText filename
-    let program = Parser.Parse (text, filename)
-    let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-
-    {
-        Program = program;
-        BuiltIns = importedModules;
-        State = {Robot=robot; Grid=Map.empty}
-    }
-
 [<Fact>]
 let ``no-op detla simulation`` () =
-    let initData = makeInitData ("../../../../doc/line.txt")
+    let initData = IST.loadSampleProgram "line"
     let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
 
     let cache = Simulator.MutableDict ()
@@ -42,7 +31,7 @@ let ``no-op detla simulation`` () =
 
 [<Fact>]
 let ``detla simulation`` () =
-    let initData = makeInitData ("../../../../doc/line.txt")
+    let initData = IST.loadSampleProgram "line"
     let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
 
     let cache = Simulator.MutableDict ()
@@ -72,7 +61,7 @@ type NoFallbackDeltaRobotSimulator (robot) =
 // delta simulation on normal program should never hit the fallback code
 [<Fact>]
 let ``detla simulation no fallback`` () =
-    let initData = makeInitData ("../../../../doc/line.txt")
+    let initData = IST.loadSampleProgram "line"
     let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
 
     let cache = Simulator.MutableDict ()
@@ -85,7 +74,7 @@ let ``detla simulation no fallback`` () =
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``yet another optimization test`` () =
-    let initData = makeInitData ("../../../../doc/pyramid.txt")
+    let initData = IST.loadSampleProgram "pyramid"
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
 
     let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
@@ -102,7 +91,7 @@ let ``yet another optimization test`` () =
 [<Fact>]
 [<Trait("tag", "opt")>]
 let ``dictionary-based delta integration test`` () =
-    let initData = makeInitData ("../../../../doc/pyramid.txt")
+    let initData = IST.loadSampleProgram "pyramid"
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
     let initState3: BasicWorldState3 = {Robot=initData.State.Robot; Grid=System.Collections.Generic.Dictionary()}
 

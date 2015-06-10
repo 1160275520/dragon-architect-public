@@ -12,17 +12,6 @@ module S = Ruthefjord.Serialization
 module A = Ruthefjord.Ast.Imperative
 module SIM = Ruthefjord.Simulator
 
-let newRobot () = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-
-let loadBuiltIns () =
-    let builtInsFilename = "../../../../unity/Assets/Resources/module/stdlib.txt"
-    let text = File.ReadAllText builtInsFilename
-    P.Parse (text, "stdlib") |> SIM.import
-
-let simpleTestProgram = """
-PlaceCube(1)
-"""
-
 let runParseFromFileTest filename =
     let text = File.ReadAllText filename
     let prog = P.Parse (text, filename)
@@ -46,7 +35,7 @@ let stageParsingTests = [
     "puzzle/repeat.repeat_fixedProgram.txt";
     "puzzle/repeat.repeat_fixedLoops.txt";
 ]
-let stageParsingTestsSeq = stageParsingTests |> Seq.map (fun s -> [|s :> obj|])
+let stageParsingTestsSeq = stageParsingTests |> TestUtil.SingleToTheory
 
 [<Theory>]
 [<PropertyData("stageParsingTestsSeq")>]
