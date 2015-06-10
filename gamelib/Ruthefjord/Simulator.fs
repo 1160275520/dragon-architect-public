@@ -693,20 +693,22 @@ type private OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulat
         for s in block do
             executeWithCache ctx s |> ignore
 
-    (*
     let rec executeToStateIndex (ctx:ContextOpt) (stmt:Statement) (statesRemaining:int) =
         match statesRemaining, concretizeStatement ctx stmt with
         // no states remaining means stop running things
-        | 0, _ -> (ctx, 0)
+        | 0, _ -> 0
         // any non-concretizable statements take up no states
-        | _, None -> (fst (executeWithCache ctx stmt), 0)
+        | _, None ->
+            executeWithCache ctx stmt |> ignore
+            0
         | _, Some concrete ->
             let result = getCached ctx concrete
             // if we have extra states remaining, just run it
             if result.NumStates <= statesRemaining
             then
-                (fst (executeWithCache ctx stmt), result.NumStates)
-                // otherwise, we need to recurse into the statement
+                executeWithCache ctx stmt |> ignore
+                result.NumStates
+            // otherwise, we need to recurse into the statement
             else
                 executeToStateIndexConcrete ctx concrete statesRemaining
 
@@ -717,13 +719,11 @@ type private OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulat
             let cbody = CRepeatBody (nodeId, lmap)
             let bodyResult = getCached ctx cbody
             let mutable remaining = statesRemaining
-            let mutable tmpCtx = ctx
             for i = 1 to numTimes do
                 if remaining > 0 then
-                    let c, r = executeToStateIndexConcrete tmpCtx cbody remaining
-                    tmpCtx <- c
+                    let r = executeToStateIndexConcrete ctx cbody remaining
                     remaining <- remaining - r
-            (tmpCtx, statesRemaining - remaining)
+            statesRemaining - remaining
         | CRepeatBody (nodeId, lmap) ->
             let stmt = (findStatementWithId nodeId fullProgram).Stmt.AsRepeat ()
             executeToStateIndexBlock ctx stmt.Body statesRemaining
@@ -735,25 +735,20 @@ type private OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulat
         | _ -> invalidOp ""
 
     and executeToStateIndexBlock (ctx:ContextOpt) (block:Statement list) (statesRemaining:int) =
-        let mutable tmpCtx = ctx
         let mutable remaining = statesRemaining
         for s in block do
             if remaining > 0 then
-                let c, n = executeToStateIndex tmpCtx s remaining
-                tmpCtx <- c
+                let n = executeToStateIndex ctx s remaining
                 remaining <- remaining - n
-
-        (tmpCtx, statesRemaining - remaining)
-    *)
+        statesRemaining - remaining
 
     member x.RunToFinal () =
         let ctx = {Environment=topLevelEnvironment}
         executeBlock ctx topLevelBlock |> ignore
 
-    (*
-    member x.RunToState () (numStates:int) =
-        let ctx = {Environment={Globals=globals; Locals=Map.empty}}
-        executeToStateIndexBlock ctx program.Body numStates |> ignore
-    *)
+    member x.RunToState (numStates:int) =
+        let ctx = {Environment=topLevelEnvironment}
+        executeToStateIndexBlock ctx topLevelBlock numStates |> ignore
 
 let RunOptimized p b s c = OptimizedRunner2(p,b,s,c).RunToFinal ()
+let RunOptimizedToState p b s c n = OptimizedRunner2(p,b,s,c).RunToState n

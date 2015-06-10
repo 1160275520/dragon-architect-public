@@ -75,11 +75,17 @@ let main argv =
 
             test "StandardHT" (fun () -> runToEnd (HashTableGrid ()))
             test "StandardTM" (fun () -> runToEnd (TreeMapGrid ()))
-            test "Cached" (fun () ->
+            test "Cached 1" (fun () ->
                 let cache = Simulator.MutableDict ()
                 let initGrid = start.Grid |> Map.map (fun k v -> (v,{Robot.Command.Name="block"; Robot.Command.Args=[v:>obj]}))
                 let initState () : BasicWorldState3 = {Robot=start.Robot; Grid=System.Collections.Generic.Dictionary initGrid}
-                do Simulator.RunOptimized37 program importedModules Debugger.stateFunctions2 cache (initState ()) |> (fun s -> foo.Add s.Grid.Count)
+                Simulator.RunOptimized37 program importedModules Debugger.stateFunctions2 cache (initState ()) |> (fun s -> foo.Add s.Grid.Count)
+            )
+            test "Cached 2" (fun () ->
+                let cache = Simulator.MutableDict ()
+                let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (start.Grid, start.Robot)
+                Simulator.RunOptimized program importedModules simulator cache
+                foo.Add simulator.CurrentState.Grid.Count
             )
 
             ()
@@ -99,6 +105,7 @@ let main argv =
                     debugger.JumpToState n
                     foo.Add debugger.CurrentStateIndex
 
+#if false
             if numStates < 10000 then
                 test "Naive HT" (fun () -> jumpTest (WorkshopDebugger (initData, HashTableGrid (), None)))
             if numStates < 100000 then
@@ -110,8 +117,10 @@ let main argv =
 
             checkpointTest [100; 500;] "HT" (fun () -> HashTableGrid ())
             checkpointTest [100; 500;] "TM" (fun () -> TreeMapGrid ())
+#endif
 
-            test "Cache" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
+            test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
+            test "Cached 2" (fun () -> jumpTest (CachingWorkshopDebugger2 (initData, None)))
 
         | _ -> invalidOp ""
 
