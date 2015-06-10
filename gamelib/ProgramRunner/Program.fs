@@ -51,7 +51,7 @@ let main argv =
         let program = Parser.Parse (text, filename)
         let start: CanonicalWorldState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=Map.empty}
 
-        let numSamples = 5
+        let numSamples = 2
         let foo = System.Collections.Generic.List (10000000)
 
         let numStates =
@@ -64,18 +64,18 @@ let main argv =
 
         let test name f =
             let t = time f numSamples
-            printf "%s: %.3f\n" name t
+            printf "%s\t%.3f\n" name t
 
         match testType with
         | TestType.Single ->
 
             let runToEnd grid =
-                let runner = Debugger.makeSimulator (HashTableGrid ()) start
-                Simulator.ExecuteToEnd program runner importedModules |> (fun s -> foo.Add s.Grid.Count)
+                let runner = Debugger.makeSimulator grid start
+                Simulator.ExecuteToEnd program runner importedModules |> (fun s -> foo.Add s.Robot.Position.X)
 
-            test "ToEnd HT" (fun () -> runToEnd (HashTableGrid ()))
-            test "ToEnd TM" (fun () -> runToEnd (TreeMapGrid ()))
-            test "ToEnd OP" (fun () ->
+            test "StandardHT" (fun () -> runToEnd (HashTableGrid ()))
+            test "StandardTM" (fun () -> runToEnd (TreeMapGrid ()))
+            test "Cached" (fun () ->
                 let cache = Simulator.MutableDict ()
                 let initGrid = start.Grid |> Map.map (fun k v -> (v,{Robot.Command.Name="block"; Robot.Command.Args=[v:>obj]}))
                 let initState () : BasicWorldState3 = {Robot=start.Robot; Grid=System.Collections.Generic.Dictionary initGrid}
@@ -100,30 +100,18 @@ let main argv =
                     foo.Add debugger.CurrentStateIndex
 
             if numStates < 10000 then
-                test "Naive  HT" (fun () -> jumpTest (WorkshopDebugger (initData, HashTableGrid (), None)))
-                test "Naive  TM" (fun () -> jumpTest (WorkshopDebugger (initData, TreeMapGrid (), None)))
+                test "Naive HT" (fun () -> jumpTest (WorkshopDebugger (initData, HashTableGrid (), None)))
+            if numStates < 100000 then
+                test "Naive TM" (fun () -> jumpTest (WorkshopDebugger (initData, TreeMapGrid (), None)))
 
-            if numStates < 300000 then
-                test "Chk20  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 20, None)))
-                test "Chk40  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 40, None)))
-            test "Chk60  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 60, None)))
-            test "Chk80  HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 80, None)))
-            test "Chk100 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 100, None)))
-            test "Chk120 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 120, None)))
-            test "Chk140 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 140, None)))
-            test "Chk160 HT" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, HashTableGrid (), 160, None)))
+            let checkpointTest vals gridName gridFn =
+                for i in vals do
+                    test (sprintf "Chk%3d %s" i gridName) (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, gridFn (), max (numStates / i) 1, None)))
 
-            if numStates < 300000 then
-                test "Chk20  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 20, None)))
-                test "Chk40  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 40, None)))
-            test "Chk60  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 60, None)))
-            test "Chk80  TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 80, None)))
-            test "Chk100 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 100, None)))
-            test "Chk120 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 120, None)))
-            test "Chk140 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 140, None)))
-            test "Chk160 TM" (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, TreeMapGrid (), 160, None)))
+            checkpointTest [100; 500;] "HT" (fun () -> HashTableGrid ())
+            checkpointTest [100; 500;] "TM" (fun () -> TreeMapGrid ())
 
-            test "Cache    " (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
+            test "Cache" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
 
         | _ -> invalidOp ""
 
