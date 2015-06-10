@@ -33,16 +33,16 @@ let makeInitData (filename) =
 let ``yet another optimization test`` () =
     let initData = makeInitData ("../../../../doc/pyramid.txt")
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
-    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
-    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+    let endState = expected.[expected.Length - 1]
+    let grid1 = MyMap.keys endState.Grid |> Array.ofSeq |> Array.sort
 
     let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctionsNoOp cache initState
-
-    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
-    actual.Robot |> should equal endState.Robot
-    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
     let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
+
+    actual.Robot |> should equal endState.Robot
     grid2 |> should equal grid1
 
 [<Fact>]
@@ -51,126 +51,17 @@ let ``dictionary-based delta integration test`` () =
     let initData = makeInitData ("../../../../doc/pyramid.txt")
     let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
     let initState3: BasicWorldState3 = {Robot=initData.State.Robot; Grid=System.Collections.Generic.Dictionary()}
-    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
-    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+
+    let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+    let endState = expected.[expected.Length - 1]
+    let grid1 = MyMap.keys endState.Grid |> Array.ofSeq |> Array.sort
 
     let cache = Simulator.MutableDict ()
     let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions2 cache initState3
-
-    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
-    actual.Robot |> should equal endState.Robot
-    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
     let grid2 = actual.Grid |> Seq.toArray |> (Array.map (fun kv -> kv.Key)) |> Array.sort
-    grid2 |> should equal grid1
 
-[<Fact>]
-[<Trait("tag", "opt")>]
-let ``jump to state test`` () =
-    let checkEqual (bws2:BasicWorldState3) (bws1:BasicWorldState) =
-        bws2.Robot |> should equal bws1.Robot
-        let grid1 = bws1.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-        let grid2 = bws2.Grid |> Seq.toArray |> (Array.map (fun kv -> kv.Key)) |> Array.sort
-        grid2 |> should equal grid1
-
-    let initData = makeInitData ("../../../../doc/pyramid.txt")
-    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
-    let initState3 () : BasicWorldState3 = {Robot=initData.State.Robot; Grid=System.Collections.Generic.Dictionary()}
-    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
-    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
-
-    let cache = Simulator.MutableDict ()
-
-    let rts n = Simulator.RunToState initData.Program initData.BuiltIns Debugger.stateFunctions2 cache (initState3 ()) n
-
-    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
-
-    let checkIndex n =
-        checkEqual (rts n) (expected.States.[n].Data.WorldState :?> BasicWorldState)
-
-    (rts 0).Grid.Count |> should equal (initState3 ()).Grid.Count
-    checkEqual (rts 10000000) endState
-    for i = 1 to expected.States.Length - 1 do
-        if i % 50 = 1 then
-            checkIndex i
-    checkIndex 2
-    checkIndex 3
-    checkIndex 4
-
-[<Fact>]
-[<Trait("id", "integ")>]
-[<Trait("tag", "opt")>]
-let ``integration test`` () =
-    let initData = makeInitData ("../../../../doc/AARON.txt")
-    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
-    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
-    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
-
-    let cache = Simulator.MutableDict ()
-    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
-
-    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
     actual.Robot |> should equal endState.Robot
-    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-    let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
     grid2 |> should equal grid1
-
-    let initData = makeInitData ("../../../../doc/pyramid.txt")
-    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
-    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
-    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
-
-    let cache = Simulator.MutableDict ()
-    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
-
-    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
-    actual.Robot |> should equal endState.Robot
-    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-    let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
-    grid2 |> should equal grid1
-
-    let initData = makeInitData ("../../../../doc/castle_decomp.txt")
-    let initState: BasicWorldState2 = {Robot=initData.State.Robot; Grid=Map.empty}
-    let runner = BasicImperativeRobotSimulator (initData.State.Robot, GridStateTracker Seq.empty)
-    let expected = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
-
-    let cache = Simulator.MutableDict ()
-    let actual = Simulator.RunOptimized37 initData.Program initData.BuiltIns Debugger.stateFunctions cache initState
-
-    let endState = expected.States.[expected.States.Length - 1].Data.WorldState :?> BasicWorldState
-    actual.Robot |> should equal endState.Robot
-    let grid1 = endState.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-    let grid2 = actual.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
-    grid2 |> should equal grid1
-
-[<Fact>]
-[<Trait("id", "gridasmap")>]
-[<Trait("tag", "opt")>]
-let ``grid as map correctness`` () =
-    let filename = "../../../../doc/castle_decomp.txt"
-    let stdlibPath = "../../../../unity/Assets/Resources/module/stdlib.txt"
-    let importedModules = Simulator.import (Parser.Parse (System.IO.File.ReadAllText stdlibPath, "stdlib"))
-    let text = System.IO.File.ReadAllText filename
-    let program = Parser.Parse (text, filename)
-    let grid = GridStateTracker Seq.empty
-    let robot:BasicRobot = {Position=IntVec3.Zero; Direction=IntVec3.UnitZ}
-    let runner = BasicImperativeRobotSimulator (robot, grid)
-    let grid2 = GridStateTracker2 Seq.empty
-    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-
-    let r1 = Simulator.SimulateWithRobot program importedModules runner
-    let r2 = Simulator.SimulateWithRobot2 program importedModules runner2
-
-    r1.States.Length |> should equal (r2.States.Length + 2) // runner 2 doesn't include the initial state, runner adds dummy state at the end
-    let final1 = r1.States.[r1.States.Length - 1]
-    let final2 = r2.States.[r2.States.Length - 1]
-    let state1 = final1.Data.WorldState :?> BasicWorldState
-    let state2 = final2.Data.WorldState :?> BasicWorldState2
-    state1.Robot |> should equal state2.Robot
-    let grid1 = state1.Grid |> ImmArr.toArray |> (Array.map (fun kvp -> kvp.Key)) |> Array.sort
-    let grid2 = state2.Grid |> Map.toArray |> (Array.map (fun kv -> fst kv)) |> Array.sort
-    grid1.Length |> should equal grid2.Length
-    grid1 |> should equal grid2
-
 
 [<Fact>]
 [<Trait("id", "delta-pos")>]

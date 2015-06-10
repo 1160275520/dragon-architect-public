@@ -50,39 +50,6 @@ with
     static member Create globals =
         {Globals=globals; Locals=Map.empty}
 
-type private CallStackStateOLD = {
-    mutable ToExecute: Statement list;
-    Environment: Environment;
-    Robot: Robot.IRobotSimulatorOLD option
-}
-
-type private CallStackStateOLD2 = {
-    mutable ToExecute: Statement list;
-    Environment: Environment;
-    Robot: Robot.IRobotSimulatorOLD2 option
-}
-
-let private MAX_CALLSTACK = 1000
-
-type private State = {
-    Program: Program;
-    mutable CallStack: CallStackStateOLD list;
-    mutable LastExecuted: Statement list;
-}
-with
-    member x.Push meta css =
-        if x.CallStack.Length >= MAX_CALLSTACK then runtimeError meta ErrorCode.StackOverflow "max callstack length exceeded"
-        x.CallStack <- css :: x.CallStack
-
-type private State2 = {
-    mutable CallStack: CallStackStateOLD2 list;
-    mutable LastExecuted: Statement list;
-}
-with
-    member x.Push meta css =
-        if x.CallStack.Length >= MAX_CALLSTACK then runtimeError meta ErrorCode.StackOverflow "max callstack length exceeded"
-        x.CallStack <- css :: x.CallStack
-
 let private valueAsInt meta (o:obj) =
     match o with
     | :? int as x -> x
@@ -90,14 +57,6 @@ let private valueAsInt meta (o:obj) =
         try System.Int32.Parse(s)
         with _ -> runtimeError meta ErrorCode.UnableToConvertToInteger (sprintf "cannot convert '%s' to integer" s)
     | _ -> runtimeError meta ErrorCode.UnableToConvertToInteger "cannot coerce object to integer"
-
-let private createState (program:Program) builtInValues robot =
-    let env = {Globals=builtInValues; Locals=Map.empty}
-    ({Program=program; CallStack=[{Environment=env; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}:State)
-
-let private createState2 (program:Program) builtInValues robot =
-    let env = {Globals=builtInValues; Locals=Map.empty}
-    ({CallStack=[{Environment=env; ToExecute=program.Body; Robot=robot}]; LastExecuted=[];}:State2)
 
 let rec private evaluate (env: Environment) (expr: Expression) =
     match expr.Expr with
@@ -180,58 +139,6 @@ and private executeBlockToEnd (ctx:Context<_>) (block:Statement list) =
 let ExecuteToEnd (program:Program) robotSimulator globals =
     executeBlockToEnd {Environment=Environment.Create globals; Simulator=robotSimulator} program.Body |> ignore
     robotSimulator.CurrentState
-
-let rec private evaluateOLD (csstate: CallStackStateOLD) (expr: Expression) =
-    match expr.Expr with
-    | Literal x -> x
-    // HACK this should probably make sure it's not a function or procedure...
-    | Identifier name ->
-        try csstate.Environment.[name]
-        with :? System.Collections.Generic.KeyNotFoundException ->
-            runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-    | Evaluate {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluateOLD csstate) argExpr
-        try
-            let func = csstate.Environment.[name] :?> Function
-            let args = Seq.zip func.Parameters argVals |> Map.ofSeq
-            let env = csstate.Environment.PushScope args
-            evaluateOLD {csstate with Environment=env} func.Body
-        with
-        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-        | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
-    | Query query ->
-        match csstate.Robot with
-        | None -> runtimeError expr.Meta ErrorCode.RobotUnavailable "Queries not allowed; robot not available"
-        | Some robot ->
-            let args = List.map (evaluateOLD csstate) query.Arguments
-            try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
-            with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
-
-let rec private evaluate2 (csstate: CallStackStateOLD2) (expr: Expression) =
-    match expr.Expr with
-    | Literal x -> x
-    // HACK this should probably make sure it's not a function or procedure...
-    | Identifier name ->
-        try csstate.Environment.[name]
-        with :? System.Collections.Generic.KeyNotFoundException ->
-            runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-    | Evaluate {Identifier=name; Arguments=argExpr} ->
-        let argVals = List.map (evaluate2 csstate) argExpr
-        try
-            let func = csstate.Environment.[name] :?> Function
-            let args = Seq.zip func.Parameters argVals |> Map.ofSeq
-            let env = csstate.Environment.PushScope args
-            evaluate2 {csstate with Environment=env} func.Body
-        with
-        | :? System.Collections.Generic.KeyNotFoundException -> runtimeError expr.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-        | :? System.InvalidCastException -> runtimeError expr.Meta ErrorCode.TypeError "Identifier is not a function"
-    | Query query ->
-        match csstate.Robot with
-        | None -> runtimeError expr.Meta ErrorCode.RobotUnavailable "Queries not allowed; robot not available"
-        | Some robot ->
-            let args = List.map (evaluate2 csstate) query.Arguments
-            try robot.Query {Name=query.Name; Args=ImmArr.ofSeq args}
-            with e -> runtimeErrorWE e expr.Meta ErrorCode.QueryError "query threw exception"
 
 type CallStackState = {
     ToExecute: Statement list;
@@ -418,223 +325,6 @@ type LazySimulator<'S> (program, globals, robot:Robot.IRobotSimulator<'S>) =
         )
         {State=robot.CurrentState; Command= !cmd; LastExecuted=ps.LastExecuted}
 
-let private step (state:State) =
-    match state.CallStack with
-    | [] -> None
-    | head :: tail ->
-        match head.ToExecute with
-        | [] ->
-            state.CallStack <- tail
-            None
-        | stmt :: next ->
-            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
-            head.ToExecute <- next
-
-            // update last executed
-            if state.LastExecuted.Length < state.CallStack.Length then
-                state.LastExecuted <- stmt :: state.LastExecuted
-            else
-                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
-
-            match stmt.Stmt with
-            | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
-                let b =
-                    try evaluateOLD head cond :?> bool
-                    with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
-                state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
-                None
-            | Repeat {Body=body; NumTimes=ntimesExpr} ->
-                let ntimes = evaluateOLD head ntimesExpr |> valueAsInt stmt.Meta
-                let toAdd = List.concat (List.init ntimes (fun _ -> body))
-                state.Push stmt.Meta {head with ToExecute=toAdd}
-                None
-            | Function func ->
-                state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: tail
-                None
-            | Procedure proc ->
-                state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: tail
-                None
-            | Execute {Identifier=name; Arguments=argExpr} ->
-                let argVals = List.map (evaluateOLD head) argExpr
-                try
-                    let proc = head.Environment.[name] :?> Procedure
-                    let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
-                    let env = head.Environment.PushScope args
-                    state.Push stmt.Meta {head with Environment=env; ToExecute=proc.Body}
-                with
-                | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-                | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
-                None
-            | Command {Name=cmd; Arguments=args} ->
-                if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
-                let args = List.map (evaluateOLD head) args
-                Some (Robot.CommandOLD (cmd, ImmArr.ofSeq args, state.LastExecuted))
-
-let private step2 (state:State2) =
-    match state.CallStack with
-    | [] -> None
-    | head :: tail ->
-        match head.ToExecute with
-        | [] ->
-            state.CallStack <- tail
-            None
-        | stmt :: next ->
-            // update toExecute before simulating, because we want to advance to the next statement even if a RuntimeError is thrown.
-            head.ToExecute <- next
-
-            // update last executed
-            if state.LastExecuted.Length < state.CallStack.Length then
-                state.LastExecuted <- stmt :: state.LastExecuted
-            else
-                state.LastExecuted <- stmt :: MyList.skip (1 + state.LastExecuted.Length - state.CallStack.Length) state.LastExecuted
-
-            match stmt.Stmt with
-            | Conditional {Condition=cond; Then=thenb; Else=elseb} ->
-                let b =
-                    try evaluate2 head cond :?> bool
-                    with :? System.InvalidCastException -> runtimeError cond.Meta ErrorCode.TypeError "Conditional expression is not a bool"
-                state.Push stmt.Meta {head with ToExecute=if b then thenb else elseb}
-                None
-            | Repeat {Body=body; NumTimes=ntimesExpr} ->
-                let ntimes = evaluate2 head ntimesExpr |> valueAsInt stmt.Meta
-                let toAdd = List.concat (List.init ntimes (fun _ -> body))
-                state.Push stmt.Meta {head with ToExecute=toAdd}
-                None
-            | Function func ->
-                state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: tail
-                None
-            | Procedure proc ->
-                state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: tail
-                None
-            | Execute {Identifier=name; Arguments=argExpr} ->
-                let argVals = List.map (evaluate2 head) argExpr
-                try
-                    let proc = head.Environment.[name] :?> Procedure
-                    let args = Seq.zip proc.Parameters argVals |> Map.ofSeq
-                    let env = head.Environment.PushScope args
-                    state.Push stmt.Meta {head with Environment=env; ToExecute=proc.Body}
-                with
-                | :? System.Collections.Generic.KeyNotFoundException -> runtimeError stmt.Meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-                | :? System.InvalidCastException -> runtimeError stmt.Meta ErrorCode.TypeError "Identifier is not a procedure"
-                None
-            | Command {Name=cmd; Arguments=args} ->
-                if head.Robot.IsNone then runtimeError stmt.Meta ErrorCode.RobotUnavailable "Commands not allowed; robot not available"
-                let args = List.map (evaluate2 head) args
-                Some (({Name=cmd; Args=args}:Robot.Command))
-
-let private internalError e =
-    raise (CodeException (makeInternalError e))
-
-/// Step the simulation a single statement.
-/// Will modify the passed-in state, and return either Some command or None on success, or the RuntimeError if one occurred.
-/// Guaranteed to not throw an exception.
-let private tryStep state =
-    try Choice1Of2 (step state)
-    with
-    // TODO should really not need a dynamic cast here...
-    | :? CodeException as e -> Choice2Of2 (e.Error :?> RuntimeError)
-    | e -> Choice2Of2 (makeInternalError e)
-
-let private tryStep2 state =
-    try Choice1Of2 (step2 state)
-    with
-    // TODO should really not need a dynamic cast here...
-    | :? CodeException as e -> Choice2Of2 (e.Error :?> RuntimeError)
-    | e -> Choice2Of2 (makeInternalError e)
-
-let inline private IsDone (state:State) = state.CallStack.IsEmpty
-
-let inline private IsDone2 (state:State2) = state.CallStack.IsEmpty
-
-/// Executes the program until a BasicCommand is hit, then returns that command, or None if the program has finished.
-let private ExecuteUntilCommand state =
-    try
-        // HACK should check to make sure this a reasonable value
-        let MAX_ITER = 20
-        let mutable numSteps = 0
-        let mutable cmd = None
-        while cmd.IsNone && not (IsDone state) && numSteps < MAX_ITER do
-            cmd <- step state
-            numSteps <- numSteps + 1
-        match cmd with Some c -> c | None -> null
-    with
-    | :? CodeException -> reraise ()
-    | e -> internalError e
-
-(*
-    The different result types of the simulation
-    Come in 3 parts:
-    StepResult: The state of the stack after every statement is executed
-    StateResult: The world state after every command is executed
-    ErrorResult: runtime errors from executing statements
-
-    The last two occur a subset of the time that the first does, so they are
-    returned as separate arrays paired with pointers to the index into the StepResult array.
-*)
-
-type StackResult = Statement list
-
-type Result<'a> = {
-    StepIndex: int;
-    Data: 'a;
-}
-
-[<ReferenceEquality;NoComparison>]
-type StateResult = {
-    Command: Robot.CommandOLD;
-    WorldState: obj;
-}
-
-[<ReferenceEquality;NoComparison>]
-type StateResult2 = {
-    Command: Robot.Command;
-    WorldState: obj;
-}
-
-type ErrorResult = RuntimeError
-
-type FullSimulationResult = {
-    /// All steps
-    Steps: StackResult [];
-    /// World state updates, with pointers to corresponding step
-    States: Result<StateResult>[];
-    /// Errors, with pointers to corresponding step
-    Errors: Result<ErrorResult>[];
-}
-with
-    /// Returns the index into the state array of the state that is active during stepIndex.
-    member x.StateOf stepIndex =
-        if stepIndex >= x.Steps.Length
-        then
-            x.States.Length
-        else
-            let onePast = x.States |> Array.tryFindIndex (fun s -> s.StepIndex > stepIndex)
-            (defaultArg onePast x.States.Length) - 1
-
-type FullSimulationResult2 = {
-    /// All steps
-    Steps: StackResult [];
-    /// World state updates, with pointers to corresponding step
-    States: Result<StateResult2>[];
-    /// Errors, with pointers to corresponding step
-    Errors: Result<ErrorResult>[];
-}
-with
-    /// Returns the index into the state array of the state that is active during stepIndex.
-    member x.StateOf stepIndex =
-        if stepIndex >= x.Steps.Length
-        then
-            x.States.Length
-        else
-            let onePast = x.States |> Array.tryFindIndex (fun s -> s.StepIndex > stepIndex)
-            (defaultArg onePast x.States.Length) - 1
-
-type StepResult = {
-    Stack: StackResult;
-    State: StateResult;
-    Errors: RuntimeError[];
-}
-
 type LocalMap = Map<string,int>
 
 let valMapToLocalMap (vals:ValueMap) =
@@ -684,9 +374,6 @@ let private concretizeStatement (ctx:ContextOLD<_>) (stmt:Statement) : ConcreteS
         let args = List.map (evaluate ctx.Environment) args
         Some (CCommand {Name=cmd; Args=args})
     | _ -> None
-
-let private isolatedState prog env toExec =
-    {Program=prog; CallStack=[{Environment=env; ToExecute=toExec; Robot=None}]; LastExecuted=[];}:State
 
 type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sfuncs:StateFunctions<'State, 'StateDelta>, cache: MutableDict<ConcreteStatement, CacheData<'StateDelta>>) =
     let fullProgram: Program =
@@ -858,98 +545,6 @@ type OptimizedRunner<'State, 'StateDelta> (program:Program, globals:ValueMap, sf
 let RunOptimized37 p b f c s = OptimizedRunner(p,b,f,c).RunToFinal s
 let RunToState p b f c s n = OptimizedRunner(p,b,f,c).RunToState s n
 
-let private evalProcedureReference2 meta (head:CallStackStateOLD2) name =
-    try
-        head.Environment.[name] :?> Procedure
-    with
-    | :? System.Collections.Generic.KeyNotFoundException -> runtimeError meta ErrorCode.UnknownIdentifier (sprintf "Unknown identifier %s." name)
-    | :? System.InvalidCastException -> runtimeError meta ErrorCode.TypeError "Identifier is not a procedure"
-
-let SimulateWithRobot program builtIns (robot:Robot.IRobotSimulatorOLD) =
-    let MAX_ITER = 100000000
-    let simstate = createState program builtIns (Some robot)
-
-    let steps = MutableList ()
-    let states = MutableList ()
-    let errors = MutableList ()
-
-    steps.Add simstate.LastExecuted
-    states.Add {StepIndex=0; Data=({Command=null; WorldState=robot.CurrentState}:StateResult)}
-
-    let mutable numSteps = 0
-    while not (IsDone simstate) && numSteps < MAX_ITER do
-        numSteps <- numSteps + 1
-        match tryStep simstate with
-        | Choice1Of2 None -> ()
-        | Choice1Of2 (Some cmd) ->
-            robot.Execute cmd
-            states.Add {StepIndex=steps.Count; Data=({Command=cmd; WorldState=robot.CurrentState}:StateResult)}
-        | Choice2Of2 error ->
-            errors.Add {StepIndex=steps.Count; Data=error}
-
-        steps.Add simstate.LastExecuted
-    // HACK ensure there's always a "final" state on the last step to simplify accounting for debugging tools
-    if states.[states.Count - 1].StepIndex <> steps.Count - 1 then
-        states.Add {StepIndex=steps.Count - 1; Data=({Command=null; WorldState=robot.CurrentState}:StateResult)}
-
-    {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult
-
-let SimulateWithRobotLastSateOnly program builtIns (robot:Robot.IRobotSimulatorOLD) : StateResult =
-    let MAX_ITER = 100000000
-    let simstate = createState program builtIns (Some robot)
-
-    let mutable numSteps = 0
-    while not (IsDone simstate) && numSteps < MAX_ITER do
-        numSteps <- numSteps + 1
-        match tryStep simstate with
-        | Choice1Of2 None -> ()
-        | Choice1Of2 (Some cmd) ->
-            robot.Execute cmd
-        | Choice2Of2 error -> ()
-
-    {Command=null; WorldState=robot.CurrentState}
-
-
-let SimulateWithRobot2 program builtIns (robot:Robot.IRobotSimulatorOLD2) =
-    let MAX_ITER = 100000000
-    let simstate = createState2 program builtIns (Some robot)
-
-    let steps = MutableList ()
-    let states = MutableList ()
-    let errors = MutableList ()
-
-    steps.Add simstate.LastExecuted
-//    states.Add {StepIndex=0; Data=({Command=null; WorldState=robot.CurrentState}:StateResult2)}
-
-    let mutable numSteps = 0
-    while not (IsDone2 simstate) && numSteps < MAX_ITER do
-        numSteps <- numSteps + 1
-        match tryStep2 simstate with
-        | Choice1Of2 None -> ()
-        | Choice1Of2 (Some cmd) ->
-            robot.Execute cmd
-            states.Add {StepIndex=steps.Count; Data={Command=cmd; WorldState=robot.CurrentState}}
-        | Choice2Of2 error ->
-            errors.Add {StepIndex=steps.Count; Data=error}
-
-        steps.Add simstate.LastExecuted
-    {Steps=steps.ToArray(); States=states.ToArray(); Errors=errors.ToArray()}:FullSimulationResult2
-
-let SimulateWithRobot2LastStateOnly program builtIns (robot:Robot.IRobotSimulatorOLD2) =
-    let MAX_ITER = 100000000
-    let simstate = createState2 program builtIns (Some robot)
-
-    let mutable numSteps = 0
-    while not (IsDone2 simstate) && numSteps < MAX_ITER do
-        numSteps <- numSteps + 1
-        match tryStep2 simstate with
-        | Choice1Of2 None -> ()
-        | Choice1Of2 (Some cmd) ->
-            robot.Execute cmd
-        | Choice2Of2 error -> ()
-
-    robot.CurrentState
-
 type EmptyRobotSimulator () =
     interface Robot.IRobotSimulator<int> with
         member x.CurrentState = invalidOp ""
@@ -966,4 +561,4 @@ let import (program:Program) =
         ctx.Environment.Globals
     with
     | :? CodeException -> reraise ()
-    | e -> internalError e
+    | e -> raise (CodeException (makeInternalError e))

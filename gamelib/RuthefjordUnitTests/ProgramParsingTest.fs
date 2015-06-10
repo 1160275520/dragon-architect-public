@@ -57,11 +57,3 @@ let ``Puzzle code parsing/serialization`` (filename:string) =
 [<PropertyData("stageParsingTestsSeq")>]
 let ``Puzzle code pretty printing`` (filename:string) =
     runPrettyPrintFromFileTest ("../../../../unity/Assets/Resources/" + filename)
-
-[<Fact>]
-let ``simpleProgram`` () =
-    let prog = Parser.Parse (simpleTestProgram, "prog")
-    let lib = loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let result = SIM.SimulateWithRobot prog lib robot
-    result

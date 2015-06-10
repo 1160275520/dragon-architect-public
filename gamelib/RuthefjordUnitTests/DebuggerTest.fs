@@ -29,10 +29,9 @@ let runBasicTest (makeDebugger: DebuggerInitialData -> IDebugger) =
     while not debugger.IsDone do
         debugger.AdvanceOneState ()
 
-    let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
-    let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+    let expected = Debugger.runToCannonicalState initData.Program (HashTableGrid ()) initData.BuiltIns initData.State
 
-    debugger.CurrentStep.State |> should equal (result.States.[result.States.Length - 1].Data.WorldState :?> BasicWorldState).AsCanonical
+    debugger.CurrentStep.State |> should equal expected
 
 [<Fact>]
 let ``basic persistent debugger`` () =
@@ -56,15 +55,15 @@ let ``workshop debugger jumping`` () =
     let initData = makeInitData ()
     let debugger: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
     let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
-    let result = Simulator.SimulateWithRobot initData.Program initData.BuiltIns runner
+    let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
 
-    debugger.StateCount |> should equal result.States.Length
+    debugger.StateCount |> should equal expected.Length
 
     let checkIndex i =
         debugger.JumpToState i
-        debugger.CurrentStep.State |> should equal (result.States.[i].Data.WorldState :?> BasicWorldState).AsCanonical
+        debugger.CurrentStep.State |> should equal expected.[i]
         debugger.CurrentStateIndex |> should equal i
-        debugger.IsDone |> should equal (i = result.States.Length - 1)
+        debugger.IsDone |> should equal (i = expected.Length - 1)
 
     checkIndex 20
     checkIndex 0
@@ -74,7 +73,7 @@ let ``workshop debugger jumping`` () =
     // try advancing from 10
     debugger.AdvanceOneState ()
     debugger.CurrentStateIndex |> should equal 11
-    checkIndex (result.States.Length - 1)
+    checkIndex (expected.Length - 1)
 
 [<Fact>]
 let ``checkpoint debugger`` () =

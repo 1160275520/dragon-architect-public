@@ -51,6 +51,9 @@ module MyList =
         if n <= 0 then list else skip (n - 1) list.Tail
 
 module MyMap =
+    let keys (map:Map<'a,'b>) =
+        map |> Seq.map (fun kvp -> kvp.Key)
+
     /// combine two maps, where any conflicting keys are overriden by the second map
     let merge m1 m2 =
         m2 |> Map.fold (fun acc k v -> Map.add k v acc) m1
