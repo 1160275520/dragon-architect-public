@@ -180,12 +180,35 @@ We looked at two different metrics: time to compute the final state, and time to
 Measurements were performed on \todo{MY COMPUTER SPECS}.
 
 \subsection{Computing Final State Only}
-We compared the caching method to two baselines: normal simulation of the pogram using both a hashtable and tree map for the world state data structure. We use the hashtable for the primary baseline since it outperforms the tree map on all programs. The results as summarized in Figure~\todo{SDFasdfasdf}. The general trend is that our optimized technique performs slightly more poorly for small programs, but vastly outperforms the baseline for the larger programs.
+We compared the caching method to two baselines: normal simulation of the program using both a hashtable and tree map for the world state data structure. We use the hashtable for the primary baseline since it outperforms the tree map on all programs. The results as summarized in Figure~\ref{fig:lso-absolute} and Figure~\ref{fig:lso-speedup}. The general trend is that our optimized technique performs slightly more poorly for small programs and programs with a large number of cubes, but vastly outperforms the baseline for programs with a great deal of dragon movement. We speculate that the caching method's poor performance with a large number of cubes is because it uses a tree map to store the cube deltas. 
+
+\begin{figure*}[ht!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/lso-absolute}
+  \caption{The absolute running time (in milliseconds, log scale) of our caching method and two baselines on our benchmark programs. The baselines use normal simulation, differing in terms of what data structure is used to store the world state (hashtable in blue, tree map in red). }
+  \label{fig:lso-absolute}
+\end{figure*}
+
+\begin{figure*}[ht!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/lso-speedup}
+  \caption{The speedup (in log scale) of our caching method and a treemap-based normal simulation relative to a hashtable-based normal simulation baseline on our benchmark programs.}
+  \label{fig:lso-speedup}
+\end{figure*}
+
 
 \subsection{Jumping to Arbitrary States}
 The metric in this comparision is the total time it takes each method to jump to 100 uniformly random points of execution. The baseline method is the na\"{i}ve algorithm of calculating an array of every state, again one for each data structure. Unlike the previous test, we use the tree map for the primary baseline, because it outperforms the hash table on bigger programs.
 
-We tested both the checkpointing and caching algorithms. The checkpoint method supports both data structures, so we tested both. Furthermore, the checkpiont method is paramaterized in the number of checkpoints, so we tested several different configurations. The caching method only supports hash tables and is not parameterized.
+We tested both the checkpointing and caching algorithms. The checkpoint method supports both data structures, so we tested both. Furthermore, the checkpiont method is paramaterized in the number of checkpoints, so we tested several different configurations. The caching method only supports hash tables and is not parameterized. The speedup results are summarized in Figure~\ref{fig:all-speedup}.
+
+\begin{figure*}[ht!]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/all-speedup}
+  \caption{The speedup (in log scale) of our caching method, hastable- and treemap-based checkpoint methods (with different numbers of checkpoints) and a naive hashtable-based method relative to a naive treemap-based baseline on our benchmark programs. The naive hashtable method is left off the larger programs as our test system runs out of memory before it terminates. Similarly, Big Loop 10K is omitted entirely as our baseline runs out of memory on that benchmark.}
+  \label{fig:all-speedup}
+\end{figure*}
+
 
 \todo{RESULTS AND DISCUSSION}
 
