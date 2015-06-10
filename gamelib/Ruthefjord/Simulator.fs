@@ -10,6 +10,7 @@ type ErrorCode =
 | UnknownIdentifier = 4101
 | TypeError = 4102
 | IllegalDefinition = 4103
+| IllegalCode = 4104
 | RobotUnavailable = 4201
 | QueryError = 4203
 | UnableToConvertToInteger = 4301
@@ -140,10 +141,8 @@ let rec private executeStatementToEnd (ctx:Context<_>) (stmt:Statement) =
         for i = 1 to ntimes do
             tmpCtx <- executeBlockToEnd tmpCtx body
         tmpCtx
-    | Function func ->
-        {ctx with Environment=ctx.Environment.AddGlobal (func.Name, func)}
-    | Procedure proc ->
-        {ctx with Environment=ctx.Environment.AddGlobal (proc.Name, proc)}
+    | Function _ | Procedure _ ->
+        runtimeError stmt.Meta ErrorCode.IllegalDefinition "Cannot define procedures/functions outside of top-level."
     | Execute exec ->
         let env, proc = prepareExecute stmt.Meta exec ctx.Environment
         executeBlockToEnd {ctx with Environment=env} proc.Body |> ignore
@@ -164,7 +163,8 @@ and private executeBlockToEnd (ctx:Context<_>) (block:Statement list) =
 /// Intended primarily as un-optimized reference implementation.
 /// NOTE: Does NOT contain any limitations on callstack depth or program execution length!
 let ExecuteToEnd (program:Program) robotSimulator globals =
-    executeBlockToEnd {Environment=Environment.Create globals; Simulator=robotSimulator} program.Body |> ignore
+    let env, block = extractDefinitionsFromBlock (Environment.Create globals) program.Body
+    executeBlockToEnd {Environment=env; Simulator=robotSimulator} block |> ignore
     robotSimulator.CurrentState
 
 type EmptyRobotSimulator () =
@@ -179,8 +179,10 @@ let import (program:Program) =
         // HACK first change the programs ids so they don't clash with things
         // these will conflict with each other if more than one program is imported!
         let program = mapMeta (fun m -> {m with Id=m.Id + 167000}) program
-        let ctx = executeBlockToEnd {Simulator=EmptyRobotSimulator (); Environment=Environment.Create Map.empty} program.Body
-        ctx.Environment.Globals
+        let env, block = extractDefinitionsFromBlock (Environment.Create Map.empty) program.Body
+        if not (block.IsEmpty) then
+            runtimeError block.Head.Meta ErrorCode.IllegalCode "Imported library has non definition code."
+        env.Globals
     with
     | :? CodeException -> reraise ()
     | e -> raise (CodeException (makeInternalError e))
@@ -204,8 +206,9 @@ type ProgramState<'S> = {
     member x.Copy = {x with CallStackLimit=x.CallStackLimit}
 
 let private createNewProgramState (program:Program) robotSimulator globals =
+    let env, block = extractDefinitionsFromBlock (Environment.Create globals) program.Body
     {
-        CallStack = [{ToExecute=program.Body; Environment=Environment.Create globals}];
+        CallStack = [{ToExecute=block; Environment=env}];
         LastExecuted = [];
         Simulator = robotSimulator;
         CallStackLimit = 3000;
@@ -253,10 +256,8 @@ let private executeNextStatement (state:ProgramState<_>) (stmt:Statement) : Robo
             // modify call stack in two operations. want to use PushCallStack to catch stack overflows.
             state.CallStack <- {head with ToExecute=after :: head.ToExecute} :: state.CallStack.Tail
             state.PushCallStack stmt.Meta {head with ToExecute=body}
-    | Function func ->
-        state.CallStack <- {head with Environment=head.Environment.AddGlobal (func.Name, func)} :: state.CallStack.Tail
-    | Procedure proc ->
-        state.CallStack <- {head with Environment=head.Environment.AddGlobal (proc.Name, proc)} :: state.CallStack.Tail
+    | Function _ | Procedure _ ->
+        runtimeError stmt.Meta ErrorCode.IllegalDefinition "Cannot define procedures/functions outside of top-level."
     | Execute exec ->
         let env, proc = prepareExecute stmt.Meta exec head.Environment
         state.PushCallStack stmt.Meta {head with Environment=env; ToExecute=proc.Body}
