@@ -177,7 +177,8 @@ To evaluate our optimizations, we compared their performance on a suite of bench
 
 We looked at two different metrics: time to compute the final state, and time to jump to a set of arbitrary states. We meausre the latter as this is our primary goal: to support faster jumping to arbitrary states. We would expect both the checkpoint method and caching method to outperform the na\"{i}ve method. However, theoretically, the caching method could be faster even at finding the final state that a straight-forward execution, so we also tested it's performance in computing the final state only.
 
-Measurements were performed on \todo{MY COMPUTER SPECS}.
+% TODO
+%Measurements were performed on \todo{MY COMPUTER SPECS}.
 
 \subsection{Computing Final State Only}
 We compared the caching method to two baselines: normal simulation of the program using both a hashtable and tree map for the world state data structure. We use the hashtable for the primary baseline since it outperforms the tree map on all programs. The results as summarized in Figure~\ref{fig:lso-absolute} and Figure~\ref{fig:lso-speedup}. The general trend is that our optimized technique performs slightly more poorly for small programs and programs with a large number of cubes, but vastly outperforms the baseline for programs with a great deal of dragon movement. We speculate that the caching method's poor performance with a large number of cubes is because it uses a tree map to store the cube deltas. 
@@ -213,10 +214,14 @@ We tested both the checkpointing and caching algorithms. The checkpoint method s
 \todo{RESULTS AND DISCUSSION}
 
 \section{Conclusion}
-jumping to arbitrary states is tricky
-checkpointing is competitive on all but the largest programs, and is tremendously less complex
 
-\section{Distribution of Work}
+In this project we implemented two optimization methods for the language in \da, an imperative language for building 3D block structures. These techniques were designed to allow for quickly jumping to arbitrary points in the exectution trace. Both of our methods substantially outperformed the current method in our tests. The checkpointing method with a hash table in general did better on most of the benchmarks, though the caching method performed best on programs where the majority of commands were movement rather than block placement.
+
+Choice of data structure made a very strong different in peformance on each of the algorithms, because performance tended to be dominated by updating the mapping of cubes or copying these maps. These differences were noticable and surprising. Performance of the caching algorithm could possibly be improved significantly by changing it's internal representation of world detlas from tree maps to either hash tables or arrays.
+
+For practical purposes, the checkpointing method has some obvious benefits because the implementation is dramatically simpler than the caching method. The caching method requires several different versions of the language semantics for the various operations (e.g., computing deltas, applying deltas, falling back to normal simulation) and the details of counting states with deltas led to a lot of bugs. On the other hand, the checkpointing method is using the exact same simulation code as the na\"{i}ve approach, and just needs a few dozen lines of code to choose the correct checkpoint from which to start simulation. It is likely that, for now, we will use the checkpointing method in the actual application because of it's simplicitly and robustness. However, if we wish to support truly gigantic programs, we expect that some of the optimizations from the caching method will need to be implemented eventually.
+
+\subsection{Distribution of Work}
 Regarding division of labor, we have been working collaboratively on Dragon Architect for 14 months. We each implemented several independent optimizations and test cases, and worked together to combine these optimizations into our final algorithm.
 
 \bibliographystyle{plain}
