@@ -137,34 +137,27 @@ let rec private executeStatementToEnd (ctx:Context<_>) (stmt:Statement) =
         else executeBlockToEnd ctx elseb
     | Repeat {Body=body; NumTimes=ntimesExpr} ->
         let ntimes = evaluate ctx.Environment ntimesExpr |> valueAsInt stmt.Meta
-        let mutable tmpCtx = ctx
         for i = 1 to ntimes do
-            tmpCtx <- executeBlockToEnd tmpCtx body
-        tmpCtx
+            executeBlockToEnd ctx body
     | Function _ | Procedure _ ->
         runtimeError stmt.Meta ErrorCode.IllegalDefinition "Cannot define procedures/functions outside of top-level."
     | Execute exec ->
         let env, proc = prepareExecute stmt.Meta exec ctx.Environment
         executeBlockToEnd {ctx with Environment=env} proc.Body |> ignore
-        // ignore the new context, we want the old environment and the mutable state is already reference by the current context
-        ctx
     | Command {Name=cmd; Arguments=args} ->
         let args = List.map (evaluate ctx.Environment) args
         ctx.Simulator.Execute {Name=cmd; Args=args}
-        ctx
 
 and private executeBlockToEnd (ctx:Context<_>) (block:Statement list) =
-    let mutable tmpCtx = ctx
     for s in block do
-        tmpCtx <- (executeStatementToEnd tmpCtx s)
-    tmpCtx
+        executeStatementToEnd ctx s
 
 /// Fully execute a program, with no explicit stack.
 /// Intended primarily as un-optimized reference implementation.
 /// NOTE: Does NOT contain any limitations on callstack depth or program execution length!
 let ExecuteToEnd (program:Program) robotSimulator globals =
     let env, block = extractDefinitionsFromBlock (Environment.Create globals) program.Body
-    executeBlockToEnd {Environment=env; Simulator=robotSimulator} block |> ignore
+    executeBlockToEnd {Environment=env; Simulator=robotSimulator} block
     robotSimulator.CurrentState
 
 type EmptyRobotSimulator () =
