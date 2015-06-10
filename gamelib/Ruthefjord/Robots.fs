@@ -74,6 +74,8 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
     let mutable robot = startRobot
     let mutable numCommands = 0
 
+    static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
+
     member x.AsCanonicalState = {Robot=robot; Grid=grid.ConvertToCanonical grid.Current}
     member x.ConvertToCanonical (state:WorldState<'Grid>) = {Robot=state.Robot; Grid=grid.ConvertToCanonical state.Grid}
 
@@ -99,26 +101,6 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
         member x.Query query = raise (System.NotSupportedException ())
 
         member x.CurrentState = {Robot=robot; Grid=grid.Current}
-
-type GridStateTracker(init: KeyValuePair<IntVec3, Cube> seq) =
-
-    let MAX_CUBES = 800000
-
-    let mutable cells = Dictionary()
-    do
-        for kvp in init do cells.Add (kvp.Key, kvp.Value)
-
-    static member Empty () = GridStateTracker []
-
-    member x.CurrentState =
-        ImmArr.ofSeq cells
-
-    member x.AddObject idx cube = if cells.Count < MAX_CUBES && not (cells.ContainsKey idx) then cells.Add (idx, cube)
-    member x.OverwriteObject idx cube = cells.[idx] <- cube
-    member x.RemoveObject idx = cells.Remove idx |> ignore
-    member x.GetObject idx =
-        let v = ref (0,null)
-        if cells.TryGetValue (idx, v) then Some !v else None
 
 type GridStateTracker2(init: Map<IntVec3, Cube2>) =
 
@@ -331,47 +313,6 @@ with
                         delta.Remove pd
                     | _ -> invalidOp "unrecognized cube status") a b
 
-type BasicImperativeRobotSimulator(initialRobot, initialGrid) =
-    let mutable robot = initialRobot
-    let mutable grid : GridStateTracker = initialGrid
-
-    let pos() = robot.Position
-    let dir() = robot.Direction
-
-    static member FromWorldState (ws:BasicWorldState) =
-        BasicImperativeRobotSimulator (ws.Robot, GridStateTracker ws.Grid)
-
-    static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
-
-    member x.Grid with get () = grid and set g = grid <- g
-
-    interface Robot.IRobotSimulatorOLD with
-        member x.Execute command =
-            if command <> null then
-                let p = robot.Position
-                let d = robot.Direction
-                match command.Name with
-                | "forward" -> robot <- {robot with Position=p + d}
-                | "up" -> robot <- {robot with Position=p + IntVec3.UnitY}
-                | "down" -> if p.Y > 0 then robot <- {robot with Position=p - IntVec3.UnitY}
-                | "left" -> robot <- {robot with Direction=IntVec3 (-d.Z, 0, d.X)}
-                | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
-                | "cube" ->
-                    let cube = command.Args.[0] :?> int
-                    grid.AddObject p (cube, command)
-                | "remove" -> grid.RemoveObject p
-                | _ -> ()
-            else ()
-
-        member x.Query query =
-            match query.Name with
-            | "isblockatpos" -> upcast ((grid.GetObject robot.Position).IsSome)
-            | _ -> upcast ()
-
-        member x.CurrentState =
-            let state:BasicWorldState = {Robot=robot; Grid=grid.CurrentState}
-            upcast state
-
 type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
     let mutable robot = initialRobot
     let mutable grid : GridStateTracker2 = initialGrid
@@ -411,8 +352,3 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
         member x.CurrentState =
             let state:BasicWorldState2 = {Robot=robot; Grid=grid.CurrentState}
             upcast state
-
-//        member x.ApplyDelta delta =
-//            let result = BasicWorldStateDelta.ApplyDelta ((x :> Robot.IRobotSimulator2).CurrentState :?> BasicWorldState2) (delta :?> BasicWorldStateDelta)
-//            robot <- result.Robot
-//            grid <- GridStateTracker2 (Map.toSeq result.Grid)

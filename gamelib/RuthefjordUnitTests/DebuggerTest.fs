@@ -54,7 +54,6 @@ let ``persistent debugger unsupported operations`` () =
 let ``workshop debugger jumping`` () =
     let initData = makeInitData ()
     let debugger: IDebugger = upcast WorkshopDebugger (initData, TreeMapGrid (), None)
-    let runner = BasicImperativeRobotSimulator.FromWorldState (BasicWorldState.FromCanonical initData.State)
     let expected = Debugger.getAllCannonicalStates initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
 
     debugger.StateCount |> should equal expected.Length

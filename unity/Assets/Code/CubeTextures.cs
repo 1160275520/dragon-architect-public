@@ -5,7 +5,7 @@ using Ruthefjord;
 
 public class CubeTextures : MonoBehaviour {
 
-    public static readonly string[] AvailableColors = BasicImperativeRobotSimulator.Colors;
+    public static readonly string[] AvailableColors = BasicRobotSimulator<int>.Colors;
     public Texture StandardTexture;
 
     [HideInInspector]
