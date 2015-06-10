@@ -6,6 +6,7 @@
 \usepackage{syntax}
 \usepackage{caption}
 \usepackage[final]{listings}
+\usepackage{array}
 \toappear{}
 
 \newcommand{\da}{\emph{Dragon Architect}}
@@ -154,6 +155,25 @@ A point of execution is defined by the number of previous commands (or, equivale
 
 \section{Evaluation}
 To evaluate our optimizations, we compared their performance on a suite of benchmark programs to the performance of various unoptmized versions. For both convenience and completeness, we created the benchmark programs ourselves rather than use specific programs created by users of our system. To date, no group of students have used \da{} for much more than an hour, and so none have progressed to creating programs of the size and complexity needed to sufficienty evaluate our optimizations. The set of benchmarks we created are representative, however, of the types of things students often attempt to build, and the way in which students tend to try and enter very large numbers in every input. 
+
+\begin{table}[ht!]
+  \centering
+  \begin{tabular}{| >{\centering\arraybackslash}m{1.5cm} | m{4.3cm} | >{\centering\arraybackslash}m{1.2cm} |}
+    \hline
+    Name & Description & States \\\hline
+    AARON & AARON spelled out in cubes & 286 \\\hline
+    Smile & A simple, square smiley face & 963 \\\hline
+    Twisty Tower & A tall, narrow helix-like tower & 3200 \\\hline
+    Pyramid & A 21-layer pyramid & 6310 \\\hline
+    Castle & A castle with gate and towers & 9893 \\\hline
+    Cube-30& A huge solid cube, 30 cubes to a side & 88290 \\\hline
+    Cube-40& A huge solid cube, 40 cubes to a side & 204920 \\\hline
+    Big Loop 1K& Loop 1000 times, lots of dragon movement & 2004000 \\\hline
+    Big Loop 10K& Loop 10000 times, lots of dragon movement & 40040000 \\\hline
+  \end{tabular}
+  \caption{Our benchmark programs with the number of total states.}
+  \label{tab:programs}
+\end{table}
 
 We looked at two different metrics: time to compute the final state, and time to jump to a set of arbitrary states. We meausre the latter as this is our primary goal: to support faster jumping to arbitrary states. We would expect both the checkpoint method and caching method to outperform the na\"{i}ve method. However, theoretically, the caching method could be faster even at finding the final state that a straight-forward execution, so we also tested it's performance in computing the final state only.
 
