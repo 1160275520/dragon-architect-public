@@ -37,6 +37,7 @@ type WorldState<'Grid> = {
 // it's not very efficient and not what the robots use internally.
 type CanonicalGrid = Map<IntVec3, int>
 type CanonicalWorldState = WorldState<CanonicalGrid>
+type DictGrid = Dictionary<IntVec3,int>
 
 type IGrid<'Grid> =
     abstract AddObject : IntVec3 -> int -> unit
@@ -50,7 +51,10 @@ type IGrid<'Grid> =
 [<Sealed>]
 type HashTableGrid() =
     let mutable cubes = Dictionary ()
-    interface IGrid<Dictionary<IntVec3, int>> with
+
+    member x.RawCubes = cubes
+
+    interface IGrid<DictGrid> with
         member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes.Add (idx, cube)
         member x.RemoveObject idx = cubes.Remove idx |> ignore
         member x.Current = Dictionary cubes
@@ -61,7 +65,7 @@ type HashTableGrid() =
 [<Sealed>]
 type TreeMapGrid() =
     let mutable cubes = Map.empty
-    interface IGrid<Map<IntVec3, int>> with
+    interface IGrid<CanonicalGrid> with
         member x.AddObject idx cube = if cubes.Count < Impl.MAX_CUBES && not (cubes.ContainsKey idx) then cubes <- cubes.Add (idx, cube)
         member x.RemoveObject idx = cubes <- cubes.Remove idx
         member x.Current = cubes
@@ -247,20 +251,31 @@ type BasicWorldStateDelta = {
     GridDelta:Map<BasicRobotPositionDelta,CubeDelta>;
 }
 with
-    static member ApplyDelta (state:BasicWorldState2) d : BasicWorldState2 option =
-        let newGrid = Map.fold (fun (grid:Map<IntVec3 option, Cube2>) (delta:BasicRobotPositionDelta) (cubeDelta:CubeDelta) ->
-                                    match cubeDelta.Status with
-                                    | CubeStatus.Add -> grid.Add ((BasicRobotPositionDelta.ApplyDelta state.Robot delta), cubeDelta.Cube)
-                                    | CubeStatus.Remove -> grid.Remove (BasicRobotPositionDelta.ApplyDelta state.Robot delta)
-                                    | _ -> invalidOp "unrecognized cube status"
-                                )
-                                (Map.ofSeq (Seq.map (fun (k,v) -> (Some(k),v)) (Map.toSeq state.Grid))) d.GridDelta
-        if newGrid.ContainsKey None then
-            None
+
+    static member TryApplyDelta (robot:BasicRobot ref, grid:Dictionary<IntVec3,int>) (d:BasicWorldStateDelta) : bool =
+        let newCubes = System.Collections.Generic.List (d.GridDelta.Count)
+        let rob = !robot
+
+        let isValid = ref true
+        d.GridDelta |> Map.iter (fun delta cubeDelta ->
+            match BasicRobotPositionDelta.ApplyDelta rob delta with
+            | None -> isValid := false
+            | Some p -> newCubes.Add (p, cubeDelta)
+        )
+        if !isValid then
+            match BasicRobotDelta.ApplyDelta rob d.RobotDelta with
+            | None -> false
+            | Some bot ->
+                for p, c in newCubes do
+                    match c.Status with
+                    | CubeStatus.Add -> if not (grid.ContainsKey p) then grid.Add (p, fst c.Cube)
+                    | CubeStatus.Remove -> grid.Remove p |> ignore
+                    | _ -> invalidOp "unrecognized cube status"
+
+                robot := bot
+                true
         else
-            match BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta with
-            | None -> None
-            | Some bot -> Some({Robot=bot; Grid=(Map.ofSeq (Seq.map (fun ((k:IntVec3 option),v) -> (k.Value,v)) (Map.toSeq newGrid)))})
+            false
 
     static member ApplyDelta3 (state:BasicWorldState3) d : BasicWorldState3 option =
         let newCubes = System.Collections.Generic.List (d.GridDelta.Count)
@@ -357,3 +372,47 @@ type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
         member x.CurrentState =
             let state:BasicWorldState2 = {Robot=robot; Grid=grid.CurrentState}
             upcast state
+
+[<Sealed>]
+type DeltaRobotSimulator (startRobot:BasicRobot) =
+    let mutable robot = startRobot
+    let mutable numCommands = 0
+    let grid = HashTableGrid ()
+
+    static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
+
+    member x.AsCanonicalState : CanonicalWorldState = {Robot=robot; Grid=(grid:>IGrid<_>).ConvertToCanonical (grid:>IGrid<_>).Current}
+
+    member x.NumberOfCommandsExecuted = numCommands
+
+    interface Robot.IRobotDeltaSimulator<WorldState<DictGrid>, BasicWorldStateDelta> with
+        member x.Execute command =
+            numCommands <- numCommands + 1
+            let p = robot.Position
+            let d = robot.Direction
+            match command.Name with
+            | "forward" -> robot <- {robot with Position=p + d}
+            | "up" -> robot <- {robot with Position=p + IntVec3.UnitY}
+            | "down" -> if p.Y > 0 then robot <- {robot with Position=p - IntVec3.UnitY}
+            | "left" -> robot <- {robot with Direction=IntVec3 (-d.Z, 0, d.X)}
+            | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
+            | "cube" ->
+                let cube = command.Args.[0] :?> int
+                (grid:>IGrid<_>).AddObject p cube
+            | "remove" -> (grid:>IGrid<_>).RemoveObject p
+            | _ -> ()
+
+        member x.Query query = raise (System.NotSupportedException ())
+
+        member x.CurrentState = {Robot=robot; Grid=(grid:>IGrid<_>).Current}
+
+        member x.EmptyDelta = BasicWorldStateDelta.Empty
+        member x.CreateDelta command = BasicWorldStateDelta.Create command
+        member x.CombineDelta a b = BasicWorldStateDelta.Combine a b
+        member x.TryApplyDelta delta =
+            let bot = ref robot
+            if BasicWorldStateDelta.TryApplyDelta (bot, grid.RawCubes) delta then
+                robot <- !bot
+                true
+            else
+                false

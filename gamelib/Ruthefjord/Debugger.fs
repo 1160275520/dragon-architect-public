@@ -165,14 +165,6 @@ module Debugger =
         ApplyCommand = apply;
     }
 
-    let stateFunctions: Simulator.StateFunctions<BasicWorldState2, BasicWorldStateDelta> = {
-        Empty = BasicWorldStateDelta.Empty;
-        Combine = fun a b -> BasicWorldStateDelta.Combine a b;
-        Create = fun c -> BasicWorldStateDelta.Create c;
-        ApplyDelta = fun bot delta -> BasicWorldStateDelta.ApplyDelta bot delta;
-        ApplyCommand = fun state c -> BasicWorldState2.ApplyCommand state c;
-    }
-
     let stateFunctions2: Simulator.StateFunctions<BasicWorldState3, BasicWorldStateDelta> = {
         Empty = BasicWorldStateDelta.Empty;
         Combine = fun a b -> BasicWorldStateDelta.Combine a b;

@@ -41,6 +41,48 @@ let ``no-op detla simulation`` () =
     actual |> should equal expected
 
 [<Fact>]
+let ``detla simulation`` () =
+    let initData = makeInitData ("../../../../doc/line.txt")
+    let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+
+    let cache = Simulator.MutableDict ()
+    let simulator = DeltaRobotSimulator (initData.State.Robot)
+    Simulator.RunOptimized initData.Program initData.BuiltIns simulator cache
+    let actual = simulator.AsCanonicalState
+
+    actual |> should equal expected
+
+// copy of the normal delta simulator, except Execute throw an exception.
+// for testing to ensure optimized simulators actually use the deltas exclusively
+type NoFallbackDeltaRobotSimulator (robot) =
+    let sim = DeltaRobotSimulator(robot)
+    let isim = sim :> Robot.IRobotDeltaSimulator<_,_>
+
+    member x.AsCanonicalState = sim.AsCanonicalState
+
+    interface Robot.IRobotDeltaSimulator<WorldState<DictGrid>, BasicWorldStateDelta> with
+        member x.Execute command = invalidOp ""
+        member x.Query query = isim.Query query
+        member x.CurrentState = isim.CurrentState
+        member x.EmptyDelta = isim.EmptyDelta
+        member x.CreateDelta command = isim.CreateDelta command
+        member x.CombineDelta a b = isim.CombineDelta a b
+        member x.TryApplyDelta delta = isim.TryApplyDelta delta
+
+// delta simulation on normal program should never hit the fallback code
+[<Fact>]
+let ``detla simulation no fallback`` () =
+    let initData = makeInitData ("../../../../doc/line.txt")
+    let expected = Debugger.runToCannonicalState initData.Program (TreeMapGrid ()) initData.BuiltIns initData.State
+
+    let cache = Simulator.MutableDict ()
+    let simulator = NoFallbackDeltaRobotSimulator (initData.State.Robot)
+    Simulator.RunOptimized initData.Program initData.BuiltIns simulator cache
+    let actual = simulator.AsCanonicalState
+
+    actual |> should equal expected
+
+[<Fact>]
 [<Trait("tag", "opt")>]
 let ``yet another optimization test`` () =
     let initData = makeInitData ("../../../../doc/pyramid.txt")
@@ -207,96 +249,6 @@ let ``delta vertical some 2`` () =
     delta.RobotDelta.YDelta |> should equal -5
 
 [<Fact>]
-[<Trait("id", "delta-turn-around")>]
-[<Trait("tag", "opt")>]
-let ``delta turn around`` () =
-    let initDir = IntVec3.UnitZ
-    let initPos = IntVec3.Zero
-    let robot:BasicRobot = {Position=initPos; Direction=initDir}
-    let grid2 = GridStateTracker2 Seq.empty
-    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command list = [
-        {Name="forward"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="right"; Args=[]}
-        {Name="right"; Args=[]}
-        ]
-    let delta = BasicWorldStateDelta.Create commands
-    delta.RobotDelta.TurnCounter |> should equal 2
-    BasicRobotDelta.GetNewDir initDir delta.RobotDelta.TurnCounter |> should equal (new IntVec3(-initDir.X, 0, -initDir.Z))
-    delta.RobotDelta.ParallelDelta |> should equal 3
-    delta.RobotDelta.PerpenDelta |> should equal 0
-    delta.RobotDelta.YDelta |> should equal 0
-    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=grid2.CurrentState}:BasicWorldState2
-    let es = BasicWorldStateDelta.ApplyDelta startState delta
-    es.IsSome |> should equal true
-    let endState = es.Value
-    endState |> should equal {startState with Robot={Position=IntVec3(0,0,3); Direction= -initDir}}
-
-[<Fact>]
-[<Trait("id", "delta-L")>]
-[<Trait("tag", "opt")>]
-let ``delta L`` () =
-    let initDir = IntVec3.UnitZ
-    let initPos = IntVec3.Zero
-    let robot:BasicRobot = {Position=initPos; Direction=initDir}
-    let grid2 = GridStateTracker2 Seq.empty
-    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command list = [
-        {Name="left"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="forward"; Args=[]}
-        ]
-    let deltaIter = BasicWorldStateDelta.Create commands
-    let delta = BasicWorldStateDelta.Combine deltaIter deltaIter
-    delta.RobotDelta.TurnCounter |> should equal -2
-    BasicRobotDelta.GetNewDir initDir delta.RobotDelta.TurnCounter |> should equal (new IntVec3(-initDir.X, 0, -initDir.Z))
-    delta.RobotDelta.ParallelDelta |> should equal -4
-    delta.RobotDelta.PerpenDelta |> should equal -4
-    delta.RobotDelta.YDelta |> should equal 0
-    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=grid2.CurrentState}:BasicWorldState2
-    let es = BasicWorldStateDelta.ApplyDelta startState delta
-    es.IsSome |> should equal true
-    let endState = es.Value
-    endState |> should equal {startState with Robot={Position=IntVec3(-4,0,-4); Direction= -initDir}}
-
-[<Fact>]
-[<Trait("id", "delta-apply")>]
-[<Trait("tag", "opt")>]
-let ``delta apply`` () =
-    let initDir = IntVec3.UnitX
-    let initPos = new IntVec3(1,1,1)
-    let robot:BasicRobot = {Position=initPos; Direction=initDir}
-    let gridInit:(IntVec3 * Cube2) list = [
-        ((new IntVec3(2,2,1)), (1, {Name="cube"; Args=[1]}))
-        ((new IntVec3(0,0,0)), (1, {Name="cube"; Args=[1]}))
-    ]
-    let grid2 = GridStateTracker2 gridInit
-    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command list = [
-        {Name="up"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="cube"; Args=[1]}
-        {Name="right"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="cube"; Args=[1]}
-        ]
-    let delta = BasicWorldStateDelta.Create commands
-    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=(GridStateTracker2 gridInit).CurrentState}:BasicWorldState2
-    let es = BasicWorldStateDelta.ApplyDelta startState delta
-    es.IsSome |> should equal true
-    let endState = es.Value
-    endState.Robot.Position |> should equal (new IntVec3(2,2,0))
-    endState.Robot.Direction |> should equal -IntVec3.UnitZ
-    (Map.toArray endState.Grid).Length |> should equal 3
-    endState.Grid.ContainsKey((new IntVec3(0, 0, 0))) |> should equal true
-    endState.Grid.ContainsKey((new IntVec3(2, 2, 1))) |> should equal true
-    endState.Grid.ContainsKey((new IntVec3(2, 2, 0))) |> should equal true
-
-[<Fact>]
 [<Trait("id", "delta-robot-combine")>]
 [<Trait("tag", "opt")>]
 let ``delta robot combine`` () =
@@ -386,53 +338,3 @@ let ``delta combine`` () =
     combine.GridDelta.ContainsKey({ParallelDelta=1;PerpenDelta=0;YDelta=1;MinY=0}) |> should equal true
     combine.GridDelta.ContainsKey({ParallelDelta=1;PerpenDelta= -1;YDelta=1;MinY=0}) |> should equal true
     combine.GridDelta.ContainsKey({ParallelDelta=0;PerpenDelta= -1;YDelta=2;MinY=0}) |> should equal true
-
-[<Fact>]
-[<Trait("id", "delta-combine-apply")>]
-[<Trait("tag", "opt")>]
-let ``delta combine apply`` () =
-    let initDir = IntVec3.UnitZ
-    let initPos = IntVec3.Zero
-    let robot:BasicRobot = {Position=initPos; Direction=initDir}
-    let grid2 = GridStateTracker2 Seq.empty
-    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command list = [
-        {Name="forward"; Args=[]}
-        {Name="cube"; Args=[1]}
-        {Name="up"; Args=[]}
-        {Name="cube"; Args=[1]}
-        {Name="down"; Args=[]}
-        {Name="up"; Args=[]}
-        {Name="left"; Args=[]}
-        {Name="right"; Args=[]}
-        ]
-    let delta = BasicWorldStateDelta.Create commands
-
-    let robot:BasicRobot = {Position=initPos; Direction=initDir}
-    let grid2 = GridStateTracker2 Seq.empty
-    let runner2 = BasicImperativeRobotSimulator2 (robot, grid2)
-    let commands:Command list = [
-        {Name="cube"; Args=[1]}
-        {Name="left"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="cube"; Args=[1]}
-        {Name="left"; Args=[]}
-        {Name="up"; Args=[]}
-        {Name="forward"; Args=[]}
-        {Name="cube"; Args=[1]}
-        {Name="down"; Args=[]}
-        ]
-    let delta2 = BasicWorldStateDelta.Create commands
-
-    let combine = BasicWorldStateDelta.Combine delta delta2
-    let startState = {Robot={Position=initPos; Direction=initDir}; Grid=(GridStateTracker2 Seq.empty).CurrentState}:BasicWorldState2
-    let es = BasicWorldStateDelta.ApplyDelta startState combine
-    es.IsSome |> should equal true
-    let endState = es.Value
-    endState.Robot.Position |> should equal (new IntVec3(-1,1,0))
-    endState.Robot.Direction |> should equal -initDir
-    (Map.toArray endState.Grid).Length |> should equal 4
-    endState.Grid.ContainsKey((new IntVec3(0, 0, 1))) |> should equal true
-    endState.Grid.ContainsKey((new IntVec3(0, 1, 1))) |> should equal true
-    endState.Grid.ContainsKey((new IntVec3(-1, 1, 1))) |> should equal true
-    endState.Grid.ContainsKey((new IntVec3(-1, 2, 0))) |> should equal true
