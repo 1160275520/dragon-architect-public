@@ -1,0 +1,6 @@
+#lang imperative:1.0
+
+repeat 3 times
+    PlaceCube(1)
+    Forward(1)
+

@@ -1,6 +1,10 @@
 /// Some basic linear algebra types needed for the block simulation.
 namespace Ruthefjord
 
+module RMath =
+    let inline floori v =
+        int (floor v)
+
 [<StructuralEquality;NoComparison>]
 type IntVec2 = struct
     val X : int
@@ -19,7 +23,7 @@ type IntVec2 = struct
     override v.ToString () = sprintf "<%d,%d>" v.X v.Y
 end
 
-[<StructuralEquality;NoComparison>]
+[<StructuralEquality;StructuralComparison>]
 type IntVec3 = struct
     val X : int
     val Y : int
@@ -30,6 +34,8 @@ type IntVec3 = struct
     static member (+) (a:IntVec3, b:IntVec3) = IntVec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
     static member (-) (a:IntVec3, b:IntVec3) = IntVec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
     static member (~-) (v:IntVec3) = IntVec3(-v.X, -v.Y, -v.Z)
+    static member (*) (v:IntVec3, s:int) = IntVec3(v.X * s, v.Y * s, v.Z * s)
+    static member (*) (s:int, v:IntVec3) = IntVec3(s * v.X, s * v.Y, s * v.Z)
 
     static member Zero = IntVec3(0,0,0)
     static member UnitX = IntVec3(1,0,0)

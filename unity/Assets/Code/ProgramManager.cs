@@ -7,6 +7,8 @@ using Microsoft.FSharp.Core;
 using Ruthefjord;
 using Ruthefjord.Ast;
 
+using CanonicalWorldState = Ruthefjord.WorldState<Microsoft.FSharp.Collections.FSharpMap<Ruthefjord.IntVec3, int>>;
+
 public enum ProgramStepType
 {
     Statement,
@@ -17,12 +19,12 @@ public class ProgramManager : MonoBehaviour {
 
     private static Dictionary<string, int> stdlibSteps = new Dictionary<string, int>
     {
-        {"Forward", 2}, 
-        {"Left", 1}, 
-        {"Right", 1}, 
-        {"Up", 2}, 
-        {"Down", 2}, 
-        {"PlaceCube", 1}, 
+        {"Forward", 2},
+        {"Left", 1},
+        {"Right", 1},
+        {"Up", 2},
+        {"Down", 2},
+        {"PlaceCube", 1},
         {"RemoveCube", 1}
     };
 
@@ -31,36 +33,24 @@ public class ProgramManager : MonoBehaviour {
 
     public ImperativeAstManipulator Manipulator { get; private set; }
 
-    private Simulator.FullSimulationResult result;
-
     // never access these directly, even for private code!
     private RunState runState;
     private EditMode editMode;
+
+    private IDebugger debugger;
+    private ProgramRunner runner;
 
     // the grid state at the beginning of workshop mode
     private KeyValuePair<IntVec3, int>[] initialCells;
 
     public bool IsSimulationRunning { get { return EditMode.IsPersistent || RunState.IsExecuting; } }
 
-    private int currentStepIndex = 0;
 
-    private int currentStateIndex {
-        get { return result == null ? 0 : result.StateOf(currentStepIndex); }
-        set {
-            currentStepIndex = result == null
-                ? 0
-                : value == result.States.Length ? result.Steps.Length : result.States[value].StepIndex;
-        }
-    }
-
-    // the absolute time when a step was last advanced
+    // the absolute time when a step was last advanced, used to determine how long animation should play
     private float lastStatementExecutionTime = 0.0f;
-    // how many ticks have passed since the last step was advanced
-    private float totalTicks;
 
     private IEnumerable<Imperative.Statement> lastExecuted;
-    private LazyProgramRunner lazyProgramRunner;
-    private Simulator.StateResult currentState;
+    private BasicWorldState currentState;
 
     private Microsoft.FSharp.Collections.FSharpMap<string, object> importedModules;
 
@@ -80,9 +70,10 @@ public class ProgramManager : MonoBehaviour {
         runState = RunState.Stopped;
         editMode = EditMode.Persistent;
         initialCells = new KeyValuePair<IntVec3, int>[] { };
+        this.runner = new ProgramRunner();
     }
-    
-    void Start () {
+
+    void Start() {
         var eapi = GetComponent<ExternalAPI>();
         eapi.NotifyPS_EditMode(EditMode);
         eapi.NotifyPS_RunState(RunState);
@@ -105,6 +96,8 @@ public class ProgramManager : MonoBehaviour {
         set {
             if (editMode == value) return;
 
+            // TODO do some state changes
+
             // stop playback when mode changes (which should clear out any workshop changes)
             RunState = RunState.Stopped;
             FindObjectOfType<MyCamera>().clearCubeHighlight();
@@ -112,7 +105,7 @@ public class ProgramManager : MonoBehaviour {
                 // if switching to workshop mode, backup all cells and clear old states
                 var grid = GetComponent<Grid>();
                 initialCells = grid != null ? grid.AllCells : new KeyValuePair<IntVec3, int>[] { };
-                result = null;
+                //result = null;
             }
 
             setEditMode(value);
@@ -133,11 +126,12 @@ public class ProgramManager : MonoBehaviour {
 
             if (value.IsStopped) {
                 if (EditMode.IsWorkshop) {
-                    setGameStateToStateIndex(0, 0.0f);
+                    setGameStateToStateIndex(0);
                 }
             } else if (value.IsExecuting) {
                 if (runState.IsStopped) {
                     startExecution();
+                    this.runner.Play();
                 } else {
                     // reset last statement execution time so dt isn't super wrong next time
                     lastStatementExecutionTime = Time.time;
@@ -153,18 +147,15 @@ public class ProgramManager : MonoBehaviour {
     }
 
     private void startExecution() {
-        totalTicks = 0.0f;
-        lastStatementExecutionTime = Time.time;
+        var initData = new DebuggerInitialData(
+            this.Manipulator.Program,
+            this.importedModules,
+            new BasicWorldState(this.robot.Robot, ImmArr.ofArray(GetComponent<Grid>().AllCellsWithCommands)).AsCanonical);
+        this.debugger = Debugger.create(this.editMode, initData);
+        this.runner.Reset(this.debugger);
+        this.lastStatementExecutionTime = Time.time;
 
-        if (EditMode.IsPersistent) {
-            // use the current grid as the initial state
-            var grid = new GridStateTracker(GetComponent<Grid>().AllCellsWithCommands);
-            // just use wherever the robot current is as the initial state
-            lazyProgramRunner = new LazyProgramRunner(Manipulator.Program, importedModules, grid, robot.Robot);
-        } else if (EditMode.IsWorkshop) {
-            evalEntireProgram();
-            setGameStateToStateIndex(0, 0.0f);
-        }
+        // TODO probably need to set the state?
     }
 
     public IEnumerable<int> LastExecuted {
@@ -174,31 +165,23 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
-    private void setGameStateToStateIndex(int index, float transitionTimeSeconds) {
+    private void setGameStateToStateIndex(int index) {
         if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
-        currentStateIndex = index;
-        var state = result.States[Util.clamp(0, result.States.Length - 1, index)];
-        setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
+        debugger.JumpToState(index);
+        var cs = debugger.CurrentStep;
+        setGameState(cs.State, cs.Command, cs.LastExecuted, 0.0f);
     }
 
-    private void setGameStateToStepIndex(int index) {
-        var transitionTimeSeconds = 0.0f;
-        if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only set using state index in workshop mode!");
-        this.currentStepIndex = index;
-        // currentStateIndex will update after we set currentStepIndex
-        var state = result.States[Util.clamp(0, result.States.Length - 1, this.currentStateIndex)];
-        setGameState(state.Data, result.Steps[state.StepIndex], transitionTimeSeconds);
-    }
-
-    private void setGameState(Simulator.StateResult state, IEnumerable<Imperative.Statement> stack, float transitionTimeSeconds) {
+    private void setGameState(CanonicalWorldState cws, FSharpOption<Ruthefjord.Robot.Command> commandOpt, IEnumerable<Imperative.Statement> stack, float transitionTimeSeconds) {
         Profiler.BeginSample("ProgramManager.setGameState");
+        var state = BasicWorldState.FromCanonical(cws);
         if (state != currentState) {
             FindObjectOfType<MyCamera>().clearCubeHighlight();
             currentState = state;
             var grid = GetComponent<Grid>();
-            var ws = state.WorldState as BasicWorldState;
-            robot.SetRobot(ws.Robot, state.Command, transitionTimeSeconds);
-            grid.SetGrid(ws.Grid);
+            var cmd = OptionModule.IsSome(commandOpt) ? commandOpt.Value : null;
+            robot.SetRobot(state.Robot, cmd, transitionTimeSeconds);
+            grid.SetGrid(state.Grid);
             lastExecuted = stack;
             GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
         }
@@ -206,6 +189,8 @@ public class ProgramManager : MonoBehaviour {
     }
 
     public void StepProgramState(ProgramStepType type, int distance) {
+#if false
+        if (RunState == RunState.Executing) RunState = RunState.Paused;
         if (EditMode.IsWorkshop) {
             switch (type) {
                 case ProgramStepType.Command:
@@ -216,141 +201,58 @@ public class ProgramManager : MonoBehaviour {
                     break;
             }
         }
-    }
-
-    public void AdvanceToNextInterestingStep ()
-    {
-        // can only happen in workshop mode if the program has steps remaining
-        if (EditMode.IsWorkshop && currentStepIndex < result.Steps.Length - 1) {
-            // run if we haven't yet
-            evalEntireProgram();
-            // sometimes evaling entire program fails, so check again anyway
-            if (result != null) {
-                setRunState(RunState.Paused);
-                // advance to the next step
-                // skip to the first callstack change
-                int distance = 1;
-                var currentCallstack = result.Steps [currentStepIndex];
-                int stepsRemaining = (result.Steps.Length - 1) - currentStepIndex;
-                while (distance < stepsRemaining && Enumerable.SequenceEqual(currentCallstack, result.Steps [currentStepIndex + distance])) {
-                    distance++;
-                }
-                Imperative.Statement nextOnCallstack = result.Steps [currentStepIndex + distance].First();
-                GetComponent<ExternalAPI>().NotifyStepHighlight(nextOnCallstack.Meta.Id);
-                // if the next thing on the callstack is the start of a stdlib procedure that performs a command
-                if (nextOnCallstack.Stmt.IsExecute && stdlibSteps.ContainsKey(nextOnCallstack.Stmt.AsExecute().Identifier)) {
-                    // skip the steps that don't change the state
-                    distance += stdlibSteps [nextOnCallstack.Stmt.AsExecute().Identifier];
-                }
-                setGameStateToStepIndex(currentStepIndex + distance);
-            }
-        }
-    }
-
-    public void SetProgramStateBySlider(float slider) {
-        if (EditMode.IsWorkshop) {
-            // run if we haven't yet
-            evalEntireProgram();
-
-            // sometimes evaling entire program fails, so check again anyway
-            if (result != null) {
-                setRunState(RunState.Paused);
-                var newIndex = (int)Math.Floor(result.States.Length * slider);
-                if (currentStateIndex != newIndex) {
-                    setGameStateToStateIndex(newIndex, 0.0f);
-                }
-            }
-        }
+#endif
     }
 
     public float SliderPosition {
         get {
-            if (result == null) return 0.0f;
-            else return (float)currentStateIndex / result.States.Length;
+            if (debugger == null || editMode.IsPersistent) return 0.0f;
+            else return (float)debugger.CurrentStateIndex / (debugger.StateCount - 1);
         }
-    }
+        set {
+            if (EditMode.IsWorkshop) {
+                setRunState(RunState.Paused);
 
-    public bool AtLastStep {
-        get {
-            return currentStepIndex >= result.Steps.Length - 1;
+                // if the slider is moved before play starts, then execute the program
+                if (debugger == null) {
+                    startExecution();
+                }
+
+                var newIndex = (int)Math.Floor((debugger.StateCount - 1) * value);
+                if (debugger.CurrentStateIndex != newIndex) {
+                    setGameStateToStateIndex(newIndex);
+                }
+            }
         }
     }
 
     public void LoadProgram(string resourceName) {
         Manipulator.Program = Ruthefjord.Parser.Parse(Resources.Load<TextAsset>(resourceName).text, resourceName);
     }
-    
-    private void evalEntireProgram() {
-        if (EditMode != EditMode.Workshop) throw new InvalidOperationException("can only call this in workshop mode!");
-        if (Manipulator.IsDirty || result == null) {
-            Manipulator.ClearDirtyBit();
 
-            var isOldIndexAtEnd = result != null && currentStateIndex == result.States.Length;
+	void Update() {
+        // TODO figure out if "last time" should be updated, even if paused
 
-            var grid = new GridStateTracker(initialCells.Select((kvp) => new KeyValuePair<IntVec3, Tuple<int, Ruthefjord.Robot.Command>>(kvp.Key, new Tuple<int, Ruthefjord.Robot.Command>(kvp.Value, null))));
-            var initialRobotState = result != null ? ((BasicWorldState)result.States[0].Data.WorldState).Robot : robot.Robot;
-            var runner = new BasicImperativeRobotSimulator(initialRobotState, grid);
-            result = Simulator.SimulateWithRobot(Manipulator.Program, importedModules, runner);
-
-            if (isOldIndexAtEnd) {
-                currentStateIndex = result.States.Length;
-            }
-
-            setGameStateToStateIndex(currentStateIndex, 0.0f);
-        }
-    }
-
-	void Update () {
-        Profiler.BeginSample("ProgramManager.Update.CalculateTicks");
-        var oldTicks = (int)totalTicks;
         if (RunState.IsExecuting) {
-            totalTicks += Time.deltaTime * TicksPerSecond;
-        }
-
-        int stepsPassed = Math.Max(0, (int)(totalTicks / TicksPerStep));
-        totalTicks -= stepsPassed * TicksPerStep;
-
-        float dt = 0;
-
-        if (stepsPassed > 0) {
-            if (stepsPassed == 1) {
-                dt = Time.time - lastStatementExecutionTime;
+            //Debug.Log("time: " + Time.deltaTime + ", TPS: " + TicksPerSecond);
+            var numSteps = this.runner.Update(Time.deltaTime * TicksPerSecond / TicksPerStep);
+            // check if the runner is finished
+            if (!this.runner.IsRunning) {
+                setRunState(editMode.IsPersistent ? RunState.Stopped : RunState.Finished);
             }
-            lastStatementExecutionTime = Time.time;
-        }
-        Profiler.EndSample();
 
-        if (EditMode.IsPersistent && RunState.IsExecuting) {
-            for (var i = 0; i < stepsPassed; i++) {
-                Profiler.BeginSample("ProgramManager.Update.GetGrid");
-                var grid = new GridStateTracker(GetComponent<Grid>().AllCellsWithCommands);
-                Profiler.EndSample();
-                if (lazyProgramRunner.IsDone) {
-                    RunState = RunState.Stopped;
-                    GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
-                } else {
-                    Profiler.BeginSample("ProgramManager.Update.ProgramStep");
-                    var tuple = lazyProgramRunner.UpdateOneStep(grid);
-                    Profiler.EndSample();
-                    setGameState(tuple.State, tuple.Stack, dt);
-                }
+            // TODO check if this should be something fancier
+            var dt = numSteps == 1
+                ? Time.time - this.lastStatementExecutionTime
+                : 0.0f;
+
+            // notify of state change, I guess?
+            // TODO why are we doing this?
+            if (numSteps > 0) {
+                this.lastStatementExecutionTime = Time.time;
+                var cs = debugger.CurrentStep;
+                setGameState(cs.State, cs.Command, cs.LastExecuted, dt);
             }
         }
-
-        else if (EditMode.IsWorkshop) {
-            evalEntireProgram();
-
-            if (RunState.IsExecuting) {
-                currentStateIndex += stepsPassed;
-                if (currentStateIndex >= result.States.Length) {
-                    // use the private var, the public setter will throw if you try to set to finished manually
-                    setRunState(RunState.Finished);
-                    GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(new int[]{}, 1.0f, GetComponent<Grid>().CellsFilled));
-                } else {
-                    setGameStateToStateIndex(currentStateIndex, dt);
-                }
-            }
-        }
-
 	}
 }

@@ -16,7 +16,7 @@ let ``World serialization empty test`` () =
     let world = {Cubes=[||]; Robots=[||]}
 
     let encoded = World.encodeToString world
-    let decoded = World.decodeFromString encoded 
+    let decoded = World.decodeFromString encoded
     decoded |> should equal world
 
     let empty = [
@@ -37,21 +37,21 @@ let ``World serialization simple test`` () =
     let world = {Cubes=cubes; Robots=robots}
 
     let encoded = World.encodeToString world
-    let decoded = World.decodeFromString encoded 
+    let decoded = World.decodeFromString encoded
     decoded |> should equal world
 
 [<Fact>]
 let ``World serialization repeat program test`` () =
     let prog = Parser.Parse (ImperativeSimulatorTest.repeatTestProg, "prog")
     let lib = ImperativeSimulatorTest.loadBuiltIns ()
-    let robot = BasicImperativeRobotSimulator (newRobot (), GridStateTracker [])
-    let states = (Simulator.SimulateWithRobot prog lib robot).States
-    let cubes = (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Grid.ToArray()
-    let robots = [| (states.[states.Length - 1].Data.WorldState :?> BasicWorldState).Robot |]
-    let world = {Cubes=cubes |> Array.map (fun kvp -> KeyValuePair(kvp.Key, fst kvp.Value)); Robots=robots}
+    let robot = BasicRobotSimulator (TreeMapGrid (), newRobot ())
+    let states = Simulator.CollectAllStates prog robot lib None
+    let cubes = states.[states.Length - 1].State.Grid |> Array.ofSeq
+    let robots = [| states.[states.Length - 1].State.Robot |]
+    let world = {Cubes=cubes; Robots=robots}
 
-    let encoded = World.encodeToString world 
-    let decoded = World.decodeFromString encoded 
+    let encoded = World.encodeToString world
+    let decoded = World.decodeFromString encoded
     decoded |> should equal world
 
 [<Fact>]

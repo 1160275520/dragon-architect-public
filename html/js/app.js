@@ -928,15 +928,17 @@ handler.onProgramStateChange = function(data) {
                 var callStackIndex = 1;
                 // add new highlights for currently executing block and all surrounding blocks
                 var block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[0].toString());
-                block.svg_.addHighlight(true);
-                while(block.getSurroundParent()) {
-                    block.getSurroundParent().svg_.addHighlight();
-                    if (block.getSurroundParent().type === "procedures_defnoreturn") {
-                        // add highlight to the function call that we're in
-                        block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[callStackIndex++].toString());
-                        block.svg_.addHighlight();
-                    } else {
-                        block = block.getSurroundParent();
+                if (block) {
+                    block.svg_.addHighlight(true);
+                    while(block.getSurroundParent()) {
+                        block.getSurroundParent().svg_.addHighlight();
+                        if (block.getSurroundParent().type === "procedures_defnoreturn") {
+                            // add highlight to the function call that we're in
+                            block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[callStackIndex++].toString());
+                            block.svg_.addHighlight();
+                        } else {
+                            block = block.getSurroundParent();
+                        }
                     }
                 }
             } else {

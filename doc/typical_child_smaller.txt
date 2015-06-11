@@ -1,0 +1,11 @@
+
+repeat 1000 times
+    Forward(500)
+    PlaceCube(1)
+    Up(500)
+    Left()
+    Left()
+    Down(499)
+    Forward(500)
+    Left()
+    Left()

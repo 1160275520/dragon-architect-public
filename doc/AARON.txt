@@ -1,0 +1,79 @@
+#lang imperative:1.0
+
+define Line(x)
+    repeat x times
+        PlaceCube(1)
+        Forward(1)
+
+define A()
+    Line(6)
+    Right()
+    Line(3)
+    Right()
+    Line(7)
+    Right()
+    Right()
+    Forward(4)
+    Left()
+    repeat 2 times
+        Forward(1)
+        PlaceCube(1)
+    repeat 2 times
+        Left()
+        Forward(4)
+    Left()
+    Forward(1)
+
+define R()
+    Line(6)
+    repeat 3 times
+        Right()
+        Line(3)
+    Right()
+    Right()
+    repeat 3 times
+        Forward(1)
+        Right()
+        Forward(1)
+        PlaceCube(1)
+        Left()
+    Forward(2)
+    Left()
+
+define O()
+    repeat 2 times
+        Line(6)
+        Right()
+        Line(3)
+        Right()
+    Right()
+    Forward(5)
+    Left()
+
+define N()
+    Line(7)
+    Right()
+    Forward(1)
+    Right()
+    Forward(2)
+    repeat 3 times
+        Line(2)
+        Left()
+        Forward(1)
+        Right()
+    Right()
+    Forward(1)
+    Right()
+    repeat 7 times
+        Forward(1)
+        PlaceCube(1)
+
+A()
+A()
+R()
+O()
+N()
+Forward(1)
+Left()
+Forward(12)
+Left()
