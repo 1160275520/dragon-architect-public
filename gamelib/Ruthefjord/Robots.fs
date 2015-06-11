@@ -413,12 +413,11 @@ with
         List.fold f BasicWorldStateDelta.Empty commands
 
     static member Combine (a:BasicWorldStateDelta2) (b:BasicWorldStateDelta2) =
-        let cubes =
-            b.GridDelta |> Array.map (fun (delta, cubeDelta) ->
-                (BasicRobotPositionDelta2.Combine a.RobotDelta.PosDelta delta a.RobotDelta.TurnCounter), cubeDelta
-            )
-        let grid = Array.append a.GridDelta cubes
-        {RobotDelta=BasicRobotDelta2.Combine a.RobotDelta b.RobotDelta; GridDelta=grid}
+        let cubes = Array.append a.GridDelta b.GridDelta
+        for i = a.GridDelta.Length to cubes.Length - 1 do
+            let delta, cubeDelta = cubes.[i]
+            cubes.[i] <- (BasicRobotPositionDelta2.Combine a.RobotDelta.PosDelta delta a.RobotDelta.TurnCounter), cubeDelta
+        {RobotDelta=BasicRobotDelta2.Combine a.RobotDelta b.RobotDelta; GridDelta=cubes}
 
 [<Sealed>]
 type DeltaRobotSimulator2 (startGrid: CanonicalGrid, startRobot:BasicRobot) =

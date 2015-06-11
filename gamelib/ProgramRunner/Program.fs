@@ -73,7 +73,7 @@ let main argv =
                 let runner = Debugger.makeSimulator grid start
                 Simulator.ExecuteToEnd program runner importedModules |> (fun s -> foo.Add s.Robot.Position.X)
 
-            //test "StandardHT" (fun () -> runToEnd (HashTableGrid ()))
+            test "StandardHT" (fun () -> runToEnd (HashTableGrid ()))
             //test "StandardTM" (fun () -> runToEnd (TreeMapGrid ()))
             test "Cached 1" (fun () ->
                 let cache = Simulator.MutableDict ()
@@ -144,7 +144,9 @@ let main argv =
 #endif
 
             test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
-            //test "Cached 2" (fun () -> jumpTest (CachingWorkshopDebugger2 (initData, None)))
+            test "Cached 2" (fun () -> jumpTest (CachingWorkshopDebugger2 (initData, None)))
+            test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
+            test "Cached 2" (fun () -> jumpTest (CachingWorkshopDebugger2 (initData, None)))
 
         | _ -> invalidOp ""
 
