@@ -358,9 +358,9 @@ with
 
     static member GetNewDir (dir:IntVec3) tc =
         match tc % 4 with
-        | (-3 | 1) -> (new IntVec3(dir.Z, 0, -dir.X))
-        | (-2 | 2) -> (new IntVec3(-dir.X, 0, -dir.Z))
-        | (-1 | 3) -> (new IntVec3(-dir.Z, 0, dir.X))
+        | (-3 | 1) -> IntVec3 (dir.Z, 0, -dir.X)
+        | (-2 | 2) -> IntVec3 (-dir.X, 0, -dir.Z)
+        | (-1 | 3) -> IntVec3 (-dir.Z, 0, dir.X)
         | _ -> dir
 
     static member Empty = {PosDelta={ParallelDelta=0; PerpenDelta=0; YDelta=0; MinY=0}; TurnCounter=0}
@@ -403,7 +403,8 @@ with
             {RobotDelta=BasicRobotDelta2.Empty; GridDelta=[|(BasicRobotPositionDelta2.Create command, {Status=CubeStatus.Add; Cube=cube})|]}
         | "remove" ->
             {RobotDelta=BasicRobotDelta2.Empty; GridDelta=[|(BasicRobotPositionDelta2.Create command, {Status=CubeStatus.Remove; Cube=0})|]}
-        | _ -> {RobotDelta=BasicRobotDelta2.Create command; GridDelta=Array.empty}
+        | _ ->
+            {RobotDelta=BasicRobotDelta2.Create command; GridDelta=Array.empty}
 
     static member Combine (a:BasicWorldStateDelta2) (b:BasicWorldStateDelta2) =
         let cubes = Array.append a.GridDelta b.GridDelta
@@ -420,7 +421,6 @@ type DeltaRobotSimulator2 (startGrid: CanonicalGrid, startRobot:BasicRobot) =
     do (grid:>IGrid<_>).SetFromCanonical startGrid
 
     static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
-
 
     member x.NumberOfCommandsExecuted = numCommands
 
