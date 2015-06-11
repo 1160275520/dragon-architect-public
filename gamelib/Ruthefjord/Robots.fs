@@ -107,7 +107,7 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
         member x.TryApplyDelta _ = false
 
 module private DMath =
-    // combine two rotations, represented as int vec 3
+    // combine two rotations, represented as int vec
     let combineRotation2 (a:IntVec2) (b:IntVec2) =
         IntVec2 (a.X*b.X - a.Y*b.Y, a.X*b.Y + a.Y*b.X)
     // rotate the X and Z of b by the rotation given by a
