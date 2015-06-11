@@ -51,7 +51,7 @@ let main argv =
         let program = Parser.Parse (text, filename)
         let start: CanonicalWorldState = {Robot={Position=IntVec3.Zero; Direction=IntVec3.UnitZ}; Grid=Map.empty}
 
-        let numSamples = 5
+        let numSamples = 10
         let foo = System.Collections.Generic.List (10000000)
 
         let numStates =
@@ -73,11 +73,41 @@ let main argv =
                 let runner = Debugger.makeSimulator grid start
                 Simulator.ExecuteToEnd program runner importedModules |> (fun s -> foo.Add s.Robot.Position.X)
 
-            test "StandardHT" (fun () -> runToEnd (HashTableGrid ()))
-            test "StandardTM" (fun () -> runToEnd (TreeMapGrid ()))
+            //test "StandardHT" (fun () -> runToEnd (HashTableGrid ()))
+            //test "StandardTM" (fun () -> runToEnd (TreeMapGrid ()))
             test "Cached 1" (fun () ->
                 let cache = Simulator.MutableDict ()
                 let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (start.Grid, start.Robot)
+                Simulator.RunOptimized program importedModules simulator cache
+                foo.Add simulator.CurrentState.Grid.Count
+            )
+            test "Cached 2" (fun () ->
+                let cache = Simulator.MutableDict ()
+                let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator2 (start.Grid, start.Robot)
+                Simulator.RunOptimized program importedModules simulator cache
+                foo.Add simulator.CurrentState.Grid.Count
+            )
+            test "Cached 1" (fun () ->
+                let cache = Simulator.MutableDict ()
+                let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (start.Grid, start.Robot)
+                Simulator.RunOptimized program importedModules simulator cache
+                foo.Add simulator.CurrentState.Grid.Count
+            )
+            test "Cached 2" (fun () ->
+                let cache = Simulator.MutableDict ()
+                let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator2 (start.Grid, start.Robot)
+                Simulator.RunOptimized program importedModules simulator cache
+                foo.Add simulator.CurrentState.Grid.Count
+            )
+            test "Cached 1" (fun () ->
+                let cache = Simulator.MutableDict ()
+                let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (start.Grid, start.Robot)
+                Simulator.RunOptimized program importedModules simulator cache
+                foo.Add simulator.CurrentState.Grid.Count
+            )
+            test "Cached 2" (fun () ->
+                let cache = Simulator.MutableDict ()
+                let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator2 (start.Grid, start.Robot)
                 Simulator.RunOptimized program importedModules simulator cache
                 foo.Add simulator.CurrentState.Grid.Count
             )
@@ -114,6 +144,7 @@ let main argv =
 #endif
 
             test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
+            //test "Cached 2" (fun () -> jumpTest (CachingWorkshopDebugger2 (initData, None)))
 
         | _ -> invalidOp ""
 

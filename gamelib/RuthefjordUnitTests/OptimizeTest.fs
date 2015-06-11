@@ -67,6 +67,13 @@ let ``delta samples`` progName =
         DeltaRobotSimulator (init.State.Grid, init.State.Robot)
     )
 
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``delta 2 reference`` (text, start, expected) =
+    (text, start, expected) |> checkOptimizedReference (fun init ->
+        DeltaRobotSimulator2 (init.State.Grid, init.State.Robot)
+    )
+
 // copy of the normal delta simulator, except Execute throw an exception.
 // for testing to ensure optimized simulators actually use the deltas exclusively
 type NoFallbackDeltaRobotSimulator (state) =
