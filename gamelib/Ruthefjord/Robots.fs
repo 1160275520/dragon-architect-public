@@ -15,6 +15,10 @@ type CubeDelta = {
     Cube: Cube2;
     Status: CubeStatus;
 }
+type CubeDelta2 = {
+    Cube: int;
+    Status: CubeStatus;
+}
 
 module private Impl =
     let MAX_CUBES = 100000
@@ -249,7 +253,7 @@ with
         {RobotDelta=BasicRobotDelta.Combine a.RobotDelta b.RobotDelta; GridDelta=BasicWorldStateDelta.MergeGridDelta a.GridDelta gridB}
 
     static member private MergeGridDelta a b =
-        Map.fold (fun delta pd cd ->
+        Map.fold (fun delta pd (cd:CubeDelta) ->
                     match cd.Status with
                     | CubeStatus.Add ->
                         if delta.ContainsKey pd then
@@ -317,14 +321,12 @@ type BasicRobotPositionDelta2 = {
     MinY: int;
 }
 with
-    static member ApplyDeltaNoCheck bot d =
+    member d.ApplyDeltaNoCheck bot =
         bot.Position + d.ParallelDelta * bot.Direction + d.PerpenDelta * bot.DirRightTurn + IntVec3(0, d.YDelta, 0)
 
-    static member ApplyDelta bot d =
-        if bot.Position.Y + d.MinY < 0 then
-            None
-        else
-            Some (bot.Position + d.ParallelDelta * bot.Direction + d.PerpenDelta * bot.DirRightTurn + IntVec3(0, d.YDelta, 0))
+    member d.TryApplyDelta bot =
+        if bot.Position.Y + d.MinY < 0 then None
+        else Some (d.ApplyDeltaNoCheck bot)
 
     static member Empty = {ParallelDelta=0; YDelta=0; PerpenDelta=0; MinY=0}
 
@@ -348,12 +350,9 @@ type BasicRobotDelta2 = {
     TurnCounter: int; // -1 for each left turn, +1 for each right turn
 }
 with
-    member x.ParallelDelta = x.PosDelta.ParallelDelta
-    member x.PerpenDelta = x.PosDelta.PerpenDelta
-    member x.YDelta = x.PosDelta.YDelta
     // to apply PosDelta, we move the X in the current direction and move Z in the current direction turned ot the right
-    static member ApplyDelta bot d =
-        match BasicRobotPositionDelta2.ApplyDelta bot d.PosDelta with
+    member d.TryApplyDelta bot =
+        match d.PosDelta.TryApplyDelta bot with
         | None -> None
         | Some delta -> Some ({Position=delta; Direction=BasicRobotDelta.GetNewDir bot.Direction d.TurnCounter})
 
@@ -377,21 +376,20 @@ with
 
 type BasicWorldStateDelta2 = {
     RobotDelta: BasicRobotDelta2;
-    GridDelta: (BasicRobotPositionDelta2*CubeDelta) array;
+    GridDelta: (BasicRobotPositionDelta2*CubeDelta2) array;
 }
 with
-
-    static member TryApplyDelta (robot:BasicRobot ref, grid:Dictionary<IntVec3,int>) (d:BasicWorldStateDelta2) : bool =
+    member d.TryApplyDelta (robot:BasicRobot ref, grid:Dictionary<IntVec3,int>) : bool =
         let rob = !robot
 
-        match BasicRobotDelta2.ApplyDelta rob d.RobotDelta with
+        match d.RobotDelta.TryApplyDelta rob with
         | None -> false
         | Some bot ->
             robot := bot
             for delta, cubeDelta in d.GridDelta do
-                let p = BasicRobotPositionDelta2.ApplyDeltaNoCheck rob delta
+                let p = delta.ApplyDeltaNoCheck rob
                 match cubeDelta.Status with
-                | CubeStatus.Add -> if not (grid.ContainsKey p) then grid.Add (p, fst cubeDelta.Cube)
+                | CubeStatus.Add -> if not (grid.ContainsKey p) then grid.Add (p, cubeDelta.Cube)
                 | CubeStatus.Remove -> grid.Remove p |> ignore
                 | _ -> invalidOp "unrecognized cube status"
             true
@@ -402,15 +400,10 @@ with
         match command.Name with
         | "cube" ->
             let cube = command.Args.[0] :?> int
-            {RobotDelta=BasicRobotDelta2.Empty; GridDelta=[|(BasicRobotPositionDelta2.Create command, {Status=CubeStatus.Add; Cube=(cube, command)})|]}
+            {RobotDelta=BasicRobotDelta2.Empty; GridDelta=[|(BasicRobotPositionDelta2.Create command, {Status=CubeStatus.Add; Cube=cube})|]}
         | "remove" ->
-            let cube = command.Args.[0] :?> int
-            {RobotDelta=BasicRobotDelta2.Empty; GridDelta=[|(BasicRobotPositionDelta2.Create command, {Status=CubeStatus.Remove; Cube=(cube, command)})|]}
+            {RobotDelta=BasicRobotDelta2.Empty; GridDelta=[|(BasicRobotPositionDelta2.Create command, {Status=CubeStatus.Remove; Cube=0})|]}
         | _ -> {RobotDelta=BasicRobotDelta2.Create command; GridDelta=Array.empty}
-
-    static member Create (commands:Robot.Command list) =
-        let f = fun delta (c:Robot.Command) -> BasicWorldStateDelta.Combine delta (BasicWorldStateDelta.Create c)
-        List.fold f BasicWorldStateDelta.Empty commands
 
     static member Combine (a:BasicWorldStateDelta2) (b:BasicWorldStateDelta2) =
         let cubes = Array.append a.GridDelta b.GridDelta
@@ -459,7 +452,7 @@ type DeltaRobotSimulator2 (startGrid: CanonicalGrid, startRobot:BasicRobot) =
         member x.CombineDelta a b = BasicWorldStateDelta2.Combine a b
         member x.TryApplyDelta delta =
             let bot = ref robot
-            if BasicWorldStateDelta2.TryApplyDelta (bot, grid.RawCubes) delta then
+            if delta.TryApplyDelta (bot, grid.RawCubes) then
                 robot <- !bot
                 true
             else
