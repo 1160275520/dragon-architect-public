@@ -124,13 +124,15 @@ type CubeDelta = {
 }
 
 type BasicRobotDelta = {
-    // vertical translation
+    // vertical translation.
     YTranslation: int;
-    // how low the robot must travel for this delta to apply cleanly (since it can't go beneath Y=0)
+    // how low the robot must travel for this delta to apply cleanly (since it can't go beneath Y=0).
     MinY: int;
-    // translation on the X and Z axes, as a Vec2 (so GroundTranslation.Y is actually the Z translation)
+    // translation on the X and Z axes, as a Vec2 (so GroundTranslation.Y is actually the Z translation).
+    // assumes default direction is (1,0), so must rotate by robot's actually direction before applying.
     GroundTranslation: IntVec2;
-    // rotation along Y axis (applied after translation), stored as a complex number
+    // rotation along Y axis (applied after translation), stored as a complex number.
+    // so (1,0) is the unit rotation.
     Rotation: IntVec2;
 } with
     static member Empty = {YTranslation=0; MinY=0; GroundTranslation=IntVec2.Zero; Rotation=IntVec2.UnitX}
@@ -146,7 +148,7 @@ type BasicRobotDelta = {
         else
             // extract the robot's rotation
             let rd = IntVec2 (robot.Direction.X, robot.Direction.Z)
-            // chane the ground translation by the current robot rotation
+            // change the ground translation by the current robot rotation
             let ground = DMath.combineRotation2 rd d.GroundTranslation
             let offset = IntVec3 (ground.X, d.YTranslation, ground.Y)
             // combine rotations for the new rotation
