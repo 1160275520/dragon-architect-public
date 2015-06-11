@@ -150,31 +150,30 @@ type CachingWorkshopDebugger2 (init: DebuggerInitialData, maxSteps) =
     let nie () = raise (System.NotImplementedException ())
 
     let cache = Simulator.MutableDict ()
-    let simulator () : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (init.State.Grid, init.State.Robot)
+    let newSimulator () : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (init.State.Grid, init.State.Robot)
+    let mutable simulator = newSimulator ()
 
     let mutable index = 0
-    let jumpTo newIndex : WorldState<DictGrid> =
+    let jumpTo newIndex : unit =
         index <- newIndex
-        let sim = simulator ()
-        Simulator.RunOptimizedToState init.Program init.BuiltIns sim cache newIndex
-        sim.CurrentState
-    let mutable current = jumpTo 0
+        simulator <- newSimulator ()
+        Simulator.RunOptimizedToState init.Program init.BuiltIns simulator cache newIndex
+    do jumpTo 0
     let total = 0
 
     interface IDebugger with
         member x.IsDone = index = total - 1
         member x.CurrentStep =
-            let grid = current.Grid |> Seq.map (fun kvp -> (kvp.Key, kvp.Value)) |> Map.ofSeq
-            let state: CanonicalWorldState = {Robot=current.Robot; Grid=grid}
+            let state = simulator.AsCanonicalState
             {State=state; LastExecuted=[]; Command=None}
         member x.AdvanceOneState () =
-            current <- jumpTo (index + 1)
+            jumpTo (index + 1)
         member x.AdvanceOneLine () = nie ()
 
         member x.CurrentStateIndex = index
         member x.StateCount = total
         member x.JumpToState newIndex =
-            current <- jumpTo newIndex
+            jumpTo newIndex
 
 module Debugger =
     let create (mode, init) : IDebugger =
