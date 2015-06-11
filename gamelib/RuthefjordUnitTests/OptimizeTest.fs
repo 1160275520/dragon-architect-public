@@ -74,6 +74,19 @@ let ``delta 2 reference`` (text, start, expected) =
         DeltaRobotSimulator2 (init.State.Grid, init.State.Robot)
     )
 
+[<Theory>]
+[<PropertyData("referenceProgramsTheory")>]
+let ``delta 3 reference`` (text, start, expected) =
+    (text, start, expected) |> checkOptimizedReference (fun init ->
+        DeltaRobotSimulator3 (init.State.Grid, init.State.Robot)
+    )
+
+[<Fact>]
+let ``delta 3 reference ASD`` ()  =
+    IST.referencePrograms.[1] |> checkOptimizedReference (fun init ->
+        DeltaRobotSimulator3 (init.State.Grid, init.State.Robot)
+    )
+
 // copy of the normal delta simulator, except Execute throw an exception.
 // for testing to ensure optimized simulators actually use the deltas exclusively
 type NoFallbackDeltaRobotSimulator (state) =

@@ -105,8 +105,9 @@ let checkReferenceProgram (runSim:DebuggerInitialData -> CanonicalWorldState) (t
     let prog = Parser.Parse (text, "prog")
     let lib = loadBuiltIns ()
     let actual = runSim {Program=prog; BuiltIns=lib; State=start}
-    actual.Grid |> should equal expected.Grid
+
     actual.Robot |> should equal expected.Robot
+    actual.Grid |> should equal expected.Grid
 
 let loadSampleProgram progName : DebuggerInitialData =
     let text = System.IO.File.ReadAllText (sprintf "../../../../doc/%s.txt" progName)

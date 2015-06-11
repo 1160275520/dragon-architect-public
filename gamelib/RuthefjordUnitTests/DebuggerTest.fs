@@ -105,3 +105,9 @@ let ``caching debugger 2`` () =
     runFullWorkshopTest (fun init ->
         upcast CachingWorkshopDebugger2 (init, None)
     )
+
+[<Fact>]
+let ``caching debugger 3`` () =
+    runFullWorkshopTest (fun init ->
+        upcast CachingWorkshopDebugger3 (init, None)
+    )

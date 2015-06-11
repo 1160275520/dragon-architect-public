@@ -460,3 +460,136 @@ type DeltaRobotSimulator2 (startGrid: CanonicalGrid, startRobot:BasicRobot) =
                 true
             else
                 false
+
+module private DMath =
+    // combine two rotations, represented as int vec 3
+    let combineRotation2 (a:IntVec2) (b:IntVec2) =
+        IntVec2 (a.X*b.X - a.Y*b.Y, a.X*b.Y + a.Y*b.X)
+    // rotate the X and Z of b by the rotation given by a
+    let combineRotation3 (a:IntVec2) (b:IntVec3) =
+        IntVec3 (a.X*b.X - a.Y*b.Z, b.Y, a.X*b.Z + a.Y*b.X)
+
+type BasicRobotDelta3 = {
+    YTranslation: int;
+    MinY: int;
+    GroundTranslation: IntVec2;
+    // rotation along Y axis (applied after translation)
+    Rotation: IntVec2;
+} with
+    static member Empty = {YTranslation=0; MinY=0; GroundTranslation=IntVec2.Zero; Rotation=IntVec2.UnitX}
+
+    member d.ApplyToPos (p:IntVec3) =
+        let p = DMath.combineRotation3 d.Rotation p
+        IntVec3 (p.X + d.GroundTranslation.X, p.Y + d.YTranslation, p.Z + d.GroundTranslation.Y)
+
+    member d.TryApplyDelta (robot:BasicRobot) =
+        if robot.Position.Y + d.MinY < 0 then
+            None
+        else
+            let rd = IntVec2 (robot.Direction.X, robot.Direction.Z)
+            let ground = DMath.combineRotation2 rd d.GroundTranslation
+            let offset = IntVec3 (ground.X, d.YTranslation, ground.Y)
+            let newDir = DMath.combineRotation3 d.Rotation robot.Direction
+            Some { Position = robot.Position + offset; Direction = newDir }
+
+    static member Create (command:Robot.Command) =
+        let e = BasicRobotDelta3.Empty
+        match command.Name with
+        | "forward" -> {e with GroundTranslation = IntVec2 (1, 0)}
+        | "up" -> {e with YTranslation = 1}
+        | "down" -> {e with YTranslation = -1; MinY = -1}
+        | "left" -> {e with Rotation = IntVec2 (0, 1)}
+        | "right" -> {e with Rotation = IntVec2 (0, -1)}
+        | _ -> e
+
+    static member Combine (a:BasicRobotDelta3) (b:BasicRobotDelta3) =
+        let r = DMath.combineRotation2 a.Rotation b.Rotation
+        let g = a.GroundTranslation + (DMath.combineRotation2 a.Rotation b.GroundTranslation)
+        let y = a.YTranslation + b.YTranslation
+        let my = min a.MinY (b.MinY + a.YTranslation)
+        {YTranslation=y; MinY=my; GroundTranslation=g; Rotation=r}
+
+type BasicWorldStateDelta3 = {
+    RobotDelta: BasicRobotDelta3;
+    GridDelta: (IntVec3*CubeDelta2) array;
+}
+with
+    member d.TryApplyDelta (robot:BasicRobot ref, grid:Dictionary<IntVec3,int>) : bool =
+        let rob = !robot
+
+        match d.RobotDelta.TryApplyDelta rob with
+        | None -> false
+        | Some bot ->
+            let cubeRot = IntVec2 (rob.Direction.X, rob.Direction.Z)
+            for offset, cubeDelta in d.GridDelta do
+                let p = rob.Position + (DMath.combineRotation3 cubeRot offset)
+                match cubeDelta.Status with
+                | CubeStatus.Add -> if not (grid.ContainsKey p) then grid.Add (p, cubeDelta.Cube)
+                | CubeStatus.Remove -> grid.Remove p |> ignore
+                | _ -> invalidOp "unrecognized cube status"
+            robot := bot
+            true
+
+    static member Empty = {RobotDelta=BasicRobotDelta3.Empty; GridDelta=Array.empty}
+
+    static member Create (command:Robot.Command) =
+        match command.Name with
+        | "cube" ->
+            let cube = command.Args.[0] :?> int
+            {RobotDelta=BasicRobotDelta3.Empty; GridDelta=[|(IntVec3.Zero, {Status=CubeStatus.Add; Cube=cube})|]}
+        | "remove" ->
+            {RobotDelta=BasicRobotDelta3.Empty; GridDelta=[|(IntVec3.Zero, {Status=CubeStatus.Remove; Cube=0})|]}
+        | _ ->
+            {RobotDelta=BasicRobotDelta3.Create command; GridDelta=Array.empty}
+
+    static member Combine (a:BasicWorldStateDelta3) (b:BasicWorldStateDelta3) =
+        let cubes = Array.append a.GridDelta b.GridDelta
+        for i = a.GridDelta.Length to cubes.Length - 1 do
+            let delta, cubeDelta = cubes.[i]
+            cubes.[i] <- a.RobotDelta.ApplyToPos delta, cubeDelta
+        {RobotDelta=BasicRobotDelta3.Combine a.RobotDelta b.RobotDelta; GridDelta=cubes}
+
+[<Sealed>]
+type DeltaRobotSimulator3 (startGrid: CanonicalGrid, startRobot:BasicRobot) =
+    let mutable robot = startRobot
+    let mutable numCommands = 0
+    let grid = HashTableGrid ()
+    do (grid:>IGrid<_>).SetFromCanonical startGrid
+
+    static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
+
+    member x.NumberOfCommandsExecuted = numCommands
+
+    interface IGridWorldSimulator<DictGrid, BasicWorldStateDelta3> with
+        member x.AsCanonicalState : CanonicalWorldState = {Robot=robot; Grid=(grid:>IGrid<_>).ConvertToCanonical (grid:>IGrid<_>).Current}
+
+        member x.Execute command =
+            numCommands <- numCommands + 1
+            let p = robot.Position
+            let d = robot.Direction
+            match command.Name with
+            | "forward" -> robot <- {robot with Position=p + d}
+            | "up" -> robot <- {robot with Position=p + IntVec3.UnitY}
+            | "down" -> if p.Y > 0 then robot <- {robot with Position=p - IntVec3.UnitY}
+            | "left" -> robot <- {robot with Direction=IntVec3 (-d.Z, 0, d.X)}
+            | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
+            | "cube" ->
+                let cube = command.Args.[0] :?> int
+                (grid:>IGrid<_>).AddObject p cube
+            | "remove" -> (grid:>IGrid<_>).RemoveObject p
+            | _ -> ()
+
+        member x.Query query = raise (System.NotSupportedException ())
+
+        member x.CurrentState = {Robot=robot; Grid=(grid:>IGrid<_>).Current}
+
+        member x.EmptyDelta = BasicWorldStateDelta3.Empty
+        member x.CreateDelta command = BasicWorldStateDelta3.Create command
+        member x.CombineDelta a b = BasicWorldStateDelta3.Combine a b
+        member x.TryApplyDelta delta =
+            let bot = ref robot
+            if delta.TryApplyDelta (bot, grid.RawCubes) then
+                robot <- !bot
+                true
+            else
+                false
