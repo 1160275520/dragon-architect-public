@@ -98,8 +98,8 @@ type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a
             // hack handle last case
             if newIndex = (x :> IDebugger).StateCount - 1 then
                 current <- thd3 (MyArray.last result)
-            else if newIndex = index + 1 then
-                current <- Simulator.ExecuteNSteps lastProgState 1
+            //else if newIndex = index + 1 then
+            //    current <- Simulator.ExecuteNSteps lastProgState 1
             else
                 // find closest checkpoint
                 let onePast = result |> Array.findIndex (fun (i,_,_) -> i > newIndex)
@@ -144,7 +144,8 @@ module Debugger =
     let create (mode, init) : IDebugger =
         match mode with
         | EditMode.Persistent -> upcast PersistentDebugger init
-        | EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 50, Some 1000000)
+        //| EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 50, Some 1000000)
+        | EditMode.Workshop -> upcast WorkshopDebugger (init, TreeMapGrid (), Some 1000000)
 
     let makeSimulator (grid:IGrid<'a>) (init:CanonicalWorldState) =
         let sim = BasicRobotSimulator (grid, init.Robot)
