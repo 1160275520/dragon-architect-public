@@ -80,6 +80,7 @@ type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a
 
     let mutable index = 0
     let mutable _, _, current = result.[0]
+    let mutable lastProgState = (snd3 result.[0]).Copy
 
     interface IDebugger with
         member x.IsDone = index = result.Length - 1
@@ -97,13 +98,17 @@ type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a
             // hack handle last case
             if newIndex = (x :> IDebugger).StateCount - 1 then
                 current <- thd3 (MyArray.last result)
+            else if newIndex = index + 1 then
+                current <- Simulator.ExecuteNSteps lastProgState 1
             else
                 // find closest checkpoint
                 let onePast = result |> Array.findIndex (fun (i,_,_) -> i > newIndex)
                 let chkIndex, progState, stateData = result.[onePast - 1]
                 grid.Set stateData.State.Grid
                 let newSim = BasicRobotSimulator (grid, stateData.State.Robot)
-                current <- Simulator.ExecuteNSteps {progState with Simulator=newSim} (newIndex - chkIndex)
+                lastProgState <- {progState with Simulator=newSim}
+                current <- Simulator.ExecuteNSteps lastProgState (newIndex - chkIndex)
+
             index <- newIndex
 
 type CachingWorkshopDebugger (init: DebuggerInitialData, maxSteps) =

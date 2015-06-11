@@ -91,7 +91,7 @@ let ``checkpoint debugger hash table`` () =
 [<Fact>]
 let ``checkpoint debugger tree map`` () =
     runFullWorkshopTest (fun init ->
-        upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 500, None)
+        upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 20, None)
     )
 
 [<Fact>]
