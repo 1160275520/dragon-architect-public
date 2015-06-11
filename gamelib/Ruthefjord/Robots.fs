@@ -51,7 +51,6 @@ type IGrid<'Grid> =
 [<Sealed>]
 type HashTableGrid() =
     let mutable cubes = Dictionary ()
-
     member x.RawCubes = cubes
 
     interface IGrid<DictGrid> with
@@ -116,23 +115,6 @@ type BasicRobotSimulator<'Grid> (grid: IGrid<'Grid>, startRobot:BasicRobot) =
         member x.CreateDelta _ = 0
         member x.CombineDelta _ _  = 0
         member x.TryApplyDelta _ = false
-
-type GridStateTracker2(init: Map<IntVec3, Cube2>) =
-
-    let MAX_CUBES = 800000
-
-    let mutable cells = init
-
-    static member Empty () = GridStateTracker2 []
-
-    new (init: (IntVec3 * Cube2) seq) = GridStateTracker2 (Map.ofSeq init)
-
-    member x.CurrentState = cells
-
-    member x.AddObject idx cube = if cells.Count < MAX_CUBES && not (cells.ContainsKey idx) then cells <- cells.Add (idx, cube)
-    member x.OverwriteObject idx cube = cells <- cells.Add (idx, cube)
-    member x.RemoveObject idx = cells <- cells.Remove idx
-    member x.GetObject idx = cells.TryFind idx
 
 type BasicRobotPositionDelta = {
     ParallelDelta: int;
@@ -221,37 +203,6 @@ type BasicWorldState = {
             Grid=s.Grid |> Seq.map (fun kvp -> (kvp.Key, fst kvp.Value)) |> Map.ofSeq
         }
 
-type BasicWorldState2 = {
-    Robot: BasicRobot;
-    Grid: Map<IntVec3,Cube2>;
-}
-with
-    static member ApplyCommand (state:BasicWorldState2) (command:Robot.Command) =
-        let p = state.Robot.Position
-        let d = state.Robot.Direction
-        match command.Name with
-        | "forward" -> {state with Robot={state.Robot with Position=p + d}}
-        | "up" -> {state with Robot={state.Robot with Position=p + IntVec3.UnitY}}
-        | "down" ->
-            if p.Y > 0 then
-                {state with Robot={state.Robot with Position=p - IntVec3.UnitY}}
-            else
-                state
-        | "left" -> {state with Robot={state.Robot with Direction=IntVec3 (-d.Z, 0, d.X)}}
-        | "right" -> {state with Robot={state.Robot with Direction=IntVec3 (d.Z, 0, -d.X)}}
-        | "cube" ->
-            let cube = command.Args.[0] :?> int
-            {state with Grid=state.Grid.Add (state.Robot.Position, (cube, command))}
-        | "remove" -> {state with Grid=state.Grid.Remove state.Robot.Position}
-        | _ -> invalidOp "unrecognized command"
-
-type BasicWorldState3 = {
-    Robot: BasicRobot;
-    Grid: Dictionary<IntVec3, Cube2>;
-} with
-    static member ApplyCommand (state:BasicWorldState3) (command:Robot.Command) =
-        invalidOp ""
-
 type BasicWorldStateDelta = {
     RobotDelta:BasicRobotDelta;
     GridDelta:Map<BasicRobotPositionDelta,CubeDelta>;
@@ -282,29 +233,6 @@ with
                 true
         else
             false
-
-    static member ApplyDelta3 (state:BasicWorldState3) d : BasicWorldState3 option =
-        let newCubes = System.Collections.Generic.List (d.GridDelta.Count)
-
-        let isValid = ref true
-        d.GridDelta |> Map.iter (fun delta cubeDelta ->
-            match BasicRobotPositionDelta.ApplyDelta state.Robot delta with
-            | None -> isValid := false
-            | Some p -> newCubes.Add (p, cubeDelta)
-        )
-        if !isValid then
-            match BasicRobotDelta.ApplyDelta state.Robot d.RobotDelta with
-            | None -> None
-            | Some bot ->
-                for p, c in newCubes do
-                    match c.Status with
-                    | CubeStatus.Add -> if not (state.Grid.ContainsKey p) then state.Grid.Add (p, c.Cube)
-                    | CubeStatus.Remove -> state.Grid.Remove p |> ignore
-                    | _ -> invalidOp "unrecognized cube status"
-
-                Some ({Robot=bot; Grid=state.Grid})
-        else
-            None
 
     static member Empty = {RobotDelta=BasicRobotDelta.Empty; GridDelta=Map.empty}
 
@@ -338,46 +266,6 @@ with
                     | CubeStatus.Remove ->
                         delta.Remove pd
                     | _ -> invalidOp "unrecognized cube status") a b
-
-type BasicImperativeRobotSimulator2(initialRobot, initialGrid) =
-    let mutable robot = initialRobot
-    let mutable grid : GridStateTracker2 = initialGrid
-
-    let pos() = robot.Position
-    let dir() = robot.Direction
-
-    static member FromWorldState (ws:BasicWorldState2) =
-        BasicImperativeRobotSimulator2 (ws.Robot, GridStateTracker2 ws.Grid)
-
-    static member Colors = [| "#1ca84f"; "#a870b7"; "#ff1a6d"; "#00bcf4"; "#ffc911"; "#ff6e3d"; "#000000"; "#ffffff" |]
-
-    member x.Grid with get () = grid and set g = grid <- g
-    member x.Robot with get () = robot and set r = robot <- r
-
-    interface Robot.IRobotSimulatorOLD2 with
-        member x.Execute command =
-            let p = robot.Position
-            let d = robot.Direction
-            match command.Name with
-            | "forward" -> robot <- {robot with Position=p + d}
-            | "up" -> robot <- {robot with Position=p + IntVec3.UnitY}
-            | "down" -> if p.Y > 0 then robot <- {robot with Position=p - IntVec3.UnitY}
-            | "left" -> robot <- {robot with Direction=IntVec3 (-d.Z, 0, d.X)}
-            | "right" -> robot <- {robot with Direction=IntVec3 (d.Z, 0, -d.X)}
-            | "cube" ->
-                let cube = command.Args.[0] :?> int
-                grid.AddObject p (cube, command)
-            | "remove" -> grid.RemoveObject p
-            | _ -> ()
-
-        member x.Query query =
-            match query.Name with
-            | "isblockatpos" -> upcast ((grid.GetObject robot.Position).IsSome)
-            | _ -> upcast ()
-
-        member x.CurrentState =
-            let state:BasicWorldState2 = {Robot=robot; Grid=grid.CurrentState}
-            upcast state
 
 [<Sealed>]
 type DeltaRobotSimulator (startGrid: CanonicalGrid, startRobot:BasicRobot) =

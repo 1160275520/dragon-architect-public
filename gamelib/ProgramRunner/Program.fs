@@ -77,12 +77,6 @@ let main argv =
             test "StandardTM" (fun () -> runToEnd (TreeMapGrid ()))
             test "Cached 1" (fun () ->
                 let cache = Simulator.MutableDict ()
-                let initGrid = start.Grid |> Map.map (fun k v -> (v,{Robot.Command.Name="block"; Robot.Command.Args=[v:>obj]}))
-                let initState () : BasicWorldState3 = {Robot=start.Robot; Grid=System.Collections.Generic.Dictionary initGrid}
-                Simulator.RunOptimized37 program importedModules Debugger.stateFunctions2 cache (initState ()) |> (fun s -> foo.Add s.Grid.Count)
-            )
-            test "Cached 2" (fun () ->
-                let cache = Simulator.MutableDict ()
                 let simulator : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (start.Grid, start.Robot)
                 Simulator.RunOptimized program importedModules simulator cache
                 foo.Add simulator.CurrentState.Grid.Count
@@ -120,7 +114,6 @@ let main argv =
 #endif
 
             test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
-            test "Cached 2" (fun () -> jumpTest (CachingWorkshopDebugger2 (initData, None)))
 
         | _ -> invalidOp ""
 

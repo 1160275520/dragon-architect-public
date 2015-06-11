@@ -95,13 +95,7 @@ let ``checkpoint debugger tree map`` () =
     )
 
 [<Fact>]
-let ``old caching debugger`` () =
+let ``caching debugger`` () =
     runFullWorkshopTest (fun init ->
         upcast CachingWorkshopDebugger (init, None)
-    )
-
-[<Fact>]
-let ``new caching debugger`` () =
-    runFullWorkshopTest (fun init ->
-        upcast CachingWorkshopDebugger2 (init, None)
     )

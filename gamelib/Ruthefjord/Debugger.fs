@@ -115,46 +115,6 @@ type CachingWorkshopDebugger (init: DebuggerInitialData, maxSteps) =
     let nie () = raise (System.NotImplementedException ())
 
     let cache = Simulator.MutableDict ()
-    let initGrid = init.State.Grid |> Map.map (fun k v -> (v,{Robot.Command.Name="block"; Robot.Command.Args=[v:>obj]}))
-    let initState () : BasicWorldState3 =
-        {Robot=init.State.Robot; Grid=System.Collections.Generic.Dictionary initGrid}
-
-    let stateFunctions2: Simulator.StateFunctions<BasicWorldState3, BasicWorldStateDelta> = {
-        Empty = BasicWorldStateDelta.Empty;
-        Combine = fun a b -> BasicWorldStateDelta.Combine a b;
-        Create = fun c -> BasicWorldStateDelta.Create c;
-        ApplyDelta = fun bot delta -> BasicWorldStateDelta.ApplyDelta3 bot delta;
-        ApplyCommand = fun state c -> BasicWorldState3.ApplyCommand state c;
-    }
-
-    do Simulator.RunOptimized37 init.Program init.BuiltIns stateFunctions2 cache (initState ()) |> ignore
-
-    let mutable index = 0
-    let jumpTo newIndex =
-        index <- newIndex
-        Simulator.RunToState init.Program init.BuiltIns stateFunctions2 cache (initState ()) newIndex
-    let mutable current = jumpTo 0
-    let total = 0
-
-    interface IDebugger with
-        member x.IsDone = index = total - 1
-        member x.CurrentStep =
-            let grid = current.Grid |> Seq.map (fun kvp -> (kvp.Key, fst kvp.Value)) |> Map.ofSeq
-            let state: CanonicalWorldState = {Robot=current.Robot; Grid=grid}
-            {State=state; LastExecuted=[]; Command=None}
-        member x.AdvanceOneState () =
-            current <- jumpTo (index + 1)
-        member x.AdvanceOneLine () = nie ()
-
-        member x.CurrentStateIndex = index
-        member x.StateCount = total
-        member x.JumpToState newIndex =
-            current <- jumpTo newIndex
-
-type CachingWorkshopDebugger2 (init: DebuggerInitialData, maxSteps) =
-    let nie () = raise (System.NotImplementedException ())
-
-    let cache = Simulator.MutableDict ()
     let newSimulator () : IGridWorldSimulator<_,_> = upcast DeltaRobotSimulator (init.State.Grid, init.State.Robot)
     let mutable simulator = newSimulator ()
 
@@ -185,27 +145,6 @@ module Debugger =
         match mode with
         | EditMode.Persistent -> upcast PersistentDebugger init
         | EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 50, Some 1000000)
-
-    let private apply (state:BasicWorldState2) (cmd:Robot.Command) =
-        let sim = (BasicImperativeRobotSimulator2.FromWorldState state)
-        (sim :> Robot.IRobotSimulatorOLD2).Execute cmd
-        (sim :> Robot.IRobotSimulatorOLD2).CurrentState :?> BasicWorldState2
-
-    let stateFunctionsNoOp: Simulator.StateFunctions<BasicWorldState2, unit> = {
-        Empty = ();
-        Combine = fun () () -> ();
-        Create = fun _ -> ();
-        ApplyDelta = fun _ () -> None;
-        ApplyCommand = apply;
-    }
-
-    let stateFunctions2: Simulator.StateFunctions<BasicWorldState3, BasicWorldStateDelta> = {
-        Empty = BasicWorldStateDelta.Empty;
-        Combine = fun a b -> BasicWorldStateDelta.Combine a b;
-        Create = fun c -> BasicWorldStateDelta.Create c;
-        ApplyDelta = fun bot delta -> BasicWorldStateDelta.ApplyDelta3 bot delta;
-        ApplyCommand = fun state c -> BasicWorldState3.ApplyCommand state c;
-    }
 
     let makeSimulator (grid:IGrid<'a>) (init:CanonicalWorldState) =
         let sim = BasicRobotSimulator (grid, init.Robot)
