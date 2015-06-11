@@ -63,10 +63,15 @@ let runThoroughWorkshopTest makeDebugger init =
     if expected.StateCount < 1000 then
         for i = 0 to expected.StateCount - 1 do
             check i
+        for i = expected.StateCount - 1 downto 0 do
+            check i
     // for big ones just hop around a bunch
     else
         let n = 100
         for i = 0 to n do
+            let idx = i * expected.StateCount / n
+            check (max 0 idx)
+        for i = n downto 0 do
             let idx = i * expected.StateCount / n
             check (max 0 idx)
 
