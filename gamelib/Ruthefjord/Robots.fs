@@ -256,3 +256,21 @@ type DeltaRobotSimulator (startGrid: CanonicalGrid, startRobot:BasicRobot) =
                 true
             else
                 false
+
+type Cube = int * Robot.CommandOLD
+
+type BasicWorldState = {
+    Robot: BasicRobot;
+    Grid: ImmArr<KeyValuePair<IntVec3,Cube>>;
+} with
+    static member FromCanonical (s:CanonicalWorldState) : BasicWorldState =
+        {
+            Robot=s.Robot;
+            Grid=s.Grid |> Seq.map (fun kvp -> KeyValuePair (kvp.Key, (kvp.Value, null))) |> ImmArr.ofSeq
+        }
+
+    member s.AsCanonical : CanonicalWorldState =
+        {
+            Robot=s.Robot;
+            Grid=s.Grid |> Seq.map (fun kvp -> (kvp.Key, fst kvp.Value)) |> Map.ofSeq
+        }
