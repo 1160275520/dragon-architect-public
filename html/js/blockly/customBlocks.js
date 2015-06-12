@@ -324,7 +324,7 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
 
     // HACK NOTE: we don't deal with the prepended $ correctly yet but this sorta fixes itself when the program gets immediately sent to unity
     _.each(groups.proc, function(proc) {
-        var x = 90 + 200*(funcCount % 2);
+        var x = 110 + 200*(funcCount % 2);
         var y = 150 + 250*Math.floor(funcCount/2);
         xml += '<block type="procedures_defnoreturn" id="' + proc.meta.id + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
         xml += Blockly.UnityJSON.bodyToXML(proc.body, program);
@@ -333,7 +333,7 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     });
 
     var main = Blockly.UnityJSON.bodyToXML(groups.other, program);
-    var pos = ' x="90" y="15"';
+    var pos = ' x="110" y="15"';
     var insertIndex = main.indexOf(">", main.indexOf("block"));
     main = main.substring(0, insertIndex) + pos + main.substring(insertIndex);
     xml += main;
