@@ -14,7 +14,7 @@
 			"local":"closure-library",
 			"engine":"git",
 			"remote":"https://github.com/google/closure-library",
-			"revision":"25472bf87c572bcf6791715161ce095af37408b8",
+			"revision":"eb26f425dbd99a70d2955d8fcc892f2fd0178acb",
 			"branch":"master"
 		}
 	]
