@@ -19,6 +19,7 @@ RuthefjordBlockly.ignoreNextHistory = false;
 RuthefjordBlockly.isSandbox = false;
 RuthefjordBlockly.game_info;
 RuthefjordBlockly.progress;
+RuthefjordBlockly.scene_info;
 
 var q_defer = Q.defer();
 
@@ -219,6 +220,15 @@ RuthefjordBlockly.updateToolbox = function() {
             });
         }
     });
+
+    // highlight blocks that should be used in the current puzzle
+    if (RuthefjordBlockly.scene_info && RuthefjordBlockly.scene_info.tutorial && RuthefjordBlockly.scene_info.tutorial.highlighted) {
+        Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
+            if (_.contains(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
+                b.svg_.addNewGlow();
+            }
+        });
+    }
 };
 
 /**
@@ -236,15 +246,9 @@ RuthefjordBlockly.setLevel = function(scene_info, library) {
         return !_.contains(scene_info.library.restricted, value);
     })
 
-    RuthefjordBlockly.updateToolbox();
+    RuthefjordBlockly.scene_info = scene_info;
 
-    if (scene_info && scene_info.tutorial && scene_info.tutorial.highlighted) {
-        Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
-            if (_.contains(scene_info.tutorial.highlighted, b.type)) {
-                b.svg_.addNewGlow();
-            }
-        });
-    }
+    RuthefjordBlockly.updateToolbox();
 };
 
 /**
