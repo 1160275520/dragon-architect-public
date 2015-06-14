@@ -33,18 +33,14 @@ blocklyIframeLoaded = function() {
         Blockly.fireUiEvent(window, 'resize');
     });
 
-    Blockly.updateToolbox('<xml id="toolbox" style="display: none"></xml>');
+    Blockly.getMainWorkspace().updateToolbox('<xml id="toolbox" style="display: none"></xml>');
 
     // block limit currently set to infinity, no need for counter; disabling it since it disrupts DebugFeaturesInfo's use of the arrow
     // Blockly.addChangeListener(RuthefjordBlockly.makeCounter);
-    Blockly.addChangeListener(RuthefjordBlockly.addToHistory);
+    Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
 
     q_defer.resolve();
 };
-
-// Supported languages.
-BlocklyApps.LANGUAGES = ['en'];
-BlocklyApps.LANG = BlocklyApps.getLang();
 
 /* XXX edbutler: was this suppossed to be changed? It currently loads a non-existent file, so I commented it out.
 document.write('<script type="text/javascript" src="generated/' +
@@ -139,7 +135,7 @@ RuthefjordBlockly.setProgram = function(program) {
         var attr;
         if (stmt.meta) { attr = stmt.meta.attributes; }
         if (attr) {
-            var block = Blockly.mainWorkspace.getBlockById(stmt.meta.id);
+            var block = Blockly.getMainWorkspace().getBlockById(stmt.meta.id);
             if (attr['FrozenBlocks']) {
                 var doFreezeArgs = Boolean(attr['FrozenArgs']);
                 RuthefjordBlockly.freezeBody(block, doFreezeArgs);
@@ -157,7 +153,7 @@ RuthefjordBlockly.setProgram = function(program) {
     _.each(program.body, checkStmt);
 
     // update block colors
-    _.each(Blockly.mainWorkspace.getAllBlocks(), function (b) { b.svg_.updateColour(); });
+    _.each(Blockly.getMainWorkspace().getAllBlocks(), function (b) { b.updateColour(); });
 
     // update the toolbox in case the program contains any procedures
     RuthefjordBlockly.updateToolbox();
@@ -171,7 +167,8 @@ RuthefjordBlockly.setProgram = function(program) {
  */
 RuthefjordBlockly.loadBlocks = function (blocksXML) {
     // console.info(blocksXML);
-    BlocklyApps.loadBlocks(blocksXML);
+    var xml = Blockly.Xml.textToDom(blocksXML);
+    Blockly.Xml.domToWorkspace(Blockly.getMainWorkspace(), xml);
 
     // update the toolbox in case the program contains any procedures
     RuthefjordBlockly.updateToolbox();
@@ -200,7 +197,7 @@ RuthefjordBlockly.updateToolbox = function() {
     });
 
     // add call for each defined procedure
-    var procs = Blockly.Procedures.allProcedures()[0];
+    var procs = Blockly.Procedures.allProcedures(Blockly.getMainWorkspace())[0]; // returns [proceduresNoReturn, proceduresReturn]
     _.each(procs, function(proc) {
         var name = proc[0];
         toolXML += '<block type="procedures_callnoreturn"><mutation name="' + name + '"></mutation></block>';
@@ -208,10 +205,10 @@ RuthefjordBlockly.updateToolbox = function() {
 
     toolXML += '</xml>';
     // console.log(toolXML);
-    Blockly.updateToolbox(toolXML);
+    Blockly.getMainWorkspace().updateToolbox(toolXML);
 
     // lock blocks as necessary
-    _.each(Blockly.mainWorkspace.flyout_.workspace_.getAllBlocks(), function(block) {
+    _.each(Blockly.getMainWorkspace().flyout_.targetWorkspace_.getAllBlocks(), function(block) {
         if (block.locked) {
             block.setDisabled(true);
             block.setEditable(false);
@@ -222,13 +219,13 @@ RuthefjordBlockly.updateToolbox = function() {
     });
 
     // highlight blocks that should be used in the current puzzle
-    if (RuthefjordBlockly.scene_info && RuthefjordBlockly.scene_info.tutorial && RuthefjordBlockly.scene_info.tutorial.highlighted) {
-        Blockly.mainWorkspace.flyout_.workspace_.topBlocks_.forEach(function (b) { 
-            if (_.contains(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
-                b.svg_.addNewGlow();
-            }
-        });
-    }
+    // if (RuthefjordBlockly.scene_info && RuthefjordBlockly.scene_info.tutorial && RuthefjordBlockly.scene_info.tutorial.highlighted) {
+    //     Blockly.getMainWorkspace().flyout_.targetWorkspace_.topBlocks_.forEach(function (b) { 
+    //         if (_.contains(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
+    //             b.addNewGlow();
+    //         }
+    //     });
+    // }
 };
 
 /**

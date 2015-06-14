@@ -37,7 +37,7 @@ module.Player = (function(){
     var selector = '#unity-player embed, #unity-player, #main-view-game';
 
     self.hide = function() {
-        if (navigator.platform.startsWith('Mac') && bowser.firefox) {
+        if (navigator.platform.indexOf('Mac') === 0 && bowser.firefox) {
             $('#unity-player').css('z-index', '-1');
             $('#main-view-game').css('background', '#b5b5b5');
         } else {
@@ -46,7 +46,7 @@ module.Player = (function(){
     };
 
     self.show = function() {
-        if (navigator.platform.startsWith('Mac') && bowser.firefox) {
+        if (navigator.platform.indexOf('Mac') === 0 && bowser.firefox) {
             $('#unity-player').css('z-index', '0');
             $('#main-view-game').css('background', '#ccebff');
         } else {

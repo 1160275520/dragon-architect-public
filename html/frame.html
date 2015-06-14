@@ -62,7 +62,6 @@
       }
       function create() {
         Blockly.inject(document.body, {
-          path: '',
           rtl: false,
           trashcan: true,
           toolbox: document.getElementById('toolbox')
@@ -71,13 +70,13 @@
         return Blockly;
       }
       function makeLabels() {
-        var toolboxWidth = Blockly.mainWorkspace.flyout_.getMetrics_().viewWidth;
+        var toolboxWidth = Blockly.getMainWorkspace().flyout_.getMetrics_().viewWidth;
         if (toolboxWidth < 100) { // hide when toolbox is empty
           $("#blocklyLabels").hide();
         } else {
           $("#blocklyLabels").show()
           $("#libraryLabel").width(toolboxWidth + 1); // viewWidth is 1 pixel too small for some reason when event fires
-          $("#codeLabel").width(Blockly.mainWorkspace.getMetrics().viewWidth - $("#libraryLabel").width());
+          $("#codeLabel").width(Blockly.getMainWorkspace().getMetrics().viewWidth - $("#libraryLabel").width());
         }
       }
     </script>

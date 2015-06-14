@@ -112,11 +112,20 @@ Blockly.UnityJSON['Right'] = function(block) {
 // FORWARD
 Blockly.Blocks['Forward'] = {
     init: function() {
-        this.setFullColor(COLOR_MOVE_1);
-        this.interpolateMsg("foward by %1", ["VALUE", "Number", Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setInputsInline(true);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
+        this.jsonInit({
+            message: "forward by %1",
+            args: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                }
+            ],
+            previousStatement:true,
+            nextStatement:true,
+            inputsInline:true,
+            colour:COLOR_MOVE_1
+        });
     }
 };
 
@@ -127,21 +136,39 @@ Blockly.UnityJSON['Forward'] = function(block) {
 // UP
 Blockly.Blocks['Up'] = {
     init: function() {
-        this.setFullColor(COLOR_MOVE_2);
-        this.interpolateMsg("up by %1", ["VALUE", "Number", Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setInputsInline(true);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
+        this.jsonInit({
+            message: "up by %1",
+            args: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                }
+            ],
+            previousStatement:true,
+            nextStatement:true,
+            inputsInline:true,
+            colour:COLOR_MOVE_2
+        });
     }
 };
 
 Blockly.Blocks['Up_locked'] = {
     init: function() {
-        this.setFullColor(COLOR_LOCKED);
-        this.interpolateMsg("up by %1", ["VALUE", "Number", Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setInputsInline(true);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
+        this.jsonInit({
+            message: "up by %1",
+            args: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                }
+            ],
+            previousStatement:true,
+            nextStatement:true,
+            inputsInline:true,
+            colour:COLOR_LOCKED
+        });
         this.locked = true;
         this.packName = "up";
     }
@@ -154,21 +181,39 @@ Blockly.UnityJSON['Up'] = function(block) {
 // DOWN
 Blockly.Blocks['Down'] = {
     init: function() {
-        this.setFullColor(COLOR_MOVE_2);
-        this.interpolateMsg("down by %1", ["VALUE", "Number", Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setInputsInline(true);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
+        this.jsonInit({
+            message: "down by %1",
+            args: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                }
+            ],
+            previousStatement:true,
+            nextStatement:true,
+            inputsInline:true,
+            colour:COLOR_MOVE_2
+        });
     }
 };
 
 Blockly.Blocks['Down_locked'] = {
     init: function() {
-        this.setFullColor(COLOR_LOCKED);
-        this.interpolateMsg("down by %1", ["VALUE", "Number", Blockly.ALIGN_RIGHT], Blockly.ALIGN_RIGHT);
-        this.setInputsInline(true);
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
+        this.jsonInit({
+            message: "down by %1",
+            args: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                }
+            ],
+            previousStatement:true,
+            nextStatement:true,
+            inputsInline:true,
+            colour:COLOR_LOCKED
+        });
         this.locked = true;
         this.packName = "up";
     }
@@ -207,7 +252,7 @@ Blockly.Blocks['RemoveCube'] = {
 
 Blockly.Blocks['RemoveCube_locked'] = {
     init: function() {
-        this.setFullColor(COLOR_BLOCK);
+        this.setFullColor(COLOR_LOCKED);
         this.appendDummyInput()
             .appendField("remove cube");
         this.setPreviousStatement(true);
@@ -228,17 +273,30 @@ Blockly.Blocks['controls_repeat_locked'] = {
    * @this Blockly.Block
    */
   init: function() {
-    this.setHelpUrl(Blockly.Msg.CONTROLS_REPEAT_HELPURL);
-    this.setFullColor(Blockly.Blocks.loops.COLOR);
-    this.interpolateMsg(Blockly.Msg.CONTROLS_REPEAT_TITLE,
-                        ['TIMES', 'Number', Blockly.ALIGN_RIGHT],
-                        Blockly.ALIGN_RIGHT);
-    this.appendStatementInput('DO')
-        .appendField(Blockly.Msg.CONTROLS_REPEAT_INPUT_DO);
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setInputsInline(true);
-    this.setTooltip(Blockly.Msg.CONTROLS_REPEAT_TOOLTIP);
+    this.jsonInit({
+      "message": Blockly.Msg.CONTROLS_REPEAT_TITLE + " %2 " +
+          Blockly.Msg.CONTROLS_REPEAT_INPUT_DO + " %3",
+      "args": [
+        {
+          "type": "input_value",
+          "name": "TIMES",
+          "check": "Number"
+        },
+        {
+          "type": "input_dummy"
+        },
+        {
+          "type": "input_statement",
+          "name": "DO"
+        }
+      ],
+      "previousStatement": true,
+      "nextStatement": true,
+      "inputsInline": true,
+      "colour": COLOR_LOCKED,
+      "tooltip": Blockly.Msg.CONTROLS_REPEAT_TOOLTIP,
+      "helpUrl": Blockly.Msg.CONTROLS_REPEAT_HELPURL
+    });
 
     // make inner repeat connections immune to freezing
     var inputs = this.inputList.filter(function (input) { return input.type === Blockly.NEXT_STATEMENT; });

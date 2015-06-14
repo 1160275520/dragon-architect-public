@@ -923,19 +923,19 @@ handler.onProgramStateChange = function(data) {
 
         // highlight current block
 
-        if (program_state.run_state === 'executing' && !Blockly.mainWorkspace.dragMode) {
+        if (program_state.run_state === 'executing' && !Blockly.getMainWorkspace().dragMode) {
             if (s.current_code_elements.length > 0) {
                 var callStackIndex = 1;
                 // add new highlights for currently executing block and all surrounding blocks
-                var block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[0].toString());
+                var block = Blockly.getMainWorkspace().getBlockById(s.current_code_elements[0].toString());
                 if (block) {
-                    block.svg_.addHighlight(true);
+                    block.addHighlight(true);
                     while(block.getSurroundParent()) {
-                        block.getSurroundParent().svg_.addHighlight();
+                        block.getSurroundParent().addHighlight();
                         if (block.getSurroundParent().type === "procedures_defnoreturn") {
                             // add highlight to the function call that we're in
-                            block = Blockly.mainWorkspace.getBlockById(s.current_code_elements[callStackIndex++].toString());
-                            block.svg_.addHighlight();
+                            block = Blockly.getMainWorkspace().getBlockById(s.current_code_elements[callStackIndex++].toString());
+                            block.addHighlight();
                         } else {
                             block = block.getSurroundParent();
                         }
@@ -954,7 +954,7 @@ handler.onProgramStateChange = function(data) {
 }
 
 handler.onLockedToolboxClick = function(block) {
-    RuthefjordUI.UnlockBlockMsg.show(block.svg_.svgGroup_, function () {
+    RuthefjordUI.UnlockBlockMsg.show(block.svgGroup_, function () {
         current_puzzle_runner = create_puzzle_runner(game_info.packs[block.packName], "pack");
     });
 }
@@ -963,9 +963,9 @@ handler.onStepHighlight = function(id) {
     // clear any existing highlights
     clearHighlights();
     // apply new highlight
-    var block = Blockly.mainWorkspace.getBlockById(id.toString());
+    var block = Blockly.getMainWorkspace().getBlockById(id.toString());
     if (block) {
-        block.svg_.addHighlight(true);
+        block.addHighlight(true);
     }
 }
 
@@ -973,10 +973,10 @@ handler.onDebugHighlight = function(id) {
     // clear any existing highlights
     clearBlocklyClass("blocklyDebugHighlight");
     // apply new highlight
-    var block = Blockly.mainWorkspace.getBlockById(id.toString());
+    var block = Blockly.getMainWorkspace().getBlockById(id.toString());
     if (block) {
-        Blockly.addClass_(block.svg_.svgGroup_, "blocklyDebugHighlight");
-        block.svg_.svgGroup_.parentNode.appendChild(block.svg_.svgGroup_);
+        Blockly.addClass_(block.svgGroup_, "blocklyDebugHighlight");
+        block.svgGroup_.parentNode.appendChild(block.svgGroup_);
         var questLogger = RuthefjordLogging.activeQuestLogger;
         if (questLogger) {
             questLogger.logDoUiAction("debug-cube-highlight", 'start', null);
@@ -1025,7 +1025,7 @@ handler.onWorldDataEnd = function() {
 
 handler.onUnlockDevMode = function() {
     isDevMode = true;
-    Blockly.mainWorkspace.maxBlocks = 5000;
+    Blockly.getMainWorkspace().maxBlocks = 5000;
 };
 
 handler.onCubeCount = function(count) {
