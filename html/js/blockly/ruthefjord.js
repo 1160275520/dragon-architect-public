@@ -48,7 +48,7 @@ document.write('<script type="text/javascript" src="generated/' +
  */
 
 RuthefjordBlockly.makeNumXML = function(num) {
-    return '<block type="math_number"><field name="NUM">' + num + '</field></block>';
+    return '<block type="math_number" default="true"><field name="NUM">' + num + '</field></block>';
 }
 
 // list of custom block xml, in the order they should appear in the library
