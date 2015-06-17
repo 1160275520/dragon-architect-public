@@ -72,7 +72,7 @@ Blockly.addCanvasListener("blocklyBlockDeleted", function() {
     if (!Blockly.mainWorkspace.dragMode) {
         RuthefjordBlockly.updateToolbox();
     }
-})
+});
 
 function newCall0(name, id) {
     return {args:[],meta:{id:Number(id)},ident:name,type:"call"};
@@ -116,7 +116,7 @@ Blockly.Blocks['Forward'] = {
             message: "forward by %1",
             args: [
                 {
-                    type: "input_value",
+                    type: "param_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -140,7 +140,7 @@ Blockly.Blocks['Up'] = {
             message: "up by %1",
             args: [
                 {
-                    type: "input_value",
+                    type: "param_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -159,7 +159,7 @@ Blockly.Blocks['Up_locked'] = {
             message: "up by %1",
             args: [
                 {
-                    type: "input_value",
+                    type: "param_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -185,7 +185,7 @@ Blockly.Blocks['Down'] = {
             message: "down by %1",
             args: [
                 {
-                    type: "input_value",
+                    type: "param_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -204,7 +204,7 @@ Blockly.Blocks['Down_locked'] = {
             message: "down by %1",
             args: [
                 {
-                    type: "input_value",
+                    type: "param_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -278,7 +278,7 @@ Blockly.Blocks['controls_repeat_locked'] = {
           Blockly.Msg.CONTROLS_REPEAT_INPUT_DO + " %3",
       "args": [
         {
-          "type": "input_value",
+          "type": "param_value",
           "name": "TIMES",
           "check": "Number"
         },
