@@ -67,6 +67,16 @@ Blockly.Procedures.rename = function(text) {
     }
 };
 
+var old_changed_func = Blockly.Mutator.prototype.workspaceChanged_;
+
+Blockly.Mutator.prototype.workspaceChanged_ = function() {
+    old_changed_func.call(this);
+    // blockly friggin explodes if the toolbox is updated while something is being dragged
+    if (!Blockly.mainWorkspace.dragMode) {
+        RuthefjordBlockly.updateToolbox();
+    }
+}
+
 Blockly.addCanvasListener("blocklyBlockDeleted", function() {
     // console.log('delete event!');
     if (!Blockly.mainWorkspace.dragMode) {
@@ -74,24 +84,20 @@ Blockly.addCanvasListener("blocklyBlockDeleted", function() {
     }
 });
 
-function newCall0(name, id) {
-    return {args:[],meta:{id:Number(id)},ident:name,type:"call"};
-}
-
-function newCall1(name, id, arg0) {
-    return {args:[{type:"literal", value:arg0}],meta:{id:Number(id)},ident:name,type:"call"};
-}
-
 function newCall(name, id, args) {
-    var json = {args:[],meta:{id:Number(id)},ident:name,type:"call"};
-    _.each(args, function(arg) {
-        json.args.push({type:"literal", value:arg});
-    });
-    return json;
+    return {args:args,meta:{id:Number(id)},ident:name,type:"call"};
+}
+
+function makeLiteral(value) {
+    return {type:'literal', value:value};
+}
+
+function makeIdent(name) {
+    return {type:'ident', name:name};
 }
 
 Blockly.UnityJSON['Left'] = function(block) {
-    return newCall0("Left", block.id);
+    return newCall("Left", block.id, []);
 };
 
 // RIGHT
@@ -106,7 +112,7 @@ Blockly.Blocks['Right'] = {
 };
 
 Blockly.UnityJSON['Right'] = function(block) {
-    return newCall0("Right", block.id);
+    return newCall("Right", block.id, []);
 };
 
 // FORWARD
@@ -130,7 +136,12 @@ Blockly.Blocks['Forward'] = {
 };
 
 Blockly.UnityJSON['Forward'] = function(block) {
-    return newCall1("Forward", block.id, block.getInlineInput("VALUE", "NUM"));
+    var input = block.getInlineInput("VALUE", "NUM");
+    if (input === null) {
+        input = block.getInlineInput("VALUE", "VAR")
+        return newCall("Forward", block.id, [makeIdent(input)]);
+    }
+    return newCall("Forward", block.id, [makeLiteral(input)]);
 };
 
 // UP
@@ -175,7 +186,12 @@ Blockly.Blocks['Up_locked'] = {
 };
 
 Blockly.UnityJSON['Up'] = function(block) {
-    return newCall1("Up", block.id, block.getInlineInput("VALUE", "NUM"));
+    var input = block.getInlineInput("VALUE", "NUM");
+    if (input === null) {
+        input = block.getInlineInput("VALUE", "VAR")
+        return newCall("Up", block.id, [makeIdent(input)]);
+    }
+    return newCall("Up", block.id, [makeLiteral(input)]);
 };
 
 // DOWN
@@ -220,7 +236,12 @@ Blockly.Blocks['Down_locked'] = {
 };
 
 Blockly.UnityJSON['Down'] = function(block) {
-    return newCall1("Down", block.id, block.getInlineInput("VALUE", "NUM"));
+    var input = block.getInlineInput("VALUE", "NUM");
+    if (input === null) {
+        input = block.getInlineInput("VALUE", "VAR")
+        return newCall("Down", block.id, [makeIdent(input)]);
+    }
+    return newCall("Down", block.id, [makeLiteral(input)]);
 };
 
 // PLACECUBE
@@ -236,7 +257,7 @@ Blockly.Blocks['PlaceCube'] = {
 };
 
 Blockly.UnityJSON['PlaceCube'] = function(block) {
-    return newCall1("PlaceCube", block.id, Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1);
+    return newCall("PlaceCube", block.id, [makeLiteral(Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1)]);
 };
 
 // REMOVECUBE
@@ -263,7 +284,7 @@ Blockly.Blocks['RemoveCube_locked'] = {
 };
 
 Blockly.UnityJSON['RemoveCube'] = function(block) {
-    return newCall0("RemoveCube", block.id);
+    return newCall("RemoveCube", block.id, []);
 };
 
 // REPEAT
@@ -365,9 +386,30 @@ Blockly.UnityJSON['math_number'] = function (block) {
     return {skip: true};
 }
 
+// VARIABLE_GET
+Blockly.UnityJSON['variables_get'] = function (block) {
+    return {skip: true};
+}
+
 // CALL
 Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
-    return {args:[],meta:{id:Number(block.id)},ident:'$' + block.getFieldValue("NAME"),type:"call"};
+    var args = [];
+    block.setWarningText(null);
+    for (var i = 0; i < block.arguments_.length; i++) {
+        var type = block.getInlineInputType("ARG" + i);
+        if (!type) {
+            block.setWarningText('Help me know what to do by filling in all the parameters', RuthefjordBlockly.dragonIcon);
+        } else {
+            var data = block.getInlineInput("ARG" + i, type);
+            if (type === "VAR") {
+                args.push(makeIdent(data));
+            } else {
+                args.push(makeLiteral(data));
+            }
+        }
+    };
+
+    return {args:args,meta:{id:Number(block.id)},ident:'$' + block.getFieldValue("NAME"),type:"call"};
 }
 
 /// Transform a program from its serialized JSON representation to blockly XML representation.
