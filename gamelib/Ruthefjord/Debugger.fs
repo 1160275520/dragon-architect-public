@@ -83,7 +83,7 @@ type CheckpointingWorkshopDebugger<'a> (init: DebuggerInitialData, grid:IGrid<'a
     let mutable lastProgState = (snd3 result.[0]).Copy
 
     interface IDebugger with
-        member x.IsDone = index = fst3 result.[result.Length - 1]
+        member x.IsDone = index = fst3 (MyArray.last result)
         member x.CurrentStep =
             {State=simulator.ConvertToCanonical current.State; LastExecuted=current.LastExecuted; Command=current.Command}
         member x.AdvanceOneState () = (x :> IDebugger).JumpToState (index + 1)
@@ -124,7 +124,7 @@ type CachingWorkshopDebugger (init: DebuggerInitialData, maxSteps) =
         simulator <- newSimulator ()
         Simulator.RunOptimizedToState init.Program init.BuiltIns simulator cache newIndex
     do jumpTo 0
-    let total = 0
+    let total = Simulator.CountStateTotal init.Program init.BuiltIns (newSimulator ()) cache
 
     interface IDebugger with
         member x.IsDone = index = total - 1
@@ -144,8 +144,8 @@ module Debugger =
     let create (mode, init) : IDebugger =
         match mode with
         | EditMode.Persistent -> upcast PersistentDebugger init
-        //| EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 50, Some 1000000)
         | EditMode.Workshop -> upcast CheckpointingWorkshopDebugger (init, TreeMapGrid (), 50, Some 1000000)
+        //| EditMode.Workshop -> upcast CachingWorkshopDebugger (init, Some 1000000)
 
     let makeSimulator (grid:IGrid<'a>) (init:CanonicalWorldState) =
         let sim = BasicRobotSimulator (grid, init.Robot)

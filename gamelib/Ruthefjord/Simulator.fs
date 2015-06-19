@@ -553,5 +553,16 @@ type private OptimizedRunner2<'S,'D> (program:Program, globals:ValueMap, simulat
         let ctx = {Environment=topLevelEnvironment}
         executeToStateIndexBlock ctx topLevelBlock numStates |> ignore
 
+    member x.CountStates () =
+        let ctx = {Environment=topLevelEnvironment}
+        let sum =
+            topLevelBlock |> List.sumBy (fun b ->
+                match concretizeStatement ctx b with
+                | Some c -> (getCached ctx c).NumStates
+                | None -> 0
+            )
+        sum + 2 // add 2, one each for start and end states
+
 let RunOptimized p b s c = OptimizedRunner2(p,b,s,c).RunToFinal ()
 let RunOptimizedToState p b s c n = OptimizedRunner2(p,b,s,c).RunToState n
+let CountStateTotal p b s c = OptimizedRunner2(p,b,s,c).CountStates ()

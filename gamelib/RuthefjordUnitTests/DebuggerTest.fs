@@ -42,6 +42,8 @@ let runThoroughWorkshopTest makeDebugger init =
     let expected: IDebugger = upcast WorkshopDebugger (init, TreeMapGrid (), None)
     let actual: IDebugger = makeDebugger init
 
+    actual.StateCount |> should equal expected.StateCount
+
     let check i =
         if i < expected.StateCount then
             actual.JumpToState i
@@ -58,6 +60,10 @@ let runThoroughWorkshopTest makeDebugger init =
     check 50
     check 49
     check 51
+
+    check (expected.StateCount - 1)
+    actual.CurrentStateIndex |> should equal (expected.StateCount - 1)
+    actual.IsDone |> should equal true
 
     // only run this test for reasonable small programs
     if expected.StateCount < 1000 then
