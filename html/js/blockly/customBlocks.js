@@ -96,6 +96,15 @@ function makeIdent(name) {
     return {type:'ident', name:name};
 }
 
+function makeSingleArg(block, inputName) {
+    var input = block.getInlineInput(inputName, "NUM");
+    if (input === null) {
+        input = block.getInlineInput(inputName, "VAR")
+        return makeIdent(input);
+    }
+    return makeLiteral(input);
+}
+
 Blockly.UnityJSON['Left'] = function(block) {
     return newCall("Left", block.id, []);
 };
@@ -136,12 +145,7 @@ Blockly.Blocks['Forward'] = {
 };
 
 Blockly.UnityJSON['Forward'] = function(block) {
-    var input = block.getInlineInput("VALUE", "NUM");
-    if (input === null) {
-        input = block.getInlineInput("VALUE", "VAR")
-        return newCall("Forward", block.id, [makeIdent(input)]);
-    }
-    return newCall("Forward", block.id, [makeLiteral(input)]);
+    return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
 // UP
@@ -186,12 +190,7 @@ Blockly.Blocks['Up_locked'] = {
 };
 
 Blockly.UnityJSON['Up'] = function(block) {
-    var input = block.getInlineInput("VALUE", "NUM");
-    if (input === null) {
-        input = block.getInlineInput("VALUE", "VAR")
-        return newCall("Up", block.id, [makeIdent(input)]);
-    }
-    return newCall("Up", block.id, [makeLiteral(input)]);
+    return newCall("Up", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
 // DOWN
@@ -236,12 +235,7 @@ Blockly.Blocks['Down_locked'] = {
 };
 
 Blockly.UnityJSON['Down'] = function(block) {
-    var input = block.getInlineInput("VALUE", "NUM");
-    if (input === null) {
-        input = block.getInlineInput("VALUE", "VAR")
-        return newCall("Down", block.id, [makeIdent(input)]);
-    }
-    return newCall("Down", block.id, [makeLiteral(input)]);
+    return newCall("Down", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
 // PLACECUBE
@@ -331,7 +325,7 @@ Blockly.Blocks['controls_repeat_locked'] = {
 Blockly.UnityJSON['controls_repeat'] = function(block, children) {
     return {
         meta: {id:Number(block.id)},
-        numtimes: {type:"literal", value:block.getInlineInput("TIMES", "NUM")},
+        numtimes: makeSingleArg(block, "TIMES"),
         body: children.map(Blockly.UnityJSON.convertCallback),
         type: "repeat"
     };

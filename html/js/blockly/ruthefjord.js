@@ -64,6 +64,7 @@ RuthefjordBlockly.Commands = [
     ['remove', '<block type="RemoveCube"></block>', '<block type="RemoveCube_locked"></block>', 'remove'],
     ['repeat', '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', '<block type="controls_repeat_locked"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', 'repeat'],
     ['defproc', '<block type="procedures_defnoreturn"></block>', '<block type="procedures_defnoreturn_locked"></block>', 'procedures']
+    // ['number', '<block type="math_number"><field name="NUM">1</field></block>']
 ];
 
 RuthefjordBlockly.AddonCommands = [];
