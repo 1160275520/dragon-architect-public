@@ -161,7 +161,7 @@ public class ProgramManager : MonoBehaviour {
     public IEnumerable<int> LastExecuted {
         get {
             if (RunState.IsStopped) return Enumerable.Empty<int>();
-            else return lastExecuted.Select(s => s.Meta.Id).Where(id => id > 0);
+            else return lastExecuted.Select(s => s.Meta.Id).Where(id => id < 167000);
         }
     }
 
@@ -232,7 +232,6 @@ public class ProgramManager : MonoBehaviour {
 
 	void Update() {
         // TODO figure out if "last time" should be updated, even if paused
-
         if (RunState.IsExecuting) {
             //Debug.Log("time: " + Time.deltaTime + ", TPS: " + TicksPerSecond);
             var numSteps = this.runner.Update(Time.deltaTime * TicksPerSecond / TicksPerStep);
