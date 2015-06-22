@@ -114,15 +114,17 @@ let main argv =
             if numStates < 100000 then
                 test "Naive TM" (fun () -> jumpTest (WorkshopDebugger (initData, TreeMapGrid (), None)))
 
+#endif
             let checkpointTest vals gridName gridFn =
                 for i in vals do
                     test (sprintf "Chk%3d %s" i gridName) (fun () -> jumpTest (CheckpointingWorkshopDebugger (initData, gridFn (), max (numStates / i) 1, None)))
 
             checkpointTest [100; 500;] "HT" (fun () -> HashTableGrid ())
             checkpointTest [100; 500;] "TM" (fun () -> TreeMapGrid ())
-#endif
-
             test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
+            checkpointTest [100; 500;] "HT" (fun () -> HashTableGrid ())
+            checkpointTest [100; 500;] "TM" (fun () -> TreeMapGrid ())
+
             test "Cached 1" (fun () -> jumpTest (CachingWorkshopDebugger (initData, None)))
 
         | _ -> invalidOp ""
