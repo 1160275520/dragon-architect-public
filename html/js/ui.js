@@ -401,7 +401,8 @@ module.Instructions = (function() {
         towertop: "media/blockSvgs/towertop.svg",
         wallsheet: "media/blockSvgs/wallsheet.svg",
         walltop: "media/blockSvgs/walltop.svg",
-        pillarProc: "media/blockSvgs/pillarProc.svg"
+        pillarProc: "media/blockSvgs/pillarProc.svg",
+        bridge: "media/bridge.png"
     };
 
     var uiIdMap = {

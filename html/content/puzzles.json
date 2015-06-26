@@ -2,7 +2,7 @@
     "dummy": {
         "library": {
             "granted": [
-                "time_slider"
+                
             ]
         }
     },
@@ -72,7 +72,7 @@
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
-            "granted": ["place"]
+            "granted": ["place", "time_slider", "speed_slider"]
         },
         "tutorial": {
             "highlighted": ["PlaceCube", "Forward"]
@@ -158,11 +158,12 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"resource", "value":"puzzle/up.bridge"},
         "instructions": {
-            "summary": "Use what you've learned to help me fill in the blueprint!",
+            "summary": "Use what you've learned to help me put a cube in each blue space: {bridge}",
             "detail": ""
         },
-        "logging_id": 34
+        "logging_id": 40
     },
     "up.rotate_camera":{
         "name": "A New Perspective",
@@ -178,7 +179,7 @@
         "logging_id": 35
     },
     "repeat.arguments":{
-        "name": "Using Arguments",
+        "name": "Winning Arguments",
         "component": "PuzMovementArgs",
         "library": {
             "restricted": ["blocks"],
@@ -195,20 +196,38 @@
         "program": {"type":"resource", "value":"puzzle/tutorial.arguments"},
         "logging_id": 24
     },
-    "repeat.speed_slider": {
-        "name": "Speed Slider",
-        "component": "PuzSpeedSlider",
+    "repeat.repeat_args":{
+        "name": "Line Time",
+        "component": "PuzRepeatArgs",
         "library": {
-            "restricted": ["blocks"],
+            "restricted":["blocks"],
             "required": [],
-            "granted": ["speed_slider"]
+            "granted": []
         },
         "instructions": {
-            "summary": "This program takes a long time to run. Speed me up by dragging {speedSlider} to <b>Fast</b>!",
+            "summary": "Help me fill in the whole line by repeating 5 times!",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/repeat.speed_slider"},
-        "logging_id": 25
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"resource", "value":"puzzle/repeat.repeat_args"},
+        "logging_id": 41
+    },
+    "repeat.repeat_nested":{
+        "name": "Square Dancing",
+        "component": "PuzRepeatNested",
+        "library": {
+            "restricted":["move2", "place", "up", "down", "defproc", "remove"],
+            "required":["repeat"],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Put {repeat4} around my code to have me build a square.",
+            "detail": ""
+        },
+        "program": {"type":"resource", "value":"puzzle/repeat.repeat_nested"},
+        "logging_id": 42
     },
     "repeat.repeat_fixedProgram": {
         "name": "A Bit of Repeat",
@@ -226,7 +245,7 @@
             "detail": "{repeat4} tells me to do everything inside 4 times."
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedProgram"},
-        "logging_id": 26
+        "logging_id": 27
     },
     "repeat.repeat_fixedLoops": {
         "name": "Nested Repeats",
@@ -241,25 +260,20 @@
             "detail": "Try adding those code blocks inside {repeat9}."
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedLoops"},
-        "logging_id": 27
+        "logging_id": 28
     },
-    "repeat.repeat_101Cubes": {
-        "name": "101 Cubes",
-        "component": "PuzRepeat101Cubes",
+    "repeat.repeat_tower": {
+        "name": "A Towering Achievement",
+        "component": "PuzRepeatTower",
         "library": {
-            "required": ["move2", "place"],
+            "required": ["move2", "place", "up"],
             "granted": ["repeat"]
         },
-        "goals": [{
-            "type": "cube_count",
-            "comp": ">=",
-            "value": 101
-        }],
         "instructions": {
-            "summary": "Write a program to have me place 101 cubes!",
-            "detail": "It may be helpful to use {repeat}."
+            "summary": "Fill in the blueprint to have me build a tower!",
+            "detail": "Each layer of the tower is a 5 by 5 square. The tower has 5 layers."
         },
-        "logging_id": 28
+        "logging_id": 43
     },
     "procedures.call_me": {
         "name": "Call Me, Square",

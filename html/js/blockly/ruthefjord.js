@@ -119,7 +119,7 @@ RuthefjordBlockly.init = function() {
 
 RuthefjordBlockly.clearProgram = function () {
     // clear existing blocks
-    Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(); });
+    Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(false, false, false, true); });
 };
 
 /**
@@ -215,11 +215,11 @@ RuthefjordBlockly.updateToolbox = function() {
     Blockly.getMainWorkspace().updateToolbox(toolXML);
 
     // lock blocks as necessary
-    _.each(Blockly.getMainWorkspace().flyout_.targetWorkspace_.getAllBlocks(), function(block) {
+    _.each(Blockly.getMainWorkspace().flyout_.workspace_.getAllBlocks(), function(block) {
         if (block.locked) {
             block.setDisabled(true);
             block.setEditable(false);
-            $(block.svg_.svgGroup_).on('click', function() {
+            $(block.svgGroup_).on('click', function() {
                 onRuthefjordEvent("onLockedToolboxClick", block);
             });
         }

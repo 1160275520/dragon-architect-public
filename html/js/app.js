@@ -557,12 +557,12 @@ $(function() {
             }
         });
 
-        $('#btn-step').on('click', function() {
-            if (questLogger) {
-                questLogger.logDoUiAction('button-one-step', 'click', null);
-            }
-            RuthefjordUnity.Call.next_interesting_step();
-        });
+        // $('#btn-step').on('click', function() {
+        //     if (questLogger) {
+        //         questLogger.logDoUiAction('button-one-step', 'click', null);
+        //     }
+        //     RuthefjordUnity.Call.next_interesting_step();
+        // });
 
         // camera
         $('#camera-zoom-in').click(function(){RuthefjordUnity.Call.control_camera('zoomin');});

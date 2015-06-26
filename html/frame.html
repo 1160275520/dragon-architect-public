@@ -64,7 +64,8 @@
         Blockly.inject(document.body, {
           rtl: false,
           trashcan: true,
-          toolbox: document.getElementById('toolbox')
+          toolbox: document.getElementById('toolbox'),
+          // scrollbars: true
         });
         document.addEventListener("toolboxUpdated", makeLabels);
         return Blockly;
