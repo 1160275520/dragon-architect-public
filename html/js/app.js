@@ -6,7 +6,6 @@ var program_state = {
     last_program_sent: undefined
 };
 
-var questLogger;
 var handler = {};
 var isDevMode = false;
 // the packs/puzzles sent up on game start
@@ -537,14 +536,14 @@ $(function() {
 
         $('#btn-run').on('click', function() {
             var newRS = program_state.run_state !== 'stopped' ? 'stopped' : 'executing';
-            if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
+            if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoProgramRunStateChange(newRS); }
             RuthefjordUnity.Call.set_program_state({run_state: newRS});
 
         });
 
         $('#btn-workshop').on('click', function() {
             var newEM = program_state.edit_mode === 'workshop' ? 'persistent' : 'workshop';
-            if (questLogger) { questLogger.logDoEditModeChange(newEM); }
+            if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoEditModeChange(newEM); }
             RuthefjordUnity.Call.set_program_state({edit_mode: newEM});
         });
 
@@ -552,14 +551,14 @@ $(function() {
             var oldRS = program_state.run_state;
             if (oldRS === 'executing' || oldRS === 'paused') {
                 var newRS = oldRS === 'executing' ? 'paused' : 'executing';
-                if (questLogger) { questLogger.logDoProgramRunStateChange(newRS); }
+                if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoProgramRunStateChange(newRS); }
                 RuthefjordUnity.Call.set_program_state({run_state: newRS});
             }
         });
 
         // $('#btn-step').on('click', function() {
-        //     if (questLogger) {
-        //         questLogger.logDoUiAction('button-one-step', 'click', null);
+        //     if (RuthefjordLogging.activeTaskLogger) {
+        //         RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
         //     }
         //     RuthefjordUnity.Call.next_interesting_step();
         // });
@@ -595,8 +594,8 @@ $(function() {
                 RuthefjordUI.TurboButton.update(true);
             }
 
-            if (questLogger) {
-                questLogger.logDoUiAction('button-turbo', 'click', {toggle:toggleState});
+            if (RuthefjordLogging.activeTaskLogger) {
+                RuthefjordLogging.activeTaskLogger.logDoUiAction('button-turbo', 'click', {toggle:toggleState});
             }
         });
         RuthefjordUI.TurboButton.update(false); // initialize button text
@@ -703,6 +702,9 @@ $(function() {
         });
         RuthefjordBlockly.game_info = game_info;
         RuthefjordBlockly.progress = progress;
+    }, function(error) {
+        console.error("Initialization failed! Program not starting! Error is below:")
+        console.error(error);
     });
 });
 
@@ -758,12 +760,11 @@ function start_editor(info) {
         }
 
         // clear old quest logger if it exists
-        if (questLogger) {
-            questLogger.logQuestEnd();
-            questLogger = null;
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logTaskEnd();
         }
         // then start new quest logger if this is not an empty level
-        questLogger = RuthefjordLogging.startQuest(info.puzzle.logging_id, info.checksum);
+        RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum);
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
         RuthefjordBlockly.AddonCommands = [];
@@ -889,7 +890,7 @@ handler.onProgramStateChange = function(data) {
         RuthefjordUI.StepButton.update(program_state.run_state !== 'finished' && em === 'workshop');
         RuthefjordUI.ModeButton.update(em === 'workshop');
         RuthefjordUI.TimeSlider.setEnabled(em === 'workshop');
-        if (questLogger) { questLogger.logOnEditModeChanged(json.edit_mode); }
+        if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logOnEditModeChanged(json.edit_mode); }
     }
 
     if ('run_state' in json) {
@@ -900,7 +901,7 @@ handler.onProgramStateChange = function(data) {
         RuthefjordUI.PauseButton.update(rs !== 'stopped' && rs !== 'finished', rs === 'paused');
         RuthefjordUI.RunButton.update(rs !== 'stopped', program_state.edit_mode === 'workshop');
 
-        if (questLogger) { questLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }
+        if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }
 
         if (rs === 'stopped' && current_scene === 'sandbox') {
             RuthefjordUnity.Call.request_world_state();
@@ -977,9 +978,9 @@ handler.onDebugHighlight = function(id) {
     if (block) {
         Blockly.addClass_(block.svgGroup_, "blocklyDebugHighlight");
         block.svgGroup_.parentNode.appendChild(block.svgGroup_);
-        var questLogger = RuthefjordLogging.activeQuestLogger;
-        if (questLogger) {
-            questLogger.logDoUiAction("debug-cube-highlight", 'start', null);
+        var taskLogger = RuthefjordLogging.activeTaskLogger;
+        if (taskLogger) {
+            taskLogger.logDoUiAction("debug-cube-highlight", 'start', null);
         }
     }
 }
@@ -994,7 +995,7 @@ handler.onSetColors = function(json) {
 // sent the moment they "win" a puzzle
 handler.onPuzzleComplete = function(puzzle_id) {
     progress.mark_puzzle_completed(puzzle_id, game_info.puzzles[puzzle_id]);
-    if (questLogger) { questLogger.logOnPuzzledCompleted(); }
+    if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logOnPuzzledCompleted(); }
     RuthefjordUI.WinMessage.show(win_msg, win_btn_msg, function() { handler.onPuzzleFinish(puzzle_id); });
     var cheer = new Audio("media/cheer_3.mp3");
     cheer.play();
@@ -1004,9 +1005,8 @@ handler.onPuzzleComplete = function(puzzle_id) {
 handler.onPuzzleFinish = function(puzzle_id) {
     current_puzzle_runner.onPuzzleFinish();
 
-    if (questLogger) {
-        questLogger.logQuestEnd();
-        questLogger = null;
+    if (RuthefjordLogging.activeTaskLogger) {
+        RuthefjordLogging.activeTaskLogger.logTaskEnd();
     }
 };
 

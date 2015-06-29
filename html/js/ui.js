@@ -704,7 +704,7 @@ function Slider(elemName, selector, labels, allElems) {
             onChangeCallback(changeEvent.value.newValue);
         });
         slider.on("slideStart", function(slideEvent) {
-            var questLogger = RuthefjordLogging.activeQuestLogger;
+            var questLogger = RuthefjordLogging.activeTaskLogger;
             if (questLogger) {
                 questLogger.logDoUiAction(elemName, 'start', null);
             }

@@ -6,55 +6,41 @@ var is_initialized = false;
 var self = {};
 
 // expose the logger globally because ui needs it XP
-self.activeQuestLogger = null;
+self.activeTaskLogger = null;
+self.telemetry_client = null;
 
 self.uid = function() {
-    return user.getUserId();
+    //return user.getUserId();
+    return '234234';
 }
 
 self.initialize = function(uid) {
+    var base_uri = RUTHEFJORD_CONFIG.logging.url;
+    var release_id = RUTHEFJORD_CONFIG.logging.release_id;
+    var release_key = RUTHEFJORD_CONFIG.logging.release_key;
 
-    var skey = RUTHEFJORD_CONFIG.logging.game.skey;
-    var skeyHash = cgs.server.logging.GameServerData.UUID_SKEY_HASH;
-    var serverTag = cgs.server.CGSServerProps[RUTHEFJORD_CONFIG.logging.server_tag];
-    var gameName = RUTHEFJORD_CONFIG.logging.game.name;
-    var gameId = RUTHEFJORD_CONFIG.logging.game.id;
-    var versionId = 1;
-    var categoryId = RUTHEFJORD_CONFIG.logging.category_id;
-
-    if (!serverTag || !gameName || !gameId || !versionId || (!categoryId && categoryId !== 0)) {
+    if (!base_uri || !release_id) {
         console.warn('invalid logging configuration!');
         return;
     }
 
-    var loader = new cgs.http.UrlLoader(new cgs.js.http.DefaultHttpLoaderFactory());
-    var handler = new cgs.http.requests.UrlRequestHandler(loader, new cgs.http.requests.RequestFailureHandler());
-    var api = new cgs.CgsApi(handler, new cgs.CgsCache(null));
-
-    var props = new cgs.user.CgsUserProperties(
-        skey, skeyHash, gameName, gameId, versionId, categoryId, serverTag);
-
-    // DO NOT Enable saving of data to server (it doesn't even work yet anyway)
-    // props.enableCaching();
-
-    // force the uid if it was passed into this function
-    if (uid) {
-        props.setForceUid(uid);
+    // force the uid if it was passed into this function, otherwise make a random one
+    // TODO FIXME actually fish this out of the session maybe XP, or use the one from the server
+    // using Math.random to make these kinda sucks...
+    if (!uid) {
+        uid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
     }
 
-    if (RUTHEFJORD_CONFIG.logging.proxy_url) {
-        props.setUseProxy(true);
-        props.setProxyUrl(RUTHEFJORD_CONFIG.game_server.url + RUTHEFJORD_CONFIG.logging.proxy_url);
-    }
-
-    //Wait to save data until everything has been loaded.
-    props.setCompleteCallback(function(response) {
-        // TODO nothing really to do in here...
+    self.telemetry_client = papika.TelemetryClient(base_uri, release_id, release_key);
+    self.telemetry_client.log_session({
+        user: uid,
+        release: release_id,
+        // TODO stick some actually useful information in here
+        detail: null
     });
-
-    //Initialize an anonymous user. TODO - Local cache still needs
-    //to be written for js.
-    user = api.initializeUser(props);
 
     is_initialized = true;
 };
@@ -73,13 +59,17 @@ self.initialize = function(uid) {
 var AID = {
     // meta stuff
 
-    PlayerConsented: 101,
-    PlayerLogin: 102,
-    PlayerExperimentalCondition: 103,
+    PuzzleStarted: 11,
+    PuzzleEnded: 12,
+
+    PlayerLogin: 101,
+    PlayerConsented: 201,
+    PlayerExperimentalCondition: 202,
 
     // state changes
 
-    OnPuzzleSolved: 10001,
+    OnPuzzleStarted: 10001,
+    OnPuzzleSolved: 10002,
     OnProgramExecuted: 10011,
     OnProgramStopped: 10012,
     OnProgramPaused: 10013,
@@ -99,40 +89,32 @@ var AID = {
     Unused: 0 // to prevent comma sadness
 };
 
-self.startQuest = function(qid, checksum) {
+self.startTask = function(gid, checksum) {
 
-    var localDqid = 1; //Optional parameter that is needed if more than one quest is being logged at a time.
+    if (!is_initialized) throw Error("cannot start task, logger not initialized!");
+
     var msStartTime = Date.now();
 
-    function start() {
-        //Load a quest start action and the quest end.
-        var questId = qid;
-        var details = {exampleData1:"data1", exampleData2:"data2"};
-        //CrytoJS is required to call this. See html file for script.
-        var questHash = checksum;
-        user.logQuestStart(questId, questHash, details, function(response) {
-            //Callback is optional and usually is only used for testing.
-        }, localDqid);
-        // console.info('logging quest start for qid ' + qid);
+    var task_logger = self.telemetry_client.start_task({
+        type: AID.PuzzleStarted,
+        detail: {gid:gid, checksum:checksum},
+        group:'0b854859-f162-4324-97db-a8fe21c3409a'
+    });
+
+    var tl = {};
+
+    function log(aid, detail) {
+        task_logger.log_event({
+            type: aid,
+            detail: detail
+        });
     }
 
-    var ql = {};
-
-    function log(actionId, actionDetail) {
-        if (!is_initialized) return;
-
-        var startTs = Date.now() - msStartTime;
-        var endTs = 0;
-        var questAction = new cgs.QuestAction(actionId, startTs, endTs);
-        questAction.setDetail(actionDetail);
-        user.logQuestAction(questAction);
-    }
-
-    ql.logOnPuzzledCompleted = function() {
+    tl.logOnPuzzledCompleted = function() {
         log(AID.OnPuzzleSolved, {});
     };
 
-    ql.logOnProgramRunStateChanged = function(runState, program) {
+    tl.logOnProgramRunStateChanged = function(runState, program) {
         switch (runState) {
             case "stopped":
                 log(AID.OnProgramStopped, {});
@@ -149,7 +131,7 @@ self.startQuest = function(qid, checksum) {
         }
     };
 
-    ql.logDoProgramRunStateChange = function(runState) {
+    tl.logDoProgramRunStateChange = function(runState) {
         switch (runState) {
             case "stopped":
                 log(AID.DoProgramStop, {});
@@ -166,63 +148,50 @@ self.startQuest = function(qid, checksum) {
         }
     };
 
-    ql.logOnEditModeChanged = function(newMode) {
+    tl.logOnEditModeChanged = function(newMode) {
         log(AID.OnEditModeChanged, {mode: newMode});
     };
 
-    ql.logDoEditModeChange = function(newMode) {
+    tl.logDoEditModeChange = function(newMode) {
         log(AID.DoEditModeChange, {mode: newMode});
     };
 
-    ql.logDoUiAction = function(element, action, data) {
+    tl.logDoUiAction = function(element, action, data) {
         log(AID.DoUiAction, {element: element, action: action, data: data});
     };
 
-    ql.logQuestEnd = function() {
-        if (!is_initialized) return;
-
-        var questEndDetail = {test:"test"};
-        user.logQuestEnd(questEndDetail, function(response) {
-            //Callback is optional and usually is only used for testing.
-        }, localDqid);
-        // console.info('logging quest end for qid ' + qid);
-        self.activeQuestLogger = null;
+    tl.logTaskEnd = function() {
+        task_logger.log_event({
+            type: AID.PuzzleEnded,
+            detail:null
+        });
+        self.activeTaskLogger = null;
     };
 
-    if (is_initialized) {
-        start();
-    }
-    self.activeQuestLogger = ql;
-    return ql;
+    self.activeTaskLogger = tl;
+    return tl;
 };
-
-self.logPlayerLogin = function(loginId) {
-    var actionId = AID.PlayerLogin;
-    var actionDetail = {id:loginId};
-    var action = new cgs.UserAction(actionId, actionDetail);
-    user.logAction(action);
-}
 
 // TODO add logging of their condition for redundancy
 self.logExperimentalCondition = function(experimentId, conditionId) {
-    var actionId = AID.PlayerExperimentalCondition;
-    var actionDetail = {experiment:experimentId, condition:conditionId};
-    var action = new cgs.UserAction(actionId, actionDetail);
-    user.logAction(action);
+    self.telemetry_client.log_event({
+        type: AID.PlayerExperimentalCondition,
+        detail: {experiment:experimentId, condition:conditionId}
+    });
 }
 
 self.logPlayerLogin = function(loginId) {
-    var actionId = AID.PlayerLogin;
-    var actionDetail = {id:loginId};
-    var action = new cgs.UserAction(actionId, actionDetail);
-    user.logAction(action);
+    self.telemetry_client.log_event({
+        type: AID.PlayerLogin,
+        detail: {id:loginId}
+    });
 }
 
 self.logStudentConsented = function(didPlayerConsent, tosId) {
-    var actionId = AID.PlayerConsented;
-    var actionDetail = {tos_id: tosId, did_consent:didPlayerConsent};
-    var action = new cgs.UserAction(actionId, actionDetail);
-    user.logAction(action);
+    self.telemetry_client.log_event({
+        type: AID.PlayerConsented,
+        detail: {tos_id: tosId, did_consent:didPlayerConsent}
+    });
 };
 
 return self;

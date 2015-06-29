@@ -5,9 +5,9 @@ var RUTHEFJORD_CONFIG = {
         storage: 'local' // can be 'server', 'local', or 'session'
     },
     logging: {
-        server_tag: 'DEVELOPMENT_SERVER',
-        game: {name: 'hackcraft', id: 19, skey: "e00fc765bbcc46064b5eb57dbb02bdf2"},
-        category_id: 1
+        url: 'http://localhost:5001',
+        release_id: 'f7f2f237-100a-4b18-8ca7-913c0f1e30ed',
+        release_key: 'asdf'
     },
     features: {
         is_debugging: true,
