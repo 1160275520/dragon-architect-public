@@ -672,6 +672,10 @@ $(function() {
             $('#btn-workshop').hide();
         }
 
+        _.each(RUTHEFJORD_CONFIG.hide_packs, function (packName) {
+            delete game_info.packs[packName]
+        })
+
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 

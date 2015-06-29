@@ -33,10 +33,13 @@ if system == 'Windows':
     #check(subprocess.call([command, "build", config, "--target:Clean", slnfile]))
     #check(subprocess.call([command, "build", config, "--target:Build", slnfile]))
 elif system == 'Darwin':
-    command = "/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"
-    config = "--configuration:" + configarg
-    check(subprocess.call([command, "build", config, "--target:Clean", slnfile]))
-    check(subprocess.call([command, "build", config, "--target:Build", slnfile]))
+    if configarg == "Release":
+        sys.stdout.write("MAKE SURE YOU HAVE BUILT GAMELIB IN XAMARIN\n")
+    else:
+        command = "/Applications/Xamarin Studio.app/Contents/MacOS/mdtool"
+        config = "--configuration:" + configarg
+        check(subprocess.call([command, "build", config, "--target:Clean", slnfile]))
+        check(subprocess.call([command, "build", config, "--target:Build", slnfile]))
 else:
     sys.stderr.write("platform unsupported!\n")
     raise Exception('platform unsupported')

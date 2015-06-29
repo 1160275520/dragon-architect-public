@@ -193,8 +193,13 @@ RuthefjordBlockly.updateToolbox = function() {
             toolXML += commandData[1];
         } else if (commandData[2] && RuthefjordBlockly.isSandbox) {
             var pack = RuthefjordBlockly.game_info.packs[commandData[3]];
-            if (!pack.prereq || pack.prereq.every(function (packName) { return RuthefjordBlockly.progress.is_pack_completed(RuthefjordBlockly.game_info.packs[packName]); })) {
-                toolXML += commandData[2];
+            if (pack) { // pack may have been hidden by config
+                var allPrereqsDone = pack.prereq && pack.prereq.every(function (packName) { 
+                    return RuthefjordBlockly.progress.is_pack_completed(RuthefjordBlockly.game_info.packs[packName]); 
+                });
+                if (!pack.prereq || allPrereqsDone) {
+                    toolXML += commandData[2];
+                }
             }
         }
     });
