@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # backup the game and logging databases to $BASE_DIR
 # this must be run by a postgres superuser (problably postgres)
@@ -7,7 +7,7 @@
 DUMPALL="/usr/bin/pg_dumpall"
 PGDUMP="/usr/bin/pg_dump"
 PSQL="/usr/bin/psql"
-DBS=ruthefjord logging
+DBS="ruthefjord logging"
 
 BASE_DIR="/var/backups/postgres"
 YMD=$(date "+%Y-%m-%d")
