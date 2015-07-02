@@ -11,8 +11,8 @@ Requries Windows (64-bit) or Mac OSX, because Unity.
 64-bit because I was lazy and hard-coded paths to "C:\Program Files (x86)".
 
 Dependencies:
-- either Visual Studio 2012 or MonoDevelop 5 (aka Xamarin Studio)
-- Unity 4.5 (with Pro License)
+- either Visual Studio 2013 or MonoDevelop 5 (aka Xamarin Studio)
+- Unity 5.1
 - python 2.7+ (does NOT work with 3.X)
 - nodejs + npm + gulp
 
