@@ -5,12 +5,12 @@ var RUTHEFJORD_CONFIG = {
         storage: 'session' // can be 'server', 'local', or 'session'
     },
     logging: {
-        server_tag: 'DEVELOPMENT_SERVER',
-        game: {name: 'hackcraft', id: 19, skey: "e00fc765bbcc46064b5eb57dbb02bdf2"},
-        category_id: 100
+        url: 'http://gigantor.cs.washington.edu:27895',
+        release_id: '5938095d-62ae-487b-a43c-2c1c8851ade7',
+        release_key: ''
     },
-    features: { 
+    features: {
         is_debugging: true
-    },
+    }
 };
 
