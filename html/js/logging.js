@@ -9,12 +9,18 @@ var self = {};
 self.activeTaskLogger = null;
 self.telemetry_client = null;
 
-self.uid = function() {
-    //return user.getUserId();
-    return '234234';
+function create_random_uuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
 }
 
-self.initialize = function(uid) {
+/// Initializes the logging/telemetry system.
+/// If username is truthy, the username will be sent to the logging server for the corresponding userid.
+/// Otherwise, a random userid will be generated.
+/// Returns an (ES6) promise that resolves the uuid.
+self.initialize = function(username) {
     var base_uri = RUTHEFJORD_CONFIG.logging.url;
     var release_id = RUTHEFJORD_CONFIG.logging.release_id;
     var release_key = RUTHEFJORD_CONFIG.logging.release_key;
@@ -24,25 +30,28 @@ self.initialize = function(uid) {
         return;
     }
 
-    // force the uid if it was passed into this function, otherwise make a random one
-    // TODO FIXME actually fish this out of the session maybe XP, or use the one from the server
-    // using Math.random to make these kinda sucks...
-    if (!uid) {
-        uid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
+    self.telemetry_client = papika.TelemetryClient(base_uri, release_id, release_key);
+
+    // TODO add support for passing in a userid directly.
+    var uid_promise;
+    if (username) {
+        uid_promise = self.telemetry_client.query_user_id({username:username});
+    } else {
+        uid_promise = new Promise(function(resolve) {
+            resolve(create_random_uuid());
         });
     }
 
-    self.telemetry_client = papika.TelemetryClient(base_uri, release_id, release_key);
-    self.telemetry_client.log_session({
-        user: uid,
-        release: release_id,
-        // TODO stick some actually useful information in here
-        detail: null
+    return uid_promise.then(function(userid) {
+        self.telemetry_client.log_session({
+            user: userid,
+            release: release_id,
+            // TODO stick some actually useful information in here
+            detail: null
+        });
+        is_initialized = true;
+        return userid;
     });
-
-    is_initialized = true;
 };
 
 /*

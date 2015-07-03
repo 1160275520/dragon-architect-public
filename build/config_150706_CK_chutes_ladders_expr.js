@@ -6,8 +6,8 @@ var RUTHEFJORD_CONFIG = {
     },
     logging: {
         url: 'http://gigantor.cs.washington.edu:27895',
-        release_id: '5938095d-62ae-487b-a43c-2c1c8851ade7',
-        release_name: 'latest',
+        release_id: 'd1e866b4-afe1-4489-ab88-e5ba700f003f',
+        release_name: '150706 chutes/ladders experiment',
         release_key: ''
     },
     features: {

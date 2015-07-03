@@ -25,6 +25,34 @@ var galleryRender = false;
 // flag and data for when code from a gallery item is added to the sandbox
 var sandboxProgAddon = ""; 
 
+function send_json_get_request(url) {
+    return fetch(url, {
+        method: 'get',
+    }).then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error(response.status + ' ' + response.statusText);
+        }
+    });
+}
+
+function send_json_put_request(url, params) {
+    return fetch(url, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+    }).then(function(response) {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error(response.status + ' ' + response.statusText);
+        }
+    });
+}
+
 var Storage = (function() {
     var mdl = {};
     var base_url = RUTHEFJORD_CONFIG.server.url;
@@ -32,56 +60,17 @@ var Storage = (function() {
     var STORAGE_VERSION = "1";
 
     // commented out because we're not using it for UIST
-    /*
-    var ServerStorage = function() {
+    var ServerStorage = function(userid) {
         var self = {};
         var remote_data;
 
-        function create_new_user(username, cb) {
-            $.ajax(RUTHEFJORD_CONFIG.game_server.url + '/getuid', {
-                data: JSON.stringify({username:username}),
-                contentType: 'application/json',
-                type: 'POST'
-            }).then(function(data) {
-                return $.ajax(base_url + '/player', {
-                    data: JSON.stringify({id:data.result.uuid, username:username}),
-                    contentType: 'application/json',
-                    type: 'POST'
-                });
-            }).done(function(data) {
-                remote_data = data;
-                cb();
-            }).fail(function(data) {
-                // if THIS fails, give up and turn off logins
-                console.log("creating a player failed D:")
-                cb();
-            });
-        }
-
         self.initialize = function() {
-            var username = '';
-            while (!username) {
-                username = window.prompt("Please enter your username");
-            }
-
-            var filters = [{name: 'username', op: '==', val: username}];
-
-            // try to grab all the user data
-            $.ajax(base_url + '/player', {
-                data: {q: JSON.stringify({filters: filters})},
-                dataType: 'json',
-                contentType: 'application/json',
-            }).done(function(data) {
-                if (data.num_results > 0) {
-                    remote_data = data.objects[0];
-                    cb();
-                } else {
-                    create_new_user(username, cb);
-                }
-            }).fail(function(data) {
-                // on failure, make a new user
-                create_new_user(username, cb);
-            });
+            return send_json_get_request(base_url + '/get_player/' + userid)
+                .then(function(data) {
+                    remote_data = data;
+                }, function(error) {
+                    console.error('Failed to create player data!');
+                });
         };
 
         self.getItem = function(key) {
@@ -91,25 +80,17 @@ var Storage = (function() {
         self.setItem = function(key, value) {
             var o = {};
             o[key] = value;
-
-            $.ajax(base_url + '/player/' + remote_data.id, {
-                data: JSON.stringify(o),
-                contentType: 'application/json',
-                type: 'PUT'
-            });
+            send_json_put_request(base_url + '/player/' + remote_data.id, o);
             remote_data[key] = value;
         };
 
         self.removeItem = function (key) {
-            $.ajax(base_url + '/player/' + remote_data.id, {
-                data: JSON.stringify({key:null}),
-                contentType: 'application/json',
-                type: 'PUT'
-            });
+            send_json_put_request(base_url + '/player/' + remote_data.id, {key:null});
             remote_data[key] = null;
         };
+
+        return self;
     };
-    */
 
     var storageImpl;
 
@@ -117,13 +98,12 @@ var Storage = (function() {
         return storageImpl.getItem('id');
     }
 
-    mdl.initialize = function(cb) {
+    mdl.initialize = function(userid, cb) {
         var isLocal = false;
         switch (RUTHEFJORD_CONFIG.server.storage) {
-            //case 'server':
-            //    storageImpl = ServerStorage();
-            //      TODO once this is commented back in have to actually initialize it
-            //    break;
+            case 'server':
+                storageImpl = ServerStorage(userid);
+                break;
             case 'local':
                 storageImpl = window.localStorage;
                 isLocal = true;
@@ -142,24 +122,9 @@ var Storage = (function() {
                 storageImpl.clear();
             }
             storageImpl.setItem('version', STORAGE_VERSION);
-        }
-
-        // need to generate a user id if one does not exist
-        if (mdl.id()) {
-            console.info('loaded user id ' + mdl.id());
             cb();
         } else {
-            $.ajax(base_url + '/create_player', {
-                type: 'POST'
-            }).done(function(data) {
-                storageImpl.setItem('id', data.result.id);
-                console.info('generated new user id ' + data.result.id);
-                cb();
-            }).fail(function() {
-                // TODO maybe set something so the game can keep going
-                console.error("server not around, can't get a user id!");
-                cb();
-            });
+            storageImpl.initialize().then(function(){cb();});
         }
     };
 
@@ -421,9 +386,9 @@ $(function() {
         return d.promise;
     }
 
-    function load_save_data() {
+    function load_save_data(userid) {
         var d = Q.defer();
-        Storage.initialize(function() { d.resolve(); });
+        Storage.initialize(userid, function() { d.resolve(); });
         return d.promise;
     }
 
@@ -450,9 +415,6 @@ $(function() {
 
         return d.promise;
     }
-
-    // initialize subsystems (mainly unity and logging)
-    ////////////////////////////////////////////////////////////////////////////////
 
     function initializeUi() {
         // set up callbacks for transitions between application state
@@ -628,12 +590,6 @@ $(function() {
         }
     }
 
-    // fetch the uid from the GET params and pass that to logging initializer
-    // we don't actually need to wait for it to finish before using it
-    // TODO ensure this assumption is actually true
-    var uid = $.url().param('uid');
-    RuthefjordLogging.initialize(uid);
-
     var isInitialized = false;
     setTimeout(function() {
         if (!isInitialized) {
@@ -642,8 +598,12 @@ $(function() {
         }
     }, 15000);
 
-    // load save data first, then get the experimental condition, then do all the things
-    load_save_data()
+    // fetch the uid from the GET params and pass that to logging initializer
+    // then initialize logging, then load save data, then get the experimental condition, then do all the things
+    var username = $.url().param('username');
+    RuthefjordLogging.initialize(username).then(function(userid) {
+        return load_save_data(userid);
+    })
     .then(function() {
         // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
         RuthefjordLogging.logPlayerLogin(Storage.id());
@@ -707,7 +667,7 @@ $(function() {
         RuthefjordBlockly.game_info = game_info;
         RuthefjordBlockly.progress = progress;
     }, function(error) {
-        console.error("Initialization failed! Program not starting! Error is below:")
+        console.error("Initialization failed! Program not starting! Error is below:");
         console.error(error);
     });
 });
