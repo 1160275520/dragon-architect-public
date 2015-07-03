@@ -23,6 +23,7 @@ function create_random_uuid() {
 self.initialize = function(username) {
     var base_uri = RUTHEFJORD_CONFIG.logging.url;
     var release_id = RUTHEFJORD_CONFIG.logging.release_id;
+    var release_name = RUTHEFJORD_CONFIG.logging.release_name;
     var release_key = RUTHEFJORD_CONFIG.logging.release_key;
 
     if (!base_uri || !release_id) {
@@ -46,8 +47,7 @@ self.initialize = function(username) {
         self.telemetry_client.log_session({
             user: userid,
             release: release_id,
-            // TODO stick some actually useful information in here
-            detail: null
+            detail: {release_name:release_name}
         });
         is_initialized = true;
         return userid;
