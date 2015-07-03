@@ -22,6 +22,47 @@ def add_cors_header(response):
 
     return response
 
+class Player(db.Model):
+    __tablename__ = 'player'
+    id = db.Column(UUID, primary_key=True)
+    username = db.Column(db.Unicode, unique=True, index=True, nullable=True)
+    puzzles_completed = db.Column(db.Unicode)
+    sandbox_program = db.Column(db.Unicode)
+    sandbox_world_data = db.Column(db.Unicode)
+
+class UploadedProject(db.Model):
+    __tablename__ = 'uploaded_project'
+    id = db.Column(UUID, primary_key=True)
+    author = db.Column(UUID)
+    name = db.Column(db.Unicode)
+    time = db.Column(db.DateTime)
+    program = db.Column(db.Unicode)
+    # the initial world data (before program is run)
+    world_data = db.Column(db.Unicode)
+
+class ProjectScreenCapture(db.Model):
+    __tablename__ = 'project_screen_capture'
+    id = db.Column(UUID, primary_key=True)
+    project_id = db.Column(UUID, db.ForeignKey(UploadedProject.id), nullable=False)
+    data = db.Column(db.Unicode)
+
+# HACK this is a poor way to do this, extend with REST thing later
+@app.route('/api/get_player/<id>', methods=['GET'])
+def get_player(id):
+    player = Player.query.filter_by(id=id).first()
+    if player is None:
+        # create a new random user id
+        player = Player(id=id, username=None)
+        db.session.add(player)
+        db.session.commit()
+    return flask.jsonify(
+        id=player.id,
+        puzzles_completed=player.puzzles_completed,
+        sandbox_program=player.sandbox_program,
+        sandbox_world_data=player.sandbox_world_data,
+        username=player.username
+    )
+
 @app.route('/api/create_player', methods=['POST'])
 def get_player_id():
     # create a new random player id
@@ -40,56 +81,6 @@ def uuid_of_username():
     uid = unicode(uuid.uuid5(namespace, username.encode('utf-8')))
     result = { 'uuid':uid }
     return flask.jsonify(result=result)
-
-@app.route('/api/experiment', methods=['POST'])
-def get_experimental_condition_for_player():
-    content = request.json
-    player_id =content['player_id']
-    experiment_id = content['experiment_id']
-
-    pe = PlayerExperiment.query.filter_by(player_id=player_id, experiment_id=experiment_id).first()
-    if pe is None:
-        # new user! give them a condition
-        exper = experiments[experiment_id]
-        condition = random.choice(exper['conditions'])
-        pe = PlayerExperiment(player_id=player_id, experiment_id=experiment_id, condition=condition['id'])
-        db.session.add(pe)
-        db.session.commit()
-
-    result = { 'condition':pe.condition }
-    return flask.jsonify(result=result)
-
-class Player(db.Model):
-    __tablename__ = 'player'
-    id = db.Column(UUID, primary_key=True)
-    username = db.Column(db.Unicode, unique=True, index=True, nullable=True)
-    puzzles_completed = db.Column(db.Unicode)
-    sandbox_program = db.Column(db.Unicode)
-    sandbox_world_data = db.Column(db.Unicode)
-
-# many-to-many mapping of player to experimental condition
-class PlayerExperiment(db.Model):
-    __tablename__ = 'player_experiment'
-    # TODO add foreign key for player
-    player_id = db.Column(UUID, db.ForeignKey('player.id'), primary_key=True)
-    experiment_id = db.Column(UUID, primary_key=True)
-    condition = db.Column(db.Integer, nullable=False)
-
-class UploadedProject(db.Model):
-    __tablename__ = 'uploaded_project'
-    id = db.Column(UUID, primary_key=True)
-    author = db.Column(UUID)
-    name = db.Column(db.Unicode)
-    time = db.Column(db.DateTime)
-    program = db.Column(db.Unicode)
-    # the initial world data (before program is run)
-    world_data = db.Column(db.Unicode)
-
-class ProjectScreenCapture(db.Model):
-    __tablename__ = 'project_screen_capture'
-    id = db.Column(UUID, primary_key=True)
-    project_id = db.Column(UUID, db.ForeignKey(UploadedProject.id), nullable=False)
-    data = db.Column(db.Unicode)
 
 def setup():
     # Create the database tables.
