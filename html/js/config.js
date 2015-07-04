@@ -11,7 +11,7 @@ var RUTHEFJORD_CONFIG = {
         release_key: ''
     },
     features: {
-        is_debugging: true,
+        is_debugging: true
     }
 };
 
