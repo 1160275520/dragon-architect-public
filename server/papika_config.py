@@ -8,4 +8,10 @@ PAPIKA_EXPERIMENTS = {
             {'id':2, 'name': 'im another condition'},
         ],
     },
+    '370D0C88-16C3-47EF-89F5-32927863A59C': {
+        'conditions': [
+            {'id':1, 'name': 'puzzles only'},
+            {'id':2, 'name': 'puzzles and sandbox'},
+        ],
+    },
 }
