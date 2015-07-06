@@ -267,7 +267,7 @@ Blockly.Blocks['RemoveCube'] = {
 
 Blockly.Blocks['RemoveCube_teaser'] = {
     init: function() {
-        this.setFullColor(COLOR_teaser);
+        this.setFullColor(COLOR_TEASER);
         this.appendDummyInput()
             .appendField("remove cube");
         this.setPreviousStatement(true);

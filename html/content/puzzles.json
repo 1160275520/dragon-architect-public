@@ -204,7 +204,7 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Help me fill in the whole line by repeating 5 times!",
+            "summary": "Help me fill in the whole line by repeating 5 times! {repeat5}",
             "detail": ""
         },
         "world": {
@@ -284,7 +284,7 @@
         },
         "procedures_only":true,
         "instructions": {
-            "summary": "Put blocks inside {squareProc} to have me build a square.",
+            "summary": "Put blocks inside {SquareProc} to have me build a square.",
             "detail": ""
         },
         "program": {"type":"resource", "value":"puzzle/procedures.square"},
@@ -294,12 +294,12 @@
         "name": "Up By Any Other Name",
         "component": "PuzProceduresCall",
         "library": {
-            "restricted": ["up", "cube", "defproc", "defproc_noargs"],
+            "restricted": ["up", "place", "defproc", "defproc_noargs"],
             "required": [],
             "granted": []
         },
         "instructions": {
-            "summary": "Use {upCubeCall} to help fill in the blue spaces.",
+            "summary": "Use {UpCubeCall} to help fill in the blue spaces.",
             "detail": ""
         },
         "tutorial": {
@@ -333,7 +333,7 @@
         "name": "Do You Wanna Build a Castle?",
         "component": "PuzDecompCastle",
         "library": {
-            "restricted": ["move2", "place", "up", "down", "defproc", "remove", "repeat"],
+            "restricted": ["blocks"],
             "required": ["Castle"],
             "granted": ["speed_slider", "time_slider"],
             "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
@@ -352,7 +352,7 @@
         "name": "Fixer-Upper",
         "component": "PuzDecompFixCastle",
         "library": {
-            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["Tower", "Wall"],
             "granted": ["speed_slider", "time_slider"],
             "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
@@ -372,7 +372,7 @@
         "name": "Taller Towers",
         "component": "PuzDecompFixTowers",
         "library": {
-            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["TowerLayer", "TowerTop", "Wall"],
             "granted": ["speed_slider", "time_slider"],
             "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
@@ -392,7 +392,7 @@
         "name": "Better Walls",
         "component": "PuzDecompFixWalls",
         "library": {
-            "restricted": ["move2", "place", "up", "down", "defproc", "remove"],
+            "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["WallSheet", "WallTop", "TowerLayer", "TowerTop"],
             "granted": ["speed_slider", "time_slider"],
             "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]

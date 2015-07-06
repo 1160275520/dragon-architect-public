@@ -383,6 +383,7 @@ module.Instructions = (function() {
         repeat5: "media/blockSvgs/repeat5.svg",
         repeat9: "media/blockSvgs/repeat9.svg",
         squareProc: "media/blockSvgs/squareProc.svg",
+        UpCubeCall: "media/blockSvgs/UpCubeCall.svg",
         go: "media/goButton.png",
         rotateCW: "media/rotateCWButton.png",
         rotateCCW: "media/rotateCCWButton.png",

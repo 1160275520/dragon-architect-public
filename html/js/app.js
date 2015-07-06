@@ -460,7 +460,7 @@ $(function() {
             }).then(function(cond) {
                 console.info('got condition! ' + cond);
                 // copy the experimental condition info the config object
-                RUTHEFJORD_CONFIG.features = RUTHEFJORD_CONFIG.feature_conditions[cond];
+                _.extend(RUTHEFJORD_CONFIG.features, RUTHEFJORD_CONFIG.feature_conditions[cond]);
                 RuthefjordLogging.logExperimentalCondition(RUTHEFJORD_CONFIG.experiment.id, cond);
                 d.resolve();
             });

@@ -1,5 +1,6 @@
 #lang imperative:1.0
-@NoMove=true
+@NoDelete=true
+@NoArgs=true
 define FixedCastle()
     Wall()
     FixedTower()
@@ -10,9 +11,10 @@ define FixedCastle()
     Wall()
     FixedTower()
 
-@NoMove=true
+@NoDelete=true
+@NoArgs=true
 define FixedTower()
     pass
 
-@NoMove=true
+@NoDelete=true
 FixedCastle()

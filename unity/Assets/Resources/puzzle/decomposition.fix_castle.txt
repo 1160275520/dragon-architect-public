@@ -1,7 +1,8 @@
 #lang imperative:1.0
-@NoMove=true
+@NoDelete=true
+@NoArgs=true
 define FixedCastle()
     pass
 
-@NoMove=true
+@NoDelete=true
 FixedCastle()
