@@ -50,11 +50,13 @@
 "procedures":{
     "prereq": ["repeat"],
     "nodes": [
-        "procedures.call_me",
-        "procedures.definitions"
+        "procedures.square",
+        "procedures.call",
+        "procedures.def"
     ],
     "edges": [
-        ["procedures.call_me", "procedures.definitions"]
+        ["procedures.square", "procedures.call"],
+        ["procedures.call", "procedures.def"]
     ],
     "name": "Procedural Bliss",
     "learn": ["Create custom blocks with procedures"]

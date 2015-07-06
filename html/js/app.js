@@ -812,7 +812,7 @@ function start_editor(info) {
         clear_level_listeners();
         // check procedures only flag
         if (info.puzzle.procedures_only) {
-            Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.proceduresOnly);
+            levelListeners.push(Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.proceduresOnly));
         }
 
         if (info.puzzle.program) {

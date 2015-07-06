@@ -275,9 +275,9 @@
         },
         "logging_id": 43
     },
-    "procedures.call_me": {
-        "name": "Call Me, Square",
-        "component": "PuzProceduresCall",
+    "procedures.square": {
+        "name": "A Square Deal",
+        "component": "PuzProceduresSquare",
         "library": {
             "restricted": ["defproc_noargs", "defproc"],
             "required": [],
@@ -288,23 +288,47 @@
             "summary": "Put blocks inside {squareProc} to have me build a square.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.call_me"},
+        "program": {"type":"resource", "value":"puzzle/procedures.square"},
         "logging_id": 106
     },
-    "procedures.definitions": {
-        "name": "Definitions",
-        "component": "PuzProceduresDef",
+    "procedures.call": {
+        "name": "Up By Any Other Name",
+        "component": "PuzProceduresCall",
         "library": {
-            "restricted": ["defproc"],
-            "required": ["up", "down"],
-            "granted": ["defproc"]
+            "restricted": ["up", "cube", "defproc", "defproc_noargs"],
+            "required": [],
+            "granted": []
         },
         "instructions": {
-            "summary": "Help me fill in the blueprints by filling in {pillarProc}.",
+            "summary": "Use {upCubeCall} to help fill in the blue spaces.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.definitions"},
+        "tutorial": {
+            "highlighted": ["procedures_callnoreturn"]
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"resource", "value":"puzzle/procedures.call"},
         "logging_id": 107
+    },
+    "procedures.def": {
+        "name": "Standard Operating Procedure",
+        "component": "PuzProceduresDef",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": ["defproc_noargs"]
+        },
+        "tutorial": {
+            "highlighted": ["procedures_noargs_defnoreturn"]
+        },
+        "procedures_only":true,
+        "instructions": {
+            "summary": "Use a procedure to get me to the {pinkboxUp}!",
+            "detail": ""
+        },
+        "logging_id": 108
     },
     "decomposition.castle": {
         "name": "Do You Wanna Build a Castle?",

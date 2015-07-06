@@ -214,9 +214,9 @@ RuthefjordBlockly.updateToolbox = function() {
     var commands = _.extend({}, RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands);
     // check for commands that should be eliminated due to presence of replacement command
     _.each(RuthefjordBlockly.CommandReplacements, function(obsolete, replacement) {
-        if (_.has(commands, replacement)) {
+        if (_.has(current_tools, replacement)) {
             delete commands[obsolete]; // if we have the replacement, we can get rid of its predecessor
-        } else if (!_.has(commands, obsolete)) {
+        } else if (!_.has(current_tools, obsolete)) {
             delete commands[replacement]; // otherwise if we don't have the predecessor, hide the replacement until we do
         }
     });
@@ -264,13 +264,13 @@ RuthefjordBlockly.updateToolbox = function() {
     });
 
     // highlight blocks that should be used in the current puzzle
-    // if (RuthefjordBlockly.scene_info && RuthefjordBlockly.scene_info.tutorial && RuthefjordBlockly.scene_info.tutorial.highlighted) {
-    //     Blockly.getMainWorkspace().flyout_.targetWorkspace_.topBlocks_.forEach(function (b) { 
-    //         if (_.contains(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
-    //             b.addNewGlow();
-    //         }
-    //     });
-    // }
+    if (RuthefjordBlockly.scene_info && RuthefjordBlockly.scene_info.tutorial && RuthefjordBlockly.scene_info.tutorial.highlighted) {
+        Blockly.getMainWorkspace().flyout_.workspace_.getTopBlocks().forEach(function (b) { 
+            if (_.contains(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
+                b.addNewGlow();
+            }
+        });
+    }
 };
 
 /**

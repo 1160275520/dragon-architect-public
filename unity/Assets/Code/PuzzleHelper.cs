@@ -35,6 +35,7 @@ public class PuzzleHelper : MonoBehaviour
         typeof(PuzMovement2D_3),
         typeof(PuzMovementArgs),
         typeof(PuzPlacement),
+        typeof(PuzProceduresSquare),
         typeof(PuzProceduresCall),
         typeof(PuzProceduresDef),
         typeof(PuzRemove),
