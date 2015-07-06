@@ -1,8 +1,8 @@
 
 var RUTHEFJORD_CONFIG = {
     server: {
-        url: 'http://localhost:5000/api',
-        storage: 'server' // can be 'server', 'local', or 'session'
+        url: 'http://gigantor.cs.washington.edu:27246/api',
+        storage: 'server'
     },
     logging: {
         url: 'http://gigantor.cs.washington.edu:27895',

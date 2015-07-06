@@ -87,7 +87,9 @@ var Storage = (function() {
         };
 
         self.removeItem = function (key) {
-            send_json_put_request(base_url + '/player/' + remote_data.id, {[key]:null});
+            var o = {};
+            o[key] = null;
+            send_json_put_request(base_url + '/player/' + remote_data.id, o);
             remote_data[key] = null;
         };
 
@@ -1108,3 +1110,4 @@ function devmode() {
 function toSandbox() {
     onRuthefjordEvent('onToSandbox')
 }
+
