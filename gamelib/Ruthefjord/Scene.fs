@@ -111,6 +111,7 @@ type PuzzleInfo = {
     WorldData: WorldData option;
     Goals: J.JsonValue;
     WinMsg: string option;
+    ProceduresOnly: bool option;
 } with
     // need to produce the json with and without the checksum so the checksum can actually be computed
     member x.ToJson () =
@@ -126,6 +127,7 @@ type PuzzleInfo = {
             "world", defaultArg (Option.map World.encodeToJson x.WorldData) J.Null;
             "goals", x.Goals;
             "winmsg", defaultArg (Option.map J.String x.WinMsg) J.Null;
+            "procedures_only", defaultArg (Option.map J.Bool x.ProceduresOnly) J.Null;
         ]
 
     static member Parse j =
@@ -140,6 +142,7 @@ type PuzzleInfo = {
             WorldData = tryJload j "world" World.decodeFromJsonNoMeta;
             Goals = defaultArg (j.TryGetField "goals") J.Null;
             WinMsg = tryJload j "winmsg" J.asString;
+            ProceduresOnly = tryJload j "procedures_only" J.asBool;
         }
 
     member x.UpdateInstructions instructions = {x with Instructions=Some instructions;}

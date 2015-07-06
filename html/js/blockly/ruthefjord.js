@@ -39,7 +39,9 @@ blocklyIframeLoaded = function() {
 
     // block limit currently set to infinity, no need for counter; disabling it since it disrupts DebugFeaturesInfo's use of the arrow
     // Blockly.addChangeListener(RuthefjordBlockly.makeCounter);
-    Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
+
+    // no undo button currently
+    // Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
 
     q_defer.resolve();
 };
@@ -55,19 +57,25 @@ RuthefjordBlockly.makeNumXML = function(num) {
 
 // list of custom block xml, in the order they should appear in the library
 // block name, standard xml, locked xml, pack name
-RuthefjordBlockly.Commands = [
-    ['move2',  '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block><block type="Left"></block><block type="Right"></block>'],
-    ['place',  '<block type="PlaceCube"></block>'],
-    ['line',   '<block type="Line"></block>'],
-    ['up',  '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', '<block type="Up_locked"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', 'up'],
-    ['down',  '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', '<block type="Down_locked"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', 'up'],
-    ['remove', '<block type="RemoveCube"></block>', '<block type="RemoveCube_locked"></block>', 'remove'],
-    ['repeat', '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', '<block type="controls_repeat_locked"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', 'repeat'],
-    ['defproc', '<block type="procedures_defnoreturn"></block>', '<block type="procedures_defnoreturn_locked"></block>', 'procedures']
+RuthefjordBlockly.Commands = {
+    move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
+    place: { block: '<block type="PlaceCube"></block>'},
+    line: { block:  '<block type="Line"></block>'},
+    up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', pack: 'up'},
+    down: { block: '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', pack: 'up'},
+    remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
+    repeat: { block: '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', 
+              teaser: '<block type="controls_repeat_teaser"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', pack: 'repeat'},
+    defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
+    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'}
     // ['number', '<block type="math_number"><field name="NUM">1</field></block>']
-];
+};
 
-RuthefjordBlockly.AddonCommands = [];
+RuthefjordBlockly.CommandReplacements = {
+    defproc:'defproc_noargs'
+}
+
+RuthefjordBlockly.AddonCommands = {};
 
 RuthefjordBlockly.makeCounter = function() {
     var blocksLeft = Blockly.mainWorkspace.remainingCapacity();
@@ -94,7 +102,7 @@ RuthefjordBlockly.addToHistory = function () {
         return;
     }
     var prog = RuthefjordBlockly.getXML();
-    if (Blockly.Block.dragMode_ === 0 && prog !== RuthefjordBlockly.curProgramStr) {
+    if (Blockly.dragMode_ === 0 && prog !== RuthefjordBlockly.curProgramStr) {
         RuthefjordBlockly.history.push(RuthefjordBlockly.curProgramStr);
         RuthefjordBlockly.curProgramStr = prog;
     }
@@ -108,6 +116,17 @@ RuthefjordBlockly.undo = function () {
         RuthefjordBlockly.loadBlocks(RuthefjordBlockly.curProgramStr);
     }
 };
+
+RuthefjordBlockly.proceduresOnly = function () {
+    if (Blockly.dragMode_ === 0) { // don't clean while a block is still being dragged
+        var topBlocks = Blockly.getMainWorkspace().getTopBlocks();
+        _.each(topBlocks, function(block) {
+            if (block.type.indexOf("procedures") !== 0) {
+                block.dispose();
+            }
+        });
+    }
+}
 
 /**
  * Initialize Blockly.  Called by app.js
@@ -142,9 +161,13 @@ RuthefjordBlockly.setProgram = function(program) {
             if (attr['FrozenBlocks']) {
                 var doFreezeArgs = Boolean(attr['FrozenArgs']);
                 RuthefjordBlockly.freezeBody(block, doFreezeArgs);
+                block.setMovable(true); // let only the top block move
             }
             if (attr['NoMove']) {
                 block.setMovable(false);
+            }
+            if (attr['NoDelete']) {
+                block.setDeletable(false);
             }
         }
         if (stmt.body) { // recursively process children (e.g. blocks inside a repeat)
@@ -188,17 +211,27 @@ RuthefjordBlockly.freezeBody = function(block, doFreezeArgs) {
 
 RuthefjordBlockly.updateToolbox = function() {
     var toolXML = '<xml id="toolbox" style="display: none">';
-    _.each(_.union(RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands), function(commandData) {
-        if (_.contains(current_tools, commandData[0])) {
-            toolXML += commandData[1];
-        } else if (commandData[2] && RuthefjordBlockly.isSandbox) {
-            var pack = RuthefjordBlockly.game_info.packs[commandData[3]];
+    var commands = _.extend({}, RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands);
+    // check for commands that should be eliminated due to presence of replacement command
+    _.each(RuthefjordBlockly.CommandReplacements, function(obsolete, replacement) {
+        if (_.has(commands, replacement)) {
+            delete commands[obsolete]; // if we have the replacement, we can get rid of its predecessor
+        } else if (!_.has(commands, obsolete)) {
+            delete commands[replacement]; // otherwise if we don't have the predecessor, hide the replacement until we do
+        }
+    });
+    // assemble toolbox XML, adding in teaser blocks as appropriate
+    _.each(commands, function(data, name) {
+        if (_.contains(current_tools, name)) {
+            toolXML += data.block;
+        } else if (data.teaser && RuthefjordBlockly.isSandbox) {
+            var pack = RuthefjordBlockly.game_info.packs[data.pack];
             if (pack) { // pack may have been hidden by config
                 var allPrereqsDone = pack.prereq && pack.prereq.every(function (packName) { 
                     return RuthefjordBlockly.progress.is_pack_completed(RuthefjordBlockly.game_info.packs[packName]); 
                 });
                 if (!pack.prereq || allPrereqsDone) {
-                    toolXML += commandData[2];
+                    toolXML += data.teaser;
                 }
             }
         }
@@ -271,7 +304,7 @@ RuthefjordBlockly.getProgram = function() {
 
     // iterate over top-level blocks, putting all function/procedure definitions first and everything else second
     _.each(topBlocks, function(block) {
-        if (block.type === "procedures_defnoreturn") {
+        if (block.getProcedureDef) {
             // prepend a symbol to avoid clashes with builtins
             var name = '$' + block.getFieldValue("NAME");
             var params = block.arguments_;
@@ -321,7 +354,7 @@ RuthefjordBlockly.generateBlock = function(name, text, params) {
     Blockly.UnityJSON[name] = function(block) {
         return {args:[],meta:{id:Number(block.id)},ident:name,type:"call"};
     };
-    RuthefjordBlockly.AddonCommands.push([name, '<block type="'+name+'"></block>']);
+    RuthefjordBlockly.AddonCommands[name] = {block: '<block type="'+name+'"></block>'};
 }
 
 return RuthefjordBlockly;

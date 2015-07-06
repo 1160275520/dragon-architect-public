@@ -279,12 +279,13 @@
         "name": "Call Me, Square",
         "component": "PuzProceduresCall",
         "library": {
-            "restricted": ["move2", "place", "up", "down", "defproc", "remove", "repeat"],
+            "restricted": ["defproc_noargs", "defproc"],
             "required": [],
             "granted": []
         },
+        "procedures_only":true,
         "instructions": {
-            "summary": "Help me fill in the blueprints by using two more {squareProc}s.",
+            "summary": "Put blocks inside {squareProc} to have me build a square.",
             "detail": ""
         },
         "program": {"type":"resource", "value":"puzzle/procedures.call_me"},

@@ -10,7 +10,7 @@ var COLOR_LOOPS = '#00711C';
 var COLOR_PROCS = '#7C478B';
 var COLOR_UNUSED_1 = '#B63551';
 var COLOR_UNUSED_2 = '#A88217';
-var COLOR_LOCKED = '#707070';
+var COLOR_TEASER = '#707070';
 
 Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
 Blockly.Blocks.procedures.COLOR = COLOR_PROCS;
@@ -27,7 +27,7 @@ Blockly.UnityJSON.convertCallback = function (obj) {
 Blockly.UnityJSON.processStructure = function (block) {
     var structure = block.getStructure();
     // if procedure, we only process its children
-    if (block.type === "procedures_defnoreturn") {
+    if (block.getProcedureDef) {
         // procedures have no connection, so no siblings exist and we can assume the object we want is the first and only element
         return structure[0].children.map(Blockly.UnityJSON.convertCallback).filter(function (x) { return x.skip !== true; });
     } else {
@@ -168,7 +168,7 @@ Blockly.Blocks['Up'] = {
     }
 };
 
-Blockly.Blocks['Up_locked'] = {
+Blockly.Blocks['Up_teaser'] = {
     init: function() {
         this.jsonInit({
             message: "up by %1",
@@ -182,7 +182,7 @@ Blockly.Blocks['Up_locked'] = {
             previousStatement:true,
             nextStatement:true,
             inputsInline:true,
-            colour:COLOR_LOCKED
+            colour:COLOR_TEASER
         });
         this.locked = true;
         this.packName = "up";
@@ -213,7 +213,7 @@ Blockly.Blocks['Down'] = {
     }
 };
 
-Blockly.Blocks['Down_locked'] = {
+Blockly.Blocks['Down_teaser'] = {
     init: function() {
         this.jsonInit({
             message: "down by %1",
@@ -227,7 +227,7 @@ Blockly.Blocks['Down_locked'] = {
             previousStatement:true,
             nextStatement:true,
             inputsInline:true,
-            colour:COLOR_LOCKED
+            colour:COLOR_TEASER
         });
         this.locked = true;
         this.packName = "up";
@@ -265,9 +265,9 @@ Blockly.Blocks['RemoveCube'] = {
     }
 };
 
-Blockly.Blocks['RemoveCube_locked'] = {
+Blockly.Blocks['RemoveCube_teaser'] = {
     init: function() {
-        this.setFullColor(COLOR_LOCKED);
+        this.setFullColor(COLOR_teaser);
         this.appendDummyInput()
             .appendField("remove cube");
         this.setPreviousStatement(true);
@@ -282,7 +282,7 @@ Blockly.UnityJSON['RemoveCube'] = function(block) {
 };
 
 // REPEAT
-Blockly.Blocks['controls_repeat_locked'] = {
+Blockly.Blocks['controls_repeat_teaser'] = {
   /**
    * Block for repeat n times (internal number).
    * @this Blockly.Block
@@ -308,7 +308,7 @@ Blockly.Blocks['controls_repeat_locked'] = {
       "previousStatement": true,
       "nextStatement": true,
       "inputsInline": true,
-      "colour": COLOR_LOCKED,
+      "colour": COLOR_TEASER,
       "tooltip": Blockly.Msg.CONTROLS_REPEAT_TOOLTIP,
       "helpUrl": Blockly.Msg.CONTROLS_REPEAT_HELPURL
     });
@@ -329,61 +329,90 @@ Blockly.UnityJSON['controls_repeat'] = function(block, children) {
         body: children.map(Blockly.UnityJSON.convertCallback),
         type: "repeat"
     };
-}
+};
 
-Blockly.Blocks['procedures_defnoreturn_locked'] = {
-  /**
-   * Block for defining a procedure with no return value.
-   * @this Blockly.Block
-   */
-  init: function() {
-    this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
-    this.setFullColor(Blockly.Blocks.procedures.COLOR);
-    var name = Blockly.Procedures.findLegalName(
-        Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
-        .appendField(new Blockly.FieldTextInput(name,
-        Blockly.Procedures.rename), 'NAME')
-        .appendField('', 'PARAMS');
-    this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
-    this.arguments_ = [];
-    this.setStatements_(true);
-    this.statementConnection_ = null;
-    this.locked = true;
-    this.packName = "procedures";
-  },
-  /**
-   * Add or remove the statement block from this function definition.
-   * @param {boolean} hasStatements True if a statement block is needed.
-   * @this Blockly.Block
-   */
-  setStatements_: function(hasStatements) {
-    if (this.hasStatements_ === hasStatements) {
-      return;
+Blockly.Blocks['procedures_noargs_defnoreturn'] = {
+    init: function() {
+        this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
+        this.setFullColor(Blockly.Blocks.procedures.COLOR);
+        var name = Blockly.Procedures.findLegalName(
+            Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
+        var nameField = new Blockly.FieldTextInput(name,
+            Blockly.Procedures.rename);
+        nameField.setSpellcheck(false);
+        this.appendDummyInput()
+            .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
+            .appendField(nameField, 'NAME');
+        this.arguments_ = [];
+        this.updateParams_();
+        this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
+        this.setStatements_(true);
+        this.setInputsInline(true);
+        this.statementConnection_ = null;
+    },
+    setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
+    updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
+    mutationToDom: Blockly.Blocks['procedures_defnoreturn'].mutationToDom,
+    domToMutation: Blockly.Blocks['procedures_defnoreturn'].domToMutation,
+    decompose: Blockly.Blocks['procedures_defnoreturn'].decompose,
+    compose: Blockly.Blocks['procedures_defnoreturn'].compose,
+    dispose: Blockly.Blocks['procedures_defnoreturn'].dispose,
+    getProcedureDef: Blockly.Blocks['procedures_defnoreturn'].getProcedureDef
+};
+
+Blockly.Blocks['procedures_defnoreturn_teaser'] = {
+    /**
+    * Block for defining a procedure with no return value.
+    * @this Blockly.Block
+    */
+    init: function() {
+        this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
+        this.setFullColor(Blockly.Blocks.procedures.COLOR);
+        var name = Blockly.Procedures.findLegalName(
+            Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
+        this.appendDummyInput()
+            .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
+            .appendField(new Blockly.FieldTextInput(name,
+            Blockly.Procedures.rename), 'NAME')
+            .appendField('', 'PARAMS');
+        this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
+        this.arguments_ = [];
+        this.setStatements_(true);
+        this.statementConnection_ = null;
+        this.locked = true;
+        this.packName = "procedures";
+    },
+    /**
+    * Add or remove the statement block from this function definition.
+    * @param {boolean} hasStatements True if a statement block is needed.
+    * @this Blockly.Block
+    */
+    setStatements_: function(hasStatements) {
+        if (this.hasStatements_ === hasStatements) {
+            return;
+        }
+        if (hasStatements) {
+            this.appendStatementInput('STACK')
+                .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_DO);
+            if (this.getInput('RETURN')) {
+                this.moveInputBefore('STACK', 'RETURN');
+            }
+        } else {
+            this.removeInput('STACK', true);
+        }
+        this.hasStatements_ = hasStatements;
     }
-    if (hasStatements) {
-      this.appendStatementInput('STACK')
-          .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_DO);
-      if (this.getInput('RETURN')) {
-        this.moveInputBefore('STACK', 'RETURN');
-      }
-    } else {
-      this.removeInput('STACK', true);
-    }
-    this.hasStatements_ = hasStatements;
-  }
 };
 
 // MATH_NUMBER
 Blockly.UnityJSON['math_number'] = function (block) {
     return {skip: true};
-}
+};
 
 // VARIABLE_GET
 Blockly.UnityJSON['variables_get'] = function (block) {
     return {skip: true};
-}
+};
 
 // CALL
 Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
@@ -404,7 +433,7 @@ Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
     };
 
     return {args:args,meta:{id:Number(block.id)},ident:'$' + block.getFieldValue("NAME"),type:"call"};
-}
+};
 
 /// Transform a program from its serialized JSON representation to blockly XML representation.
 Blockly.UnityJSON.XMLOfJSON = function(program) {
@@ -420,7 +449,8 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     _.each(groups.proc, function(proc) {
         var x = 110 + 200*(funcCount % 2);
         var y = 150 + 250*Math.floor(funcCount/2);
-        xml += '<block type="procedures_defnoreturn" id="' + proc.meta.id + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
+        var type = proc.meta && proc.meta.attributes && proc.meta.attributes["NoArgs"] ? "procedures_noargs_defnoreturn" : "procedures_defnoreturn";
+        xml += '<block type="' + type + '" id="' + proc.meta.id + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
         xml += Blockly.UnityJSON.bodyToXML(proc.body, program);
         xml += '</statement></block>';
         funcCount += 1;
@@ -433,7 +463,7 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     xml += main;
 
     return xml + "</xml>";
-}
+};
 
 Blockly.UnityJSON.bodyToXML = function (body, program) {
     if (!body) return "";
@@ -448,9 +478,9 @@ Blockly.UnityJSON.bodyToXML = function (body, program) {
         xml += '</next></block>';
     }
     return xml;
-}
+};
 
-var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down']
+var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.UnityJSON.stmtToXML = function (stmt, program) {
@@ -474,7 +504,7 @@ Blockly.UnityJSON.stmtToXML = function (stmt, program) {
         }
     }
     return '';
-}
+};
 
 }
 

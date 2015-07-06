@@ -25,6 +25,8 @@ var galleryRender = false;
 // flag and data for when code from a gallery item is added to the sandbox
 var sandboxProgAddon = ""; 
 
+var levelListeners = []
+
 function send_json_get_request(url) {
     return fetch(url, {
         method: 'get',
@@ -741,6 +743,13 @@ handler.onTitleButtonClicked = function(button) {
     }
 }
 
+function clear_level_listeners() {
+    _.each(levelListeners, function (listener) {
+        Blockly.getMainWorkspace().removeChangeListener(listener);
+    });
+    levelListeners = [];
+}
+
 var PUZZLE_FORMAT_VERSION = 1;
 
 function start_editor(info) {
@@ -787,7 +796,7 @@ function start_editor(info) {
         RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum);
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
-        RuthefjordBlockly.AddonCommands = [];
+        RuthefjordBlockly.AddonCommands = {};
         if (info.puzzle.library.autoimports) {
             _.each(info.puzzle.library.autoimports, function(module) {
                 _.each(JSON.parse(module.value).body, function(statement) {
@@ -798,6 +807,12 @@ function start_editor(info) {
             });
             // get the imported blocks to show up in the toolbox
             RuthefjordBlockly.updateToolbox();
+        }
+
+        clear_level_listeners();
+        // check procedures only flag
+        if (info.puzzle.procedures_only) {
+            Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.proceduresOnly);
         }
 
         if (info.puzzle.program) {
@@ -833,6 +848,8 @@ function start_editor(info) {
 // TODO remove duplicate code from this an onPuzzleChange
 handler.onSandboxStart = function() {
     current_scene = "sandbox";
+
+    clear_level_listeners();
 
     Storage.load('sandbox_program', function(sandbox_program) {
         var info = {
