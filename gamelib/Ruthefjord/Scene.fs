@@ -101,7 +101,7 @@ type Tutorial = {
 let FORMAT_VERSION = 1
 
 type PuzzleInfo = {
-    LoggingId: int;
+    LoggingId: string;
     Name: string;
     Component: string option;
     Library: Library;
@@ -117,7 +117,7 @@ type PuzzleInfo = {
     member x.ToJson () =
         J.JsonValue.ObjectOf [
             "version", J.Int FORMAT_VERSION;
-            "logging_id", J.Int x.LoggingId;
+            "logging_id", J.String x.LoggingId;
             "name", J.String x.Name;
             "component", defaultArg (Option.map J.String x.Component) J.Null;
             "library", x.Library.ToJson ();
@@ -132,7 +132,7 @@ type PuzzleInfo = {
 
     static member Parse j =
         {
-            LoggingId = jload j "logging_id" J.asInt
+            LoggingId = jload j "logging_id" J.asString
             Name = jload j "name" J.asString;
             Component = tryJload j "component" J.asString;
             Library = jload j "library" Library.Parse;
