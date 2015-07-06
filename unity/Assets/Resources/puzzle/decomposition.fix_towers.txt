@@ -1,5 +1,6 @@
 #lang imperative:1.0
-@NoDelete=true
+@FrozenBlocks=true
+@FrozenArgs=true
 @NoArgs=true
 define FixedCastle()
     Wall()
@@ -16,5 +17,5 @@ define FixedCastle()
 define FixedTower()
     pass
 
-@NoDelete=true
+@FrozenBlocks=true
 FixedCastle()

@@ -357,11 +357,12 @@
             "granted": ["speed_slider", "time_slider"],
             "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
         },
+        "procedures_only":true,
         "goals": [{
             "type": "submit"
         }],
         "instructions": {
-            "summary": "Fill in the FixedCastle procedure. Use 4 {wall} and 4 {tower}.",
+            "summary": "Fill in {FixedCastleProc}. Use 4 {wall} and 4 {tower}.",
             "detail": "I don't want a castle with only three sides! Help me give my castle four walls and four towers. Try alternating Wall blocks and Tower blocks."
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_castle"},
@@ -380,8 +381,9 @@
         "goals": [{
             "type": "submit"
         }],
+        "procedures_only":true,
         "instructions": {
-            "summary": "Fill in the FixedTower procedure. Use at least 10 {towerlayer} and a {towertop}.",
+            "summary": "Fill in {FixedTowerProc}. Use at least 10 {towerlayer} and a {towertop}.",
             "detail": "Those towers are too short. I want big, impressive towers... at least 10 blocks high!"
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_towers"},
@@ -400,8 +402,9 @@
         "goals": [{
             "type": "submit"
         }],
+        "procedures_only":true,
         "instructions": {
-            "summary": "Fill in the FixedWall procedure. Use at least 3 {wallsheet} and a {walltop}.",
+            "summary": "Fill in {FixedWallProc}. Use at least 3 {wallsheet} and a {walltop}.",
             "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all."
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
