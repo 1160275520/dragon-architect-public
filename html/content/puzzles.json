@@ -2,7 +2,6 @@
     "dummy": {
         "library": {
             "granted": [
-                
             ]
         }
     },
@@ -18,7 +17,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/tutorial.movement2d"},
-        "logging_id": 21,
+        "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
             "summary": "Click {go} to have me run my program!",
             "detail": "My program tells me what to do. You can see it below."
@@ -39,7 +38,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part2"},
-        "logging_id": 31,
+        "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
         "instructions": {
             "summary": "I need to get to the {pinkboxGround}, and my program doesn't move me far enough.",
             "detail": "Add a {forward} to complete my program and click {go}."
@@ -60,7 +59,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part3"},
-        "logging_id": 32,
+        "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
         "instructions": {
             "summary": "The {pinkboxGround} has moved. Change my program to help me get there!",
             "detail": "Add a {right} to my program and click {go}."
@@ -82,7 +81,7 @@
             "summary": "I want to place some cubes. Help me place 4 of them!",
             "detail": "Use several {forward} and {placecube} together to place a bunch of cubes."
         },
-        "logging_id": 23
+        "logging_id": "aad39525-99a7-4833-a3d2-87ad9d5cbec3"
     },
     "remove.remove_cubes":{
         "name": "Removing Cubes",
@@ -107,7 +106,7 @@
             "summary": "Help me remove those three cubes!",
             "detail": "Add one more {removecube} to fix my program."
         },
-        "logging_id": 29
+        "logging_id": "f927a173-7fdf-4850-9888-1b23d9e8f89e"
     },
     "up.what_is_up":{
         "name": "What is Up?",
@@ -127,7 +126,7 @@
             "summary": "Help me get to the {pinkboxUp}!",
             "detail": "Use two {up} to complete my program."
         },
-        "logging_id": 30
+        "logging_id": "a9f31eea-a109-4c79-954a-8cc0957ee745"
     },
     "up.what_is_down":{
         "name": "What is Down?",
@@ -146,7 +145,7 @@
             "summary": "Help me get to the {pinkboxGround}!",
             "detail": "Use three {down} to get me there."
         },
-        "logging_id": 33
+        "logging_id": "b8619792-bda0-4e38-a233-0fa91225b296"
     },
     "up.bridge":{
         "name": "Building a Bridge",
@@ -163,7 +162,7 @@
             "summary": "Use what you've learned to help me put a cube in each blue space: {bridge}",
             "detail": ""
         },
-        "logging_id": 40
+        "logging_id": "3464281b-7176-464e-a599-5b5a5fc01500"
     },
     "up.rotate_camera":{
         "name": "A New Perspective",
@@ -176,7 +175,7 @@
             "summary": "Solve the challenge by filling in the blueprint!",
             "detail": "It's hard to see where the cubes should go from this angle! Play with {camera} to get a better view."
         },
-        "logging_id": 35
+        "logging_id": "be92dcde-caea-4d27-b80b-3bc0cc7fed8a"
     },
     "repeat.arguments":{
         "name": "Winning Arguments",
@@ -194,7 +193,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/tutorial.arguments"},
-        "logging_id": 24
+        "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
     },
     "repeat.repeat_args":{
         "name": "Line Time",
@@ -212,7 +211,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_args"},
-        "logging_id": 41
+        "logging_id": "340d5fc0-6c16-45ea-8681-b3d27324f92f"
     },
     "repeat.repeat_nested":{
         "name": "Square Dancing",
@@ -227,7 +226,7 @@
             "detail": ""
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_nested"},
-        "logging_id": 42
+        "logging_id": "d1405e1a-cf4f-4580-9dd1-cd85c8b5849c"
     },
     "repeat.repeat_fixedProgram": {
         "name": "A Bit of Repeat",
@@ -245,7 +244,7 @@
             "detail": "{repeat4} tells me to do everything inside 4 times."
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedProgram"},
-        "logging_id": 27
+        "logging_id": "8ead7f35-82f0-44f2-9f80-56b3cd220100"
     },
     "repeat.repeat_fixedLoops": {
         "name": "Nested Repeats",
@@ -260,7 +259,7 @@
             "detail": "Try adding those code blocks inside {repeat9}."
         },
         "program": {"type":"resource", "value":"puzzle/repeat.repeat_fixedLoops"},
-        "logging_id": 28
+        "logging_id": "8026a7ae-4242-4321-a395-0cd0c67aee09"
     },
     "repeat.repeat_tower": {
         "name": "A Towering Achievement",
@@ -273,7 +272,7 @@
             "summary": "Fill in the blueprint to have me build a tower!",
             "detail": "Each layer of the tower is a 5 by 5 square. The tower has 5 layers."
         },
-        "logging_id": 43
+        "logging_id": "7f8b0b15-5ffb-4340-8166-5502e4bfb999"
     },
     "procedures.square": {
         "name": "A Square Deal",
@@ -289,7 +288,7 @@
             "detail": ""
         },
         "program": {"type":"resource", "value":"puzzle/procedures.square"},
-        "logging_id": 106
+        "logging_id": "ff93d5bd-b26f-4614-90a2-0d420b3f105a"
     },
     "procedures.call": {
         "name": "Up By Any Other Name",
@@ -310,7 +309,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/procedures.call"},
-        "logging_id": 107
+        "logging_id": "5b4e957f-9d07-4537-8d62-abd3f42cd65c"
     },
     "procedures.def": {
         "name": "Standard Operating Procedure",
@@ -328,7 +327,7 @@
             "summary": "Use a procedure to get me to the {pinkboxUp}!",
             "detail": ""
         },
-        "logging_id": 108
+        "logging_id": "c74cf758-09d3-4989-9058-3d73e3ee7b3d"
     },
     "decomposition.castle": {
         "name": "Do You Wanna Build a Castle?",
@@ -347,7 +346,7 @@
             "detail": ""
         },
         "winmsg": "That castle doesn't look like what I want at all. Let's fix it!",
-        "logging_id": 102
+        "logging_id": "9d3bbfff-6ca6-49bb-bff4-5e679f38e416"
     },
     "decomposition.fix_castle": {
         "name": "Fixer-Upper",
@@ -367,7 +366,7 @@
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_castle"},
         "winmsg": "Nice work! Those towers look too short, so let's go make them taller.",
-        "logging_id": 103
+        "logging_id": "4a12dfff-d3ff-487e-a320-c9b6c10b48b2"
     },
         "decomposition.fix_towers": {
         "name": "Taller Towers",
@@ -387,7 +386,7 @@
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_towers"},
         "winmsg": "Getting close! The walls look too thin, and you can help me fix them.",
-        "logging_id": 104
+        "logging_id": "af3a9547-66d5-4571-bf69-d89ddb07a6c3"
     },
         "decomposition.fix_walls": {
         "name": "Better Walls",
@@ -407,7 +406,7 @@
         },
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
         "winmsg": "At last, the perfect castle!",
-        "logging_id": 105
+        "logging_id": "759d34a7-6982-424f-91d3-3f7f5a0ac62c"
     }
 }
 

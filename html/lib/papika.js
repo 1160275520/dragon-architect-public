@@ -19,6 +19,7 @@ var papika = function(){
     function is_uuid(str) {
         return uuid_regex.test(str);
     }
+    mdl.is_uuid = is_uuid;
 
     function send_post_request(url, params) {
         return fetch(url, {

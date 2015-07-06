@@ -98,16 +98,20 @@ var AID = {
     Unused: 0 // to prevent comma sadness
 };
 
-self.startTask = function(gid, checksum) {
+self.startTask = function(gid, checksum, name) {
 
     if (!is_initialized) throw Error("cannot start task, logger not initialized!");
 
     var msStartTime = Date.now();
 
+    if (!papika.is_uuid(gid)) {
+        console.warn("Task group id is not a uuid, so must use default instead. Given id was: " + gid);
+        gid = "2668f17d-f950-4a9e-9c19-78d626bfb131";
+    }
     var task_logger = self.telemetry_client.start_task({
         type: AID.PuzzleStarted,
-        detail: {gid:gid, checksum:checksum},
-        group:'0b854859-f162-4324-97db-a8fe21c3409a'
+        detail: {checksum:checksum, name:name},
+        group:gid
     });
 
     var tl = {};

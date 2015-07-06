@@ -795,7 +795,7 @@ function start_editor(info) {
             RuthefjordLogging.activeTaskLogger.logTaskEnd();
         }
         // then start new quest logger if this is not an empty level
-        RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum);
+        RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum, info.puzzle.name);
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
         RuthefjordBlockly.AddonCommands = {};
@@ -859,7 +859,7 @@ handler.onSandboxStart = function() {
             is_starting: true,
             puzzle: {
                 version: PUZZLE_FORMAT_VERSION,
-                logging_id: 11,
+                logging_id: "ee3d8d04-1bd0-4517-b5ed-e52f47f86dd0",
                 library: {required:[],granted:[]},
                 program: {type: 'xml', value: sandbox_program},
                 instructions: {
