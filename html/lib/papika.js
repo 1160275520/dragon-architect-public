@@ -1,7 +1,7 @@
 /**!
  * Papika telemetry client library.
  * Copyright 2015 Eric Butler.
- * Revision Id: 65cccd80fb68d02139aaa4ed2e2387c755375283
+ * Revision Id: 8d48ef60db810a1fd75970a6c0d9754a003118cb
  */
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -13,7 +13,7 @@ var papika = function(){
     var mdl = {};
 
     var PROTOCOL_VESRION = 1;
-    var REVISION_ID = '65cccd80fb68d02139aaa4ed2e2387c755375283';
+    var REVISION_ID = '8d48ef60db810a1fd75970a6c0d9754a003118cb';
 
     var uuid_regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     function is_uuid(str) {
@@ -64,15 +64,12 @@ var papika = function(){
         return send_nonsession_request(baseUri + '/api/user', data, release_id, release_key);
     }
 
-    function query_experimental_condition(baseUri, args) {
+    function query_experimental_condition(baseUri, args, release_id, release_key) {
         var data = {
             user_id: args.user,
             experiment_id: args.experiment
         };
-        return send_nonsession_request(baseUri + '/api/experiement', data, session_id, session_key)
-            .then(function(result) {
-                return result.condition;
-            });
+        return send_nonsession_request(baseUri + '/api/experiment', data, release_id, release_key);
     }
 
     function log_session(baseUri, args, release_id, release_key) {

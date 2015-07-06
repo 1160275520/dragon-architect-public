@@ -449,18 +449,16 @@ $(function() {
         return d.promise;
     }
 
-    function fetch_experimental_condition() {
+    function fetch_experimental_condition(userid) {
         var d = Q.defer();
 
         if (RUTHEFJORD_CONFIG.experiment) {
             console.log('logging experiment!');
-            $.ajax(RUTHEFJORD_CONFIG.server.url + '/experiment', {
-                data: JSON.stringify({player_id: Storage.id(), experiment_id: RUTHEFJORD_CONFIG.experiment.id}),
-                contentType: 'application/json',
-                type: 'POST'
-            }).then(function(data) {
-                var cond = data.result.condition;
-                console.info('got condition! ' + data.result.condition);
+            RuthefjordLogging.telemetry_client.query_experimental_condition({
+                user: userid,
+                experiment: RUTHEFJORD_CONFIG.experiment.id
+            }).then(function(cond) {
+                console.info('got condition! ' + cond);
                 // copy the experimental condition info the config object
                 RUTHEFJORD_CONFIG.features = RUTHEFJORD_CONFIG.feature_conditions[cond];
                 RuthefjordLogging.logExperimentalCondition(RUTHEFJORD_CONFIG.experiment.id, cond);
@@ -650,13 +648,15 @@ $(function() {
     // fetch the uid from the GET params and pass that to logging initializer
     // then initialize logging, then load save data, then get the experimental condition, then do all the things
     var username = $.url().param('username');
-    RuthefjordLogging.initialize(username).then(function(userid) {
+    var userid;
+    RuthefjordLogging.initialize(username).then(function(uid) {
+        userid = uid;
         return load_save_data(userid);
     })
     .then(function() {
         // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
         RuthefjordLogging.logPlayerLogin(Storage.id());
-        return fetch_experimental_condition();
+        return fetch_experimental_condition(userid);
     })
     .then(function() {
         initializeUi();
