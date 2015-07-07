@@ -369,7 +369,7 @@
         "winmsg": "Nice work! Those towers look too short, so let's go make them taller.",
         "logging_id": "4a12dfff-d3ff-487e-a320-c9b6c10b48b2"
     },
-        "decomposition.fix_towers": {
+    "decomposition.fix_towers": {
         "name": "Taller Towers",
         "component": "PuzDecompFixTowers",
         "library": {
@@ -390,7 +390,7 @@
         "winmsg": "Getting close! The walls look too thin, and you can help me fix them.",
         "logging_id": "af3a9547-66d5-4571-bf69-d89ddb07a6c3"
     },
-        "decomposition.fix_walls": {
+    "decomposition.fix_walls": {
         "name": "Better Walls",
         "component": "PuzDecompFixWalls",
         "library": {
@@ -410,6 +410,90 @@
         "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
         "winmsg": "At last, the perfect castle!",
         "logging_id": "759d34a7-6982-424f-91d3-3f7f5a0ac62c"
+    },
+    "challenges.house": {
+        "name": "Homemaker",
+        "component": "UnsolvablePuzzle",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Try and build a house!",
+            "detail": ""
+        },
+        "logging_id": "8894A795-34CB-49E5-9EF9-2F2C2A1E0377"
+    },
+    "challenges.name": {
+        "name": "Name Game",
+        "component": "UnsolvablePuzzle",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Try and spell your name with cubes!",
+            "detail": ""
+        },
+        "logging_id": "C69065D3-2592-4FA0-BE0B-4E235CB12189"
+    },
+    "challenges.rainbow": {
+        "name": "Over the Rainbow",
+        "component": "UnsolvablePuzzle",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Try and make a rainbow!",
+            "detail": ""
+        },
+        "logging_id": "029CB012-495E-467C-86D8-C101AF1FD27E"
+    },
+    "challenges.tree": {
+        "name": "Tree of Life",
+        "component": "UnsolvablePuzzle",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Try and build a tree!",
+            "detail": ""
+        },
+        "logging_id": "E1F6F3B9-82C7-4696-827F-43846EC50ABB"
+    },
+    "challenges.dragon": {
+        "name": "Self Portrait",
+        "component": "UnsolvablePuzzle",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Try and make a dragon!",
+            "detail": ""
+        },
+        "logging_id": "FC44805E-1767-444B-B9FD-6523F5CE90F8"
+    },
+    "challenges.castle": {
+        "name": "Castlemania",
+        "component": "UnsolvablePuzzle",
+        "library": {
+            "restricted": [],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "summary": "Try and build a castle!",
+            "detail": ""
+        },
+        "logging_id": "B3B19370-9D1B-4941-BEDD-8A0391DD0A10"
     }
 }
 

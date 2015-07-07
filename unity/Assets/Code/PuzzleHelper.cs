@@ -49,6 +49,7 @@ public class PuzzleHelper : MonoBehaviour
         typeof(PuzSpeedSlider),
         typeof(PuzWhatIsDown),
         typeof(PuzWhatIsUp),
+        typeof(UnsolvablePuzzle),
     };
 
     void Awake() {

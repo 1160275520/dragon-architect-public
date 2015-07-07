@@ -690,6 +690,11 @@ $(function() {
             $('#btn-back-sandbox').hide();
         }
 
+        if (RUTHEFJORD_CONFIG.features.sandbox_only) {
+            $('#btn-packs').removeClass();
+            $('#btn-packs').hide();
+        }
+
         // HACK add blockly change listener for saving
         Blockly.addChangeListener(onProgramEdit);
 
@@ -718,9 +723,15 @@ $(function() {
                 $("#btn-consent-continue").on('click', function() {
                     RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
                     RuthefjordUI.State.goToAlphaMsg();
-                    $("#btn-alpha-continue").on('click', function() {
-                        setState_title();
-                    });
+                    if (RUTHEFJORD_CONFIG.features.sandbox_only) {
+                        $("#btn-alpha-continue").on('click', function() {
+                            setState_sandbox();
+                        });
+                    } else {
+                        $("#btn-alpha-continue").on('click', function() {
+                            setState_title();
+                        });
+                    }
                 });
             }
         });
@@ -774,7 +785,7 @@ function start_editor(info) {
         var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
-        if (!RUTHEFJORD_CONFIG.features.debugging_always) {
+        if (!RUTHEFJORD_CONFIG.features.debugging_always && !RUTHEFJORD_CONFIG.features.unlock_all) {
             RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
             RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
         }
@@ -853,6 +864,11 @@ handler.onSandboxStart = function() {
 
     clear_level_listeners();
 
+    var summary = "Have fun and build stuff!";
+    if (!RUTHEFJORD_CONFIG.features.sandbox_only) {
+        summary += " Click {learn} to start unlocking new abilities."
+    }
+
     Storage.load('sandbox_program', function(sandbox_program) {
         var info = {
             checksum: 0,
@@ -863,7 +879,7 @@ handler.onSandboxStart = function() {
                 library: {required:[],granted:[]},
                 program: {type: 'xml', value: sandbox_program},
                 instructions: {
-                    summary: "Have fun and build stuff! Click {learn} to start unlocking new abilities.",
+                    summary: summary,
                     detail:
                         "Any cubes you place will stick around <b>permanently</b>. " +
                         "Click on {workshop} to make it so you can test code without cubes sticking around. " +

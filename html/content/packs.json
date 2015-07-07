@@ -76,6 +76,18 @@
     ],
     "name": "One Castle, Two Castle, Red Castle, Blue Castle",
     "learn": ["How to solve problems"]
+},
+"challenges":{
+    "nodes": [
+        "challenges.house",
+        "challenges.name",
+        "challenges.rainbow",
+        "challenges.tree",
+        "challenges.dragon",
+        "challenges.castle"
+    ],
+    "edges": [],
+    "name": "Challenge Yourself!"
 }
 }
 

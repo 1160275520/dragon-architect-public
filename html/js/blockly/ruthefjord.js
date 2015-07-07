@@ -60,7 +60,6 @@ RuthefjordBlockly.makeNumXML = function(num) {
 RuthefjordBlockly.Commands = {
     move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
     place: { block: '<block type="PlaceCube"></block>'},
-    line: { block:  '<block type="Line"></block>'},
     up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', pack: 'up'},
     down: { block: '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', pack: 'up'},
     remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
@@ -214,7 +213,7 @@ RuthefjordBlockly.updateToolbox = function() {
     var commands = _.extend({}, RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands);
     // check for commands that should be eliminated due to presence of replacement command
     _.each(RuthefjordBlockly.CommandReplacements, function(obsolete, replacement) {
-        if (_.has(current_tools, replacement)) {
+        if (_.has(current_tools, replacement) || RUTHEFJORD_CONFIG.features.unlock_all) {
             delete commands[obsolete]; // if we have the replacement, we can get rid of its predecessor
         } else if (!_.has(current_tools, obsolete)) {
             delete commands[replacement]; // otherwise if we don't have the predecessor, hide the replacement until we do
@@ -222,7 +221,7 @@ RuthefjordBlockly.updateToolbox = function() {
     });
     // assemble toolbox XML, adding in teaser blocks as appropriate
     _.each(commands, function(data, name) {
-        if (_.contains(current_tools, name)) {
+        if (_.contains(current_tools, name) || RUTHEFJORD_CONFIG.features.unlock_all) {
             toolXML += data.block;
         } else if (data.teaser && RuthefjordBlockly.isSandbox) {
             var pack = RuthefjordBlockly.game_info.packs[data.pack];
