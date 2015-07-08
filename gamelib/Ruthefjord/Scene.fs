@@ -9,7 +9,7 @@ let private tryJload obj key fn = Json.tryGetField obj key |> Option.map fn
 let private jsonOfSet (s:Set<string>) = J.arrayOfSeq (Seq.map J.String s)
 let private setOfJson j = J.arrayToArray j |> Array.map J.asString |> Set.ofArray
 let inline private toJson obj =  (^a : (member ToJson : unit -> J.JsonValue) obj)
-let inline private nullOrToJson o = match o with Some x -> toJson x | None -> J.Null
+let inline private nullOrToJson o = match o with Some x -> toJson x | None -> J.Null ()
 
 type Program =
 /// resource name, will be loaded from file
@@ -119,15 +119,15 @@ type PuzzleInfo = {
             "version", J.Int FORMAT_VERSION;
             "logging_id", J.String x.LoggingId;
             "name", J.String x.Name;
-            "component", defaultArg (Option.map J.String x.Component) J.Null;
+            "component", defaultArg (Option.map J.String x.Component) (J.Null ());
             "library", x.Library.ToJson ();
             "tutorial", nullOrToJson x.Tutorial;
             "instructions", nullOrToJson x.Instructions;
             "program", nullOrToJson x.StartingProgram;
-            "world", defaultArg (Option.map World.encodeToJson x.WorldData) J.Null;
+            "world", defaultArg (Option.map World.encodeToJson x.WorldData) (J.Null ());
             "goals", x.Goals;
-            "winmsg", defaultArg (Option.map J.String x.WinMsg) J.Null;
-            "procedures_only", defaultArg (Option.map J.Bool x.ProceduresOnly) J.Null;
+            "winmsg", defaultArg (Option.map J.String x.WinMsg) (J.Null ());
+            "procedures_only", defaultArg (Option.map J.Bool x.ProceduresOnly) (J.Null ());
         ]
 
     static member Parse j =
@@ -140,7 +140,7 @@ type PuzzleInfo = {
             Instructions = tryJload j "instructions" Instructions.Parse;
             StartingProgram = tryJload j "program" Program.Parse;
             WorldData = tryJload j "world" World.decodeFromJsonNoMeta;
-            Goals = defaultArg (j.TryGetField "goals") J.Null;
+            Goals = defaultArg (j.TryGetField "goals") (J.Null ());
             WinMsg = tryJload j "winmsg" J.asString;
             ProceduresOnly = tryJload j "procedures_only" J.asBool;
         }

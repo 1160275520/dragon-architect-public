@@ -79,7 +79,7 @@ let ProgramOfJson (json: J.JsonValue) =
             Attributes = defaultArg (J.tryGetField j "attributes") J.emptyObject;
         }
 
-    let emptyMeta = {Id=0; Attributes=J.Null}
+    let emptyMeta = {Id=0; Attributes=J.Null ()}
 
     let rec parseExpr j =
         let expr =

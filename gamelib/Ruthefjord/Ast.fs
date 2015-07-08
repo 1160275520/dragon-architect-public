@@ -12,7 +12,7 @@ module Imperative =
         Attributes: Json.JsonValue;
     }
     with
-        static member New id = {Id=id; Attributes=Json.Null}
+        static member New id = {Id=id; Attributes=Json.Null ()}
         override x.ToString() = sprintf "id = %d" x.Id
 
     type ExpressionT =

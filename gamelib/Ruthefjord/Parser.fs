@@ -215,10 +215,10 @@ let private parse tokens =
     let idCounter = ref 0
     let newExpr e =
         idCounter := !idCounter + 1
-        {Meta={Id= !idCounter; Attributes=Json.Null}; Expr=e}
+        {Meta={Id= !idCounter; Attributes=Json.Null ()}; Expr=e}
     let newStmt s =
         idCounter := !idCounter + 1
-        {Meta={Id= !idCounter; Attributes=Json.Null}; Stmt=s}
+        {Meta={Id= !idCounter; Attributes=Json.Null ()}; Stmt=s}
 
     let matchToken t =
         let n = next ()

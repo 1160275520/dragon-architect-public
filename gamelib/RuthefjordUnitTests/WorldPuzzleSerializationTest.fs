@@ -65,7 +65,7 @@ let ``Puzzle simple load test`` () =
             "required": ["happy"],
             "granted": ["joy"]
         },
-        "logging_id": 1,
+        "logging_id": "7d8e3678-12d1-4434-9bd2-9fcbd6edad35",
         "instructions": {
             "summary": "Do a thing!",
             "detail": "Here is how"
@@ -86,7 +86,7 @@ let ``Puzzle simple load test`` () =
     puzzle.Component |> should equal (Some "SomeClass")
     puzzle.Library.RequiredTools |> should equal (Set [ "happy" ])
     puzzle.Library.GrantedTools |> should equal (Set [ "joy" ])
-    puzzle.LoggingId |> should equal 1
+    puzzle.LoggingId |> should equal "7d8e3678-12d1-4434-9bd2-9fcbd6edad35"
     puzzle.Instructions |> should equal (Some {Summary="Do a thing!"; Detail="Here is how"})
     puzzle.WorldData.IsSome |> should equal true
     let world = puzzle.WorldData.Value
