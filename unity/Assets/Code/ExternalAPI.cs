@@ -92,6 +92,10 @@ public class ExternalAPI : MonoBehaviour
         }
     }
 
+    public void EAPI_ExecuteProgramTo(string time) {
+        GetComponent<ProgramManager>().ExecuteProgramTo(float.Parse(time));
+    }
+
     public void EAPI_ParseProgramFromConcrete(string code) {
         Application.ExternalCall(ExternalApiFunc, "onProgramParse", Json.Serialize(Serialization.JsonOfProgram(Ruthefjord.Parser.Parse(code, "submitted text"))));
     }
@@ -245,7 +249,28 @@ public class ExternalAPI : MonoBehaviour
         Debug.LogError("unimplemented!");
     }
 
-    public System.Collections.IEnumerator EAPI_RenderFinal(string json) {
+    public System.Collections.IEnumerator EAPI_RenderCurrent(string id) {
+        // render to texture
+        yield return new WaitForEndOfFrame();
+        int width = Screen.width;
+        int height = Screen.height;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        tex.Apply();
+        byte[] bytes = tex.EncodeToPNG();
+        
+        // cleanup
+        Destroy(tex);
+
+        // encode and ship data
+        var dict = new Dictionary<string, Json.JsonValue>();
+        dict.Add("id", Json.JsonValue.NewString(id));
+        dict.Add("src", Json.JsonValue.NewString(Convert.ToBase64String(bytes)));
+        Application.ExternalCall(ExternalApiFunc, "onRender", Json.Serialize(Json.JsonValue.ObjectOf(dict)));
+        yield return null;
+    }
+    
+    public void EAPI_RenderFinal(string json) {
         var data = Json.Parse(json);
 
         // set up game state
@@ -256,25 +281,7 @@ public class ExternalAPI : MonoBehaviour
         progman.EditMode = EditMode.Workshop;
         progman.SliderPosition = 1.0f;
 
-
-        // render to texture
-        yield return new WaitForEndOfFrame();
-        int width = Screen.width;
-        int height = Screen.height;
-        Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
-        tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-        tex.Apply();
-        byte[] bytes = tex.EncodeToPNG();
-
-        // cleanup
-        Destroy(tex);
-
-        // encode and ship data
+        EAPI_RenderCurrent(data.GetField("id").AsString);
         camera.ForceFullTranslation = false;
-        var dict = new Dictionary<string, Json.JsonValue>();
-        dict.Add("id", Json.JsonValue.NewString(data.GetField("id").AsString));
-        dict.Add("src", Json.JsonValue.NewString(Convert.ToBase64String(bytes)));
-        Application.ExternalCall(ExternalApiFunc, "onRenderFinal", Json.Serialize(Json.JsonValue.ObjectOf(dict)));
-        yield return null;
     }
 }

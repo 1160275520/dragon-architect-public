@@ -257,11 +257,11 @@ type DeltaRobotSimulator (startGrid: CanonicalGrid, startRobot:BasicRobot) =
             else
                 false
 
-type Cube = int * Robot.CommandOLD
+type CubeOLD = int * Robot.CommandOLD
 
 type BasicWorldState = {
     Robot: BasicRobot;
-    Grid: ImmArr<KeyValuePair<IntVec3,Cube>>;
+    Grid: ImmArr<KeyValuePair<IntVec3,CubeOLD>>;
 } with
     static member FromCanonical (s:CanonicalWorldState) : BasicWorldState =
         {

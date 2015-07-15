@@ -78,6 +78,17 @@ module.Call = (function() {
         send_message("System", "EAPI_SetProgramFromJson", prog);
     }
 
+    self.execute_program_to = function(prog, time) {
+        console.log(prog);
+        var params = {
+            program: prog,
+            time: time
+        };
+        send_message("System", "EAPI_SetProgramExecutionTime", "0");
+        send_message("System", "EAPI_SetProgramFromJson", prog);
+        send_message("System", "EAPI_ExecuteProgramTo", JSON.stringify(time));
+    }
+
     self.submit_solution = function() {
         send_message("System", "EAPI_SubmitSolution", "");
     }
@@ -116,6 +127,10 @@ module.Call = (function() {
 
     self.render_final_frame = function(data) {
         send_message("System", "EAPI_RenderFinal", JSON.stringify(data));
+    }
+
+    self.render_current_frame = function(id) {
+        send_message("System", "EAPI_RenderCurrent", id);
     }
 
     return self;

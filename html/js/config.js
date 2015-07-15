@@ -1,7 +1,7 @@
 
 var RUTHEFJORD_CONFIG = {
     server: {
-        url: 'http://gigantor.cs.washington.edu:27246/api',
+        url: 'http://localhost:5000/api',
         storage: 'server'
     },
     logging: {
@@ -11,7 +11,11 @@ var RUTHEFJORD_CONFIG = {
         release_key: ''
     },
     features: {
-        is_debugging: true
+        is_debugging: true,
+        workshop_only: true
+    },
+    gallery: {
+        group: "dev"
     }
 };
 

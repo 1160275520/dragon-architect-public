@@ -146,6 +146,11 @@ public class ProgramManager : MonoBehaviour {
         }
     }
 
+    public void ExecuteProgramTo(float time) {
+        startExecution();
+        SliderPosition = time;
+    }
+
     private void startExecution() {
         var initData = new DebuggerInitialData(
             this.Manipulator.Program,

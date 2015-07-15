@@ -37,14 +37,24 @@ class UploadedProject(db.Model):
     name = db.Column(db.Unicode)
     time = db.Column(db.DateTime)
     program = db.Column(db.Unicode)
+    screen = db.Column(db.Unicode)
     # the initial world data (before program is run)
     world_data = db.Column(db.Unicode)
+    group = db.Column(db.Unicode)
 
-class ProjectScreenCapture(db.Model):
-    __tablename__ = 'project_screen_capture'
-    id = db.Column(UUID, primary_key=True)
-    project_id = db.Column(UUID, db.ForeignKey(UploadedProject.id), nullable=False)
-    data = db.Column(db.Unicode)
+    @property
+    def serialize(self):
+        return {
+            'id' : self.id,
+            'author' : self.author,
+            'name' : self.name,
+            'time' : self.time,
+            'program' : self.program,
+            'screen' : self.screen,
+            'world_data' : self.world_data,
+            'group' : self.group
+        }
+    
 
 # HACK this is a poor way to do this, extend with REST thing later
 @app.route('/api/get_player/<id>', methods=['GET'])
@@ -62,6 +72,11 @@ def get_player(id):
         sandbox_world_data=player.sandbox_world_data,
         username=player.username
     )
+
+@app.route('/api/get_gallery/<group>', methods=['GET'])
+def get_gallery(group):
+    projects = UploadedProject.query.filter_by(group=group).all()
+    return flask.jsonify(projects=[p.serialize for p in projects])
 
 @app.route('/api/create_player', methods=['POST'])
 def get_player_id():
@@ -92,5 +107,4 @@ def setup():
     # Create API endpoints, which will be available at /api/<tablename> by default.
     manager.create_api(Player, methods=['GET', 'POST', 'PUT'])
     manager.create_api(UploadedProject, methods=['GET', 'POST', 'PUT'])
-    manager.create_api(ProjectScreenCapture, methods=['GET', 'POST', 'PUT'])
 

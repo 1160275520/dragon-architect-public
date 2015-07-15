@@ -493,6 +493,8 @@ header button, .control-btn, .control-icon-btn {
     -webkit-justify-content: center;
     flex-wrap: wrap;
     -webkit-flex-wrap: wrap;
+    align-content: flex-start;
+    -webkit-align-content: flex-start;
     min-height: 100%;
 }
 
@@ -546,7 +548,7 @@ header button, .control-btn, .control-icon-btn {
     background-color: antiquewhite;
     border-style: solid;
     border-width: 2px;
-    min-height: 500px;
+    min-height: 600px;
 }
 
 #share-message {

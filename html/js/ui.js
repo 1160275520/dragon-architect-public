@@ -111,52 +111,44 @@ module.State = (function(){ "use strict";
     return self;
 }());
 
-/*
+
 module.Share = (function() {
     var self = {};
-
-    self.title = "";
-    var site = fermata.json(RUTHEFJORD_CONFIG.server.url);
+    var url = RUTHEFJORD_CONFIG.server.url;
 
     var submit = function (cb) {
         var message = $("#share-message");
         if (self.title) {
-            $.ajax(RUTHEFJORD_CONFIG.game_server.url + '/getuid', {
-                data: JSON.stringify({username:RuthefjordLogging.uid()}),
-                contentType: 'application/json',
-                type: 'POST'
-            })
-                .done(function(data) {
-                    // from http://stackoverflow.com/a/2117523
-                    var author_uuid = data.result.uuid;
-                    var project_uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                        return v.toString(16);
-                    });
-                    var upload = {id: project_uuid, author: author_uuid, name: self.title, time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()), world_data: ""};
-                    site('uploaded_project').post({"Content-Type":"application/json"}, upload, function (e,d) {});
-                })
-                .fail(function(data) {
-                    // if THIS fails, give up and turn off logins
-                    console.log("getting the user uuid failed D:")
-                    cb();
-                });
-
+            // from http://stackoverflow.com/a/2117523
+            var project_uuid = RuthefjordLogging.create_random_uuid();
+            
+            var upload = {id: project_uuid, author: RuthefjordLogging.userid, name: self.title, 
+                          time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()), 
+                          screen: $("#share-thumb").attr('src'), world_data: "", group: RUTHEFJORD_CONFIG.gallery.group};
+            fetch(url + "/uploaded_project", {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(upload)
+            }).then(function (response) { console.log(response); cb();});                   
         } else {
-            // message.html("Please enter a title");
-            // message.show();
-            // message.stop().animate({opacity: '100'});
-            // message.fadeOut(2000, "easeInExpo", function () {message.html("");});
-            alert("Please enter a title");
+            message.html("Please enter a title");
+            message.show();
+            message.stop().animate({opacity: '100'});
+            message.fadeOut(2000, "easeInExpo", function () {message.html("");});
         }
     }
 
     self.create = function (cb) {
+        self.title = "";
+        $("#share-edit-title").text("(click to add a title)");
         $("#share-edit-title").editInPlace({
             callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
             show_buttons: false,
         });
-        RuthefjordUnity.Call.render_final_frame({id:"share-thumb", program:JSON.stringify(RuthefjordBlockly.getProgram())});
+        RuthefjordUnity.Call.render_current_frame("share-thumb");
+        $("#btn-share-submit").off('click'); // clear previous handler
         $("#btn-share-submit").on('click', function () {submit(cb);});
     }
 
@@ -165,13 +157,6 @@ module.Share = (function() {
 
 module.Gallery = (function() {
     var self = {};
-
-    self.thumbsToRender = [];
-
-    function renderThumb(item, thumbId) {
-        self.thumbsToRender.push(thumbId);
-        RuthefjordUnity.Call.render_final_frame({id:thumbId, program:item.program});
-    }
 
     function makeItem(item, sandboxCallback) {
         var span = document.createElement("span");
@@ -186,7 +171,7 @@ module.Gallery = (function() {
         var content = document.createElement("div");
         var thumb = document.createElement("img");
         thumb.id = item.id;
-        renderThumb(item, thumb.id);
+        thumb.src = item.screen;
         $(content).append(thumb);
         
         var controls = document.createElement("div");
@@ -194,8 +179,7 @@ module.Gallery = (function() {
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
         function viewItem() {
-            RuthefjordUnity.Call.set_program(item.program);
-            RuthefjordUnity.Call.set_program_execution_time(1);
+            RuthefjordUnity.Call.execute_program_to(item.program, 1);
             RuthefjordUI.State.goToViewer(function () {});
         }
         $(viewBtn).on('click', viewItem);
@@ -228,7 +212,7 @@ module.Gallery = (function() {
 
     return self;
 }());
-*/
+
 
 // TODO move hard-coded graph spec to config file of some kind
 var colors = {
@@ -257,15 +241,16 @@ module.PackSelect = (function() {
         $(title).css("font-weight", "700");
         $(title).css("padding-bottom", "5px");
         $(span).append(title);
-        $(span).append("<u>You will learn how to:</u>");
-        var learnList = document.createElement("ul");
-        _.each(pack.learn, function(item) {
-            var e = document.createElement("li");
-            e.innerHTML = item;
-
-            $(learnList).append(e);
-        })
-        $(span).append(learnList);
+        if (pack.learn && pack.learn.length > 0) {
+            $(span).append("<u>You will learn how to:</u>");
+            var learnList = document.createElement("ul");
+            _.each(pack.learn, function(item) {
+                var e = document.createElement("li");
+                e.innerHTML = item;
+                $(learnList).append(e);
+            })
+            $(span).append(learnList);
+        }
         return span;
     };
 
@@ -382,7 +367,7 @@ module.Instructions = (function() {
         repeat4: "media/blockSvgs/repeat4.svg",
         repeat5: "media/blockSvgs/repeat5.svg",
         repeat9: "media/blockSvgs/repeat9.svg",
-        squareProc: "media/blockSvgs/squareProc.svg",
+        SquareProc: "media/blockSvgs/SquareProc.svg",
         UpCubeCall: "media/blockSvgs/UpCubeCall.svg",
         FixedCastleProc: "media/blockSvgs/FixedCastleProc.svg",
         FixedTowerProc: "media/blockSvgs/FixedTowerProc.svg",
@@ -789,6 +774,25 @@ module.Dialog = (function() {
         $(dialog).show();
     }
 
+    self.defaultElems = function(msg, btn_msg) {
+        var div = document.createElement('div');
+        $(div).addClass("dialog-content");
+        var dialogContent = document.createElement('span');
+        dialogContent.appendChild(document.createTextNode(msg));
+        $(dialogContent).css("text-align", "center");
+        $(dialogContent).css("display", "block");
+
+        var btn = document.createElement('button');
+        $(btn).css("margin", "0 auto");
+        $(btn).css("display", "block");
+        $(btn).addClass("control-btn");
+        $(btn).html(btn_msg);
+
+        div.appendChild(dialogContent);
+        div.appendChild(btn);
+        return div;
+    }
+
     self.destroy = function () {
         $(".dialog-content").remove();
         $(dialog).hide();
@@ -801,22 +805,11 @@ module.WinMessage = (function() {
     var self = {};
 
     self.show = function(msg, btn_msg, cb) {
-        var div = document.createElement('div');
-        $(div).addClass("dialog-content");
-        var dialogContent = document.createElement('span');
-        dialogContent.appendChild(document.createTextNode(msg));
-        $(dialogContent).css("text-align", "center");
-        $(dialogContent).css("display", "block");
-        var btn = document.createElement('button');
-        $(btn).css("font-size", "20pt");
-        $(btn).css("margin", "0 auto");
-        $(btn).css("display", "block");
-        $(btn).addClass("control-btn");
-        $(btn).html(btn_msg);
-        var timeout = setTimeout(function () { module.Dialog.destroy(); cb(); }, 4000);
-        $(btn).on('click', function () { clearTimeout(timeout); module.Dialog.destroy(); cb(); });
-        div.appendChild(dialogContent);
-        div.appendChild(btn);
+        var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
+        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 4000);
+        var btn = $(div).find("button");
+        btn.css('font-size', '20pt');
+        btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
     }
@@ -834,13 +827,13 @@ module.UnlockBlockMsg = (function() {
         $(btn).css("font-size", "16pt");
         $(btn).addClass("control-btn");
         $(btn).html("Unlock this here");
-        $(btn).on('click', function () { module.Dialog.destroy(); cb(); });
+        $(btn).on('click', function () { RuthefjordUI.Dialog.destroy(); cb(); });
         div.appendChild(btn);
         var rect = svg.getBoundingClientRect();
         var style = {width: '200px', top: (rect.top + $("#code-area").position().top) + 'px', left: (rect.left + 50) + 'px'};
         $("#dialog").stop(true, true);
         RuthefjordUI.Dialog.make(div, style);
-        $("#dialog").fadeOut(4000, "easeInExpo", function() { module.Dialog.destroy(); });
+        $("#dialog").fadeOut(4000, "easeInExpo", function() { RuthefjordUI.Dialog.destroy(); });
     }
 
     return self;
@@ -873,13 +866,8 @@ module.DebugFeatureInfo = (function() {
         var msg = self.features[nextFeatureIndex][1];
         nextFeatureIndex++;
 
-        var div = document.createElement('div');
-        $(div).addClass("dialog-content");
-        var dialogContent = document.createElement('span');
-        dialogContent.appendChild(document.createTextNode(msg));
-        $(dialogContent).css("text-align", "center");
-        $(dialogContent).css("display", "block");
-        $(dialogContent).css("padding-bottom", "20px");
+        var div = RuthefjordUI.Dialog.defaultElems(msg, "Got it!");
+        $(div).find('span').css('padding-bottom', '20px');
         
         var arrow = $("#attention-arrow");
         if (uiElem) {
@@ -888,12 +876,7 @@ module.DebugFeatureInfo = (function() {
             arrow.stop().animate({opacity: '100'});
         }
 
-        var btn = document.createElement('button');
-        $(btn).css("margin", "0 auto");
-        $(btn).css("display", "block");
-        $(btn).addClass("control-btn");
-        $(btn).html("Got it!");
-        $(btn).on('click', function () { module.Dialog.destroy(); arrow.fadeOut(1000, "easeInExpo", function() { }); });
+        $(div).find("button").on('click', function () { RuthefjordUI.Dialog.destroy(); arrow.fadeOut(1000, "easeInExpo", function() { }); });
 
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "20pt"};
         if (uiElem) {
@@ -902,8 +885,6 @@ module.DebugFeatureInfo = (function() {
             style.left = (rect.left - 450) + 'px';
         }
 
-        div.appendChild(dialogContent);
-        div.appendChild(btn);
         RuthefjordUI.Dialog.make(div, style);
     }
 

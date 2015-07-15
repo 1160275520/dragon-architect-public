@@ -1,15 +1,16 @@
 
 var RuthefjordLogging = (function(){ "use strict";
 
-var user;
 var is_initialized = false;
 var self = {};
 
 // expose the logger globally because ui needs it XP
 self.activeTaskLogger = null;
 self.telemetry_client = null;
+self.userid = null;
 
-function create_random_uuid() {
+// from http://stackoverflow.com/a/2117523
+self.create_random_uuid = function() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
         return v.toString(16);
@@ -39,7 +40,7 @@ self.initialize = function(username) {
         uid_promise = self.telemetry_client.query_user_id({username:username});
     } else {
         uid_promise = new Promise(function(resolve) {
-            resolve(create_random_uuid());
+            resolve(self.create_random_uuid());
         });
     }
 

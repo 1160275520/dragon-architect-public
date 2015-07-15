@@ -19,6 +19,8 @@ var current_scene = "title";
 var win_msg;
 var win_btn_msg;
 
+var dont_expand_instructions = false;
+
 // flag for when unity is rendering gallery thumbnails
 var galleryRender = false; 
 
@@ -61,7 +63,6 @@ var Storage = (function() {
     // if we find something lower than this, it's old data, just delete it!
     var STORAGE_VERSION = "1";
 
-    // commented out because we're not using it for UIST
     var ServerStorage = function(userid) {
         var self = {};
         var remote_data;
@@ -498,7 +499,7 @@ $(function() {
         });
 
         $('#btn-header-sandbox').on('click', setState_sandbox);
-        $('#btn-back-sandbox').on('click', setState_sandbox);
+        $('#btn-back-sandbox').on('click', function() { dont_expand_instructions = true; setState_sandbox(); });
 
         $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
@@ -510,6 +511,7 @@ $(function() {
         function goToGallery() {
             function sandboxCallback(item) {
                 current_scene = 'transition';
+                dont_expand_instructions = true;
                 RuthefjordUI.State.goToSandbox(function() {
                     Storage.load('sandbox_world_data', function(wd) {
                         RuthefjordUnity.Call.request_start_sandbox(wd);
@@ -517,18 +519,14 @@ $(function() {
                     sandboxProgAddon = item.program;
                 });
             }
-            var site = fermata.json(RUTHEFJORD_CONFIG.game_server.url);
-            site("uploaded_project").get(function (err, data, headers) {
-                if (!err) {
-                    if (data.objects && data.objects.length > 0) {
-                        RuthefjordUI.Gallery.create(data.objects, sandboxCallback);
-                        galleryRender = true;
-                    } else {
-                        RuthefjordUI.State.goToGallery(function () {}); // just go to empty gallery
-                    }
-                } else {
-                    alert("The Gallery server is unavailable.");
-                }
+
+            send_json_get_request(RUTHEFJORD_CONFIG.server.url + "/get_gallery/" + RUTHEFJORD_CONFIG.gallery.group)
+            .then(function (data) {
+                console.log(data);
+                if (data.projects) {
+                    RuthefjordUI.Gallery.create(data.projects, sandboxCallback);
+                } 
+                RuthefjordUI.State.goToGallery(function () {});
             });
         }
 
@@ -537,7 +535,14 @@ $(function() {
         $('#btn-back-gallery').on('click', function () {RuthefjordUI.State.goToGallery(function () {})});
 
         $('#btn-share').on('click', function () {
-            RuthefjordUI.Share.create(setState_sandbox);
+            RuthefjordUI.Share.create(function () {
+                dont_expand_instructions = true;
+                setState_sandbox();
+                var div = RuthefjordUI.Dialog.defaultElems("Your code has been shared!", "Got it");
+                $(div).find("button").on('click', function () { RuthefjordUI.Dialog.destroy(); });
+                var style = {width: '300px', top: '400px', left: '200px', "font-size": "20pt"};
+                RuthefjordUI.Dialog.make(div, style);
+            });
         });
 
         // set up some of the callbacks for code editing UI
@@ -648,15 +653,14 @@ $(function() {
     // fetch the uid from the GET params and pass that to logging initializer
     // then initialize logging, then load save data, then get the experimental condition, then do all the things
     var username = $.url().param('username');
-    var userid;
     RuthefjordLogging.initialize(username).then(function(uid) {
-        userid = uid;
-        return load_save_data(userid);
+        RuthefjordLogging.userid = uid;
+        return load_save_data(RuthefjordLogging.userid);
     })
     .then(function() {
         // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
         RuthefjordLogging.logPlayerLogin(Storage.id());
-        return fetch_experimental_condition(userid);
+        return fetch_experimental_condition(RuthefjordLogging.userid);
     })
     .then(function() {
         initializeUi();
@@ -854,8 +858,12 @@ function start_editor(info) {
             win_msg = "Yay, you win!"
         }
     }
-
-    RuthefjordUI.Instructions.show(info.puzzle.instructions, null, true);
+    if (dont_expand_instructions) {
+        dont_expand_instructions = false;
+        RuthefjordUI.Instructions.show(info.puzzle.instructions, null, false);
+    } else {
+        RuthefjordUI.Instructions.show(info.puzzle.instructions, null, true);
+    }
 }
 
 // TODO remove duplicate code from this an onPuzzleChange
@@ -1087,18 +1095,10 @@ handler.onCubeCount = function(count) {
     RuthefjordUI.CubeCounter.update(count);
 }
 
-handler.onRenderFinal = function(data) {
+handler.onRender = function(data) {
     var json = JSON.parse(data);
     document.getElementById(json.id).src = "data:image/png;base64," + json.src;
-    if (galleryRender) {
-        RuthefjordUI.Gallery.thumbsToRender.splice(RuthefjordUI.Gallery.thumbsToRender.indexOf(json.id), 1);
-        if (RuthefjordUI.Gallery.thumbsToRender.length == 0) {
-            RuthefjordUI.State.goToGallery(function () {});
-            galleryRender = false;
-        }
-    } else {
-        RuthefjordUI.State.goToShare(function () {});
-    }
+    RuthefjordUI.State.goToShare(function () {});
 }
 
 handler.onProgramParse = function(prog) {

@@ -81,23 +81,24 @@ public class MyCamera : MonoBehaviour
     }
 
     void Update() {
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit hitInfo = new RaycastHit();
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            bool hit = Physics.Raycast(ray, out hitInfo);
-            if (hit)
-            {
-                clearCubeHighlight();
-                if (hitInfo.transform.gameObject.name.StartsWith("Cube") && FindObjectOfType<ProgramManager>().EditMode.IsWorkshop) {
-                    // highlight cube
-                    currentCubeHighlight = (GameObject)GameObject.Instantiate(CubeHighlight, hitInfo.transform.position, Quaternion.identity);
-                    // the command StatementT will be first, so we want the execute right after that with the id for the corresponding code block
-                    var id = FindObjectOfType<Grid>().CommandForCube(hitInfo.transform.gameObject).LastExecuted.Tail.Head.Meta.Id;
-                    FindObjectOfType<ExternalAPI>().NotifyDebugHighlight(id);
-                }
-            }
-        }
+        // commented out until ids are working again
+//        if (Input.GetMouseButtonDown(0))
+//        {
+//            RaycastHit hitInfo = new RaycastHit();
+//            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+//            bool hit = Physics.Raycast(ray, out hitInfo);
+//            if (hit)
+//            {
+//                clearCubeHighlight();
+//                if (hitInfo.transform.gameObject.name.StartsWith("Cube") && FindObjectOfType<ProgramManager>().EditMode.IsWorkshop) {
+//                    // highlight cube
+//                    currentCubeHighlight = (GameObject)GameObject.Instantiate(CubeHighlight, hitInfo.transform.position, Quaternion.identity);
+//                    // the command StatementT will be first, so we want the execute right after that with the id for the corresponding code block
+//                    var id = FindObjectOfType<Grid>().CommandForCube(hitInfo.transform.gameObject).LastExecuted.Tail.Head.Meta.Id;
+//                    FindObjectOfType<ExternalAPI>().NotifyDebugHighlight(id);
+//                }
+//            }
+//        }
     }
 
     public void clearCubeHighlight() {
