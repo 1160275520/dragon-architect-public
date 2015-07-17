@@ -7,9 +7,13 @@ from tornado.ioloop import IOLoop
 DEV_PORT=5000
 PRD_PORT=27246
 
-def _go(args):
+def create_app(args):
     from . import app
     app.setup()
+    return app
+
+def _go(args):
+    app = create_app(args)
 
     if args.mode == 'dev':
         print("Starting development server on port %d..." % DEV_PORT)

@@ -1,15 +1,12 @@
-import flask
-import flask.ext.sqlalchemy
-import flask.ext.restless
-from flask import request
-from sqlalchemy.dialects.postgresql import UUID
+import flask, flask.ext.restless, flask_cors
 import uuid
 import random
-from .experiments import experiments
+from .models import db, Player, UploadedProject
 
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ruthefjord'
-db = flask.ext.sqlalchemy.SQLAlchemy(app)
+db.init_app(app)
+cors = flask_cors.CORS(app)
 
 @app.after_request
 def add_cors_header(response):
@@ -19,40 +16,6 @@ def add_cors_header(response):
     response.headers['Access-Control-Allow-Credentials'] = 'true'
 
     return response
-
-class Player(db.Model):
-    __tablename__ = 'player'
-    id = db.Column(UUID, primary_key=True)
-    username = db.Column(db.Unicode, unique=True, index=True, nullable=True)
-    puzzles_completed = db.Column(db.Unicode)
-    sandbox_program = db.Column(db.Unicode)
-    sandbox_world_data = db.Column(db.Unicode)
-
-class UploadedProject(db.Model):
-    __tablename__ = 'uploaded_project'
-    id = db.Column(UUID, primary_key=True)
-    author = db.Column(UUID)
-    name = db.Column(db.Unicode)
-    time = db.Column(db.DateTime)
-    program = db.Column(db.Unicode)
-    screen = db.Column(db.Unicode)
-    # the initial world data (before program is run)
-    world_data = db.Column(db.Unicode)
-    group = db.Column(db.Unicode)
-
-    @property
-    def serialize(self):
-        return {
-            'id' : self.id,
-            'author' : self.author,
-            'name' : self.name,
-            'time' : self.time,
-            'program' : self.program,
-            'screen' : self.screen,
-            'world_data' : self.world_data,
-            'group' : self.group
-        }
-
 
 # HACK this is a poor way to do this, extend with REST thing later
 @app.route('/api/get_player/<id>', methods=['GET'])
@@ -96,13 +59,14 @@ def uuid_of_username():
     return flask.jsonify(result=result)
 
 def setup():
-    # Create the database tables.
-    db.create_all()
+    with app.app_context():
+        # Create the database tables.
+        db.create_all()
 
-    # Create the Flask-Restless API manager.
-    manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
+        # Create the Flask-Restless API manager.
+        manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
 
-    # Create API endpoints, which will be available at /api/<tablename> by default.
-    manager.create_api(Player, methods=['GET', 'POST', 'PUT'])
-    manager.create_api(UploadedProject, methods=['GET', 'POST', 'PUT'])
+        # Create API endpoints, which will be available at /api/<tablename> by default.
+        manager.create_api(Player, methods=['GET', 'POST', 'PUT'])
+        manager.create_api(UploadedProject, methods=['GET', 'POST', 'PUT'])
 
