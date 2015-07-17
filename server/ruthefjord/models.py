@@ -41,7 +41,7 @@ class UploadedProject(db.Model):
             'id' : self.id,
             'author' : self.author,
             'name' : self.name,
-            'time' : self.time,
+            'time' : str(self.time),
             'program' : self.program,
             'screen' : self.screen,
             'world_data' : self.world_data,
