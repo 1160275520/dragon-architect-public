@@ -3,6 +3,6 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 
-from ruthefjordserver.main import main
+from ruthefjord.main import main
 main()
 

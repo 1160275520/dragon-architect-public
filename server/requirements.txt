@@ -1,4 +1,6 @@
 Flask-SQLAlchemy
+flask-cors
 Flask-Restless
-gevent
+tornado
 psycopg2
+python-dateutil

@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function, unicode_literals
-
 import flask
 import flask.ext.sqlalchemy
 import flask.ext.restless
@@ -54,7 +52,7 @@ class UploadedProject(db.Model):
             'world_data' : self.world_data,
             'group' : self.group
         }
-    
+
 
 # HACK this is a poor way to do this, extend with REST thing later
 @app.route('/api/get_player/<id>', methods=['GET'])

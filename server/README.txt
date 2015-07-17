@@ -4,13 +4,13 @@ Source is in ruthefjordserver (which is also the package name).
 To get running on a linux system:
 
 Install the following software:
-- python 2.7+ with virtualenv
+- python 3.4+ with virtualenv
 - postgresql (with development files)
     - create a 'ruthefjord' database
     - user must have privileges on localhost:ruthefjord
 
 Execute the following commands
-virtualenv venv
+virtualenv -p /usr/bin/python3.4 venv
 source venv/bin/activate
 pip install -r requirements.txt
 ./bin/initialize
