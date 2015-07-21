@@ -76,7 +76,7 @@
           $("#blocklyLabels").hide();
         } else {
           $("#blocklyLabels").show()
-          $("#libraryLabel").width(toolboxWidth + 1); // viewWidth is 1 pixel too small for some reason when event fires
+          $("#libraryLabel").width(toolboxWidth);
           $("#codeLabel").width(Blockly.getMainWorkspace().getMetrics().viewWidth - $("#libraryLabel").width());
         }
       }

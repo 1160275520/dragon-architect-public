@@ -624,6 +624,16 @@ module.StepButton = (function() {
     return self;
 }());
 
+module.UndoButton = (function () {
+    var self = {};
+
+    self.update = function () {
+        $('#btn-undo').css('top', Blockly.getMainWorkspace().trashcan.top_ - $('#btn-undo').outerHeight(true));
+    };
+
+    return self;
+}());
+
 module.CameraControls = (function() {
     var self = {};
 
@@ -844,7 +854,7 @@ module.DebugFeatureInfo = (function() {
     var nextFeatureIndex = 0;
     self.features = [
         ["#time-slider", "Drag this slider to go to the beginning and end of your program"],
-        ["NONE", "Click on any cube to see which code block placed it"],
+        // ["NONE", "Click on any cube to see which code block placed it"],
         ["#btn-step", "This button lets you run your program one block at a time"],
         ["#speed-slider", "Drag this slider to speed up or slow down your program"]
     ]

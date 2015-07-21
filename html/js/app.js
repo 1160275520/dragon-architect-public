@@ -652,7 +652,9 @@ $(function() {
 
     // fetch the uid from the GET params and pass that to logging initializer
     // then initialize logging, then load save data, then get the experimental condition, then do all the things
-    var username = $.url().param('username');
+    // var username = $.url().param('username');
+    var username = window.prompt("Please enter your usename", "");
+
     RuthefjordLogging.initialize(username).then(function(uid) {
         RuthefjordLogging.userid = uid;
         return load_save_data(RuthefjordLogging.userid);
@@ -699,10 +701,10 @@ $(function() {
             $('#btn-packs').hide();
         }
 
-        // HACK add blockly change listener for saving
-        Blockly.addChangeListener(onProgramEdit);
-
         console.info('EVERYTHING IS READY!');
+
+        // HACK add blockly change listener for saving
+        Blockly.getMainWorkspace().addChangeListener(onProgramEdit);
 
         // HACK this needs to wait for the packs to be loaded
         // console.log(game_info.packs);
@@ -796,6 +798,7 @@ function start_editor(info) {
         RuthefjordUI.CameraControls.setVisible(library.all);
         RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
         RuthefjordUI.DoneButton.setVisible(goals.some(function(g) { return g.type === "submit";}));
+        RuthefjordUI.UndoButton.update();
 
         RuthefjordBlockly.history = [];
 
@@ -933,7 +936,7 @@ handler.onPuzzleChange = function(json) {
 function clearBlocklyClass (className) {
     var highlights = $('.' + className, $("#blockly").contents());
     for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
-        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(" "+className, ""));
+        highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(className, ""));
     };
 }
 

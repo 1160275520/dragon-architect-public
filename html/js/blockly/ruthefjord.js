@@ -41,7 +41,7 @@ blocklyIframeLoaded = function() {
     // Blockly.addChangeListener(RuthefjordBlockly.makeCounter);
 
     // no undo button currently
-    // Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
+    Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
 
     q_defer.resolve();
 };
@@ -150,7 +150,6 @@ RuthefjordBlockly.setProgram = function(program) {
     RuthefjordBlockly.clearProgram();
 
     RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
-    RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
 
     var checkStmt = function(stmt) {
         var attr;
@@ -183,6 +182,8 @@ RuthefjordBlockly.setProgram = function(program) {
     // update the toolbox in case the program contains any procedures
     RuthefjordBlockly.updateToolbox();
 
+    RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
+    
     // set maximum blocks to 15 per function
     // Blockly.mainWorkspace.maxBlocks = Object.keys(program.procedures).length * 15;
 };

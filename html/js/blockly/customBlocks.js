@@ -128,8 +128,8 @@ Blockly.UnityJSON['Right'] = function(block) {
 Blockly.Blocks['Forward'] = {
     init: function() {
         this.jsonInit({
-            message: "forward by %1",
-            args: [
+            message0: "forward by %1",
+            args0: [
                 {
                     type: "param_value",
                     name: "VALUE",
@@ -152,8 +152,8 @@ Blockly.UnityJSON['Forward'] = function(block) {
 Blockly.Blocks['Up'] = {
     init: function() {
         this.jsonInit({
-            message: "up by %1",
-            args: [
+            message0: "up by %1",
+            args0: [
                 {
                     type: "param_value",
                     name: "VALUE",
@@ -171,8 +171,8 @@ Blockly.Blocks['Up'] = {
 Blockly.Blocks['Up_teaser'] = {
     init: function() {
         this.jsonInit({
-            message: "up by %1",
-            args: [
+            message0: "up by %1",
+            args0: [
                 {
                     type: "param_value",
                     name: "VALUE",
@@ -197,8 +197,8 @@ Blockly.UnityJSON['Up'] = function(block) {
 Blockly.Blocks['Down'] = {
     init: function() {
         this.jsonInit({
-            message: "down by %1",
-            args: [
+            message0: "down by %1",
+            args0: [
                 {
                     type: "param_value",
                     name: "VALUE",
@@ -216,8 +216,8 @@ Blockly.Blocks['Down'] = {
 Blockly.Blocks['Down_teaser'] = {
     init: function() {
         this.jsonInit({
-            message: "down by %1",
-            args: [
+            message0: "down by %1",
+            args0: [
                 {
                     type: "param_value",
                     name: "VALUE",
@@ -289,9 +289,9 @@ Blockly.Blocks['controls_repeat_teaser'] = {
    */
   init: function() {
     this.jsonInit({
-      "message": Blockly.Msg.CONTROLS_REPEAT_TITLE + " %2 " +
+      "message0": Blockly.Msg.CONTROLS_REPEAT_TITLE + " %2 " +
           Blockly.Msg.CONTROLS_REPEAT_INPUT_DO + " %3",
-      "args": [
+      "args0": [
         {
           "type": "param_value",
           "name": "TIMES",

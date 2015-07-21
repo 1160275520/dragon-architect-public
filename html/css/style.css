@@ -300,6 +300,14 @@ header button, .control-btn, .control-icon-btn {
     background-color: #0072F4;
 }
 
+#btn-undo {
+    position: absolute;
+    font-size: 16pt;
+    background-color: #d1bd7d;
+    height: 40px;
+    right: 10px;
+}
+
 /* unity player */
 /************************************************************/
 
@@ -328,13 +336,6 @@ header button, .control-btn, .control-icon-btn {
 
 /* */
 /************************************************************/
-
-#btn-undo {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    font-size: 16pt;
-}
 
 #statement-counter {
     position: absolute;
@@ -558,8 +559,6 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #share-body {
-    min-height: 400px;
-    max-height: 400px;
     height: 400px;
     width: 750px;
     padding: 10px;
