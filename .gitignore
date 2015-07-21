@@ -35,3 +35,5 @@ dist/
 *.blg
 papers/**/*.pdf
 .\#*
+.idea
+.nuget

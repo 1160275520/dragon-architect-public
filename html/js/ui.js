@@ -20,17 +20,17 @@ module.State = (function(){ "use strict";
     self.goToLoading = function() {
         hideAll();
         $('.view-loading').show();
-    }
+    };
 
     self.goToConsent = function() {
         hideAll();
         $('#player-consent').show();
-    }
+    };
 
     self.goToAlphaMsg = function() {
         hideAll();
         $('#alpha-msg').show();
-    }
+    };
 
     self.goToTitle = function(cb) {
         current_state = 'title';
@@ -85,13 +85,13 @@ module.State = (function(){ "use strict";
         hideAll();
         $('.packSelector').show();
         cb();
-    }
+    };
 
     self.goToGallery = function(cb) {
         hideAll();
         $('.gallerySelector').show();
         cb();
-    }
+    };
 
     self.goToViewer = function(cb) {
         hideAll();
@@ -100,13 +100,13 @@ module.State = (function(){ "use strict";
         RuthefjordUI.CameraControls.viewMode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
         cb();
-    }
+    };
 
     self.goToShare = function(cb) {
         hideAll();
         $('.shareModeUI').show();
         cb();
-    }
+    };
 
     return self;
 }());
@@ -138,7 +138,7 @@ module.Share = (function() {
             message.stop().animate({opacity: '100'});
             message.fadeOut(2000, "easeInExpo", function () {message.html("");});
         }
-    }
+    };
 
     self.create = function (cb) {
         self.title = "";
@@ -150,7 +150,7 @@ module.Share = (function() {
         RuthefjordUnity.Call.render_current_frame("share-thumb");
         $("#btn-share-submit").off('click'); // clear previous handler
         $("#btn-share-submit").on('click', function () {submit(cb);});
-    }
+    };
 
     return self;
 }());
@@ -208,7 +208,7 @@ module.Gallery = (function() {
                 selector.append(i);
             }
         });
-    }
+    };
 
     return self;
 }());
@@ -248,11 +248,11 @@ module.PackSelect = (function() {
                 var e = document.createElement("li");
                 e.innerHTML = item;
                 $(learnList).append(e);
-            })
+            });
             $(span).append(learnList);
         }
         return span;
-    };
+    }
 
     self.create = function(packs, progress, onSelectCallback) {
         var selector = $(".packOptions");
@@ -413,7 +413,7 @@ module.Instructions = (function() {
         } 
         html += "></object>";
         return html;
-    };
+    }
 
     // replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
     function processTemplate(str) {
@@ -423,7 +423,7 @@ module.Instructions = (function() {
                 : match
             ;
         });
-    };
+    }
 
     // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element 
     // when the image is clicked
@@ -447,11 +447,11 @@ module.Instructions = (function() {
                 });
             }
         });
-    };
+    }
 
     function setOnExpandAnimationDone(f) {
         setTimeout(f, 1000);
-    };
+    }
 
     function setSize(doMakeLarge, clickCallback, doAnimate) {
 
@@ -493,7 +493,7 @@ module.Instructions = (function() {
                 onDone();
             }
         }
-    };
+    }
 
     self.hide = function() {
         $('#instructions-container').css('visibility', 'hidden');
@@ -545,13 +545,13 @@ module.Arrow = (function() {
         var arrow = $("#attention-arrow");
         arrow.css("top", (uiElem.offset().top - arrow.height()/2 + uiElem.outerHeight()/2) + 'px')
         arrow.css("left", (uiElem.offset().left - arrow.width()) + 'px');
-    }
+    };
 
     self.positionAt = function(top, left, height) {
         var arrow = $("#attention-arrow");
         arrow.css("top", (top - arrow.height()/2 + height/2) + 'px')
         arrow.css("left", (left - arrow.width()) + 'px');
-    }
+    };
 
     return self;
 }());
@@ -645,7 +645,7 @@ module.CameraControls = (function() {
         // var isTilt = _.contains(components, 'camera_tilt');
         // $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
         // $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
-    }
+    };
 
     self.toggleMode = function() {
         if (self.cameraMode === "gamemode") {
@@ -653,17 +653,17 @@ module.CameraControls = (function() {
         } else {
             self.cameraMode = "gamemode";
         }
-    }
+    };
 
     self.viewMode = function() {
         self.cameraMode = "viewmode";
         RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
-    }
+    };
 
     self.gameMode = function() {
         self.cameraMode = "gamemode";
         RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
-    }
+    };
 
     return self;
 }());
@@ -723,7 +723,7 @@ function Slider(elemName, selector, labels, allElems) {
             $(allElems.join(', ')).addClass("disabled");
         }
         container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
-    }
+    };
 
     self.value = function(x) {
         if (x === undefined) {
@@ -751,7 +751,7 @@ module.CubeCounter = (function() {
 
     self.update = function(count) {
         $('#cube-counter').html(count + " cubes placed.");
-    }
+    };
 
     return self;
 }());
@@ -767,7 +767,7 @@ module.DoneButton = (function() {
 }());
 
 module.Dialog = (function() {
-    self = {};
+    var self = {};
 
     self.make = function(content, style) {
         // clear out any old contents
@@ -782,7 +782,7 @@ module.Dialog = (function() {
         dialog.appendChild(content);
 
         $(dialog).show();
-    }
+    };
 
     self.defaultElems = function(msg, btn_msg) {
         var div = document.createElement('div');
@@ -801,12 +801,12 @@ module.Dialog = (function() {
         div.appendChild(dialogContent);
         div.appendChild(btn);
         return div;
-    }
+    };
 
     self.destroy = function () {
         $(".dialog-content").remove();
         $(dialog).hide();
-    }
+    };
 
     return self;
 }());
@@ -822,7 +822,7 @@ module.WinMessage = (function() {
         btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
-    }
+    };
 
     return self;
 }());
@@ -844,7 +844,7 @@ module.UnlockBlockMsg = (function() {
         $("#dialog").stop(true, true);
         RuthefjordUI.Dialog.make(div, style);
         $("#dialog").fadeOut(4000, "easeInExpo", function() { RuthefjordUI.Dialog.destroy(); });
-    }
+    };
 
     return self;
 }());
@@ -857,11 +857,11 @@ module.DebugFeatureInfo = (function() {
         // ["NONE", "Click on any cube to see which code block placed it"],
         ["#btn-step", "This button lets you run your program one block at a time"],
         ["#speed-slider", "Drag this slider to speed up or slow down your program"]
-    ]
+    ];
 
     self.hasNext = function() {
         return nextFeatureIndex < self.features.length;
-    }
+    };
 
     self.showNext = function() {
         if (nextFeatureIndex >= self.features.length) {
@@ -896,7 +896,7 @@ module.DebugFeatureInfo = (function() {
         }
 
         RuthefjordUI.Dialog.make(div, style);
-    }
+    };
 
     return self;
 }());

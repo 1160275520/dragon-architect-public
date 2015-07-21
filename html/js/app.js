@@ -288,9 +288,9 @@ function create_puzzle_runner(pack, sceneSelectType) {
                     }
                 } else {
                     if (progress.puzzles_remaining(pack) > 0) {
-                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"></img> if you want to go back.'); 
+                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"/> if you want to go back.');
                     } else {
-                        $("#selector-puzzle-instructions").html('All done! Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"></img> to go back.'); 
+                        $("#selector-puzzle-instructions").html('All done! Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"/> to go back.');
                         packSelectCB = function () {
                             var arrow = $("#attention-arrow");
                             arrow.css("display", "block");
