@@ -23,7 +23,7 @@
     <DocumentationFile>bin\Debug\Ruthefjord.XML</DocumentationFile>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="cp ${TargetFile} /Users/awb/Documents/Research/ruthefjord/unity/Assets/Code" externalConsole="True" />
+        <Command type="AfterBuild" command="cp ${TargetFile} /Users/awb/Documents/Research/dragon-architect/unity/Assets/Code" externalConsole="True" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -38,7 +38,7 @@
     <DebugSymbols>true</DebugSymbols>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="cp ${TargetFile} /Users/awb/Documents/Research/ruthefjord/unity/Assets/Code" externalConsole="True" />
+        <Command type="AfterBuild" command="cp ${TargetFile} /Users/awb/Documents/Research/dragon-architect/unity/Assets/Code" externalConsole="True" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
