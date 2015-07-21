@@ -70,7 +70,7 @@
 %\crdata{0-12345-67-8/90/01}  % Allows default copyright data (0-89791-88-6/97/05) to be over-ridden - IF NEED BE.
 % --- End of Author Metadata ---
 
-\title{Dragon Architect: Guided Learning in a \\Creative Computer Science Sandbox Game}
+\title{\TODO{title}}
 
 \numberofauthors{1}
 \author{Anonymized}
@@ -88,7 +88,7 @@
 
 \maketitle
 \begin{abstract}
-Computer science is expanding into K12 education and numerous educational games and systems have been created to teach programming skills. One area deserving of more research is methods of teaching \emph{computational thinking} skills through games. In this paper, we survey and discuss challenges in answering these questions. We do so through a discussion of the design of our educational game, \gametitle{}. Studying these research questions requires investigating broader questions about learning in games. Open-ended games such as \emph{Minecraft} have proven valuable in educational settings, but open-ended systems require external instruction to be effective. We discuss trade-offs and challenges in combining open-ended systems with structured, direct teaching in-game and how to integrate the social environments seen in multiplayer games into a game about programming. We also survey current educational programming games and software.
+\TODO{abstract}
 \end{abstract}
 % TODO replace macros in abstract so we don't accidentally paste them into form
 
@@ -106,7 +106,7 @@ Computer science is expanding into K12 education and numerous educational games 
 
 The past few years have seen many efforts to broaden the reach of computer science education and make it available, and accessible, to more students in more places. As the expansion of computer science education gathers momentum, we need more concrete data to guide the development of educational systems and curricula. Though researchers have created many educational programming environments~\cite{kelleher2005lowering} and done substantial work on educational games in general~\cite{backlund2013educational}, and educational programming tools in particular~\cite{salleh2013analysis}, there is a lack of systematic empirical work on how to build and use educational technology to teach computer science.
 
-Teaching \emph{computational thinking} has been a focus of this expansion that requires further investigation. In their review of recent literature on teaching computational thinking, Lye and Koh~\cite{lye2014review} use Brennan and Resnick's definition of computational thinking as consisting of \emph{concepts}, \emph{practices}, and \emph{perspectives}~\cite{brennan2012new}. Concepts are basic programming ideas (such as variables, conditionals, and loops), practices are the problem-solving strategies used while programming (such as ``being incremental and iterative'' or ``using abstraction and modularization''), and perspectives are the relationships with the wider technological world. Lye and Koh conclude that more research is needed on teaching computational thinking \emph{practices} in particular. How to directly teach such skills in an educational game is an open problem. It is also unknown how particular programming language design choices impact learning these concepts. Thus, investigating language design is a crucial part of studying these systems.
+Teaching \emph{computational thinking} has been a focus of recent efforts to broaden the reach of computer science education, including those using block-based programming environments. In their review of recent literature on teaching computational thinking, Lye and Koh~\cite{lye2014review} use Brennan and Resnick's definition of computational thinking as consisting of \emph{concepts}, \emph{practices}, and \emph{perspectives}~\cite{brennan2012new}. Concepts are basic programming ideas (such as variables, conditionals, and loops), practices are the problem-solving strategies used while programming (such as ``being incremental and iterative'' or ``using abstraction and modularization''), and perspectives are the relationships with the wider technological world. Lye and Koh conclude that more research is needed on teaching computational thinking \emph{practices} in particular. How to \emph{directly} teach such skills in a block-based programming environment is an open problem. 
 
 Investigating these questions depends on answers to broader research questions about effective methods of teaching in games. The structure of existing educational programming environments generally falls into one of two groups: (1) an open-ended setting with little to no direct guidance where players are intended to learn via exploration and from instructors or other members of the social community, or (2) a linear series of puzzles or exercises with substantial direct guidance, but little in the way of exploration of social interaction. Both methods have benefits, and exploring how to combine these designs leads to interesting questions and design challenges. An important method through which open-ended games can guide players in the social environment, and questions about how to foster such guidance in a programming game deserve special attention.
 
@@ -194,216 +194,6 @@ This part of \gametitle{} needs to be expanded and refined before it can be eval
   \caption{The code required by a progression of levels demonstrating the strategy of divide and conquer. In A, the player uses a single code block to build an entire castle. Then, in B, the player is given an empty \texttt{FixedCastle} procedure, which they must fill with the appropriate number of wall and tower blocks. Finally, in C, the player is given a completed \texttt{FixedCastle} procedure and must fill in the \texttt{FixedTower} procedure as shown. The final completed castle is shown on the right.}
   \label{fig:decomp}
 \end{figure*}
-
-\subsubsection{Language Semantics for Novices}
-
-For those just starting to program, many aspects of the programming language and programming environment can affect their progress. 
-Language syntax and semantics have been extensively studied for professional programmers~\cite{hudak1994haskell, kennedy2004defining, delorey2007programming}.
-Previous work on programming for novices indicates aspects such as language syntax~\cite{stefik2013syntax}, compiler messages~\cite{nienaltowski2008compiler}, and language semantics~\cite{hoc1990language} can all have an impact, but only syntax and compiler messages have been characterized in any detail. 
-So while we can draw on existing research when choosing the programming syntax and input method, it is an open problem which language semantics help novices learn programming and computational thinking.
-
-
-\gametitle{} uses a custom visual programming language instead of a popular existing language like JavaScript.
-The primary benefit of the approach is that we have fine-grained control over language semantics, enabling future experimentation and comparative studies on language semantics.
-However, this comes with several downsides over using an existing language.
-The most apparent drawback of this approach is the lack of existing resources for students to use.
-Using an existing popular language not only comes with a very large and free corpus of learning material, but provides an avenue for students to apply what they have learned directly outside the game.
-On the other hand, choosing an existing language requires inheriting quirks of that language.
-Finally, some visual programming tools, such as Code.org, offer conversion to the equivalent concrete syntax.
-With a general-purpose language, this transformation is one-way only, since many syntactic constructs cannot be expressed in the visual language. Our design choice, however, allows for a one-to-one onto mapping between concrete and visual syntaxes.
-
-%Finally, we have implemented a concrete syntax for our language that corresponds precisely with its visual code-block equivalent, allowing translation to and from concrete syntax, allowing players to choose which method of input they prefer.  
-
-\subsection{Structure of Learning Environment}
-
-\subsubsection{Guided Discovery Learning}
-\label{sec:guided_discovery_theory}
-
-Teaching complex skills such as computational thinking or programming though interactive software is very challenging, and any effort to do so in a game naturally leads to research questions about which structures are most effective.
-For example, some games are structured as a sandbox where players discover the properties of the environment through largely unguided exploration (e.g., \emph{Minecraft}, \emph{SimCity}~\cite{simcity}), while others provide a linear sequence of levels designed to teach the player the relevant information (e.g., \emph{Portal}~\cite{portal}). 
-
-In terms of learning theory, the former is known as \emph{discovery learning}, in which learning takes place through exploration with the object of study.
-A major advantage it can have over a traditional teaching approach is motivational: directly exploring and interacting with something can be substantially more engaging than hearing someone talk about it.
-Furthermore, this allows learning domains to be grounded in an application of interest to the learner, creating meaning and intrinsic interest in developing the desired skills.
-While the pure form of this approach can work for simple learning domains, complex ones such as programming or computational thinking cannot be taught through exploration alone unless players have sufficient background knowledge~\cite{kirschner2006minimal}. 
-
-The recommended practice is to use \emph{guided discovery}, in which discovery learning is paired with some kind of external direct guidance~\cite{mayer2004should}.  For example, in games, players might consult wikis or ask friends to help them develop high-level skills.
-This approach of combining settings for discovery learning with guidance is a central part of \emph{constructionism}, a learning theory that proposes students learn effectively by constructing things of social relevance in a social context~\cite{kafai06constructionism}.
-\emph{Scratch}~\cite{maloney2010scratch}, which enables users to create interactive digital media projects such as stories and games, is among the most popular of systems designed with constructionist principles.
-\emph{Scratch}'s open-ended creative environment allows player to pursue meaningful creative projects, giving them motivation to learn the programming skills required to do so.
-However, the tool in isolation cannot effectively teach these skills.
-It is designed such that the social community or instructors and mentors help teach new users.
-
-On the other hand, more structured systems can more effectively teach skills without external guidance by limiting player freedom.
-Linear games such as \emph{Portal} introduce concepts in a deliberate ordering and pacing to allow players to develop skills.
-Methods of direct instruction also fall into this category, such as traditional classroom lectures.
-Online systems such as Code.org pair linear sequences of puzzles with videos to explain and teach the concepts.
-
-Other games teach players by doing something in between. 
-Games in the Zelda series (e.g., \emph{The Legend of Zelda: Ocarina of Time}~\cite{zelda_oot}) contain a non-linear sequence of puzzles and teach new mechanics by requiring the player demonstrate understanding of a new mechanic before they are allowed to progress. 
-Strategy games such as \emph{Crusader Kings II}~\cite{ck2} offer a set of explicit tutorials the player may choose to go through before beginning more open-ended play.
-
-Both types of systems (open-ended vs.\ highly-structured) have highly desirable benefits.
-The open research problem we are interested in is how to create a hybrid model that best combines benefits of both approaches, particularly in settings where we cannot rely on an instructor.
-Our initial approach joins an open sandbox with small sequences of puzzles that directly guide players.
-Our playtesting has shown this to be a promising approach, though this encounters several design challenges. We discuss the details and associated trade-offs in Section~\ref{sec:direct_guidance}.
-The primary challenge with direct guidance in an open-ended game is providing guidance at the appropriate moment;
-effective games provide help on-demand and just-in-time~\cite{gee2003video}.
-
-\subsubsection{Social Environments}
-\label{sec:social}
-
-An effective technique for providing guidance and guided discovery is through social environments.
-Social communities both create motivation to learn (to impress the social group) and guidance (by getting help from the group).
-\emph{Scratch} users, for example, have shared millions of projects and even formed online companies to tackle projects together~\cite{resnick2009scratch}. 
-Research using an online programming environment called MOOSE Crossing~\cite{bruckman1997moose} found that a social context can support and motivate learning programming in a shared environment~\cite{bruckman2000situated}.
-This work is supported by research in behavioral and social sciences that indicates sharing and collaboration can improve learning~\cite{bransford2000people}. 
-Open-world multiplayer games such as \emph{Minecraft} and \emph{World of Warcraft}~\cite{worldofwarcraft} have been used as a virtual classroom environment in schools~\cite{gillispie14from}.
-Players on the same \emph{Minecraft} server are able to share their work, collaborate with others, and help directly guide others.
-
-%Social environments are also a critical aspect of learning in many games, including non-educational games.
-%The communities surrounding skill-based games (wikis, forums, conferences) help players learn effective high-level skills and strategies~\TODO{cite, someone definitely looked at this}.
-
-We have so far incorporated the project-sharing features of \emph{Scratch}.
-Players can share what they build in the sandbox by posting it in a gallery.
-Players can browse, view and download others' creations.
-However, a desirable goal and open problem is supporting close collaboration activities, such pair programming, in a \emph{Minecraft}-like shared world.
-Attempting this problem encounters several design challenges, which we describe in Section~\ref{sec:multiplayer}.
-
-\section{Open Design Problems}
-\gametitle{}'s design and research goals have led to several tensions and difficulties.
-In this section we discuss cases where the goals have presented unusual challenges, and relevant results from pilot tests.
-
-\subsection{Guided Learning in a Sandbox}
-\label{sec:direct_guidance}
-
-Section~\ref{sec:guided_discovery_theory} described \emph{guided discovery learning} and the techniques games and educational systems use to approach teaching.
-In \gametitle{}, our design goal is to center the experience in an open sandbox (like, e.g., \emph{Minecraft}) but provide on-demand, just-in-time direct guidance for new tools and concepts in the form of small puzzle segments.
-
-The ideal we are trying to emulate, like much educational software, is a personal human tutor.
-An effective tutor can allow the player to explore in the sandbox, and, once the player expresses the need for a tool or feature they do not yet possess, the tutor can guide them to the appropriate learning material.
-Knowing when to intervene and what the player is trying to do is a challenge.
-\emph{Intelligent tutoring systems} accomplish this by tracking player knowledge and skill, which requires both a model of all conceptual knowledge and a rigid structure of problems with known solution strategies~\cite{koedinger06cognitive}.
-As we have neither of these, this is not an option.
-
-The game must strike a difficult balance: get the player to the sandbox where they can experiment as quickly and often as possible, but support the player in the gradual acquisition of new knowledge and skills. 
-
-We do not wish to overwhelm new players with the full suite of features and tools upon start, so they are locked behind puzzles until the player has a chance to learn about them in a guided, isolated setting.
-Puzzle sequences need to be relatively short to minimize frustration and boredom; they should give players the knowledge they need and allow them to return to the sandbox.
-Once unlocked, players have free use of tools in the sandbox.
-A list of available learning modules advertise what techniques and tools players can gain from puzzles.
-This is in tension with the desire to quickly allow a player access to the tools they need without jumping through hoops and challenges. 
-Systems like \emph{Scratch} are fully open from the start, and expect an expert to guide newcomers through the system.
-
-Even if committed to the design of gated introduction of features, there are difficult questions about what should be unlockable when.
-The total set of features and strategies available are quite large, and freedom to learn \emph{all} of them immediately may overwhelm players.
-Content is instead currently arranged into a graph, where prerequisite concepts must be unlocked before access to more complex ones is granted.
-This, however, makes it difficult for players to determine if a feature is absent or if they simply have not unlocked it yet.
-
-Empirically, players initially struggle with the structure but enjoy it once it is explained to them.
-Very few players discover the puzzles without external guidance, a clear failure point if we wish the system to function without an instructor.
-In playtests, players would often ask if they game supports a feature (e.g., moving up and down, removing blocks), when such a feature was directly advertised in the list of available modules.
-After being informed of this, players began to understand the basic loop and would check for other skills they could learn through puzzles.
-
-Other players can also be a source of guidance and ideas, so the social features will play an important role in this process.
-For example, a friend in \emph{Minecraft} can jump-start a new player by giving them tools and showing them around.
-Perhaps, in our game, veteran players could unlock tools for new players to let them bypass the built-in gating when mentoring them.
-
-We have also found that creating in the sandbox is not necessarily the activity of choice for every player. 
-Some choose to doodle in the sandbox, scattering cubes, often of different colors, in lines and clusters without trying to assemble anything in particular.
-Others exclusively seek out the game's puzzles, more interesting in solving those than working in the sandbox.
-Theoretically, this game structure should allow \gametitle{} to appeal to players with either interests, though it currently requires both parts.
-
-\subsection{Collaboration in a Multiplayer\\Environment}
-\label{sec:multiplayer}
-
-As discussed in Section~\ref{sec:social}, social environments are an important part of guiding discovery learning and a major goal of our project.
-The goal is to create a shared virtual environment in which players can assist each other and collaborate.
-This works naturally in multiplayer games such as \emph{Minecraft}, where players on the same game server can explore and shape a persistent world together.
-This shared world has several benefits.
-It is easy for players to share their creations with others, but at the same time work relatively independently.
-Changes to the world are localized around the player, so one player does not interfere with those far away.
-At the same time, working closely together is as simple as walking to the same place in the world.
-
-Such interactions could be invaluable for programming, supporting activities such as pair programming and mentoring.
-However, the persistent world model conflicts with other design considerations.
-It is very easy to accidentally (or intentionally) write programs that have non-localized effects, interfering with others in the shared world.
-Programming often relies on rerunning the same program over and over to iterate and find bugs, but this requires resetting the world state to a consistent start state.
-While such a reset or undo feature is an option, if a player writes code that places blocks all over another player's work, how should the game reset state in a consistent and understandable manner?
-This tension is even present in a single-player setting.
-Playtesters that wanted to construct complex objects, such as a town of buildings, often wanted to do so piecemeal. They write separate programs to build each part without wanting to reset the world to a start state.
-
-Our current approach does not sufficiently resolve this tension, and only addresses the single-player setting.
-The sandbox makes the effects of programs permanent by default, including any cubes placed and the dragon's position.
-To allow for experimentation, the player has the option to switch to \emph{workshop mode}, which resets the world to its previous state each time the player runs a new program. 
-The player can freely toggle between these two modes, testing out each program before committing to its results. 
-In practice, players have a difficult time understanding the nuanced difference between the two modes, despite dramatic visual cues.
-The feature is empirically both difficult to discover and difficult to understand even once explained.
-
-\section{Related Work}
-
-\subsection{Educational Technology and Games\\for Computer Science}
-
-The development of tools designed to teach novices programming dates back to systems such as Papert's LOGO~\cite{papert80mindstorms}.
-Kelleher and Pausch review programming environments for novices and describe a taxonomy of these systems~\cite{kelleher2005lowering}.
-Within that taxonomy, \gametitle{} fits best as a teaching system that targets \emph{structuring programs} and aims to provide learning support both through \emph{social learning} and \emph{providing a motivating context}. 
-In this section, we summarize the current space of educational programming tools. 
-We separate them into two broad categories according to their structure: open-ended, largely unstructured systems that allow users to creatively explore and systems that present users with a linear sequence of problems or puzzles to solve. 
-
-\subsubsection{Open-Ended Creative Systems}
-Both early tools like LOGO and recent tools like \emph{Scratch} have an open-ended and creative approach.
-LOGO allowed players to create drawings by controlling a robot with a virtual pen.
-While LOGO was text-based, many modern examples use visual programming languages. 
-\emph{Alice}~\cite{cooper2000alice}, like \emph{Scratch}, focuses on storytelling, though it does so in a 3D animation context with more fine-grained control than Scratch offers.
-Other systems such as \emph{AgentSheets}~\cite{repenning2000agentsheets} and \emph{Kodu}~\cite{kodu} let users create simulations and games.
-\emph{AgentSheets} models its world as agents on a grid, and players can program the behavior of each type of agent, conditioning behavior on the contents of adjacent grid cells. 
-Designed for the Xbox as well as PC, \emph{Kodu} users program the behavior of each entity by setting up a series of event triggers and corresponding actions. The large number of available triggers and actions are accessed through a series of menus. 
-
-There are also educational programming games that have their players tackle open-ended challenges.
-\emph{CodeSpells}~\cite{esper2013codespells} is a game in which players write Java code to cast spells that control their environment. 
-In \emph{RoboBuilder}~\cite{weintrop2013robobuilder}, players program robots to battle against enemies.
-
-\subsubsection{Structured Learning Systems}
-Another type of programming educational system is instead arranged as a linear sequence of problems or puzzles.
-Step-by-step lessons are available from Khan Academy~\cite{khanacademy} and Codecademy~\cite{codecademy}, in which users program in a popular industry programming language such as JavaScript or Java, sometimes with accompanying video.
-Code.org~\cite{codedotorg} is a sequence of videos and puzzles where users control characters from popular games like Rovio's \emph{Angry Birds} or movies like Disney's \emph{Frozen} with drag-and-drop programming (like \emph{Scratch}).
-
-The game \emph{LightBot}~\cite{lightbot} asks players to use programming to control a robot in a sequence of linear puzzles.
-The game has been used to study education in computational thinking~\cite{Gouws13Lightbot}, and is now featured in Code.org's Hour of Code~\cite{lightbothoc}.
-\emph{BOTS} is a programming puzzle game. The stated goal of the project is to study how community-authored content is used in educational games~\cite{hickspart14}, and it has also been used to explore hint generation~\cite{peddycord14generating}.
-
-Program By Design~\cite{programbydesign} is a curricula-oriented project that shares several principles with our approach, including gradually expanding the programming language. 
-Following the course laid out in the textbook~\cite{felleisen2001design}, a student uses a series of subsets of the programming language Racket.
-Like most computer science curricula, Program By Design gradually exposes the student to more programming concepts over time, but also prevents beginning students from dealing with unexplained language constructs or error messages depending on knowledge the student has not learned.
-Adapting this curriculum, a related project called Bootstrap~\cite{bootstrap} uses videogame programming to teach algebra and geometry to middle school students.
-
-\subsection{Related Learning Technologies}
-
-\subsubsection{Intelligent Tutoring Systems}
-Intelligent Tutoring Systems~\cite{koedinger06cognitive} have been successful applied to several teaching domains.
-These tutors are typically rigidly structured, choosing which problem the student will work on next.
-Some system employ results from cognitive psychology and thus are also called \emph{cognitive tutors}.
-Techniques such as Knowledge Tracing~\cite{corbett1994knowledge} model student knowledge with a Bayesian framework.
-This modeling requires experts to design a set of \emph{knowledge components} that encompass the skills and abilities players use, as well as a comprehensive set of production rules students use to solve problems in the tutor.
-
-Projects such as \emph{Crystal Island} have integrated ITS technologies into educational games and found success with student knowledge modeling, goal recognition, and affect modeling~\cite{lester2013serious,rowe2010modeling}.
-Student modeling is more challenging in games than rigid tutor environments, and this problem is even larger with open-ended games.
-Creating a full set of production rules for an open-ended sandbox is not feasible since there are no direct goals.
-Even with puzzle sections, creating the set of knowledge components is impractical or expensive for complex learning domains, such as meta-strategies for programming.
-
-\subsubsection{Game-Based Learning}
-Games have been steadily gaining attention as educational tools. 
-Gee discusses games' potential for learning in a variety of subjects~\cite{gee2003video}.
-He also describes ways \emph{good games} educate their players, including operating at the edge of a player's skill and allowing players to be producers as well as consumers.
-A meta-analysis of research on games as educational tools found games can be effective in some educational settings, but require appropriate instructional support~\cite{ke2009qualitative}.
-Such support could be external (provided by teacher facilitation, good team dynamics, or structured cooperative learning/playing) or internal (provided by debriefing, flexible scoring, progression of complexity, or other methods).
-
-Games can be educational tools by design, or be adapted to educational purposes. 
-\emph{Minecraft}'s popularity and its ability to engage children have prompted several efforts to use it as an educational tool.
-\emph{MinecraftEdu}~\cite{minecraftedu} is an official variant of \emph{Minecraft} with a number of classroom-centric features. 
-Teachers have used it in lessons on math, English, computer science, and other subjects.  
-Zorn et al.\ created \emph{CodeBlocks}, a plugin for Minecraft that allows players to program a robot within the game, and they found that \emph{CodeBlocks} increased non-programmers' interest in programming~\cite{zorn2013minecraft}.
-Another avenue people have tried is to teach programming by having students create modifications and plugins for \emph{Minecraft}, through mods such as \emph{ScriptCraft}~\cite{scriptcraft}.
 
 \section{Conclusion}
 
