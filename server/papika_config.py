@@ -1,6 +1,7 @@
 DEBUG=False
-SQLALCHEMY_DATABASE_URI = 'postgresql:///logging'
+SQLALCHEMY_DATABASE_URI = 'postgresql:///ruthefjord_logging'
 PORT = 27895
+SERVER = 'production'
 PAPIKA_EXPERIMENTS = {
     '00000000-0000-0000-0000-000000000000': {
         'conditions': [
@@ -12,6 +13,12 @@ PAPIKA_EXPERIMENTS = {
         'conditions': [
             {'id':1, 'name': 'puzzles only'},
             {'id':2, 'name': 'puzzles and sandbox'},
+        ],
+    },
+    '6C853767-7307-417B-A565-BA4614536026': {
+        'conditions': [
+            {'id':1, 'name': 'debugging tools'},
+            {'id':2, 'name': 'turbo button only'},
         ],
     },
 }
