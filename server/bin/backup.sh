@@ -7,7 +7,7 @@
 DUMPALL="/usr/bin/pg_dumpall"
 PGDUMP="/usr/bin/pg_dump"
 PSQL="/usr/bin/psql"
-DBS="ruthefjord logging"
+DBS="ruthefjord ruthefjord_logging"
 
 BASE_DIR="/var/backups/postgres"
 YMD=$(date "+%Y-%m-%d")
