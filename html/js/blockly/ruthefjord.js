@@ -119,8 +119,14 @@ RuthefjordBlockly.proceduresOnly = function () {
     if (Blockly.dragMode_ === 0) { // don't clean while a block is still being dragged
         var topBlocks = Blockly.getMainWorkspace().getTopBlocks();
         _.each(topBlocks, function(block) {
-            if (block.type.indexOf("procedures") !== 0) {
+            if (block.type.indexOf("procedures") !== 0) { // clear out blocks outside of procedures that aren't calls
                 block.dispose();
+            } else if (block.type === "procedures_callnoreturn") { // clear out blocks attached to calls that aren't other calls
+                _.each(block.getDescendants(), function(child) {
+                    if (child.type.indexOf("procedures") !== 0) {
+                        child.dispose();
+                    }
+                })
             }
         });
     }
