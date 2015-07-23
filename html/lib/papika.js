@@ -1,25 +1,25 @@
 /**!
  * Papika telemetry client library.
  * Copyright 2015 Eric Butler.
- * Revision Id: 8d48ef60db810a1fd75970a6c0d9754a003118cb
+ * Revision Id: 0ba1fb684a170345599afcca282f94939df46690
  */
-
-if (typeof module !== 'undefined' && module.exports) {
-    fetch = require('node-fetch');
-}
 
 var papika = function(){
     "use strict";
     var mdl = {};
 
-    var PROTOCOL_VESRION = 1;
-    var REVISION_ID = '8d48ef60db810a1fd75970a6c0d9754a003118cb';
+    var PROTOCOL_VESRION = 2;
+    var REVISION_ID = '0ba1fb684a170345599afcca282f94939df46690';
 
     var uuid_regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     function is_uuid(str) {
         return uuid_regex.test(str);
     }
     mdl.is_uuid = is_uuid;
+
+    function is_short(x) {
+        return x === +x && x === (x|0) && x >= 0 && x <= 32767;
+    }
 
     function send_post_request(url, params) {
         return fetch(url, {
@@ -72,10 +72,25 @@ var papika = function(){
         return send_nonsession_request(baseUri + '/api/experiment', data, release_id, release_key);
     }
 
+    function query_user_data(baseUri, args, release_id, release_key) {
+        var data = {
+            id: args.user,
+        };
+        return send_nonsession_request(baseUri + '/api/user/get_data', data, release_id, release_key);
+    };
+
+    function save_user_data(baseUri, args, release_id, release_key) {
+        var data = {
+            id: args.user,
+            savedata: JSON.stringify(args.savedata)
+        };
+        return send_nonsession_request(baseUri + '/api/user/set_data', data, release_id, release_key);
+    };
+
     function log_session(baseUri, args, release_id, release_key) {
         var data = {
             user_id: args.user,
-            release_id: args.release,
+            release_id: release_id,
             client_time: new Date().toISOString(),
             detail: JSON.stringify(args.detail),
             library_revid: REVISION_ID,
@@ -83,7 +98,8 @@ var papika = function(){
         return send_nonsession_request(baseUri + '/api/session', data, release_id, release_key);
     }
 
-    function log_events(baseUri, events, session_id, session_key) {
+    function log_events(baseUri, to_log, session_id, session_key) {
+        var events = to_log.map(function(e) { return e.event; });
         return send_session_request(baseUri + '/api/event', events, session_id, session_key);
     }
 
@@ -113,8 +129,10 @@ var papika = function(){
                     var log_to = events_to_log.length;
 
                     return log_events(baseUri, events_to_log, session.session_id, session.session_key).then(function() {
-                        // success! throw out the events we successfully logged
-                        events_to_log.splice(0, log_to);
+                        // success! throw out the events we successfully logged, after resolving any promises
+                        events_to_log.splice(0, log_to).forEach(function(e) {
+                            if (e.resolve) { e.resolve(); }
+                        });
                         event_log_lock = false;
                     }, function() {
                         // error! end the promise anyway, but keep the failed events around
@@ -139,7 +157,7 @@ var papika = function(){
             return query_user_id(baseUri, args.username, release_id, release_key).then(function(result) {
                 return result.user_id;
             });
-        }
+        };
 
         self.query_experimental_condition = function(args) {
             if (!is_uuid(args.user)) throw Error('bad/missing user id!');
@@ -147,16 +165,33 @@ var papika = function(){
             return query_experimental_condition(baseUri, args, release_id, release_key).then(function(result) {
                 return result.condition;
             });
-        }
+        };
 
-        self.log_event = function(args) {
+        self.query_user_data = function(args) {
+            if (!is_uuid(args.user)) throw Error('bad/missing user id!');
+            return query_user_data(baseUri, args, release_id, release_key).then(function(result) {
+                return result.savedata;
+            });
+        };
+
+        self.save_user_data = function(args) {
+            if (!is_uuid(args.user)) throw Error('bad/missing user id!');
+            if (typeof args.savedata === 'undefined') throw Error('bad/missing savedata');
+            return save_user_data(baseUri, args, release_id, release_key).then(function(result) {
+                return true;
+            });
+        };
+
+        self.log_event = function(args, do_create_promise) {
             // TODO add some argument checking and error handling
             if (!p_session_id) throw Error('session not yet logged!');
-            if (typeof args.type !== 'number') throw Error('bad/missing type!');
+            if (!is_short(args.category)) throw Error('bad/missing category!');
+            if (!is_short(args.type)) throw Error('bad/missing type!');
             if (typeof args.detail === 'undefined') throw Error("bad/missing session detail object!");
             var detail = JSON.stringify(args.detail);
 
             var data = {
+                category_id: args.category,
                 type_id: args.type,
                 session_sequence_index: session_sequence_counter,
                 client_time: new Date().toISOString(),
@@ -164,12 +199,23 @@ var papika = function(){
             };
             if (args.task_start) data.task_start = args.task_start;
             if (args.task_event) data.task_event = args.task_event;
-            events_to_log.push(data);
+
+            var to_log = {event:data};
+
+            var promise;
+            if (do_create_promise) {
+                promise = new Promise(function(resolve, reject) {
+                    to_log.resolve = resolve;
+                });
+            }
+
+            events_to_log.push(to_log);
             session_sequence_counter += 1;
 
             // TODO maybe wait and batch flushes (with a timeout if it doesn't fill up)
             flush_event_log();
-        }
+            return promise;
+        };
 
         self.start_task = function(args) {
             if (!is_uuid(args.group)) throw Error('bad/missing group!');
@@ -194,16 +240,11 @@ var papika = function(){
                     self.log_event(args);
                 }
             };
-        }
+        };
 
         return self;
     };
 
     return mdl;
 }();
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = papika;
-}
-
 

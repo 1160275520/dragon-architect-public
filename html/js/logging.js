@@ -110,6 +110,7 @@ self.startTask = function(gid, checksum, name) {
         gid = "2668f17d-f950-4a9e-9c19-78d626bfb131";
     }
     var task_logger = self.telemetry_client.start_task({
+        category: 0,
         type: AID.PuzzleStarted,
         detail: {checksum:checksum, name:name},
         group:gid
@@ -119,6 +120,7 @@ self.startTask = function(gid, checksum, name) {
 
     function log(aid, detail) {
         task_logger.log_event({
+            category: 0,
             type: aid,
             detail: detail
         });
@@ -176,6 +178,7 @@ self.startTask = function(gid, checksum, name) {
 
     tl.logTaskEnd = function() {
         task_logger.log_event({
+            category: 0,
             type: AID.PuzzleEnded,
             detail:null
         });
@@ -189,6 +192,7 @@ self.startTask = function(gid, checksum, name) {
 // TODO add logging of their condition for redundancy
 self.logExperimentalCondition = function(experimentId, conditionId) {
     self.telemetry_client.log_event({
+        category: 0,
         type: AID.PlayerExperimentalCondition,
         detail: {experiment:experimentId, condition:conditionId}
     });
@@ -196,6 +200,7 @@ self.logExperimentalCondition = function(experimentId, conditionId) {
 
 self.logPlayerLogin = function(loginId) {
     self.telemetry_client.log_event({
+        category: 0,
         type: AID.PlayerLogin,
         detail: {id:loginId}
     });
@@ -203,6 +208,7 @@ self.logPlayerLogin = function(loginId) {
 
 self.logStudentConsented = function(didPlayerConsent, tosId) {
     self.telemetry_client.log_event({
+        category: 0,
         type: AID.PlayerConsented,
         detail: {tos_id: tosId, did_consent:didPlayerConsent}
     });
