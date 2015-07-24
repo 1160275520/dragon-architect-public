@@ -901,6 +901,27 @@ module.DebugFeatureInfo = (function() {
     return self;
 }());
 
+module.confirmBackspaceNavigations = function() {
+    // http://stackoverflow.com/a/22949859/2407309
+    var isBackspacePressed = false;
+    $(document).keydown(function(event){
+        if (event.which == 8) {
+            isBackspacePressed = true;
+        }
+    });
+    $(document).keyup(function(event){
+        if (event.which == 8) {
+            isBackspacePressed = false;
+        }
+    });
+    $(window).on('beforeunload', function(){
+        if (isBackspacePressed) {
+            isBackspacePressed = false;
+            return "Are you sure you want to leave this page?"
+        }
+    });
+}
+
 return module;
 }());
 

@@ -410,6 +410,7 @@ function onProgramEdit() {
 
 // startup
 $(function() {
+    RuthefjordUI.confirmBackspaceNavigations();
     RuthefjordUI.State.goToLoading();
 
     // hide this message, will re-show if loading takes too long
