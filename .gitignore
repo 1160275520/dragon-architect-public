@@ -33,6 +33,7 @@ dist/
 *.bbl
 *.log
 *.blg
+*.out
 papers/**/*.pdf
 .\#*
 .idea

@@ -48,7 +48,7 @@
 \documentclass{sig-alternate}
 \usepackage{color}
 \usepackage[usenames,dvipsnames]{xcolor}
-\usepackage{url}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
 \newcommand{\TODO}[1]{{\color{red} TODO: #1}}
 %\newcommand{\gametitle}{{\color{RoyalPurple} Dragon Architect}}
@@ -66,11 +66,8 @@
   /Subject ()
   /Keywords ()
 }
-%\CopyrightYear{2007} % Allows default copyright year (20XX) to be over-ridden - IF NEED BE.
-%\crdata{0-12345-67-8/90/01}  % Allows default copyright data (0-89791-88-6/97/05) to be over-ridden - IF NEED BE.
-% --- End of Author Metadata ---
 
-\title{\TODO{title}}
+\title{Approaches for Teaching Computational Thinking Strategies in an Educational Game}
 
 \numberofauthors{1} 
 \author{
@@ -80,21 +77,13 @@
   \affaddr{Computer Science \& Engineering}\\
   \affaddr{University of Washington}\\
   \affaddr{Seattle, WA 98195}
-  \email{\{awb, edbutler\}@cs.washington.edu}
+  \email{\{awb, edbutler, zoran\}@cs.washington.edu}
 }
 
 \maketitle
 \begin{abstract}
-\TODO{abstract}
+Computer science is expanding into K12 education and numerous educational games and systems have been created to teach programming skills, including many block-based programming environments. Teaching computational thinking has received particular attention, and more research is needed on using educational games to directly teach computational thinking skills. We propose to investigate this using \emph{Dragon Architect}, an educational block-based programming game we are developing. Specifically, we wish to study ways of directly teaching computational thinking strategies such as divide and conquer in an educational game, as well as ways to evaluate our approaches. 
 \end{abstract}
-% TODO replace macros in abstract so we don't accidentally paste them into form
-
-% A category with the (minimum) three required fields
-\category{K.3.2}{Computers and Education}{Computer and Information Science Education -- Computer science education}
-
-\terms{Design, Human Factors}
-
-\keywords{Block-based programming; computational thinking; programming education}
 
 \section{Introduction}
 
@@ -102,24 +91,23 @@ Teaching \emph{computational thinking} has been a focus of recent efforts to bro
 In their review of recent literature on teaching computational thinking, Lye and Koh~\cite{lye2014review} use Brennan and Resnick's definition of computational thinking as consisting of \emph{concepts}, \emph{practices}, and \emph{perspectives}~\cite{brennan2012new}. 
 Concepts are basic programming ideas (such as variables, conditionals, and loops), practices are the problem-solving strategies used while programming (such as ``being incremental and iterative'' or ``using abstraction and modularization''), and perspectives are the relationships with the wider technological world. 
 Lye and Koh conclude that more research is needed on teaching computational thinking \emph{practices} in particular. 
-How to \emph{directly} teach such skills in is an open problem, no more so than in the context of a block-based programming environment. 
+How to \emph{directly} teach such skills in is an open problem, including in the context of a block-based programming environment. 
 
-In this paper we propose investigating teaching computational practices in an educational block-based programming game called \emph{Dragon Architect}. 
+In this paper we propose investigating directly teaching computational practices in an educational block-based programming game called \emph{Dragon Architect}. 
 We briefly discuss existing work on teaching computational thinking and the direct teaching of problem-solving strategies. 
 We describe ways this might be attempted in \emph{Dragon Architect}, as well as ways we might evaluate such work. 
 
 \section{Game Description}
-\TODO{website, source code links}
 
-Before we discuss teaching computational thinking, we describe basic information about \emph{Dragon Architect} to provide context for the discussion.
+Before we discuss teaching computational thinking, we describe basic information about \emph{Dragon Architect}\footnote{Play the game at \url{http://centerforgamescience.org/portfolio/dragon-architect}.\\\\Source code available at \TODO{url}.} to provide context for the discussion.
 In \emph{Dragon Architect}, players write code to control a dragon that builds 3D structures in a block world.
 Our game, which has been in development since spring 2014, is played in a web browser.
 Similar to other programming environments, the user interface is separated into two parts: an area where the player can assemble their code and a visualization of the 3D environment their code affects (see Figure~\ref{fig:overall}). 
-The game uses the \emph{Unity} game engine~\cite{unity} for the 3D environment and the Blockly drag-and-drop programming library~\cite{blockly} for inputing code.
+The game uses the block-based programming library Blockly~\cite{blockly} for inputing code.
 
-The player can move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
-In addition to blocks that control the dragon directly, players can also make use of definite loops and procedures (see Figure~\ref{fig:toolbox}).
-As players progress through the game, they alternate between short sequences of puzzles with a specific goal and set of available code blocks and an open-ended sandbox.
+The player can write programs to move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
+In addition to blocks that control the dragon directly, players can also use definite loops and procedures (see Figure~\ref{fig:toolbox}).
+As players progress through the game, they alternate between short sequences of puzzles with a specific goal and constrained set of available code blocks and an open-ended sandbox.
 The game begins with puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon and placing cubes.
 After that, the player can creatively experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available, switching between sandbox and puzzles at any time. 
 In this way, the language the player uses to write instructions for the dragon gradually expands as the player advances.
@@ -131,7 +119,7 @@ Common sandbox activities have included making the dragon travel very long dista
 
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=\textwidth]{images/overall-example}
+  \includegraphics[width=\textwidth]{images/overall-example-cropped}
   \caption{The player assembles code to control the dragon on the left side, and the dragon and world it inhabits are visualized on the right side. Only a few different code blocks are available to the player initially, and more are unlocked through completing guided puzzles.}
   \label{fig:overall}
 \end{figure*}
@@ -146,30 +134,28 @@ Common sandbox activities have included making the dragon travel very long dista
 \section{Teaching Computational Thinking Strategies}
 
 % what is it
-As discussed in the introduction, a major goal of our project is to explore methods of teaching computational thinking skills.
-Many have studied how to increase the presence and effectiveness of computational thinking in computer science education (and education in general) (e.g., Barr and Stephenson~\cite{barr2011bringing}), and others have developed games to teach these ideas~\cite{weintrop2013robobuilder, kazimoglu2012serious}.
-A recent review of the literature on teaching computational thinking found that additional research is needed~\cite{lye2014review}.
-Furthermore, we believe there is not enough empirical work on using educational games to teach computational thinking skills. 
-
-\gametitle{}'s design is structured to encourage and require use of computational thinking skills.
-Like many programming games, we force the player to automate tasks that they are used to performing manually (in this case, the construction of 3D block structures).
-As the player sets more sophisticated goals, modularity becomes important (e.g., putting the building of a wall into a procedure) to keep the visual programming feasible. 
+Many have studied how to increase the presence and effectiveness of computational thinking in computer science education and education in general (e.g., Barr and Stephenson~\cite{barr2011bringing}, Grover and Pea~\cite{grover2013computational}). 
+Furthermore, educational games and other systems often have teaching computational thinking as an explicit goal (e.g., Weintrop and Wilensky~\cite{weintrop2013robobuilder},  Kazimoglue et al.~\cite{kazimoglu2012serious}) or have a computational thinking framework built around them (e.g., Gouws et al.~\cite{gouws2013lightbot}, Computational Thinking with Scratch~\cite{scratchedCT}).
+A recent review of the literature on teaching computational thinking found that additional empirical research is needed~\cite{lye2014review}, particularly in the case of computational thinking practices.
+In addition, we believe using educational games to teach computational thinking skills deserves to be the focus of more empirical work. 
 
 % how can we teach it directly?
-As we cannot expect players to learn such complex skills simply by playing in an environment that requires those skills~\cite{mayer2004should}, we must address how to directly teach computational thinking skills.
+Specifically, we propose to investigate directly teaching computational thinking strategies in \emph{Dragon Architect}. 
+Simply playing in a computational environment where these strategies are necessary is unlikely to teach students such complex skills~\cite{mayer2004should}.
+Instead, we must address how to directly teach computational thinking skills by investigating which guidance is effective and how it is best deployed in an educational game.
 One such skill is the identification and application of problem-solving strategies, which is a core component of computational thinking.
-A great deal of recent education research suggests that ``curricula can model such strategies for students'' and that appropriate guidance, which in many cases consists of the capabilities afforded by a suitable computational environment, can ``enable students to learn to use these strategies independently''~\cite{report2010computational}.
+A great deal of recent education research suggests that ``curricula can model such strategies for students'' and that appropriate guidance can ``enable students to learn to use these strategies independently''~\cite{report2010computational}.
 Mayer and Wittrock call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}~\cite{mayer1996handbook}.
 The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy.
-In both cases, Mayer and Wittrock describe studies (for non-computer science domains) that have shown teaching these skills directly can improve learning and performance. It is an open question whether this can be applied to teaching computational thinking in a game.
+In both cases, Mayer and Wittrock describe studies (for non-computer science domains) that have shown teaching these skills directly can improve learning and performance. 
+It is an open question whether this can be applied to teaching computational thinking in a game.
 
 % teaching stategies like divide and conquer
-One strategy we have focused on is \emph{divide and conquer}.
-Our initial attempt to directly teach divide and conquer is to lead the player though a top-down deconstruction of building a large castle.
+One computational thinking strategy we intend to focus on in \emph{Dragon Architect} is \emph{divide and conquer}.
+One potential approach is to lead the player though a top-down deconstruction of building a castle in order to model iteratively subdividing a large problem into more manageable subproblems.
 The player is presented with a single code block that builds an entire castle, but discovers the construction has a number of flaws. 
 The next several puzzles each decompose some part of the flawed program in order to give the player a chance to repair it. 
 For example, to enable the player to give the castle the correct number of walls and towers, the castle code block is split into a tower block and a wall block that the player uses to write a corrected castle procedure, as shown Figure~\ref{fig:decomp}. 
-This part of \gametitle{} needs to be expanded and refined before it can be evaluated, and the larger question merits further attention. 
 
 \begin{figure*}[th!]
   \centering
@@ -178,9 +164,22 @@ This part of \gametitle{} needs to be expanded and refined before it can be eval
   \label{fig:decomp}
 \end{figure*}
 
-\section{Conclusion}
+A companion approach is a gradual bottom-up progression modeling the combining of the blocks currently available to the player into more sophisticated constructs. 
+For example, the player is tasked with writing a program to place a line of cubes. 
+When this is completed, the player is awarded a new kind of block that by itself places a line of cubes (i.e., a block encapsulating the player's previous program). 
+Subsequent puzzles ask the player to use the line block to construct other, more complicated structures, each time granting the player a single, encapsulating block.  
 
-\TODO{conclusion}
+Evaluating learning outcomes and other effects of these or similar approaches is a tremendous challenge. 
+Computational Thinking with Scratch proposes three kinds of assessment: (1) artifact-based interviews, (2) design scenarios, and (3) learner documentation~\cite{scratchedCT}. 
+We believe these to be promising, and worthy of further study. 
+In addition to design scenarios, we propose that more general kinds of in-game assessments could be useful. 
+Like Scratch, \emph{Dragon Architect} provides users a place for unstructured creative exploration. 
+The effectiveness of an attempt to directly teach computational thinking strategies could be assessed by comparing the programs written by those who completed the relevant puzzles to those who did not (after controlling for time played, and differences in programs prior to completing the puzzles).
+A variety of other in-game metrics could contribute to an assessment including a player's solutions to specific challenges, time taken to complete puzzles, etc. 
+
+On-paper assessments (given as pre-test and post-test) could also serve as an evaluation.
+Computational thinking skills might be assessed through language-independent assessments of computer science knowledge~\cite{tew2011fcs1} or general problem-solving assessments such as those developed by the Program for International Student Assessment~\cite{pisa}. 
+Finally, Grover and Pea suggest ``academic talk'' (i.e., student development and use of computational language) could be leveraged as an additional assessment of computational thinking~\cite{grover2013computational}. 
 
 % Comment out in submission version
 %\section{Acknowledgments}
