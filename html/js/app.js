@@ -523,7 +523,6 @@ $(function() {
 
             send_json_get_request(RUTHEFJORD_CONFIG.server.url + "/get_gallery/" + RUTHEFJORD_CONFIG.gallery.group)
             .then(function (data) {
-                console.log(data);
                 if (data.projects) {
                     RuthefjordUI.Gallery.create(data.projects, sandboxCallback);
                 } 
