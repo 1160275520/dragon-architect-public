@@ -324,7 +324,7 @@
         },
         "procedures_only":true,
         "instructions": {
-            "summary": "Use a procedure to get me to the {pinkboxUp}!",
+            "summary": "Use {procDef} to get me to the {pinkboxUp}!",
             "detail": ""
         },
         "logging_id": "c74cf758-09d3-4989-9058-3d73e3ee7b3d"

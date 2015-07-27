@@ -391,6 +391,7 @@ module.Instructions = (function() {
         wallsheet: "media/blockSvgs/wallsheet.svg",
         walltop: "media/blockSvgs/walltop.svg",
         pillarProc: "media/blockSvgs/pillarProc.svg",
+        procDef: "media/blockSvgs/procDef.svg",
         bridge: "media/bridge.png"
     };
 
