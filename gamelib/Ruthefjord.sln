@@ -9,11 +9,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RuthefjordUnitTests", "Ruth
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ProgramRunner", "ProgramRunner\ProgramRunner.fsproj", "{9FD9D33E-F8FF-41B0-A922-2B0DFDB7A1A2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D992483F-073B-48B6-8F88-814340B687E5}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
