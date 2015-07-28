@@ -99,14 +99,14 @@ We describe ways this might be attempted in \emph{Dragon Architect}, as well as 
 
 \section{Game Description}
 
-Before we discuss teaching computational thinking, we describe basic information about \emph{Dragon Architect}\footnote{Play the game at \url{http://centerforgamescience.org/portfolio/dragon-architect}.\\\\Source code available at \url{http://gigantor.cs.washington.edu/dragon-architect-source.zip}.} to provide context for the discussion.
-In \emph{Dragon Architect}, players write code to control a dragon that builds 3D structures in a block world.
-Our game, which has been in development since spring 2014, is played in a web browser.
+Before we discuss approaches for teaching computational thinking, we describe basic information about \emph{Dragon Architect}\footnote{Play the game at \url{http://centerforgamescience.org/portfolio/dragon-architect}.\\\\Source code available at \url{http://gigantor.cs.washington.edu/dragon-architect-source.zip}.} to provide context for the discussion.
+In \emph{Dragon Architect}, players write code to control a dragon that builds 3D structures in a cube world.
+Our game, which began development in spring 2014, is played in a web browser.
 Similar to other programming environments, the user interface is separated into two parts: an area where the player can assemble their code and a visualization of the 3D environment their code affects (see Figure~\ref{fig:overall}). 
 The game uses the block-based programming library Blockly~\cite{blockly} for inputing code.
 
 The player can write programs to move the dragon in three dimensions and have the dragon place and remove cubes of various colors. 
-In addition to blocks that control the dragon directly, players can also use definite loops and procedures (see Figure~\ref{fig:toolbox}).
+In addition to blocks that control the dragon directly, players can use definite loops and procedures (see Figure~\ref{fig:toolbox}).
 As players progress through the game, they alternate between short sequences of puzzles with a specific goal and constrained set of available code blocks and an open-ended sandbox.
 The game begins with puzzles that introduce the idea of assembling and running code, as well as the code blocks for moving the dragon and placing cubes.
 After that, the player can creatively experiment and build in the sandbox and complete other puzzle sequences to make more code blocks available, switching between sandbox and puzzles at any time. 
@@ -136,14 +136,15 @@ Common sandbox activities have included making the dragon travel very long dista
 % what is it
 Many have studied how to increase the presence and effectiveness of computational thinking in computer science education and education in general (e.g., Barr and Stephenson~\cite{barr2011bringing}, Grover and Pea~\cite{grover2013computational}). 
 Furthermore, educational games and other systems often have teaching computational thinking as an explicit goal (e.g., Weintrop and Wilensky~\cite{weintrop2013robobuilder},  Kazimoglue et al.~\cite{kazimoglu2012serious}) or have a computational thinking framework built around them (e.g., Gouws et al.~\cite{gouws2013lightbot}, Computational Thinking with Scratch~\cite{scratchedCT}).
-A recent review of the literature on teaching computational thinking found that additional empirical research is needed~\cite{lye2014review}, particularly in the case of computational thinking practices.
-In addition, we believe using educational games to teach computational thinking skills deserves to be the focus of more empirical work. 
+A recent review of the literature on teaching computational thinking found that additional empirical research is needed~\cite{lye2014review}, especially in the case of computational thinking practices.
+We believe the use of educational games in particular to teach computational thinking skills deserves to be the focus of more empirical work. 
 
 % how can we teach it directly?
 Specifically, we propose to investigate directly teaching computational thinking strategies in \emph{Dragon Architect}. 
 Simply playing in a computational environment where these strategies are necessary is unlikely to teach students such complex skills~\cite{mayer2004should}.
 Instead, we must address how to directly teach computational thinking skills by investigating which guidance is effective and how it is best deployed in an educational game.
-One such skill is the identification and application of problem-solving strategies, which is a core component of computational thinking.
+
+One computatinal thinking skill of interest is the identification and application of problem-solving strategies.
 A great deal of recent education research suggests that ``curricula can model such strategies for students'' and that appropriate guidance can ``enable students to learn to use these strategies independently''~\cite{report2010computational}.
 Mayer and Wittrock call attention to the substantial evidence in the education literature for teaching what they call \emph{domain-specific thinking skills} and \emph{metacognitive skills}~\cite{mayer1996handbook}.
 The former would include the ability to use a strategy like divide and conquer, and the latter would include knowing when and where to employ that strategy.
@@ -164,7 +165,7 @@ For example, to enable the player to give the castle the correct number of walls
   \label{fig:decomp}
 \end{figure*}
 
-A companion approach is a gradual bottom-up progression modeling the combining of the blocks currently available to the player into more sophisticated constructs. 
+A companion approach is a gradual bottom-up progression modeling combining the blocks currently available to the player into more sophisticated constructs. 
 For example, the player is tasked with writing a program to place a line of cubes. 
 When this is completed, the player is awarded a new kind of block that by itself places a line of cubes (i.e., a block encapsulating the player's previous program). 
 Subsequent puzzles ask the player to use the line block to construct other, more complicated structures, each time granting the player a single, encapsulating block.  

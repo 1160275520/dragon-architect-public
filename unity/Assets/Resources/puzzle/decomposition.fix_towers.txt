@@ -3,15 +3,10 @@
 @FrozenArgs=true
 @NoArgs=true
 define FixedCastle()
-    Wall()
-    FixedTower()
-    Wall()
-    FixedTower()
-    Wall()
-    FixedTower()
-    Wall()
-    FixedTower()
-
+    repeat 4 times
+        Wall()
+        FixedTower()
+    
 @NoDelete=true
 @NoArgs=true
 define FixedTower()
