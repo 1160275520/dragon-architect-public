@@ -652,8 +652,12 @@ $(function() {
 
     // fetch the uid from the GET params and pass that to logging initializer
     // then initialize logging, then load save data, then get the experimental condition, then do all the things
-    // var username = $.url().param('username');
-    var username = window.prompt("Please enter your usename", "");
+    var username;
+    if (RUTHEFJORD_CONFIG.features.no_login_prompt) {
+        username = $.url().param('username');
+    } else {
+        username = window.prompt("Please enter your usename", "");
+    }
 
     RuthefjordLogging.initialize(username).then(function(uid) {
         RuthefjordLogging.userid = uid;
