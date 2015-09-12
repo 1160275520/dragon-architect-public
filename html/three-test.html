@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My first Three.js app</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+<script src="lib/three/three.min.js"></script>
+<script src="lib/three/ColladaLoader.js"></script>
+<script>
+    var camera, scene, renderer;
+    var cube;
+
+    init();
+    render();
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var tex = THREE.ImageUtils.loadTexture("../unity/Assets/Textures/outlined_green_cube.png");
+        var material = new THREE.MeshBasicMaterial({map: tex});
+        cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        geometry = new THREE.PlaneGeometry(100, 100, 32);
+        tex = THREE.ImageUtils.loadTexture("../unity/Assets/Textures/outlined_cube.png");
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set( 100, 100 );
+        material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
+        var plane = new THREE.Mesh( geometry, material );
+        scene.add( plane );
+
+        camera.position.set(0,12,-10);
+        camera.rotation.x = Math.PI / 4;
+        camera.lookAt(new THREE.Vector3(0,0,0));
+        cube.position.set(1.5,0.5,1.5);
+//        cube.rotation.x += Math.PI / 4;
+        plane.rotation.x += Math.PI / 2
+    }
+
+    function render() {
+        requestAnimationFrame( render );
+
+//        cube.rotation.x += 0.01;
+//        cube.rotation.y += 0.01;
+
+        renderer.render( scene, camera );
+    }
+</script>
+</body>
+</html>
