@@ -249,13 +249,12 @@ public class ProgramManager : MonoBehaviour {
             var dt = numSteps == 1
                 ? Time.time - this.lastStatementExecutionTime
                 : 0.0f;
-
-            // notify of state change, I guess?
-            // TODO why are we doing this?
+			           
             if (numSteps > 0) {
                 this.lastStatementExecutionTime = Time.time;
                 var cs = debugger.CurrentStep;
                 setGameState(cs.State, cs.Command, cs.LastExecuted, dt);
+				GetComponent<ExternalAPI>().SendCurrentWorldState();
             }
         }
 	}

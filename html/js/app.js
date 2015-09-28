@@ -27,7 +27,7 @@ var galleryRender = false;
 // flag and data for when code from a gallery item is added to the sandbox
 var sandboxProgAddon = ""; 
 
-var levelListeners = []
+var levelListeners = [];
 
 function send_json_get_request(url) {
     return fetch(url, {
@@ -214,28 +214,28 @@ var progress = (function(){
             puzzles_completed.push(id);
             Storage.save("puzzles_completed", puzzles_completed.toString());
         }
-    }
+    };
 
     self.is_puzzle_completed = function(puzzle_id) {
         return isDevMode || _.contains(puzzles_completed, puzzle_id);
-    }
+    };
 
     self.completed_puzzles = function() {
         return _.filter(content.puzzles(), function(p) { return self.is_puzzle_completed(p.id); });
-    }
+    };
 
     self.is_pack_completed = function(pack) {
         return pack.nodes.every(self.is_puzzle_completed);
-    }
+    };
 
     self.puzzles_remaining = function(pack) {
         return _.filter(pack.nodes, function(p) { return !self.is_puzzle_completed(p); }).length;
-    }
+    };
 
     self.get_library = function() {
         var libs = _.map(self.completed_puzzles(), function(p) { return p.library.granted; });
         return _.unique(_.flatten(libs));
-    }
+    };
 
     return self;
 }());
@@ -335,13 +335,13 @@ function create_puzzle_runner(pack, sceneSelectType) {
             default:
                 throw new Error("invalid scene select type " + sceneSelectType);
         }
-    }
+    };
 
     // call onPuzzleComplete to trigger the first puzzle
     self.onPuzzleFinish();
 
     return self;
-};
+}
 
 // callback function that receives messages from unity, sends to handler
 function onRuthefjordEvent(func, arg) {
@@ -627,7 +627,7 @@ $(function() {
 
         $("#btn-code-entry").on('click', function() {
             RuthefjordUnity.Call.parse_concrete_program($("#code-entry-area").val());
-        })
+        });
 
         $("#btn-done").on('click', function() {
             RuthefjordUnity.Call.set_program(JSON.stringify(RuthefjordBlockly.getProgram()));
@@ -674,10 +674,12 @@ $(function() {
         return Q.all([
             content.initialize(),
             initialize_unity(),
+            RuthefjordDisplay.init($("#three-js")[0]),
             RuthefjordBlockly.init(),
         ]);
     }).then(function() {
         isInitialized = true;
+        RuthefjordUnity.Player.hide();
 
         // turn off gallery elements if diabled
         if (!RUTHEFJORD_CONFIG.features.is_debugging) {
@@ -693,7 +695,7 @@ $(function() {
 
         _.each(RUTHEFJORD_CONFIG.hide_packs, function (packName) {
             delete game_info.packs[packName]
-        })
+        });
 
         if (RUTHEFJORD_CONFIG.features.puzzles_only) {
             $('#btn-back-sandbox').removeClass();
@@ -764,7 +766,7 @@ handler.onTitleButtonClicked = function(button) {
             throw new Error('uknown title button ' + button);
             break;
     }
-}
+};
 
 function clear_level_listeners() {
     _.each(levelListeners, function (listener) {
@@ -929,7 +931,7 @@ handler.onSandboxStart = function() {
     if (isDevMode) {
         $('.devModeOnly').show();
     }
-}
+};
 
 handler.onPuzzleChange = function(json) {
     // console.log('starting puzzle ' + json);
@@ -941,7 +943,7 @@ function clearBlocklyClass (className) {
     var highlights = $('.' + className, $("#blockly").contents());
     for (var i = 0; i < highlights.length; i++) { // need to handle each element separately to avoid applying classes from first element to every element
         highlights.slice(i,i+1).attr('class', highlights.slice(i,i+1).attr('class').replace(className, ""));
-    };
+    }
 }
 
 function clearHighlights () {
@@ -1022,13 +1024,13 @@ handler.onProgramStateChange = function(data) {
 
         RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
-}
+};
 
 handler.onLockedToolboxClick = function(block) {
     RuthefjordUI.UnlockBlockMsg.show(block.svgGroup_, function () {
         current_puzzle_runner = create_puzzle_runner(game_info.packs[block.packName], "pack");
     });
-}
+};
 
 handler.onStepHighlight = function(id) {
     // clear any existing highlights
@@ -1038,7 +1040,7 @@ handler.onStepHighlight = function(id) {
     if (block) {
         block.addHighlight(true);
     }
-}
+};
 
 handler.onDebugHighlight = function(id) {
     // clear any existing highlights
@@ -1053,7 +1055,7 @@ handler.onDebugHighlight = function(id) {
             taskLogger.logDoUiAction("debug-cube-highlight", 'start', null);
         }
     }
-}
+};
 
 handler.onSetColors = function(json) {
     // console.info('on set colors!');
@@ -1082,16 +1084,43 @@ handler.onPuzzleFinish = function(puzzle_id) {
 
 handler.onWorldDataStart = function() {
     world_data = "";
-}
+};
 
 handler.onWorldDataChunkSend = function(chunk) {
     world_data += chunk;
-}
+};
 
-handler.onWorldDataEnd = function() {
-    // console.info(world_data);
-    Storage.save('sandbox_world_data', world_data);
-}
+handler.onWorldDataEnd = function(mode) {
+    //console.log("mode: " + mode);
+    //console.info(world_data);
+    //console.info(JSON.parse(world_data));
+    //console.info(atob(JSON.parse(world_data).cubes.data));
+    switch(mode) {
+        case "save":
+            Storage.save('sandbox_world_data', world_data);
+            break;
+        case "render":
+            var world = JSON.parse(world_data);
+
+            // process cube data
+            // convert base64 to byte array
+            var byteCharacters = atob(world.cubes.data);
+            var byteNumbers = new Uint8Array(byteCharacters.length);
+            var i;
+            for (i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            // convert byte array to int array
+            var intArray = new Array(byteNumbers.length / 4);
+            for (i = 0; i < intArray.length; i++) {
+                var o = i*4;
+                intArray[i] = byteNumbers[o] << 0 | byteNumbers[o+1] << 8 | byteNumbers[o+2] << 16 | byteNumbers[o+3] << 24
+            }
+
+            RuthefjordDisplay.setWorld(world.robots[0], intArray);
+    }
+};
+
 
 handler.onUnlockDevMode = function() {
     isDevMode = true;
@@ -1100,28 +1129,28 @@ handler.onUnlockDevMode = function() {
 
 handler.onCubeCount = function(count) {
     RuthefjordUI.CubeCounter.update(count);
-}
+};
 
 handler.onRender = function(data) {
     var json = JSON.parse(data);
     document.getElementById(json.id).src = "data:image/png;base64," + json.src;
     RuthefjordUI.State.goToShare(function () {});
-}
+};
 
 handler.onProgramParse = function(prog) {
     RuthefjordUnity.Call.set_program(prog);
     var program = JSON.parse(prog);
     RuthefjordBlockly.setProgram(program);
-}
+};
 
 handler.onToSandbox = function() {
     setState_sandbox();
-}
+};
 
 handler.onErrorMessages = function(errors) {
     console.log(errors);
     RuthefjordUI.Instructions.displayErrors(JSON.parse(errors));
-}
+};
 
 return onRuthefjordEvent;
 }());

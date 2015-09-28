@@ -311,6 +311,28 @@ header button, .control-btn, .control-icon-btn {
 /* unity player */
 /************************************************************/
 
+#three-js {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#three-js:after {
+    padding-top: 75%;
+    display: block;
+    content: '';
+}
+
+#three-js canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+}
+
 #unity-player {
     position: relative;
     width: 100%;
@@ -318,7 +340,7 @@ header button, .control-btn, .control-icon-btn {
     margin: 0;
 }
 
-/* smoe hilarious hacks to keep fixed aspect ratio */
+/* some hilarious hacks to keep fixed aspect ratio */
 #unity-player:after {
     padding-top: 75%;
     display: block;

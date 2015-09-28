@@ -202,30 +202,36 @@ public class ExternalAPI : MonoBehaviour
     // world state
     //////////////////////////////////////////////////////////////////////////
 
-    public void SendWorldState(string data) {
-        const int chunkSize = 8192;
-        var numChunks = (data.Length + chunkSize - 1) / chunkSize;
-        Application.ExternalCall(ExternalApiFunc, "onWorldDataStart", "");
-        for (var i = 0; i < numChunks; i++) {
-            var offset = chunkSize * i;
-            var s = data.Substring(offset, Math.Min(chunkSize, data.Length - offset));
-            Application.ExternalCall(ExternalApiFunc, "onWorldDataChunkSend", s);
-        }
-        Application.ExternalCall(ExternalApiFunc, "onWorldDataEnd", "");
-    }
-
-    public void EAPI_RequestWorldState(string ignored) {
-        var blocks = GetComponent<Grid>().AllCells;
-        var robot = FindObjectOfType<RobotController>().Robot;
-        var robots = new List<BasicRobot>();
-        if (robot != null) {
-            robots.Add(robot);
-        }
-        var world = new WorldData(blocks, robots.ToArray());
-
-//        Debug.Log("Saving! num blocks: " + blocks.Length.ToString());
-        SendWorldState(World.encodeToString(world));
-    }
+	public void SendWorldState(string data, string mode) {
+		const int chunkSize = 8192;
+		var numChunks = (data.Length + chunkSize - 1) / chunkSize;
+		Application.ExternalCall(ExternalApiFunc, "onWorldDataStart", "");
+		for (var i = 0; i < numChunks; i++) {
+			var offset = chunkSize * i;
+			var s = data.Substring(offset, Math.Min(chunkSize, data.Length - offset));
+			Application.ExternalCall(ExternalApiFunc, "onWorldDataChunkSend", s);
+		}
+		Application.ExternalCall(ExternalApiFunc, "onWorldDataEnd", mode);
+	}
+	
+	private string EncodeCurrentWorld() {
+		var blocks = GetComponent<Grid>().AllCells;
+		var robot = FindObjectOfType<RobotController>().Robot;
+		var robots = new List<BasicRobot>();
+		if (robot != null) {
+			robots.Add(robot);
+		}
+		var world = new WorldData(blocks, robots.ToArray());
+		return World.encodeToString(world);
+	}
+	
+	public void SendCurrentWorldState() {
+		SendWorldState(EncodeCurrentWorld(), "render");
+	}
+	
+	public void EAPI_RequestWorldState(string ignored) {
+		SendWorldState(EncodeCurrentWorld(), "save");
+	}
 
     public void EAPI_SetProgramExecutionSpeed(string parameter) {
         var x = float.Parse(parameter);

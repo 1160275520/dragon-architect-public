@@ -1,7 +1,7 @@
 
 var RUTHEFJORD_CONFIG = {
     server: {
-        url: 'http://localhost:5000/api',
+        url: 'http://localhost:27246/api',
         storage: 'server'
     },
     logging: {
