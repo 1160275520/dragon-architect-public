@@ -2,11 +2,13 @@ var RuthefjordDisplay = (function() {
     "use strict";
     var module = {};
 
-    var camera, scene, renderer, clock;
+    var camera, scene, renderer, clock, stats;
     var cubeGeo;
     var cubes, robot;
-    var WobblePeriod = 4.0;
-    var WobbleMagnitude = 0.05;
+    var wobblePeriod = 4.0;
+    var wobbleMagnitude = 0.05;
+    var translationSmoothness = 1.5;         // The relative speed at which the camera will catch up.
+    var rotationSmoothness = 5.0;         // The relative speed at which the camera will catch up.
     var UP = new THREE.Vector3(0,0,1);
     var relativeCamPos = new THREE.Vector3(-10,0,12);
     var relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
@@ -35,12 +37,20 @@ var RuthefjordDisplay = (function() {
 
         renderer = new THREE.WebGLRenderer();
         var dims = parent.getBoundingClientRect();
-        console.log(dims);
         renderer.setSize(dims.width, dims.height);
         camera.aspect = dims.width / dims.height;
         camera.up.set(0,0,1);
         camera.updateProjectionMatrix();
         parent.appendChild(renderer.domElement);
+
+        stats = new Stats();
+        stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+        // align top-left
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+        parent.appendChild(stats.domElement);
 
         cubeGeo = new THREE.BoxGeometry(1, 1, 1);
         var tex = THREE.ImageUtils.loadTexture("../media/canvas_cube.png");
@@ -79,20 +89,38 @@ var RuthefjordDisplay = (function() {
         robot.position.copy(robotOffset);
 
         clock.start();
-        requestAnimationFrame(render);
+        requestAnimationFrame(update);
+    };
+
+    var update = function () {
+        stats.begin();
+        render();
+        stats.end();
+        requestAnimationFrame(update);
     };
 
     function render() {
+        // this MUST be called before getElapsedTime
+        // since it returns the time since getDelta OR getElapsedTime was called (three js docs are wrong)
+        var tDelta = clock.getDelta();
         var t = clock.getElapsedTime();
-        var z = WobbleMagnitude * Math.sin(t * 4 * Math.PI / WobblePeriod);
-        var y = WobbleMagnitude * Math.cos(t * 2 * Math.PI / WobblePeriod);
+        var z = wobbleMagnitude * Math.sin(t * 4 * Math.PI / wobblePeriod);
+        var y = wobbleMagnitude * Math.cos(t * 2 * Math.PI / wobblePeriod);
         var v = new THREE.Vector3(0, y, z);
 
-        camera.position.copy( v.add(relativeCamPos).add(robot.position) );
+        var newCamPos = v.add(relativeCamPos).add(robot.position);
+        camera.position.lerp(newCamPos, translationSmoothness * tDelta);
+
+        // Couldn't figure out how to reimplement technique from Unity code
+        // There's probably something better than my hack
+        var oldCamQ = camera.quaternion.clone();
         camera.lookAt(robot.position);
+        var newCamQ = camera.quaternion.clone();
+        camera.quaternion.copy(oldCamQ);
+        camera.quaternion.slerp(newCamQ, rotationSmoothness * tDelta);
 
         renderer.render( scene, camera );
-        requestAnimationFrame(render);
+        //requestAnimationFrame(render);
     }
 
     // until the Unity backend is discarded, we have to transform the axes it uses to the axes we use
@@ -141,6 +169,7 @@ var RuthefjordDisplay = (function() {
         relativeCamPos.applyQuaternion(q);
     };
 
+    // degrees should be <= 10
     module.tiltCamera = function(degrees) {
         if (Math.abs(degrees) > 10) {
             console.warn("tilting by more than 10 degrees in a single step may bypass safeguards");
@@ -153,6 +182,7 @@ var RuthefjordDisplay = (function() {
         }
     };
 
+    // scale should be > 0
     module.zoomCamera = function(scale) {
         if ((relativeCamPosMag > 5 && scale < 1) || (relativeCamPosMag < 100 && scale > 1)) { // limits on how far or close camera can zoom
             relativeCamPos.multiplyScalar(scale);
