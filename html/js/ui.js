@@ -11,7 +11,7 @@ module.State = (function(){ "use strict";
     var current_state;
 
     function hideAll() {
-        RuthefjordUnity.Player.hide();
+        RuthefjordDisplay.hide();
         $('.view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
@@ -37,7 +37,7 @@ module.State = (function(){ "use strict";
 
         hideAll();
         $('.codeEditor').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
         cb();
@@ -68,7 +68,7 @@ module.State = (function(){ "use strict";
     self.goToPuzzle = function(cb) {
         hideAll();
         $('.codeEditor, .puzzleModeUI').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -76,7 +76,7 @@ module.State = (function(){ "use strict";
     self.goToSandbox = function(cb) {
         hideAll();
         $('.codeEditor, .sandboxModeUI').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -96,7 +96,7 @@ module.State = (function(){ "use strict";
     self.goToViewer = function(cb) {
         hideAll();
         $('.viewerModeUI').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         RuthefjordUI.CameraControls.viewMode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
         cb();

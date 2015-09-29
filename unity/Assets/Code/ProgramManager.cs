@@ -78,6 +78,7 @@ public class ProgramManager : MonoBehaviour {
         eapi.NotifyPS_EditMode(EditMode);
         eapi.NotifyPS_RunState(RunState);
         eapi.NotifyPS_CurrentState(new StateData(new int[]{}, 0.0f, GetComponent<Grid>().CellsFilled));
+		eapi.SendCurrentWorldState(0);
     }
 
     public void AddImportedModule(Imperative.Program prog) {
@@ -189,6 +190,7 @@ public class ProgramManager : MonoBehaviour {
             grid.SetGrid(state.Grid);
             lastExecuted = stack;
             GetComponent<ExternalAPI>().NotifyPS_CurrentState(new StateData(this.LastExecuted.ToArray(), SliderPosition, GetComponent<Grid>().CellsFilled));
+			GetComponent<ExternalAPI>().SendCurrentWorldState(transitionTimeSeconds);
         }
         Profiler.EndSample();
     }
@@ -254,7 +256,6 @@ public class ProgramManager : MonoBehaviour {
                 this.lastStatementExecutionTime = Time.time;
                 var cs = debugger.CurrentStep;
                 setGameState(cs.State, cs.Command, cs.LastExecuted, dt);
-				GetComponent<ExternalAPI>().SendCurrentWorldState(dt);
             }
         }
 	}

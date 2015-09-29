@@ -37,21 +37,23 @@ module.Player = (function(){
     var selector = '#unity-player embed, #unity-player';
 
     self.hide = function() {
-        if (navigator.platform.indexOf('Mac') === 0 && bowser.firefox) {
-            $('#unity-player').css('z-index', '-1');
-            $('#main-view-game').css('background', '#b5b5b5');
-        } else {
-            $(selector).css('width', '1px').css('height', '1px');
-        }
+        //if (navigator.platform.indexOf('Mac') === 0 && bowser.firefox) {
+        $('#unity-player embed').css('z-index', '-1');
+        $('#unity-player').css('background', '#ccebff');
+        //$('#main-view-game').css('background', '#b5b5b5');
+        //} else {
+        //    $(selector).css('width', '1px').css('height', '1px');
+        //}
     };
 
     self.show = function() {
-        if (navigator.platform.indexOf('Mac') === 0 && bowser.firefox) {
-            $('#unity-player').css('z-index', '0');
-            $('#main-view-game').css('background', '#ccebff');
-        } else {
-            $(selector).removeAttr('style');
-        }
+        //if (navigator.platform.indexOf('Mac') === 0 && bowser.firefox) {
+        $('#unity-player embed').css('z-index', '0');
+        $('#unity-player').css('background', '');
+        //$('#main-view-game').css('background', '#ccebff');
+        //} else {
+        //    $(selector).removeAttr('style');
+        //}
     };
 
     return self;

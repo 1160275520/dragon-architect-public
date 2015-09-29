@@ -2,7 +2,7 @@ var RuthefjordDisplay = (function() {
     "use strict";
     var module = {};
 
-    var camera, scene, renderer, clock, stats;
+    var camera, scene, renderer, clock, stats, parentElem;
     var cubeGeo;
     var cubes, robot;
 
@@ -53,6 +53,7 @@ var RuthefjordDisplay = (function() {
         camera.up.set(0,0,1);
         camera.updateProjectionMatrix();
         parent.appendChild(renderer.domElement);
+        parentElem = parent;
 
         // FPS display
         stats = new Stats();
@@ -200,37 +201,41 @@ var RuthefjordDisplay = (function() {
             robot.quaternion.copy(finalBotQ);
             animating = false;
         }
-        // set robot goal position and direction
-        finalBotPos.fromArray(YZXFromXYZ(bot.pos)).add(robotOffset);
-        var dir = new THREE.Vector3();
-        dir.fromArray(YZXFromXYZ(bot.dir));
-        finalBotQ.setFromUnitVectors(new THREE.Vector3( 1, 0, 0 ), dir); // 1,0,0 is default direction
-        if (dt === 0) {
-            robot.position.copy(finalBotPos);
-            robot.quaternion.copy(finalBotQ);
-        } else if (!robot.position.equals(finalBotPos) || !robot.quaternion.equals(finalBotQ)) {
-            animTime = dt;
-            animating = true;
+        if (bot) {
+            // set robot goal position and direction
+            finalBotPos.fromArray(YZXFromXYZ(bot.pos)).add(robotOffset);
+            var dir = new THREE.Vector3();
+            dir.fromArray(YZXFromXYZ(bot.dir));
+            finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir); // 1,0,0 is default direction
+            if (dt === 0) {
+                robot.position.copy(finalBotPos);
+                robot.quaternion.copy(finalBotQ);
+            } else if (!robot.position.equals(finalBotPos) || !robot.quaternion.equals(finalBotQ)) {
+                animTime = dt;
+                animating = true;
+            }
         }
 
-        // set cubes
-        // clear previous cubes, reset counts
-        cubeColors.forEach(function (color) {
-            cubes[color].meshes.forEach(function (mesh) {
-                scene.remove(mesh);
+        if (grid) {
+            // set cubes
+            // clear previous cubes, reset counts
+            cubeColors.forEach(function (color) {
+                cubes[color].meshes.forEach(function (mesh) {
+                    scene.remove(mesh);
+                });
+                cubes[color].count = 0;
             });
-            cubes[color].count = 0;
-        });
-        // add cubes to scene
-        for(var i = 0; i < grid.length; i += 4) {
-            var color = cubeColors[grid[i+3] - 1]; // color parameters are 1-indexed
-            // add a new mesh, if necessary
-            if (cubes[color].count >= cubes[color].meshes.length) {
-                cubes[color].meshes.push(new THREE.Mesh(cubeGeo, cubeMats[grid[i+3]]));
+            // add cubes to scene
+            for (var i = 0; i < grid.length; i += 4) {
+                var color = cubeColors[grid[i + 3] - 1]; // color parameters are 1-indexed
+                // add a new mesh, if necessary
+                if (cubes[color].count >= cubes[color].meshes.length) {
+                    cubes[color].meshes.push(new THREE.Mesh(cubeGeo, cubeMats[grid[i + 3]]));
+                }
+                var cube = cubes[color].meshes[(cubes[color].count)++];
+                scene.add(cube);
+                cube.position.fromArray(YZXFromXYZ([grid[i], grid[i + 1], grid[i + 2]])).add(cubeOffset);
             }
-            var cube = cubes[color].meshes[(cubes[color].count)++];
-            scene.add(cube);
-            cube.position.fromArray(YZXFromXYZ([grid[i], grid[i+1], grid[i+2]])).add(cubeOffset);
         }
     };
 
@@ -259,6 +264,14 @@ var RuthefjordDisplay = (function() {
             relativeCamPos.multiplyScalar(scale);
             relativeCamPosMag = relativeCamPos.length() - 0.5;
         }
+    };
+
+    module.hide = function() {
+        $(parentElem).hide();
+    };
+
+    module.show = function() {
+        $(parentElem).show();
     };
 
     return module;
