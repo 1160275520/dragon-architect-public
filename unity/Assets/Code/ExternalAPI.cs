@@ -225,12 +225,12 @@ public class ExternalAPI : MonoBehaviour
 		return World.encodeToString(world);
 	}
 	
-	public void SendCurrentWorldState() {
-		SendWorldState(EncodeCurrentWorld(), "render");
+	public void SendCurrentWorldState(float dt) {
+		SendWorldState(EncodeCurrentWorld(), "{\"mode\":\"render\", \"dt\":" + dt + "}");
 	}
 	
 	public void EAPI_RequestWorldState(string ignored) {
-		SendWorldState(EncodeCurrentWorld(), "save");
+		SendWorldState(EncodeCurrentWorld(), "{\"mode\":\"save\"}");
 	}
 
     public void EAPI_SetProgramExecutionSpeed(string parameter) {

@@ -254,7 +254,7 @@ public class ProgramManager : MonoBehaviour {
                 this.lastStatementExecutionTime = Time.time;
                 var cs = debugger.CurrentStep;
                 setGameState(cs.State, cs.Command, cs.LastExecuted, dt);
-				GetComponent<ExternalAPI>().SendCurrentWorldState();
+				GetComponent<ExternalAPI>().SendCurrentWorldState(dt);
             }
         }
 	}

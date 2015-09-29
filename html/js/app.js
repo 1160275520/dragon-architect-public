@@ -1090,12 +1090,13 @@ handler.onWorldDataChunkSend = function(chunk) {
     world_data += chunk;
 };
 
-handler.onWorldDataEnd = function(mode) {
-    //console.log("mode: " + mode);
+handler.onWorldDataEnd = function(extra) {
+    //console.log(extra);
     //console.info(world_data);
     //console.info(JSON.parse(world_data));
     //console.info(atob(JSON.parse(world_data).cubes.data));
-    switch(mode) {
+    var extra_data = JSON.parse(extra);
+    switch(extra_data.mode) {
         case "save":
             Storage.save('sandbox_world_data', world_data);
             break;
@@ -1117,7 +1118,7 @@ handler.onWorldDataEnd = function(mode) {
                 intArray[i] = byteNumbers[o] << 0 | byteNumbers[o+1] << 8 | byteNumbers[o+2] << 16 | byteNumbers[o+3] << 24
             }
 
-            RuthefjordDisplay.setWorld(world.robots[0], intArray);
+            RuthefjordDisplay.setWorld(world.robots[0], intArray, extra_data.dt);
     }
 };
 

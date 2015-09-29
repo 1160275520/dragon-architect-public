@@ -5,18 +5,27 @@ var RuthefjordDisplay = (function() {
     var camera, scene, renderer, clock, stats;
     var cubeGeo;
     var cubes, robot;
+
+    // constants
     var wobblePeriod = 4.0;
     var wobbleMagnitude = 0.05;
     var translationSmoothness = 1.5;         // The relative speed at which the camera will catch up.
     var rotationSmoothness = 5.0;         // The relative speed at which the camera will catch up.
     var UP = new THREE.Vector3(0,0,1);
+
+    // positioning
     var relativeCamPos = new THREE.Vector3(-10,0,12);
     var relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
     var robotOffset = new THREE.Vector3(0.5,0.5,1.5);
     var cubeOffset = new THREE.Vector3(0.5,0.5,0.5);
+
     // the colors are 1-indexed for some reason
     var cubeMats = ["dummy"];
     var cubeColors = [0x1ca84f, 0xa870b7, 0xff1a6d, 0x00bcf4, 0xffc911, 0xff6e3d, 0x000000, 0xffffff];
+
+    //animation
+    var animating = false;
+    var animTime, finalBotPos, finalBotQ;
 
     function radiansOfDegrees(deg) {
         return deg / 180 * Math.PI;
@@ -34,6 +43,8 @@ var RuthefjordDisplay = (function() {
         camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
         clock = new THREE.Clock();
         cubes = {};
+        finalBotPos = new THREE.Vector3();
+        finalBotQ = new THREE.Quaternion();
 
         renderer = new THREE.WebGLRenderer( {antialias: true} );
         var dims = parent.getBoundingClientRect();
@@ -112,7 +123,7 @@ var RuthefjordDisplay = (function() {
         // lights
         var light = new THREE.DirectionalLight(0xffffff, 1.74);
         //light.position.set(0.32,0.77,-0.56); // rotating 0,0,-1 by 50 about x then 330 about y
-        light.position.set(0.56,-0.32,0.77);
+        light.position.set(-0.56,-0.32,0.77);
         scene.add(light);
         scene.add(new THREE.AmbientLight(0x404040));
 
@@ -144,6 +155,17 @@ var RuthefjordDisplay = (function() {
         var y = wobbleMagnitude * Math.cos(t * 2 * Math.PI / wobblePeriod);
         var v = new THREE.Vector3(0, y, z);
 
+        if (animating) {
+            robot.position.lerp(finalBotPos, Math.min(tDelta / animTime, 1));
+            robot.quaternion.slerp(finalBotQ, Math.min(tDelta / animTime, 1));
+            animTime -= tDelta;
+            if (animTime <= 0) {
+                robot.position.copy(finalBotPos);
+                robot.quaternion.copy(finalBotQ);
+                animating = false;
+            }
+        }
+
         var newCamPos = v.add(relativeCamPos).add(robot.position);
         camera.position.lerp(newCamPos, translationSmoothness * tDelta);
 
@@ -171,12 +193,25 @@ var RuthefjordDisplay = (function() {
     }
 
     // grid is int array where each set of 4 ints is x,y,z,color of a cube
-    module.setWorld = function(bot, grid) {
-        // set robot position and direction
-        robot.position.fromArray(YZXFromXYZ(bot.pos)).add(robotOffset);
+    module.setWorld = function(bot, grid, dt) {
+        // skip any remaining animation from previous setWorld
+        if (animating) {
+            robot.position.copy(finalBotPos);
+            robot.quaternion.copy(finalBotQ);
+            animating = false;
+        }
+        // set robot goal position and direction
+        finalBotPos.fromArray(YZXFromXYZ(bot.pos)).add(robotOffset);
         var dir = new THREE.Vector3();
         dir.fromArray(YZXFromXYZ(bot.dir));
-        robot.quaternion.setFromUnitVectors(new THREE.Vector3( 1, 0, 0 ), dir); // 1,0,0 is default direction
+        finalBotQ.setFromUnitVectors(new THREE.Vector3( 1, 0, 0 ), dir); // 1,0,0 is default direction
+        if (dt === 0) {
+            robot.position.copy(finalBotPos);
+            robot.quaternion.copy(finalBotQ);
+        } else if (!robot.position.equals(finalBotPos) || !robot.quaternion.equals(finalBotQ)) {
+            animTime = dt;
+            animating = true;
+        }
 
         // set cubes
         // clear previous cubes, reset counts
