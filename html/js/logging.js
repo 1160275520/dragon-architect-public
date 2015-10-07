@@ -15,7 +15,7 @@ self.create_random_uuid = function() {
         var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
         return v.toString(16);
     });
-}
+};
 
 /// Initializes the logging/telemetry system.
 /// If username is truthy, the username will be sent to the logging server for the corresponding userid.

@@ -1,6 +1,6 @@
 var RuthefjordDisplay = (function() {
     "use strict";
-    var module = {};
+    var self = {};
 
     var camera, scene, renderer, clock, stats, parentElem;
     var cubeGeo;
@@ -38,7 +38,7 @@ var RuthefjordDisplay = (function() {
      * positive z is up
      */
 
-    module.init = function(parent) {
+    self.init = function(parent) {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
         clock = new THREE.Clock();
@@ -131,7 +131,7 @@ var RuthefjordDisplay = (function() {
         // camera init
         camera.position.copy(relativeCamPos);
         camera.lookAt(new THREE.Vector3(0,0,0));
-        module.rotateCamera(-10);
+        self.rotateCamera(-10);
 
         robot.position.copy(robotOffset);
 
@@ -194,7 +194,7 @@ var RuthefjordDisplay = (function() {
     }
 
     // grid is int array where each set of 4 ints is x,y,z,color of a cube
-    module.setWorld = function(bot, grid, dt) {
+    self.setWorld = function(bot, grid, dt) {
         // skip any remaining animation from previous setWorld
         if (animating) {
             robot.position.copy(finalBotPos);
@@ -239,14 +239,14 @@ var RuthefjordDisplay = (function() {
         }
     };
 
-    module.rotateCamera = function(degrees) {
+    self.rotateCamera = function(degrees) {
         var q = new THREE.Quaternion();
         q.setFromAxisAngle(UP, radiansOfDegrees(degrees));
         relativeCamPos.applyQuaternion(q);
     };
 
     // degrees should be <= 10
-    module.tiltCamera = function(degrees) {
+    self.tiltCamera = function(degrees) {
         if (Math.abs(degrees) > 10) {
             console.warn("tilting by more than 10 degrees in a single step may bypass safeguards");
         }
@@ -259,20 +259,20 @@ var RuthefjordDisplay = (function() {
     };
 
     // scale should be > 0
-    module.zoomCamera = function(scale) {
+    self.zoomCamera = function(scale) {
         if ((relativeCamPosMag > 5 && scale < 1) || (relativeCamPosMag < 100 && scale > 1)) { // limits on how far or close camera can zoom
             relativeCamPos.multiplyScalar(scale);
             relativeCamPosMag = relativeCamPos.length() - 0.5;
         }
     };
 
-    module.hide = function() {
+    self.hide = function() {
         $(parentElem).hide();
     };
 
-    module.show = function() {
+    self.show = function() {
         $(parentElem).show();
     };
 
-    return module;
+    return self;
 }());
