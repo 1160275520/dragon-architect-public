@@ -11,7 +11,6 @@ var RuthefjordDisplay = (function() {
     var wobbleMagnitude = 0.05;
     var translationSmoothness = 1.5;         // The relative speed at which the camera will catch up.
     var rotationSmoothness = 5.0;         // The relative speed at which the camera will catch up.
-    var UP = new THREE.Vector3(0,0,1);
 
     // positioning
     var relativeCamPos = new THREE.Vector3(-10,0,12);
@@ -193,9 +192,10 @@ var RuthefjordDisplay = (function() {
         return [arr[2], -arr[0], arr[1]];
     }
 
-    // grid is int array where each set of 4 ints is x,y,z,color of a cube
-    self.setWorld = function(bot, grid, dt) {
-        // skip any remaining animation from previous setWorld
+    self.setDisplayFromWorld = function(dt) {
+        var bot = RuthefjordWorldState.robot;
+        var grid = RuthefjordWorldState.grid;
+        // skip any remaining animation from previous setDisplayFromWorld
         if (animating) {
             robot.position.copy(finalBotPos);
             robot.quaternion.copy(finalBotQ);
@@ -241,7 +241,7 @@ var RuthefjordDisplay = (function() {
 
     self.rotateCamera = function(degrees) {
         var q = new THREE.Quaternion();
-        q.setFromAxisAngle(UP, radiansOfDegrees(degrees));
+        q.setFromAxisAngle(RuthefjordWorldState.UP, radiansOfDegrees(degrees));
         relativeCamPos.applyQuaternion(q);
     };
 
@@ -250,10 +250,10 @@ var RuthefjordDisplay = (function() {
         if (Math.abs(degrees) > 10) {
             console.warn("tilting by more than 10 degrees in a single step may bypass safeguards");
         }
-        var curDot = relativeCamPos.clone().normalize().dot(UP);
+        var curDot = relativeCamPos.clone().normalize().dot(RuthefjordWorldState.UP);
         if ((curDot > 0.05 || degrees > 0) && (curDot < 0.95 || degrees < 0)) {
             var q = new THREE.Quaternion();
-            q.setFromAxisAngle(relativeCamPos.clone().cross(UP).normalize(), radiansOfDegrees(degrees));
+            q.setFromAxisAngle(relativeCamPos.clone().cross(RuthefjordWorldState.UP).normalize(), radiansOfDegrees(degrees));
             relativeCamPos.applyQuaternion(q);
         }
     };

@@ -673,7 +673,9 @@ $(function() {
 
         return Q.all([
             content.initialize(),
-            initialize_unity(),
+            //initialize_unity(),
+            RuthefjordManager.init(),
+            RuthefjordWorldState.init(),
             RuthefjordDisplay.init($("#three-js")[0]),
             RuthefjordBlockly.init(),
         ]);
@@ -1118,7 +1120,7 @@ handler.onWorldDataEnd = function(extra) {
                 intArray[i] = byteNumbers[o] << 0 | byteNumbers[o+1] << 8 | byteNumbers[o+2] << 16 | byteNumbers[o+3] << 24
             }
 
-            RuthefjordDisplay.setWorld(world.robots[0], intArray, extra_data.dt);
+            RuthefjordDisplay.setDisplayFromWorld(world.robots[0], intArray, extra_data.dt);
     }
 };
 
