@@ -154,7 +154,7 @@ RuthefjordBlockly.setProgram = function(program) {
     RuthefjordBlockly.ignoreNextHistory = true;
     RuthefjordBlockly.clearProgram();
 
-    RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(program));
+    RuthefjordBlockly.loadBlocks(Blockly.JSONLangOps.XMLOfJSON(program));
 
     var checkStmt = function(stmt) {
         var attr;
@@ -313,16 +313,16 @@ RuthefjordBlockly.getProgram = function() {
             // prepend a symbol to avoid clashes with builtins
             var name = '$' + block.getFieldValue("NAME");
             var params = block.arguments_;
-            var body = Blockly.UnityJSON.processStructure(block);
-            procs.push({type:"proc", meta:{id:Number(block.id)}, name:name, params:params, body:body});
+            var body = Blockly.JSONLangOps.processStructure(block);
+            procs.push({type:"procedure", meta:{id:Number(block.id)}, name:name, params:params, body:body});
         } else {
-            other = other.concat(Blockly.UnityJSON.processStructure(block));
+            other = other.concat(Blockly.JSONLangOps.processStructure(block));
         }
     });
     return {
         meta: {
             language: 'imperative_v02',
-            version: {major: 1, minor: 0}
+            version: 2
         },
         body: procs.concat(other)
     };
@@ -356,7 +356,7 @@ RuthefjordBlockly.generateBlock = function(name, text, params) {
             this.setInputsInline(true);
         }
     };
-    Blockly.UnityJSON[name] = function(block) {
+    Blockly.JSONLangOps[name] = function(block) {
         return {args:[],meta:{id:Number(block.id)},ident:name,type:"call"};
     };
     RuthefjordBlockly.AddonCommands[name] = {block: '<block type="'+name+'"></block>'};

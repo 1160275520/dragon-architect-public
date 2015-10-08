@@ -15,23 +15,23 @@ var COLOR_TEASER = '#707070';
 Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
 Blockly.Blocks.procedures.COLOR = COLOR_PROCS;
 
-Blockly.UnityJSON = {};
+Blockly.JSONLangOps = {};
 
-Blockly.UnityJSON.convertCallback = function (obj) {
-    return Blockly.UnityJSON[obj.block.type](obj.block, obj.children); 
+Blockly.JSONLangOps.convertCallback = function (obj) {
+    return Blockly.JSONLangOps[obj.block.type](obj.block, obj.children);
 };
 
 /**
  * processes the body of block and returns an array of json-ready objects
  */
-Blockly.UnityJSON.processStructure = function (block) {
+Blockly.JSONLangOps.processStructure = function (block) {
     var structure = block.getStructure();
     // if procedure, we only process its children
     if (block.getProcedureDef) {
         // procedures have no connection, so no siblings exist and we can assume the object we want is the first and only element
-        return structure[0].children.map(Blockly.UnityJSON.convertCallback).filter(function (x) { return x.skip !== true; });
+        return structure[0].children.map(Blockly.JSONLangOps.convertCallback).filter(function (x) { return x.skip !== true; });
     } else {
-        return structure.map(Blockly.UnityJSON.convertCallback).filter(function (x) { return x.skip !== true; });
+        return structure.map(Blockly.JSONLangOps.convertCallback).filter(function (x) { return x.skip !== true; });
     }
 };
 
@@ -75,7 +75,7 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     if (!Blockly.mainWorkspace.dragMode) {
         RuthefjordBlockly.updateToolbox();
     }
-}
+};
 
 Blockly.addCanvasListener("blocklyBlockDeleted", function() {
     // console.log('delete event!');
@@ -85,27 +85,27 @@ Blockly.addCanvasListener("blocklyBlockDeleted", function() {
 });
 
 function newCall(name, id, args) {
-    return {args:args,meta:{id:Number(id)},ident:name,type:"call"};
+    return {args:args,meta:{id:Number(id)},name:name,type:"execute"};
 }
 
 function makeLiteral(value) {
-    return {type:'literal', value:value};
+    return {type:'int', value:value}; // We only have int literals right now
 }
 
 function makeIdent(name) {
-    return {type:'ident', name:name};
+    return {type:'ident', value:name};
 }
 
 function makeSingleArg(block, inputName) {
     var input = block.getInlineInput(inputName, "NUM");
     if (input === null) {
-        input = block.getInlineInput(inputName, "VAR")
+        input = block.getInlineInput(inputName, "VAR");
         return makeIdent(input);
     }
     return makeLiteral(input);
 }
 
-Blockly.UnityJSON['Left'] = function(block) {
+Blockly.JSONLangOps['Left'] = function(block) {
     return newCall("Left", block.id, []);
 };
 
@@ -120,7 +120,7 @@ Blockly.Blocks['Right'] = {
     }
 };
 
-Blockly.UnityJSON['Right'] = function(block) {
+Blockly.JSONLangOps['Right'] = function(block) {
     return newCall("Right", block.id, []);
 };
 
@@ -144,7 +144,7 @@ Blockly.Blocks['Forward'] = {
     }
 };
 
-Blockly.UnityJSON['Forward'] = function(block) {
+Blockly.JSONLangOps['Forward'] = function(block) {
     return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
@@ -189,7 +189,7 @@ Blockly.Blocks['Up_teaser'] = {
     }
 };
 
-Blockly.UnityJSON['Up'] = function(block) {
+Blockly.JSONLangOps['Up'] = function(block) {
     return newCall("Up", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
@@ -234,7 +234,7 @@ Blockly.Blocks['Down_teaser'] = {
     }
 };
 
-Blockly.UnityJSON['Down'] = function(block) {
+Blockly.JSONLangOps['Down'] = function(block) {
     return newCall("Down", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
@@ -250,7 +250,7 @@ Blockly.Blocks['PlaceCube'] = {
     }
 };
 
-Blockly.UnityJSON['PlaceCube'] = function(block) {
+Blockly.JSONLangOps['PlaceCube'] = function(block) {
     return newCall("PlaceCube", block.id, [makeLiteral(Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1)]);
 };
 
@@ -277,7 +277,7 @@ Blockly.Blocks['RemoveCube_teaser'] = {
     }
 };
 
-Blockly.UnityJSON['RemoveCube'] = function(block) {
+Blockly.JSONLangOps['RemoveCube'] = function(block) {
     return newCall("RemoveCube", block.id, []);
 };
 
@@ -322,11 +322,11 @@ Blockly.Blocks['controls_repeat_teaser'] = {
 };
 
 // REPEAT
-Blockly.UnityJSON['controls_repeat'] = function(block, children) {
+Blockly.JSONLangOps['controls_repeat'] = function(block, children) {
     return {
         meta: {id:Number(block.id)},
-        numtimes: makeSingleArg(block, "TIMES"),
-        body: children.map(Blockly.UnityJSON.convertCallback),
+        number: makeSingleArg(block, "TIMES"),
+        body: children.map(Blockly.JSONLangOps.convertCallback),
         type: "repeat"
     };
 };
@@ -405,17 +405,17 @@ Blockly.Blocks['procedures_defnoreturn_teaser'] = {
 };
 
 // MATH_NUMBER
-Blockly.UnityJSON['math_number'] = function (block) {
+Blockly.JSONLangOps['math_number'] = function (block) {
     return {skip: true};
 };
 
 // VARIABLE_GET
-Blockly.UnityJSON['variables_get'] = function (block) {
+Blockly.JSONLangOps['variables_get'] = function (block) {
     return {skip: true};
 };
 
 // CALL
-Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
+Blockly.JSONLangOps['procedures_callnoreturn'] = function(block) {
     var args = [];
     block.setWarningText(null);
     for (var i = 0; i < block.arguments_.length; i++) {
@@ -430,33 +430,33 @@ Blockly.UnityJSON['procedures_callnoreturn'] = function(block) {
                 args.push(makeLiteral(data));
             }
         }
-    };
+    }
 
-    return {args:args,meta:{id:Number(block.id)},ident:'$' + block.getFieldValue("NAME"),type:"call"};
+    return {args:args,meta:{id:Number(block.id)},name:'$' + block.getFieldValue("NAME"),type:"execute"};
 };
 
 /// Transform a program from its serialized JSON representation to blockly XML representation.
-Blockly.UnityJSON.XMLOfJSON = function(program) {
+Blockly.JSONLangOps.XMLOfJSON = function(program) {
     var funcCount = 0;
     var xml = '<xml>';
 
     // pull out all top-level procedure definitions
     var groups = _.groupBy(program.body, function(stmt) {
-        return stmt.type === 'proc' ? 'proc' : 'other';
+        return stmt.type === 'procedure' ? 'procedure' : 'other';
     });
 
     // HACK NOTE: we don't deal with the prepended $ correctly yet but this sorta fixes itself when the program gets immediately sent to unity
-    _.each(groups.proc, function(proc) {
+    _.each(groups.procedure, function(proc) {
         var x = 110 + 200*(funcCount % 2);
         var y = 150 + 250*Math.floor(funcCount/2);
-        var type = proc.meta && proc.meta.attributes && proc.meta.attributes["NoArgs"] ? "procedures_noargs_defnoreturn" : "procedures_defnoreturn";
+        var type = proc.params.length === 0 ? "procedures_noargs_defnoreturn" : "procedures_defnoreturn";
         xml += '<block type="' + type + '" id="' + proc.meta.id + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
-        xml += Blockly.UnityJSON.bodyToXML(proc.body, program);
+        xml += Blockly.JSONLangOps.bodyToXML(proc.body, program);
         xml += '</statement></block>';
         funcCount += 1;
     });
 
-    var main = Blockly.UnityJSON.bodyToXML(groups.other, program);
+    var main = Blockly.JSONLangOps.bodyToXML(groups.other, program);
     var pos = ' x="110" y="15"';
     var insertIndex = main.indexOf(">", main.indexOf("block"));
     main = main.substring(0, insertIndex) + pos + main.substring(insertIndex);
@@ -465,13 +465,13 @@ Blockly.UnityJSON.XMLOfJSON = function(program) {
     return xml + "</xml>";
 };
 
-Blockly.UnityJSON.bodyToXML = function (body, program) {
+Blockly.JSONLangOps.bodyToXML = function (body, program) {
     if (!body) return "";
 
-    var xml = Blockly.UnityJSON.stmtToXML(body[0], program);
+    var xml = Blockly.JSONLangOps.stmtToXML(body[0], program);
     for (var i = 1; i < body.length; i++) {
         var stmt = body[i];
-        xml += '<next>' + Blockly.UnityJSON.stmtToXML(stmt, program);
+        xml += '<next>' + Blockly.JSONLangOps.stmtToXML(stmt, program);
     }
     if (body.length > 0) { xml += '</block>'; }
     for (var i = 0; i < body.length - 1; i++) { // don't need a </next> for the first statement in the block
@@ -483,24 +483,24 @@ Blockly.UnityJSON.bodyToXML = function (body, program) {
 var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
-Blockly.UnityJSON.stmtToXML = function (stmt, program) {
+Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
     if (stmt) {
-        if (stmt.type === "call") {
-            if (_.contains(BUILT_INS, stmt.ident)) { // built-in
+        if (stmt.type === "execute") {
+            if (_.contains(BUILT_INS, stmt.name)) { // built-in
                 if (stmt.args.length === 0) {
-                    return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '">';
-                } else if (stmt.ident === 'PlaceCube') {
-                    return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
+                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '">';
+                } else if (stmt.name === 'PlaceCube') {
+                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
                 } else {
-                    return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '"><value name="VALUE">' + RuthefjordBlockly.makeNumXML(stmt.args[0].value) + '</value>';
+                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><value name="VALUE">' + RuthefjordBlockly.makeNumXML(stmt.args[0].value) + '</value>';
                 }
-            } else if (Blockly.Blocks[stmt.ident]) { // block generated from library import, assumes no parameters
-                return '<block type="' + stmt.ident + '" id="' + stmt.meta.id + '">';
+            } else if (Blockly.Blocks[stmt.name]) { // block generated from library import, assumes no parameters
+                return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '">';
             } else { // procedure call
-                return '<block type="procedures_callnoreturn" id="' + stmt.meta.id + '"><mutation name="' + stmt.ident + '"></mutation>';
+                return '<block type="procedures_callnoreturn" id="' + stmt.meta.id + '"><mutation name="' + stmt.name + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
-            return '<block type="controls_repeat" id="' + stmt.meta.id + '"><value name="TIMES">' + RuthefjordBlockly.makeNumXML(stmt.numtimes.value) + '</value><statement name="DO">' + Blockly.UnityJSON.bodyToXML(stmt.body, program) + '</statement>';
+            return '<block type="controls_repeat" id="' + stmt.meta.id + '"><value name="TIMES">' + RuthefjordBlockly.makeNumXML(stmt.number.value) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
         }
     }
     return '';

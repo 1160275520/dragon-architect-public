@@ -914,7 +914,7 @@ handler.onSandboxStart = function() {
     });
 
     if (sandboxProgAddon) {
-        RuthefjordBlockly.loadBlocks(Blockly.UnityJSON.XMLOfJSON(JSON.parse(sandboxProgAddon)));
+        RuthefjordBlockly.loadBlocks(Blockly.JSONLangOps.XMLOfJSON(JSON.parse(sandboxProgAddon)));
         sandboxProgAddon = "";
     }
 
