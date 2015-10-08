@@ -1,0 +1,14 @@
+[Unit]
+Description=Dragon Architect telemetry server
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=ruthefjord
+Restart=always
+ExecStart=/srv/papika/server/venv/bin/python /srv/papika/server/bin/runserver.py /srv/ruthefjord/server/papika_config.py
+TimeoutSec=60
+
+[Install]
+WantedBy=default.target
+

@@ -1,0 +1,14 @@
+[Unit]
+Description=Dragon Architect gameplay server
+After=network.target postgresql.service
+Requires=postgresql.service papika.service
+
+[Service]
+User=ruthefjord
+Restart=always
+ExecStart=/srv/ruthefjord/server/venv/bin/python /srv/ruthefjord/server/bin/runserver.py -p
+TimeoutSec=60
+
+[Install]
+WantedBy=default.target
+
