@@ -26,7 +26,7 @@ var q_defer = Q.defer();
 
 blocklyIframeLoaded = function() {
     Blockly = document.getElementById('blockly').contentWindow.create();
-
+    console.info("blockly init");
     RuthefjordBlocklyCustomInit();
 
     var toolbox = document.getElementById('toolbox');

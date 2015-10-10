@@ -21,24 +21,54 @@ var RuthefjordManager = (function() {
 
     module.Simulator = (function () {
         var self = {};
-        self.saveState = null;
+        self.save_state = null;
 
         self.MAX_STACK_LENGTH = 50;
         self.MAX_STEP_COUNT = 10000;
+        self.TICKS_PER_SECOND = 60;
+        self.ticks_per_step = 30; // controlled by speed slider
+        self.last_stmt_exec_time = 0;
 
-        self.setRunState = function(rs) {
-            if (self.runState === rs) return;
-            if (rs === module.RunState.stopped && self.editMode === module.EditMode.workshop) {
-                if (save) {
-                    RuthefjordWorldState.restoreFromSave(save);
+        self.set_run_state = function(rs) {
+            if (self.run_state === rs) return;
+            if (rs === module.RunState.stopped && self.edit_mode === module.EditMode.workshop) {
+                if (self.save_state) {
+                    RuthefjordWorldState.restoreFromSave(self.save_state);
                 } else {
                     throw new Error("no save state available when stopping in workshop mode");
                 }
             } else if (rs === module.RunState.executing) {
-                if (self.runState === module.RunState.stopped) {
-                    // start execution
+                if (self.run_state === module.RunState.stopped) {
+                    self.set_program(RuthefjordBlockly.getProgram());
                 }
+                // reset last statement execution time so dt isn't super wrong next time
+                self.last_stmt_exec_time = RuthefjordDisplay.clock.getElapsedTime();
+            } else if (rs === module.RunState.paused && self.run_state !== module.RunState.executing) {
+                throw new Error("cannot pause when not executing");
             }
+
+            self.run_state = rs;
+            onRuthefjordEvent("onProgramStateChange", "run_state");
+        };
+
+        self.set_edit_mode = function(em) {
+            if (self.edit_mode === em) return;
+            self.set_run_state(module.RunState.stopped);
+            // save world state here?
+            self.edit_mode = em;
+            onRuthefjordEvent("onProgramStateChange", "edit_mode");
+        };
+
+        self.set_execution_speed = function(x) {
+            self.ticks_per_step = Math.max(1, Math.floor(60 * Math.pow(0.1, 2.0 * x)));
+        };
+
+        self.set_execution_time = function (x) {
+            throw new Error("not yet implemented");
+        };
+
+        self.execute_program_to = function (ast, t) {
+            throw new Error("not yet implemented");
         };
 
         // simulate stdlib to set up globals
@@ -97,9 +127,6 @@ var RuthefjordManager = (function() {
             stdlib.body.forEach(function (p) {
                 module.globals[p.name] = p;
             });
-            // default values
-            self.runState = module.RunState.stopped;
-            self.editMode = module.EditMode.sandbox;
         };
 
         function pop_next_statement() {
@@ -131,7 +158,7 @@ var RuthefjordManager = (function() {
         // to_execute is a list of statements, args is a list of two-element lists where the first element is the
         // parameter name, and the second element is the argument value
         function push_stack_state(to_execute, args) {
-            if (self.call_stack.length >= MAX_STACK_LENGTH) {
+            if (self.call_stack.length >= self.MAX_STACK_LENGTH) {
                 throw new Error("max stack size exceeded!");
             }
 
@@ -148,10 +175,6 @@ var RuthefjordManager = (function() {
         }
 
         function step(stmt) {
-            self.total_steps += 1;
-            if (total_steps > MAX_STEP_COUNT) {
-                throw new Error("max step count exceeded!");
-            }
             console.log(stmt);
             switch (stmt.type) {
                 case "procedure": // procedure definition
@@ -180,35 +203,36 @@ var RuthefjordManager = (function() {
                     }
                     break;
                 case "command": // imperative robot instructions
-                    var curPos = RuthefjordWorldState.robot.pos;
-                    var curDir = RuthefjordWorldState.robot.dir;
+                    var cur_pos = RuthefjordWorldState.robot.pos;
+                    var cur_dir = RuthefjordWorldState.robot.dir;
                     switch (stmt.name) {
                         case "cube":
-                            RuthefjordWorldState.grid[curPos.toArray()] = last(self.call_stack).context["color"];
+                            RuthefjordWorldState.grid[cur_pos.toArray()] = last(self.call_stack).context["color"].value;
                             break;
                         case "forward":
-                            curPos.add(curDir);
+                            cur_pos.add(cur_dir);
                             break;
                         case "up":
-                            curPos.add(RuthefjordWorldState.UP);
+                            cur_pos.add(RuthefjordWorldState.UP);
                             break;
                         case "down":
-                            if (curPos.z > 0) {
-                                curPos.add(RuthefjordWorldState.DOWN);
+                            if (cur_pos.z > 0) {
+                                cur_pos.add(RuthefjordWorldState.DOWN);
                             }
                             break;
                         case "left":
-                            RuthefjordWorldState.robot.dir = new THREE.Vector3(-curDir.y, curDir.x, 0);
+                            RuthefjordWorldState.robot.dir = new THREE.Vector3(-cur_dir.y, cur_dir.x, 0);
                             break;
                         case "right":
-                            RuthefjordWorldState.robot.dir = new THREE.Vector3(curDir.y, -curDir.x, 0);
+                            RuthefjordWorldState.robot.dir = new THREE.Vector3(cur_dir.y, -cur_dir.x, 0);
                             break;
                         case "remove":
-                            delete RuthefjordWorldState.grid[curPos.toArray()];
+                            delete RuthefjordWorldState.grid[cur_pos.toArray()];
                             break;
                         default:
                             throw new Error(stmt.name + " not a recognized command");
                     }
+                    RuthefjordWorldState.dirty = true;
                     break;
                 default:
                     throw new Error("statement type " + stmt.type + " not recognized");
@@ -216,25 +240,55 @@ var RuthefjordManager = (function() {
             }
         }
 
-        // simulates program given by ast, applying commands along the way
-        self.startExecution = function (ast) {
-            if (self.editMode === module.EditMode.workshop && self.saveState === null) {
-                self.saveState = RuthefjordWorldState.save();
+        self.set_program = function (ast) {
+            self.last_program_sent = ast;
+            if (self.edit_mode === module.EditMode.workshop && self.save_state === null) {
+                self.save_state = RuthefjordWorldState.save();
             }
 
             self.call_stack = [];
             self.total_steps = 0;
 
-            push_stack_state(ast.body, []);
-            while (self.call_stack.length > 0 && self.runState === module.RunState.executing) {
-                var s = pop_next_statement();
-                if (s) {
-                    step(s);
-                }
+            if (ast.body) { // we may be passed a null program
+                push_stack_state(ast.body, []);
             }
         };
 
+        self.update = function(dt, t) {
+            if (self.run_state === module.RunState.executing) {
+                var step_delta = dt * self.TICKS_PER_SECOND / self.ticks_per_step;
+                var old_tick = Math.floor(self.total_steps);
+                self.total_steps += step_delta;
+                var new_tick = Math.floor(self.total_steps);
+                var num_steps = new_tick - old_tick;
 
+                if (self.total_steps > self.MAX_STEP_COUNT) {
+                    throw new Error("max step count exceeded!");
+                }
+
+                var transition_time = num_steps === 1 ? t - self.last_stmt_exec_time : 0;
+                while (num_steps > 0) {
+                    var s = pop_next_statement();
+                    if (s) {
+                        step(s);
+                        self.last_stmt_exec_time = t;
+                        if (s.type === "command") {
+                            num_steps--;
+                        }
+                    }
+                    if (self.call_stack.length === 0) {
+                        self.set_run_state(self.edit_mode === module.EditMode.sandbox ? module.RunState.stopped : module.RunState.finished)
+                        return transition_time;
+                    }
+                }
+                return transition_time;
+            } else if (self.run_state === module.RunState.paused) {
+                // update last statement execution time when paused so transition
+                // time is reasonable if/when execution resumes
+                self.last_stmt_exec_time = t;
+            }
+            return 0; // dummy transition_time
+        };
 
         return self;
     }());

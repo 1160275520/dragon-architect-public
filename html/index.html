@@ -22,7 +22,6 @@
     <script src="lib/dagre/dagre.js"></script>
     <script src="lib/dagre-d3/dagre-d3.js"></script>
     <script src="lib/purl/purl.js"></script>
-    <script src="lib/unity/UnityObject2.js"></script>
     <script src="lib/papika.js"></script>
     <script src="lib/fermata/fermata.js"></script>
     <script src="lib/bowser/bowser.js"></script>
@@ -34,7 +33,7 @@
     <script src="js/config.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/db.js"></script>
-    <script src="js/unity.js"></script>
+    <script src="js/worldstate.js"></script>
     <script src="js/display.js"></script>
     <script src="js/simulator.js"></script>
     <script src="js/app.js"></script>
@@ -71,9 +70,7 @@
       </div>
     </header>
     <div class="view-loading">
-      <p id="msg-missing-unity">It appears that your browser does not have the Unity Player installed. To play this game, <a href="https://unity3d.com/webplayer">please install it here</a>.</p>
       <p id="msg-loading">Loading...</p>
-      <p id="msg-plugin-blocked">Unity is taking a long time to load! It is possible that your browser is blocking the plugin. In Chrome, you can check the right side of the address bar for a blocked plugin icon. It's also possibile that there is a bug in our program or your browser is unsupported.</p>
       <p id="msg-not-loading">Something is going wrong with initializing the game! This game is still in development, so it is likely there is a bug.</p>
     </div>
     <div id="player-consent" class="intro-msg" data-tosid="1">
@@ -151,7 +148,6 @@
           <textarea id="code-entry-area" placeholder="devmode-only text-to-code-blocks input"></textarea>
           <button id="btn-code-entry">Submit</button>
         </div>
-        <div id="unity-player"></div>
       </div>
       <div id="dialog" class="dialogUI">
         <!-- <img id="dialog-icon" src="media/dragon_icon.png"> -->

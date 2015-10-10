@@ -179,7 +179,7 @@ module.Gallery = (function() {
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
         function viewItem() {
-            RuthefjordUnity.Call.execute_program_to(item.program, 1);
+            RuthefjordManager.Simulator.execute_program_to(item.program, 1);
             RuthefjordUI.State.goToViewer(function () {});
         }
         $(viewBtn).on('click', viewItem);
@@ -658,12 +658,12 @@ module.CameraControls = (function() {
 
     self.viewMode = function() {
         self.cameraMode = "viewmode";
-        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
     };
 
     self.gameMode = function() {
         self.cameraMode = "gamemode";
-        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
     };
 
     return self;
@@ -921,7 +921,7 @@ module.confirmBackspaceNavigations = function() {
             return "Are you sure you want to leave this page?"
         }
     });
-}
+};
 
 return module;
 }());
