@@ -17,9 +17,7 @@ RuthefjordWorldState = (function() {
 
     // returns a JSON string representing the world state
     self.save = function() {
-        var botSave = {pos:self.robot.pos.clone(), dir:self.robot.dir.clone()};
-        var gridSave = JSON.parse(JSON.stringify(self.grid));
-        return JSON.stringify({bot:botSave, grid:gridSave});
+        return JSON.stringify(self.clone());
     };
 
     // loads the world state from a JSON string
@@ -27,11 +25,21 @@ RuthefjordWorldState = (function() {
         if (save) {
             save = JSON.parse(save);
             self.robot = {};
-            self.robot.pos = new THREE.Vector3(save.bot.pos.x, save.bot.pos.y, save.bot.pos.z);
-            self.robot.dir = new THREE.Vector3(save.bot.dir.x, save.bot.dir.y, save.bot.dir.z);
+            self.robot.pos = new THREE.Vector3(save.robot.pos.x, save.robot.pos.y, save.robot.pos.z);
+            self.robot.dir = new THREE.Vector3(save.robot.dir.x, save.robot.dir.y, save.robot.dir.z);
             self.grid = save.grid;
             self.dirty = true;
         }
+    };
+
+    self.clone = function() {
+        var c = {};
+        c.robot = {
+            pos: self.robot.pos.clone(),
+            dir: self.robot.dir.clone()
+        };
+        c.grid = JSON.parse(JSON.stringify(self.grid));
+        return c;
     };
 
     return self;

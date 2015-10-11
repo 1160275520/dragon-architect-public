@@ -174,7 +174,7 @@ var RuthefjordManager = (function() {
             self.call_stack.push({to_execute: stmts, context: context});
         }
 
-        function step(stmt) {
+        function step(stmt, state) {
             console.log(stmt);
             switch (stmt.type) {
                 case "procedure": // procedure definition
@@ -203,36 +203,36 @@ var RuthefjordManager = (function() {
                     }
                     break;
                 case "command": // imperative robot instructions
-                    var cur_pos = RuthefjordWorldState.robot.pos;
-                    var cur_dir = RuthefjordWorldState.robot.dir;
+                    var cur_pos = state.robot.pos;
+                    var cur_dir = state.robot.dir;
                     switch (stmt.name) {
                         case "cube":
-                            RuthefjordWorldState.grid[cur_pos.toArray()] = last(self.call_stack).context["color"].value;
+                            state.grid[cur_pos.toArray()] = last(self.call_stack).context["color"].value;
                             break;
                         case "forward":
                             cur_pos.add(cur_dir);
                             break;
                         case "up":
-                            cur_pos.add(RuthefjordWorldState.UP);
+                            cur_pos.add(state.UP);
                             break;
                         case "down":
                             if (cur_pos.z > 0) {
-                                cur_pos.add(RuthefjordWorldState.DOWN);
+                                cur_pos.add(state.DOWN);
                             }
                             break;
                         case "left":
-                            RuthefjordWorldState.robot.dir = new THREE.Vector3(-cur_dir.y, cur_dir.x, 0);
+                            state.robot.dir = new THREE.Vector3(-cur_dir.y, cur_dir.x, 0);
                             break;
                         case "right":
-                            RuthefjordWorldState.robot.dir = new THREE.Vector3(cur_dir.y, -cur_dir.x, 0);
+                            state.robot.dir = new THREE.Vector3(cur_dir.y, -cur_dir.x, 0);
                             break;
                         case "remove":
-                            delete RuthefjordWorldState.grid[cur_pos.toArray()];
+                            delete state.grid[cur_pos.toArray()];
                             break;
                         default:
                             throw new Error(stmt.name + " not a recognized command");
                     }
-                    RuthefjordWorldState.dirty = true;
+                    state.dirty = true;
                     break;
                 default:
                     throw new Error("statement type " + stmt.type + " not recognized");
@@ -254,7 +254,28 @@ var RuthefjordManager = (function() {
             }
         };
 
-        self.update = function(dt, t) {
+        // run program from ast to completion, making updates to a clone of state
+        // returns updated clone of state
+        self.get_final_state = function(ast, orig_state) {
+            if (self.call_stack.length > 0) {
+                throw new Error("this might interfere with currently executing program");
+            }
+            self.call_stack = [];
+            self.total_steps = 0;
+            var state = orig_state.clone();
+            if (ast.body) { // we may be passed a null program
+                push_stack_state(ast.body, []);
+            }
+            while (self.call_stack.length > 0) {
+                var s = pop_next_statement();
+                if (s) {
+                    step(s, state);
+                }
+            }
+            return state;
+        };
+
+        self.update = function(dt, t, state) {
             if (self.run_state === module.RunState.executing) {
                 var step_delta = dt * self.TICKS_PER_SECOND / self.ticks_per_step;
                 var old_tick = Math.floor(self.total_steps);
@@ -270,7 +291,7 @@ var RuthefjordManager = (function() {
                 while (num_steps > 0) {
                     var s = pop_next_statement();
                     if (s) {
-                        step(s);
+                        step(s, state);
                         self.last_stmt_exec_time = t;
                         if (s.type === "command") {
                             num_steps--;

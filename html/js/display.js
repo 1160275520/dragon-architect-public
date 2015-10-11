@@ -154,7 +154,7 @@ var RuthefjordDisplay = (function() {
         var t = self.clock.getElapsedTime();
         var dt = t - self.oldTime;
         self.oldTime = t;
-        var transition_time = RuthefjordManager.Simulator.update(dt, t);
+        var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
         if (RuthefjordWorldState.dirty) {
             self.setDisplayFromWorld(transition_time);
         }
@@ -167,7 +167,7 @@ var RuthefjordDisplay = (function() {
         scene.remove(zLine);
         var grid = RuthefjordWorldState.grid;
         // find nearest filled cell below robot
-        // use the robot.position (instead of RuthefjordWorldState.bot.pos), so height is correct when animating
+        // use robot.position (instead of RuthefjordWorldState.robot.pos), so height is correct when animating
         // use Math.floor to compensate for robotOffset
         var height = robot.position.z;
         for (var z = Math.floor(robot.position.z); z >= 0; z--) {

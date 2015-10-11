@@ -16,7 +16,8 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d"},
+        "program": "content/puzzle_code/tutorial.movement2d.txt",
+        "goal": {"source":"from-program", "type":"robot"},
         "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
             "summary": "Click {go} to have me run my program!",
@@ -94,11 +95,11 @@
             "highlighted": ["RemoveCube"]
         },
         "world": {
-            "cubes": {"type":"json", "data":[
-                {"pos": [3,0,0], "blk": 0},
-                {"pos": [4,0,0], "blk": 0},
-                {"pos": [5,0,0], "blk": 0}
-            ]},
+            "cubes": [
+                {"pos": [3,0,0], "color": 1},
+                {"pos": [4,0,0], "color": 1},
+                {"pos": [5,0,0], "color": 1}
+            ],
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"resource", "value":"puzzle/remove.remove_cubes"},
