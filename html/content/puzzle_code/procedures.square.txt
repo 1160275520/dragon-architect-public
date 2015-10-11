@@ -1,0 +1,8 @@
+#lang imperative:1.0
+
+@NoDelete=true
+@NoArgs=true
+define Square()
+    pass
+
+Square()

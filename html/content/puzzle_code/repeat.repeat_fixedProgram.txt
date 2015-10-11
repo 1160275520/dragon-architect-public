@@ -1,0 +1,10 @@
+#lang imperative:1.0
+@FrozenBlocks=true
+repeat 10 times
+    @FrozenBlocks=true
+    @FrozenArgs=true
+    Forward(2)
+    Right()
+    Forward(2)
+    PlaceCube(1)
+    Left()
