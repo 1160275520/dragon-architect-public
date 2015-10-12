@@ -7,7 +7,6 @@
     },
     "tutorial.movement2d_part1": {
         "name": "2D Movement part 1",
-        "component": "PuzMovement2D_1",
         "format_version": 2,
         "library": {
             "restricted": ["blocks"],
@@ -18,8 +17,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type": "file", "value":"content/puzzle_code/tutorial.movement2d.json"},
-        "solution": "content/puzzle_code/tutorial.movement2d.solution.json",
-        "goal": {"source":"solution", "type":"robot"},
+        "goal": {"source":"run-only"},
         "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
             "summary": "Click {go} to have me run my program!",
@@ -28,7 +26,7 @@
     },
     "tutorial.movement2d_part2": {
         "name": "2D Movement part 2",
-        "component": "PuzMovement2D_2",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
@@ -40,7 +38,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part2"},
+        "program": {"type":"file", "value":"puzzle/tutorial.movement2d_part2"},
+        "solution": "content/puzzle_code/tutorial.movement2d_part2.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
         "instructions": {
             "summary": "I need to get to the {pinkboxGround}, and my program doesn't move me far enough.",

@@ -53,7 +53,12 @@ var RuthefjordPuzzle = (function () {
                         }
                     });
                     break;
-                default :
+                case "run-only":
+                    win_predicate = function () {
+                        return is_running_but_done_executing();
+                    };
+                    break;
+                default:
                     throw new Error(puzzle.goal.source + " not a supported goal source");
             }
         } else {
