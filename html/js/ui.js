@@ -44,11 +44,15 @@ module.State = (function(){ "use strict";
     };
 
     self.goToIntro = function(cb) {
-        if (current_state !== 'title') {
-            throw new Error('can only transition to intro from title!');
-        }
+        // title has been removed (for now)
+        //if (current_state !== 'title') {
+        //    throw new Error('can only transition to intro from title!');
+        //}
         current_state = 'intro';
 
+        hideAll();
+        $('.codeEditor').show();
+        RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
 

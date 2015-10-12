@@ -257,7 +257,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
             if (sceneSelectType === 'tutorial') {
                 $('.hideTutorial').hide();
             }
-            //RuthefjordUnity.Call.request_start_puzzle(info);
+            RuthefjordPuzzle.request_start_puzzle(info);
         });
         win_btn_msg = finish_msg;
     }
@@ -711,7 +711,7 @@ $(function() {
                         });
                     } else {
                         $("#btn-alpha-continue").on('click', function() {
-                            setState_title();
+                            setState_intro();
                         });
                     }
                 });
@@ -745,11 +745,11 @@ function clear_level_listeners() {
     levelListeners = [];
 }
 
-var PUZZLE_FORMAT_VERSION = 1;
+var PUZZLE_FORMAT_VERSION = 2;
 
 function start_editor(info) {
 
-    if (info.puzzle.version !== PUZZLE_FORMAT_VERSION) {
+    if (info.puzzle.format_version !== PUZZLE_FORMAT_VERSION) {
         console.error("Invalid puzzle info version '" + info.puzzle.version + "'!");
         return;
     }
@@ -813,9 +813,10 @@ function start_editor(info) {
 
         if (info.puzzle.program) {
             switch (info.puzzle.program.type) {
-                case "json":
-                    var program = JSON.parse(info.puzzle.program.value);
-                    RuthefjordBlockly.setProgram(program);
+                case "file":
+                    Q($.get(info.puzzle.program.value)).then(function (program) {
+                        RuthefjordBlockly.setProgram(program);
+                    });
                     break;
                 case "xml":
                     RuthefjordBlockly.clearProgram();
@@ -850,6 +851,7 @@ handler.onSandboxStart = function() {
     current_scene = "sandbox";
 
     clear_level_listeners();
+    RuthefjordDisplay.clearTargets(); // remove target objects put in the scene by puzzles
 
     var summary = "Have fun and build stuff!";
     if (!RUTHEFJORD_CONFIG.features.sandbox_only) {
@@ -861,7 +863,7 @@ handler.onSandboxStart = function() {
             checksum: 0,
             is_starting: true,
             puzzle: {
-                version: PUZZLE_FORMAT_VERSION,
+                format_version: PUZZLE_FORMAT_VERSION,
                 logging_id: "ee3d8d04-1bd0-4517-b5ed-e52f47f86dd0",
                 library: {required:[],granted:[]},
                 program: {type: 'xml', value: sandbox_program},
@@ -903,10 +905,10 @@ handler.onSandboxStart = function() {
     }
 };
 
-handler.onPuzzleChange = function(json) {
+handler.onPuzzleChange = function(info) {
     // console.log('starting puzzle ' + json);
     current_scene = "puzzle";
-    start_editor(JSON.parse(json));
+    start_editor(info);
 };
 
 function clearBlocklyClass (className) {

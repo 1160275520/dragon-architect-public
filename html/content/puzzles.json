@@ -8,6 +8,7 @@
     "tutorial.movement2d_part1": {
         "name": "2D Movement part 1",
         "component": "PuzMovement2D_1",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": [],
@@ -16,8 +17,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": "content/puzzle_code/tutorial.movement2d.txt",
-        "goal": {"source":"from-program", "type":"robot"},
+        "program": {"type": "file", "value":"content/puzzle_code/tutorial.movement2d.json"},
+        "solution": "content/puzzle_code/tutorial.movement2d.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
             "summary": "Click {go} to have me run my program!",

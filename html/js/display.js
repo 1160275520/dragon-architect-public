@@ -3,8 +3,8 @@ var RuthefjordDisplay = (function() {
     var self = {};
 
     var camera, scene, renderer, stats, parent;
-    var cubeGeo;
-    var cubes, robot, zLine, zLineMat, zCuePlane;
+    var cubeGeo, targetGeo, cubeTargetMat;
+    var cubes, robot, zLine, zLineMat, zCuePlane, robotTarget, targetShadow;
 
     // constants
     var WOBBLE_PERIOD = 4.0;
@@ -46,6 +46,7 @@ var RuthefjordDisplay = (function() {
         self.clock = new THREE.Clock();
         self.oldTime = 0;
         cubes = {};
+        cubes.targets = [];
         finalBotPos = new THREE.Vector3();
         finalBotQ = new THREE.Quaternion();
 
@@ -104,6 +105,11 @@ var RuthefjordDisplay = (function() {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex}));
             cubes[color] = {count:0, meshes:[]};
         });
+        targetGeo = new THREE.BoxGeometry(1.1, 1.1, 1.1);
+        cubeTargetMat = new THREE.MeshLambertMaterial({color:0x7FA5F0, transparent: true, opacity:0.34});
+        robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:0xdf67be, transparent: true, opacity:0.35}));
+        targetShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
+            new THREE.MeshBasicMaterial({color:0x686868, transparent: true, opacity: 0.7, side: THREE.DoubleSide}));
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
@@ -155,6 +161,7 @@ var RuthefjordDisplay = (function() {
         var dt = t - self.oldTime;
         self.oldTime = t;
         var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
+        RuthefjordPuzzle.check_win_predicate();
         if (RuthefjordWorldState.dirty) {
             self.setDisplayFromWorld(transition_time);
         }
@@ -275,6 +282,35 @@ var RuthefjordDisplay = (function() {
                 cube.position.copy(Vector3FromString(cubePos)).add(cubeOffset);
             }
         }
+    };
+
+    self.addRobotTarget = function(pos) {
+        robotTarget.position.copy(pos).add(robotOffset);
+        var shadow = targetShadow.clone();
+        robotTarget.shadow = shadow;
+        shadow.position.copy(robotTarget.position);
+        shadow.position.setZ(0.01);
+        scene.add(robotTarget);
+        scene.add(shadow);
+    };
+
+    self.addCubeTargets = function(grid) {
+        cubes.targets = [];
+        for (var cubePos in grid) {
+            var target = new THREE.Mesh(targetGeo, cubeTargetMat);
+            target.position.copy(Vector3FromString(cubePos)).add(cubeOffset);
+            cubes.targets.push(target);
+            scene.add(target);
+        }
+    };
+
+    self.clearTargets = function() {
+        scene.remove(robotTarget);
+        scene.remove(robotTarget.shadow);
+        cubes.targets.forEach(function (target) {
+            scene.remove(target);
+        });
+        cubes.targets = [];
     };
 
     self.rotateCamera = function(degrees) {
