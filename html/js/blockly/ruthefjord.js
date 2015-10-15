@@ -161,15 +161,15 @@ RuthefjordBlockly.setProgram = function(program) {
         if (stmt.meta) { attr = stmt.meta.attributes; }
         if (attr) {
             var block = Blockly.getMainWorkspace().getBlockById(stmt.meta.id);
-            if (attr['FrozenBlocks']) {
+            if (attr.FrozenBlocks) {
                 var doFreezeArgs = Boolean(attr['FrozenArgs']);
                 RuthefjordBlockly.freezeBody(block, doFreezeArgs);
                 block.setMovable(true); // let only the top block move
             }
-            if (attr['NoMove']) {
+            if (attr.NoMove) {
                 block.setMovable(false);
             }
-            if (attr['NoDelete']) {
+            if (attr.NoDelete) {
                 block.setDeletable(false);
             }
         }

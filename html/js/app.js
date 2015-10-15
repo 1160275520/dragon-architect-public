@@ -15,9 +15,6 @@ var win_btn_msg;
 
 var dont_expand_instructions = false;
 
-// flag for when unity is rendering gallery thumbnails
-var galleryRender = false; 
-
 // flag and data for when code from a gallery item is added to the sandbox
 var sandboxProgAddon = ""; 
 
@@ -649,6 +646,7 @@ $(function() {
         // set up default values, needs to happen here to ensure Blocky has been loaded
         RuthefjordManager.Simulator.set_edit_mode(RuthefjordManager.EditMode.sandbox);
         RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
+
         isInitialized = true;
 
         // turn off gallery elements if diabled
@@ -852,6 +850,7 @@ handler.onSandboxStart = function() {
 
     clear_level_listeners();
     RuthefjordDisplay.clearTargets(); // remove target objects put in the scene by puzzles
+    RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
 
     var summary = "Have fun and build stuff!";
     if (!RUTHEFJORD_CONFIG.features.sandbox_only) {
@@ -1026,13 +1025,6 @@ handler.onDebugHighlight = function(id) {
     }
 };
 
-handler.onSetColors = function(json) {
-    // console.info('on set colors!');
-    var colors = JSON.parse(json);
-    Blockly.FieldColour.COLOURS = colors;
-    Blockly.FieldColour.COLUMNS = Math.min(colors.length, 8);
-};
-
 // sent the moment they "win" a puzzle
 handler.onPuzzleComplete = function(puzzle_id) {
     progress.mark_puzzle_completed(puzzle_id, game_info.puzzles[puzzle_id]);
@@ -1101,9 +1093,8 @@ handler.onCubeCount = function(count) {
     RuthefjordUI.CubeCounter.update(count);
 };
 
-handler.onRender = function(data) {
-    var json = JSON.parse(data);
-    document.getElementById(json.id).src = "data:image/png;base64," + json.src;
+handler.onScreenshot = function(data) {
+    document.getElementById(data.id).src = data.src;
     RuthefjordUI.State.goToShare(function () {});
 };
 

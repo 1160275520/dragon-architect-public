@@ -23,7 +23,7 @@ var RuthefjordPuzzle = (function () {
             }
             if (puzzle.world.cubes) {
                 puzzle.world.cubes.forEach(function (cube) {
-                    RuthefjordWorldState.cubes[cube.pos] = cube.color;
+                    RuthefjordWorldState.grid[cube.pos] = cube.color;
                 });
             }
             RuthefjordWorldState.dirty = true;
@@ -32,12 +32,15 @@ var RuthefjordPuzzle = (function () {
         }
         // puzzles are always in workshop mode
         RuthefjordManager.Simulator.set_edit_mode(RuthefjordManager.EditMode.workshop);
+        RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
         // start_editor in app.js takes care of everything else except setting up and checking puzzle objectives
+        RuthefjordDisplay.clearTargets();
+        console.log(puzzle);
         if (puzzle.goal) {
             switch (puzzle.goal.source) {
                 case "solution":
                     Q($.get(puzzle.solution)).then(function (json) {
-                        var final_state = RuthefjordManager.Simulator.get_final_state(json, RuthefjordWorldState);
+                        var final_state = RuthefjordManager.Simulator.get_final_state(json, RuthefjordWorldState.clone());
                         switch(puzzle.goal.type) {
                             case "robot":
                                 // display target location
@@ -48,6 +51,13 @@ var RuthefjordPuzzle = (function () {
                                         RuthefjordWorldState.robot.pos.equals(final_state.robot.pos);
                                 };
                                 break;
+                            case "cubes":
+                                RuthefjordDisplay.addCubeTargets(final_state.grid);
+                                win_predicate = function () {
+                                    return is_running_but_done_executing() &&
+                                        _.isEqual(final_state.grid, RuthefjordWorldState.grid);
+                                };
+                                break;
                             default:
                                 throw new Error(puzzle.goal.type + " not a supported type of goal from solution");
                         }
@@ -56,6 +66,12 @@ var RuthefjordPuzzle = (function () {
                 case "run-only":
                     win_predicate = function () {
                         return is_running_but_done_executing();
+                    };
+                    break;
+                case "min-cubes":
+                    win_predicate = function () {
+                        return is_running_but_done_executing() &&
+                                Object.keys(RuthefjordWorldState.grid).length >= puzzle.goal.value;
                     };
                     break;
                 default:

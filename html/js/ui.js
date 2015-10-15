@@ -151,7 +151,8 @@ module.Share = (function() {
             callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
             show_buttons: false,
         });
-        RuthefjordUnity.Call.render_current_frame("share-thumb");
+        RuthefjordDisplay.screenshot("share-thumb");
+        RuthefjordUI.State.goToShare(function () {});
         $("#btn-share-submit").off('click'); // clear previous handler
         $("#btn-share-submit").on('click', function () {submit(cb);});
     };

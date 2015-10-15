@@ -38,7 +38,7 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"file", "value":"puzzle/tutorial.movement2d_part2"},
+        "program": {"type":"file", "value":"content/puzzle_code/tutorial.movement2d_part2.json"},
         "solution": "content/puzzle_code/tutorial.movement2d_part2.solution.json",
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
@@ -49,7 +49,7 @@
     },
     "tutorial.movement2d_part3": {
         "name": "2D Movement part 3",
-        "component": "PuzMovement2D_3",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
@@ -61,7 +61,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part3"},
+        "program": {"type":"file", "value":"content/puzzle_code/tutorial.movement2d_part3.json"},
+        "solution": "content/puzzle_code/tutorial.movement2d_part3.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
         "instructions": {
             "summary": "The {pinkboxGround} has moved. Change my program to help me get there!",
@@ -70,7 +72,7 @@
     },
     "tutorial.place_cubes": {
         "name": "Placing Cubes",
-        "component": "PuzPlacement",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
@@ -79,7 +81,11 @@
         "tutorial": {
             "highlighted": ["PlaceCube", "Forward"]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.placement"},
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"file", "value":"content/puzzle_code/tutorial.placement.json"},
+        "goal": {"source":"min-cubes", "value":4},
         "instructions": {
             "summary": "I want to place some cubes. Help me place 4 of them!",
             "detail": "Use several {forward} and {placecube} together to place a bunch of cubes."
@@ -88,7 +94,7 @@
     },
     "remove.remove_cubes":{
         "name": "Removing Cubes",
-        "component": "PuzRemove",
+        "format_version": 2,
         "library": {
             "required": ["move2", "place"],
             "granted": ["remove"]
@@ -104,7 +110,9 @@
             ],
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/remove.remove_cubes"},
+        "program": {"type":"file", "value":"content/puzzle_code/remove.remove_cubes.json"},
+        "solution": "content/puzzle_code/remove.remove_cubes.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
             "summary": "Help me remove those three cubes!",
             "detail": "Add one more {removecube} to fix my program."
@@ -113,7 +121,7 @@
     },
     "up.what_is_up":{
         "name": "What is Up?",
-        "component": "PuzWhatIsUp",
+        "format_version": 2,
         "library": {
             "required": ["move2"],
             "granted": ["up"]
@@ -124,7 +132,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/up.what_is_up"},
+        "program": {"type":"file", "value":"content/puzzle_code/up.what_is_up.json"},
+        "solution": "content/puzzle_code/up.what_is_up.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "instructions": {
             "summary": "Help me get to the {pinkboxUp}!",
             "detail": "Use two {up} to complete my program."
@@ -133,7 +143,7 @@
     },
     "up.what_is_down":{
         "name": "What is Down?",
-        "component": "PuzWhatIsDown",
+        "format_version": 2,
         "library": {
             "required": ["move2"],
             "granted": ["down"]
@@ -142,8 +152,10 @@
             "highlighted": ["Down"]
         },
         "world": {
-            "robots": [{"pos": [2, 3, 0], "dir":[-1, 0, 0]}]
+            "robots": [{"pos": [0, -2, 3], "dir":[0, 1, 0]}]
         },
+        "solution": "content/puzzle_code/up.what_is_down.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "instructions": {
             "summary": "Help me get to the {pinkboxGround}!",
             "detail": "Use three {down} to get me there."
@@ -152,7 +164,7 @@
     },
     "up.bridge":{
         "name": "Building a Bridge",
-        "component": "PuzBridge",
+        "format_version": 2,
         "library": {
             "required": ["move2", "place", "up", "down"],
             "granted": []
@@ -160,7 +172,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/up.bridge"},
+        "program": {"type":"file", "value":"content/puzzle_code/up.bridge.json"},
+        "solution": "content/puzzle_code/up.bridge.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
             "summary": "Use what you've learned to help me put a cube in each blue space: {bridge}",
             "detail": ""
@@ -182,7 +196,7 @@
     },
     "repeat.arguments":{
         "name": "Winning Arguments",
-        "component": "PuzMovementArgs",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": [],
@@ -195,7 +209,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.arguments"},
+        "program": {"type":"file", "value":"content/puzzle_code/repeat.arguments.json"},
+        "solution": "content/puzzle_code/repeat.arguments.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
     },
     "repeat.repeat_args":{

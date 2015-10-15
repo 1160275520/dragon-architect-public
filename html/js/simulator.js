@@ -23,7 +23,7 @@ var RuthefjordManager = (function() {
         var self = {};
         self.save_state = null;
 
-        self.MAX_STACK_LENGTH = 50;
+        self.MAX_STACK_LENGTH = 5000;
         self.MAX_STEP_COUNT = 10000;
         self.TICKS_PER_SECOND = 60;
         self.ticks_per_step = 30; // controlled by speed slider
@@ -129,17 +129,17 @@ var RuthefjordManager = (function() {
             });
         };
 
-        function pop_next_statement() {
+        function pop_next_statement(sim) {
             // if call stack is empty, nothing left to do!
-            if (self.call_stack.length === 0) {
+            if (sim.call_stack.length === 0) {
                 return null;
             }
 
-            var ss = last(self.call_stack);
+            var ss = last(sim.call_stack);
 
             // if current stack state is empty, then go up a level
             if (ss.to_execute.length === 0) {
-                self.call_stack.pop();
+                sim.call_stack.pop();
                 return null;
             }
 
@@ -157,49 +157,49 @@ var RuthefjordManager = (function() {
 
         // to_execute is a list of statements, args is a list of two-element lists where the first element is the
         // parameter name, and the second element is the argument value
-        function push_stack_state(to_execute, args) {
-            if (self.call_stack.length >= self.MAX_STACK_LENGTH) {
+        function push_stack_state(to_execute, args, sim) {
+            if (sim.call_stack.length >= self.MAX_STACK_LENGTH) {
                 throw new Error("max stack size exceeded!");
             }
 
             var stmts = to_execute.slice();
             stmts.reverse();
             // copy parent context, or start with an empty one if this is the first thing.
-            var context = self.call_stack.length > 0
-                ? shallow_copy(last(self.call_stack).context)
+            var context = sim.call_stack.length > 0
+                ? shallow_copy(last(sim.call_stack).context)
                 : {};
             args.forEach(function (arg) {
                 context[arg[0]] = arg[1];
             });
-            self.call_stack.push({to_execute: stmts, context: context});
+            sim.call_stack.push({to_execute: stmts, context: context});
         }
 
-        function step(stmt, state) {
+        function step(stmt, state, sim) {
             console.log(stmt);
             switch (stmt.type) {
                 case "procedure": // procedure definition
-                    last(self.call_stack).context[stmt.name] = stmt;
+                    last(sim.call_stack).context[stmt.name] = stmt;
                     break;
                 case "execute": // procedure call
                     var proc;
-                    if (last(self.call_stack).context[stmt.name]) {
-                        proc = last(self.call_stack).context[stmt.name];
+                    if (last(sim.call_stack).context[stmt.name]) {
+                        proc = last(sim.call_stack).context[stmt.name];
                     } else if (module.globals[stmt.name]) {
                         proc = module.globals[stmt.name];
                     } else {
                         throw new Error(stmt.name + " not found");
                     }
-                    push_stack_state(proc.body, _.zip(proc.params, stmt.args));
+                    push_stack_state(proc.body, _.zip(proc.params, stmt.args), sim);
                     break;
                 case "repeat": // definite loop
                     var count;
                     if (stmt.number.type === "ident") {
-                        count = last(self.call_stack).context[stmt.number.value].value;
+                        count = last(sim.call_stack).context[stmt.number.value].value;
                     } else { // we only support int literals and identifiers
                         count = stmt.number.value;
                     }
                     for (var i = 0; i < count; i++) {
-                        push_stack_state(stmt.body, []);
+                        push_stack_state(stmt.body, [], sim);
                     }
                     break;
                 case "command": // imperative robot instructions
@@ -207,17 +207,17 @@ var RuthefjordManager = (function() {
                     var cur_dir = state.robot.dir;
                     switch (stmt.name) {
                         case "cube":
-                            state.grid[cur_pos.toArray()] = last(self.call_stack).context["color"].value;
+                            state.grid[cur_pos.toArray()] = last(sim.call_stack).context["color"].value;
                             break;
                         case "forward":
                             cur_pos.add(cur_dir);
                             break;
                         case "up":
-                            cur_pos.add(state.UP);
+                            cur_pos.add(RuthefjordWorldState.UP);
                             break;
                         case "down":
                             if (cur_pos.z > 0) {
-                                cur_pos.add(state.DOWN);
+                                cur_pos.add(RuthefjordWorldState.DOWN);
                             }
                             break;
                         case "left":
@@ -250,29 +250,45 @@ var RuthefjordManager = (function() {
             self.total_steps = 0;
 
             if (ast.body) { // we may be passed a null program
-                push_stack_state(ast.body, []);
+                push_stack_state(ast.body, [], self);
             }
         };
 
-        // run program from ast to completion, making updates to a clone of state
-        // returns updated clone of state
-        self.get_final_state = function(ast, orig_state) {
-            if (self.call_stack.length > 0) {
-                throw new Error("this might interfere with currently executing program");
-            }
-            self.call_stack = [];
-            self.total_steps = 0;
-            var state = orig_state.clone();
+        // run program from ast to completion, making updates to state
+        // returns state
+        self.get_final_state = function(ast, state) {
+            var sim = {};
+            sim.call_stack = [];
             if (ast.body) { // we may be passed a null program
-                push_stack_state(ast.body, []);
+                push_stack_state(ast.body, [], sim);
             }
-            while (self.call_stack.length > 0) {
-                var s = pop_next_statement();
+            while (sim.call_stack.length > 0) {
+                var s = pop_next_statement(sim);
                 if (s) {
-                    step(s, state);
+                    step(s, state, sim);
                 }
             }
             return state;
+        };
+
+        // returns a list of the commands generated by simulating ast
+        self.get_commands = function(ast) {
+            var commands = [];
+            var sim = {};
+            sim.call_stack = [];
+            if (ast.body) { // we may be passed a null program
+                push_stack_state(ast.body, [], sim);
+            }
+            while (sim.call_stack.length > 0) {
+                var s = pop_next_statement(sim);
+                if (s) {
+                    if (s.type === "command") {
+                        commands.push({command: s, context: shallow_copy(last(sim.call_stack).context)});
+                    }
+                    step(s, state, sim);
+                }
+            }
+            return commands;
         };
 
         self.update = function(dt, t, state) {
@@ -289,9 +305,9 @@ var RuthefjordManager = (function() {
 
                 var transition_time = num_steps === 1 ? t - self.last_stmt_exec_time : 0;
                 while (num_steps > 0) {
-                    var s = pop_next_statement();
+                    var s = pop_next_statement(self);
                     if (s) {
-                        step(s, state);
+                        step(s, state, self);
                         self.last_stmt_exec_time = t;
                         if (s.type === "command") {
                             num_steps--;

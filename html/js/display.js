@@ -22,8 +22,8 @@ var RuthefjordDisplay = (function() {
     var cubeOffset = new THREE.Vector3(0.5,0.5,0.5);
 
     // the colors are 1-indexed for some reason
-    var cubeMats = ["dummy"];
-    var cubeColors = [0x1ca84f, 0xa870b7, 0xff1a6d, 0x00bcf4, 0xffc911, 0xff6e3d, 0x000000, 0xffffff];
+    var cubeMats = [];
+    self.cubeColors = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
 
     //animation
     var animStatus = false;
@@ -57,6 +57,7 @@ var RuthefjordDisplay = (function() {
         camera.up.set(0,0,1);
         camera.updateProjectionMatrix();
         parent.append(renderer.domElement);
+        self.renderOut = false;
 
         // FPS display
         stats = new Stats();
@@ -68,7 +69,7 @@ var RuthefjordDisplay = (function() {
         parent.append(stats.domElement);
 
         // skybox
-        var path = "../media/skybox/";
+        var path = "media/skybox/";
         var format = ".jpg";
         // it's not clear to me three js does what it says it does with the six images, but I've got everything lining
         // up via trial and error
@@ -100,20 +101,20 @@ var RuthefjordDisplay = (function() {
 
         // cube geometry, materials
         cubeGeo = new THREE.BoxGeometry(1, 1, 1);
-        var tex = THREE.ImageUtils.loadTexture("../media/canvas_cube.png");
-        cubeColors.forEach(function (color) {
+        var tex = THREE.ImageUtils.loadTexture("media/canvas_cube.png");
+        _.each(self.cubeColors, function (color) {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex}));
             cubes[color] = {count:0, meshes:[]};
         });
         targetGeo = new THREE.BoxGeometry(1.1, 1.1, 1.1);
-        cubeTargetMat = new THREE.MeshLambertMaterial({color:0x7FA5F0, transparent: true, opacity:0.34});
-        robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:0xdf67be, transparent: true, opacity:0.35}));
+        cubeTargetMat = new THREE.MeshLambertMaterial({color:"#4078E6", transparent: true, opacity:0.5});
+        robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:"#df67be", transparent: true, opacity:0.5}));
         targetShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
-            new THREE.MeshBasicMaterial({color:0x686868, transparent: true, opacity: 0.7, side: THREE.DoubleSide}));
+            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.31, side: THREE.DoubleSide}));
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
-        tex = THREE.ImageUtils.loadTexture("../media/outlined_cube.png");
+        tex = THREE.ImageUtils.loadTexture("media/outlined_cube.png");
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         tex.repeat.set(100, 100);
@@ -123,13 +124,13 @@ var RuthefjordDisplay = (function() {
 
         // robot
         geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        material = new THREE.MeshLambertMaterial( {color: 0xf56e90} );
+        material = new THREE.MeshLambertMaterial( {color: "#f56e90"} );
         robot = new THREE.Mesh(geometry, material);
-        var robotDir = new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),1,0xff0000,0.5,0.2);
+        var robotDir = new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
         robot.add(robotDir);
         zLineMat = new THREE.MeshBasicMaterial( {color: 0xf2c2ce} );
         geometry = new THREE.PlaneBufferGeometry(1, 1, 32);
-        tex = THREE.ImageUtils.loadTexture("../media/y-cue.png");
+        tex = THREE.ImageUtils.loadTexture("media/y-cue.png");
         material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
         zCuePlane = new THREE.Mesh(geometry, material);
         scene.add(zCuePlane);
@@ -137,11 +138,11 @@ var RuthefjordDisplay = (function() {
         scene.add(robot);
 
         // lights
-        var light = new THREE.DirectionalLight(0xffffff, 1.74);
+        var light = new THREE.DirectionalLight("#ffffff", 1.74);
         //light.position.set(0.32,0.77,-0.56); // rotating 0,0,-1 by 50 about x then 330 about y
         light.position.set(-0.56,-0.32,0.77);
         scene.add(light);
-        scene.add(new THREE.AmbientLight(0x404040));
+        scene.add(new THREE.AmbientLight("#404040"));
 
         // camera init
         camera.position.copy(relativeCamPos);
@@ -152,6 +153,10 @@ var RuthefjordDisplay = (function() {
 
         self.clock.start();
         requestAnimationFrame(update); // change to render to omit fps display
+    };
+
+    self.screenshot = function(id) {
+        self.renderOut = {id: id};
     };
 
     // necessary for fps display
@@ -166,12 +171,20 @@ var RuthefjordDisplay = (function() {
             self.setDisplayFromWorld(transition_time);
         }
         render(dt, t);
+        if (self.renderOut) {
+            console.log(renderer.domElement.toDataURL());
+            onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src:renderer.domElement.toDataURL()});
+            self.renderOut = false;
+        }
         stats.end();
         requestAnimationFrame(update);
     };
 
     function makeZLine() {
         scene.remove(zLine);
+        if (zLine) {
+            zLine.geometry.dispose();
+        }
         var grid = RuthefjordWorldState.grid;
         // find nearest filled cell below robot
         // use robot.position (instead of RuthefjordWorldState.robot.pos), so height is correct when animating
@@ -180,7 +193,6 @@ var RuthefjordDisplay = (function() {
         for (var z = Math.floor(robot.position.z); z >= 0; z--) {
             if (grid.hasOwnProperty([Math.floor(robot.position.x), Math.floor(robot.position.y), z])) {
                 height -= z + (robotOffset.z - cubeOffset.z);
-                if (animStatus === "animating") console.log(height);
                 break;
             }
         }
@@ -248,9 +260,7 @@ var RuthefjordDisplay = (function() {
         if (bot) {
             // set robot goal position and direction
             finalBotPos.copy(bot.pos).add(robotOffset);
-            var dir = new THREE.Vector3();
-            dir.copy(bot.dir);
-            finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir); // 1,0,0 is default direction
+            finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), bot.dir); // 1,0,0 is default direction
             waitTime = dt*0.1;
             animTime = Math.min(dt*0.9, MAX_ANIMATION_TIME);
             animStatus = "waiting";
@@ -264,7 +274,7 @@ var RuthefjordDisplay = (function() {
         if (grid) {
             // set cubes
             // clear previous cubes, reset counts
-            cubeColors.forEach(function (color) {
+            self.cubeColors.forEach(function (color) {
                 cubes[color].meshes.forEach(function (mesh) {
                     scene.remove(mesh);
                 });
@@ -272,7 +282,7 @@ var RuthefjordDisplay = (function() {
             });
             // add cubes to scene
             for (var cubePos in grid) {
-                var color = cubeColors[grid[cubePos] - 1]; // color parameters are 1-indexed
+                var color = self.cubeColors[grid[cubePos]];
                 // add a new mesh, if necessary
                 if (cubes[color].count >= cubes[color].meshes.length) {
                     cubes[color].meshes.push(new THREE.Mesh(cubeGeo, cubeMats[grid[cubePos]]));
@@ -286,12 +296,10 @@ var RuthefjordDisplay = (function() {
 
     self.addRobotTarget = function(pos) {
         robotTarget.position.copy(pos).add(robotOffset);
-        var shadow = targetShadow.clone();
-        robotTarget.shadow = shadow;
-        shadow.position.copy(robotTarget.position);
-        shadow.position.setZ(0.01);
+        targetShadow.position.copy(robotTarget.position);
+        targetShadow.position.setZ(0.01);
         scene.add(robotTarget);
-        scene.add(shadow);
+        scene.add(targetShadow);
     };
 
     self.addCubeTargets = function(grid) {
@@ -306,7 +314,7 @@ var RuthefjordDisplay = (function() {
 
     self.clearTargets = function() {
         scene.remove(robotTarget);
-        scene.remove(robotTarget.shadow);
+        scene.remove(targetShadow);
         cubes.targets.forEach(function (target) {
             scene.remove(target);
         });

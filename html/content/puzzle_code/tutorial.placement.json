@@ -15,6 +15,22 @@
       },
       "name": "Forward",
       "type": "execute"
+    },
+    {
+      "args": [
+        {
+          "meta": {
+            "id": 3
+          },
+          "type": "int",
+          "value": 1
+        }
+      ],
+      "meta": {
+        "id": 4
+      },
+      "name": "PlaceCube",
+      "type": "execute"
     }
   ],
   "meta": {

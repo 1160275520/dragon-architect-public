@@ -14,6 +14,8 @@ var COLOR_TEASER = '#707070';
 
 Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
 Blockly.Blocks.procedures.COLOR = COLOR_PROCS;
+Blockly.FieldColour.COLOURS = RuthefjordDisplay.cubeColors;
+Blockly.FieldColour.COLUMNS = Math.min(RuthefjordDisplay.cubeColors.length, 8);
 
 Blockly.JSONLangOps = {};
 
@@ -251,7 +253,7 @@ Blockly.Blocks['PlaceCube'] = {
 };
 
 Blockly.JSONLangOps['PlaceCube'] = function(block) {
-    return newCall("PlaceCube", block.id, [makeLiteral(Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + 1)]);
+    return newCall("PlaceCube", block.id, [makeLiteral(Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")))]);
 };
 
 // REMOVECUBE
