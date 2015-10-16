@@ -352,6 +352,7 @@ Blockly.Blocks['procedures_noargs_defnoreturn'] = {
         this.setInputsInline(true);
         this.statementConnection_ = null;
     },
+    validate: Blockly.Blocks['procedures_defnoreturn'].validate,
     setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
     updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
     mutationToDom: Blockly.Blocks['procedures_defnoreturn'].mutationToDom,

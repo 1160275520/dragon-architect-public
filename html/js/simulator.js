@@ -207,7 +207,10 @@ var RuthefjordManager = (function() {
                     var cur_dir = state.robot.dir;
                     switch (stmt.name) {
                         case "cube":
-                            state.grid[cur_pos.toArray()] = last(sim.call_stack).context["color"].value;
+                            // do nothing if something already occupies that space
+                            if (!state.grid.hasOwnProperty(cur_pos.toArray())) {
+                                state.grid[cur_pos.toArray()] = last(sim.call_stack).context["color"].value;
+                            }
                             break;
                         case "forward":
                             cur_pos.add(cur_dir);
