@@ -954,28 +954,26 @@ handler.onProgramStateChange = function(type) {
     }
 
     // clear current highlights when not paused or currently unpausing
-    if (RuthefjordManager.Simulator.run_state !== RuthefjordManager.RunState.paused && RuthefjordManager.Simulator.run_state !== RuthefjordManager.RunState.executing) {
+    if (RuthefjordManager.Simulator.run_state !== RuthefjordManager.RunState.paused && !(type === 'run_state' && RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing)) {
         clearHighlights();
     }
 
     if (type === 'current_state') {
-        throw new Error("not yet implemented");
-        var s = json.current_state;
-
         // highlight current block
 
         if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing && !Blockly.getMainWorkspace().dragMode) {
-            if (s.current_code_elements.length > 0) {
-                var callStackIndex = 1;
+            console.log(RuthefjordManager.Simulator.current_code_elements);
+            if (RuthefjordManager.Simulator.current_code_elements.length > 0) {
+                var callStackIndex = RuthefjordManager.Simulator.current_code_elements.length - 2;
                 // add new highlights for currently executing block and all surrounding blocks
-                var block = Blockly.getMainWorkspace().getBlockById(s.current_code_elements[0].toString());
+                var block = Blockly.getMainWorkspace().getBlockById(RuthefjordManager.Simulator.current_code_elements[RuthefjordManager.Simulator.current_code_elements.length - 1].toString());
                 if (block) {
                     block.addHighlight(true);
                     while(block.getSurroundParent()) {
                         block.getSurroundParent().addHighlight();
                         if (block.getSurroundParent().type === "procedures_defnoreturn") {
                             // add highlight to the function call that we're in
-                            block = Blockly.getMainWorkspace().getBlockById(s.current_code_elements[callStackIndex++].toString());
+                            block = Blockly.getMainWorkspace().getBlockById(RuthefjordManager.Simulator.current_code_elements[callStackIndex--].toString());
                             block.addHighlight();
                         } else {
                             block = block.getSurroundParent();
@@ -990,7 +988,7 @@ handler.onProgramStateChange = function(type) {
 
         // set time slider position
 
-        RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
+        //RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
 };
 

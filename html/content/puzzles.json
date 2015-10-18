@@ -170,7 +170,7 @@
             "granted": []
         },
         "world": {
-            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+            "robots": [{"pos": [0, 0, 0], "dir":[0, -1, 0]}]
         },
         "program": {"type":"file", "value":"content/puzzle_code/up.bridge.json"},
         "solution": "content/puzzle_code/up.bridge.solution.json",
@@ -216,7 +216,7 @@
     },
     "repeat.repeat_args":{
         "name": "Line Time",
-        "component": "PuzRepeatArgs",
+        "format_version": 2,
         "library": {
             "restricted":["blocks"],
             "required": [],
@@ -227,14 +227,16 @@
             "detail": ""
         },
         "world": {
-            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+            "robots": [{"pos": [0, 0, 0], "dir":[0, -1, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/repeat.repeat_args"},
+        "program": {"type":"file", "value":"content/puzzle_code/repeat.repeat_args.json"},
+        "solution": "content/puzzle_code/repeat.repeat_args.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "340d5fc0-6c16-45ea-8681-b3d27324f92f"
     },
     "repeat.repeat_nested":{
         "name": "Square Dancing",
-        "component": "PuzRepeatNested",
+        "format_version": 2,
         "library": {
             "restricted":["move2", "place", "up", "down", "defproc", "remove"],
             "required":["repeat"],
@@ -244,7 +246,9 @@
             "summary": "Put {repeat4} around my code to have me build a square.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/repeat.repeat_nested"},
+        "program": {"type":"file", "value":"content/puzzle_code/repeat.repeat_nested.json"},
+        "solution": "content/puzzle_code/repeat.repeat_nested.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "d1405e1a-cf4f-4580-9dd1-cd85c8b5849c"
     },
     "repeat.repeat_fixedProgram": {
@@ -282,7 +286,7 @@
     },
     "repeat.repeat_tower": {
         "name": "A Towering Achievement",
-        "component": "PuzRepeatTower",
+        "format_version": 2,
         "library": {
             "required": ["move2", "place", "up"],
             "granted": ["repeat"]
@@ -291,6 +295,8 @@
             "summary": "Fill in the blueprint to have me build a tower!",
             "detail": "Each layer of the tower is a 5 by 5 square. The tower has 5 layers."
         },
+        "solution": "content/puzzle_code/repeat.repeat_tower.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "7f8b0b15-5ffb-4340-8166-5502e4bfb999"
     },
     "procedures.square": {
@@ -306,7 +312,9 @@
             "summary": "Put blocks inside {SquareProc} to have me build a square.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.square"},
+        "program": {"type":"file", "value":"content/puzzle_code/procedures.square.json"},
+        "solution": "content/puzzle_code/procedures.square.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "ff93d5bd-b26f-4614-90a2-0d420b3f105a"
     },
     "procedures.call": {

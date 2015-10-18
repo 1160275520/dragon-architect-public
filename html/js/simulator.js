@@ -76,47 +76,40 @@ var RuthefjordManager = (function() {
             var stdlib = {
                 "body": [{
                     "body": [{
-                        "body": [{"args": [], "meta": {"id": 2}, "name": "forward", "type": "command"}],
-                        "meta": {"id": 3},
-                        "number": {"meta": {"id": 1}, "type": "ident", "value": "x"},
+                        "body": [{"args": [], "name": "forward", "type": "command"}],
+                        "number": {"type": "ident", "value": "x"},
                         "type": "repeat"
-                    }], "meta": {"id": 4}, "name": "Forward", "params": ["x"], "type": "procedure"
+                    }], "name": "Forward", "params": ["x"], "type": "procedure"
                 }, {
-                    "body": [{"args": [], "meta": {"id": 5}, "name": "left", "type": "command"}],
-                    "meta": {"id": 6},
+                    "body": [{"args": [], "name": "left", "type": "command"}],
                     "name": "Left",
                     "params": [],
                     "type": "procedure"
                 }, {
-                    "body": [{"args": [], "meta": {"id": 7}, "name": "right", "type": "command"}],
-                    "meta": {"id": 8},
+                    "body": [{"args": [], "name": "right", "type": "command"}],
                     "name": "Right",
                     "params": [],
                     "type": "procedure"
                 }, {
                     "body": [{
-                        "body": [{"args": [], "meta": {"id": 10}, "name": "up", "type": "command"}],
-                        "meta": {"id": 11},
-                        "number": {"meta": {"id": 9}, "type": "ident", "value": "x"},
+                        "body": [{"args": [], "name": "up", "type": "command"}],
+                        "number": {"type": "ident", "value": "x"},
                         "type": "repeat"
-                    }], "meta": {"id": 12}, "name": "Up", "params": ["x"], "type": "procedure"
+                    }], "name": "Up", "params": ["x"], "type": "procedure"
                 }, {
                     "body": [{
-                        "body": [{"args": [], "meta": {"id": 14}, "name": "down", "type": "command"}],
-                        "meta": {"id": 15},
-                        "number": {"meta": {"id": 13}, "type": "ident", "value": "x"},
+                        "body": [{"args": [], "name": "down", "type": "command"}],
+                        "number": {"type": "ident", "value": "x"},
                         "type": "repeat"
-                    }], "meta": {"id": 16}, "name": "Down", "params": ["x"], "type": "procedure"
+                    }], "name": "Down", "params": ["x"], "type": "procedure"
                 }, {
                     "body": [{
-                        "args": [{"meta": {"id": 17}, "type": "ident", "value": "color"}],
-                        "meta": {"id": 18},
+                        "args": [{"type": "ident", "value": "color"}],
                         "name": "cube",
                         "type": "command"
-                    }], "meta": {"id": 19}, "name": "PlaceCube", "params": ["color"], "type": "procedure"
+                    }], "name": "PlaceCube", "params": ["color"], "type": "procedure"
                 }, {
-                    "body": [{"args": [], "meta": {"id": 20}, "name": "remove", "type": "command"}],
-                    "meta": {"id": 21},
+                    "body": [{"args": [], "name": "remove", "type": "command"}],
                     "name": "RemoveCube",
                     "params": [],
                     "type": "procedure"
@@ -175,7 +168,7 @@ var RuthefjordManager = (function() {
         }
 
         function step(stmt, state, sim) {
-            console.log(stmt);
+            //console.log(stmt);
             switch (stmt.type) {
                 case "procedure": // procedure definition
                     last(sim.call_stack).context[stmt.name] = stmt;
@@ -251,6 +244,7 @@ var RuthefjordManager = (function() {
 
             self.call_stack = [];
             self.total_steps = 0;
+            self.current_code_elements = [];
 
             if (ast.body) { // we may be passed a null program
                 push_stack_state(ast.body, [], self);
@@ -310,17 +304,23 @@ var RuthefjordManager = (function() {
                 while (num_steps > 0) {
                     var s = pop_next_statement(self);
                     if (s) {
+                        if (s.meta) {
+                            self.current_code_elements.push(s.meta.id);
+                        }
                         step(s, state, self);
                         self.last_stmt_exec_time = t;
                         if (s.type === "command") {
                             num_steps--;
                         }
+                    } else {
+                        self.current_code_elements.pop();
                     }
                     if (self.call_stack.length === 0) {
-                        self.set_run_state(self.edit_mode === module.EditMode.sandbox ? module.RunState.stopped : module.RunState.finished)
+                        self.set_run_state(self.edit_mode === module.EditMode.sandbox ? module.RunState.stopped : module.RunState.finished);
                         return transition_time;
                     }
                 }
+                onRuthefjordEvent("onProgramStateChange", "current_state");
                 return transition_time;
             } else if (self.run_state === module.RunState.paused) {
                 // update last statement execution time when paused so transition

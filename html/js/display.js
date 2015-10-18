@@ -219,6 +219,7 @@ var RuthefjordDisplay = (function() {
                 }
                 tDelta += waitTime; // wait time is negative, carry over into animating
                 animStatus = "animating";
+                // deliberate case fall-through since wait time is up if we get here
             case "animating":
                 robot.position.lerp(finalBotPos, Math.min(tDelta / animTime, 1));
                 robot.quaternion.slerp(finalBotQ, Math.min(tDelta / animTime, 1));
