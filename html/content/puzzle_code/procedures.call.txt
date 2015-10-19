@@ -1,7 +1,0 @@
-#lang imperative:1.0
-
-@FrozenBlocks=true
-@NoArgs=true
-define UpCube()
-    PlaceCube(1)
-    Up(1)

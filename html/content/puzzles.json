@@ -301,7 +301,7 @@
     },
     "procedures.square": {
         "name": "A Square Deal",
-        "component": "PuzProceduresSquare",
+        "format_version": 2,
         "library": {
             "restricted": ["defproc_noargs", "defproc"],
             "required": [],
@@ -319,7 +319,7 @@
     },
     "procedures.call": {
         "name": "Up By Any Other Name",
-        "component": "PuzProceduresCall",
+        "format_version": 2,
         "library": {
             "restricted": ["up", "place", "defproc", "defproc_noargs"],
             "required": [],
@@ -335,12 +335,14 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.call"},
+        "program": {"type":"file", "value":"content/puzzle_code/procedures.call.json"},
+        "solution": "content/puzzle_code/procedures.call.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "5b4e957f-9d07-4537-8d62-abd3f42cd65c"
     },
     "procedures.def": {
         "name": "Standard Operating Procedure",
-        "component": "PuzProceduresDef",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -354,6 +356,8 @@
             "summary": "Use {procDef} to get me to the {pinkboxUp}!",
             "detail": ""
         },
+        "solution": "content/puzzle_code/procedures.def.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "c74cf758-09d3-4989-9058-3d73e3ee7b3d"
     },
     "decomposition.castle": {
