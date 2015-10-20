@@ -17,7 +17,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type": "file", "value":"content/puzzle_code/tutorial.movement2d.json"},
-        "goal": {"source":"run-only"},
+        "goal": {"source":"run_only"},
         "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
             "summary": "Click {go} to have me run my program!",
@@ -85,7 +85,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "program": {"type":"file", "value":"content/puzzle_code/tutorial.placement.json"},
-        "goal": {"source":"min-cubes", "value":4},
+        "goal": {"source":"min_cubes", "value":4},
         "instructions": {
             "summary": "I want to place some cubes. Help me place 4 of them!",
             "detail": "Use several {forward} and {placecube} together to place a bunch of cubes."
@@ -362,16 +362,23 @@
     },
     "decomposition.castle": {
         "name": "Do You Wanna Build a Castle?",
-        "component": "PuzDecompCastle",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["Castle"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "MAIN": [
+                    {"proc_name": "Castle",
+                     "count": 1,
+                     "error_msg": "Run the program with one Castle block to see what it does"
+                    }
+                ]
+            }
+        },
         "instructions": {
             "summary": "Let's see if the block you have builds the castle I want. Run a program with one {castle} and click {done} when it finishes.",
             "detail": ""
@@ -444,7 +451,7 @@
     },
     "challenges.house": {
         "name": "Homemaker",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -454,11 +461,12 @@
             "summary": "Try and build a house!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "8894A795-34CB-49E5-9EF9-2F2C2A1E0377"
     },
     "challenges.name": {
         "name": "Name Game",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -468,11 +476,12 @@
             "summary": "Try and spell your name with cubes!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "C69065D3-2592-4FA0-BE0B-4E235CB12189"
     },
     "challenges.rainbow": {
         "name": "Over the Rainbow",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -482,11 +491,12 @@
             "summary": "Try and make a rainbow!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "029CB012-495E-467C-86D8-C101AF1FD27E"
     },
     "challenges.tree": {
         "name": "Tree of Life",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -496,11 +506,12 @@
             "summary": "Try and build a tree!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "E1F6F3B9-82C7-4696-827F-43846EC50ABB"
     },
     "challenges.dragon": {
-        "name": "Self Portrait",
-        "component": "UnsolvablePuzzle",
+        "name": "Zoology",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -510,11 +521,12 @@
             "summary": "Try and make a dragon!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "FC44805E-1767-444B-B9FD-6523F5CE90F8"
     },
     "challenges.castle": {
         "name": "Castlemania",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -524,6 +536,7 @@
             "summary": "Try and build a castle!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "B3B19370-9D1B-4941-BEDD-8A0391DD0A10"
     }
 }

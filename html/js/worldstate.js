@@ -42,5 +42,17 @@ RuthefjordWorldState = (function() {
         return c;
     };
 
+    // this is dumb, but it didn't seem possible to have the thing clone returns
+    // have its own clone method without completely changing how I've set this up
+    self.cloneState = function(state) {
+        var c = {};
+        c.robot = {
+            pos: state.robot.pos.clone(),
+            dir: state.robot.dir.clone()
+        };
+        c.grid = JSON.parse(JSON.stringify(state.grid));
+        return c;
+    };
+
     return self;
 }());

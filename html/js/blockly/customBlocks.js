@@ -449,7 +449,7 @@ Blockly.JSONLangOps.XMLOfJSON = function(program) {
     });
 
     // HACK NOTE: we don't deal with the prepended $ correctly yet but this sorta fixes itself when the program gets immediately sent to unity
-    _.each(groups.procedure, function(proc) {
+    _.forEach(groups.procedure, function(proc) {
         var x = 260 + 200*(funcCount % 2);
         var y = 150 + 250*Math.floor(funcCount/2);
         var type = proc.params.length === 0 ? "procedures_noargs_defnoreturn" : "procedures_defnoreturn";

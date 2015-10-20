@@ -169,7 +169,7 @@ var content = (function() {
             .then(function(json) {
                 game_info.puzzles = json;
                 // HACK we want these objects to have id as a property instead of being a mysterious key mapping.
-                _.each(json, function(val, key) {
+                _.forEach(json, function(val, key) {
                     val.id = key;
                 });
             });
@@ -594,9 +594,9 @@ $(function() {
         });
 
         $("#btn-done").on('click', function() {
-            RuthefjordManager.Simulator.set_program(JSON.stringify(RuthefjordBlockly.getProgram()));
-            RuthefjordManager.Simulator.set_execution_time(1);
-            //RuthefjordUnity.Call.submit_solution();
+            RuthefjordManager.Simulator.set_program(RuthefjordBlockly.getProgram());
+            //RuthefjordManager.Simulator.set_execution_time(1);
+            RuthefjordPuzzle.check_submit_predicate();
         });
 
         // HACK to avoid button text wrapping on smaller screens
@@ -639,7 +639,6 @@ $(function() {
             content.initialize(),
             RuthefjordBlockly.init(),
             RuthefjordWorldState.init(),
-            RuthefjordManager.Simulator.init(),
             RuthefjordDisplay.init($("#three-js")[0]),
         ]);
     }).then(function() {
@@ -661,7 +660,7 @@ $(function() {
             $('#btn-workshop').hide();
         }
 
-        _.each(RUTHEFJORD_CONFIG.hide_packs, function (packName) {
+        _.forEach(RUTHEFJORD_CONFIG.hide_packs, function (packName) {
             delete game_info.packs[packName]
         });
 
@@ -682,7 +681,7 @@ $(function() {
 
         // HACK this needs to wait for the packs to be loaded
         // console.log(game_info.packs);
-        _.each(game_info.packs, function(pack, id) {
+        _.forEach(game_info.packs, function(pack, id) {
             $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
 
@@ -737,7 +736,7 @@ handler.onTitleButtonClicked = function(button) {
 };
 
 function clear_level_listeners() {
-    _.each(levelListeners, function (listener) {
+    _.forEach(levelListeners, function (listener) {
         Blockly.getMainWorkspace().removeChangeListener(listener);
     });
     levelListeners = [];
@@ -762,7 +761,7 @@ function start_editor(info) {
         };
         library.all = _.union(library.current, library.puzzle);
 
-        var goals = info.puzzle.goals ? info.puzzle.goals : [];
+        //var goals = info.puzzle.goals ? info.puzzle.goals : [];
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
         if (!RUTHEFJORD_CONFIG.features.debugging_always && !RUTHEFJORD_CONFIG.features.unlock_all) {
@@ -770,17 +769,12 @@ function start_editor(info) {
             RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
         }
         RuthefjordUI.CameraControls.setVisible(library.all);
-        RuthefjordUI.CubeCounter.setVisible(goals.some(function(g) { return g.type === "cube_count";}));
-        RuthefjordUI.DoneButton.setVisible(goals.some(function(g) { return g.type === "submit";}));
+        RuthefjordUI.CubeCounter.setVisible(info.puzzle.goal && info.puzzle.goal.type === "cube_count");
+        RuthefjordUI.DoneButton.setVisible(info.puzzle.goal && info.puzzle.goal.type === "submit");
         RuthefjordUI.UndoButton.update();
 
+        // reset history to prevent undo from restoring whatever code happened to be around before
         RuthefjordBlockly.history = [];
-
-        // reset program execution speed, because the scene reload will have made Unity forget
-        // FIXME use the unified API
-        if (info.puzzle.name !== "101 Cubes") { // HACK to allow 101 Cubes to have a faster default execution speed
-            RuthefjordManager.Simulator.set_execution_speed(RuthefjordUI.SpeedSlider.value());
-        }
 
         // clear old quest logger if it exists
         if (RuthefjordLogging.activeTaskLogger) {
@@ -791,16 +785,27 @@ function start_editor(info) {
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
         RuthefjordBlockly.AddonCommands = {};
+        // clear existing addons from simulator globals
+        RuthefjordManager.Simulator.init();
         if (info.puzzle.library.autoimports) {
-            _.each(info.puzzle.library.autoimports, function(module) {
-                _.each(JSON.parse(module.value).body, function(statement) {
-                    if (statement.type === "proc") {
-                        RuthefjordBlockly.generateBlock(statement.name, statement.name, statement.params)
-                    }
-                });
+            var addons = [];
+            var qs = [];
+            _.forEach(info.puzzle.library.autoimports, function(module) {
+                qs.push(Q($.get(module.value)).then(function (json) {
+                    addons.push(json);
+                    _.forEach(json.body, function(statement) {
+                        if (statement.type === "procedure") {
+                            RuthefjordBlockly.generateBlock(statement.name, statement.name, statement.params)
+                        }
+                    });
+                }));
             });
-            // get the imported blocks to show up in the toolbox
-            RuthefjordBlockly.updateToolbox();
+            Q.all(qs).then(function () {
+                // get the imported blocks to show up in the toolbox
+                RuthefjordBlockly.updateToolbox();
+                // add imports to simulator globals
+                RuthefjordManager.Simulator.init(addons);
+            });
         }
 
         clear_level_listeners();

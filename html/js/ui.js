@@ -207,7 +207,7 @@ module.Gallery = (function() {
     self.create = function(items, sandboxCallback) {
         var selector = $(".galleryItems");
         selector.empty();
-        _.each(items, function(item) {
+        _.forEach(items, function(item) {
             if (item.name) {
                 var i = makeItem(item, sandboxCallback);
                 selector.append(i);
@@ -249,7 +249,7 @@ module.PackSelect = (function() {
         if (pack.learn && pack.learn.length > 0) {
             $(span).append("<u>You will learn how to:</u>");
             var learnList = document.createElement("ul");
-            _.each(pack.learn, function(item) {
+            _.forEach(pack.learn, function(item) {
                 var e = document.createElement("li");
                 e.innerHTML = item;
                 $(learnList).append(e);
@@ -262,7 +262,7 @@ module.PackSelect = (function() {
     self.create = function(packs, progress, onSelectCallback) {
         var selector = $(".packOptions");
         selector.empty();
-        _.each(packs, function(pack) {
+        _.forEach(packs, function(pack) {
             if (pack.name && (!pack.prereq || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))) {
                 var m = makePack(pack, progress.is_pack_completed(pack));
                 $(m).on('click', function () {
@@ -290,11 +290,11 @@ module.LevelSelect = (function() {
 
         var graph = new dagre.Digraph();
 
-        _.each(pack.nodes, function(id) {
+        _.forEach(pack.nodes, function(id) {
             graph.addNode(id, {label: scenes[id].name, id: id});
         });
 
-        _.each(pack.edges, function(edge) {
+        _.forEach(pack.edges, function(edge) {
             graph.addEdge(null, edge[0], edge[1]);
         });
 
@@ -530,7 +530,7 @@ module.Instructions = (function() {
         // load new errors, if any
         if (errors) {
             $("#instructions-errors-title").html("Here are some things to fix:");
-            _.each(errors, function(error) {
+            _.forEach(errors, function(error) {
                 var item = document.createElement("li");
                 $(item).html(error);
                 list[0].appendChild(item);
@@ -822,7 +822,7 @@ module.WinMessage = (function() {
 
     self.show = function(msg, btn_msg, cb) {
         var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
-        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 4000);
+        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
         var btn = $(div).find("button");
         btn.css('font-size', '20pt');
         btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });

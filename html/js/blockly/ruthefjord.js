@@ -118,11 +118,11 @@ RuthefjordBlockly.undo = function () {
 RuthefjordBlockly.proceduresOnly = function () {
     if (Blockly.dragMode_ === 0) { // don't clean while a block is still being dragged
         var topBlocks = Blockly.getMainWorkspace().getTopBlocks();
-        _.each(topBlocks, function(block) {
+        _.forEach(topBlocks, function(block) {
             if (block.type.indexOf("procedures") !== 0) { // clear out blocks outside of procedures that aren't calls
                 block.dispose();
             } else if (block.type === "procedures_callnoreturn") { // clear out blocks attached to calls that aren't other calls
-                _.each(block.getDescendants(), function(child) {
+                _.forEach(block.getDescendants(), function(child) {
                     if (child.type.indexOf("procedures") !== 0) {
                         child.dispose();
                     }
@@ -174,15 +174,15 @@ RuthefjordBlockly.setProgram = function(program) {
             }
         }
         if (stmt.body) { // recursively process children (e.g. blocks inside a repeat)
-            _.each(stmt.body, checkStmt);
+            _.forEach(stmt.body, checkStmt);
         }
     };
 
     // HACK this isn't very robust but works for everything with have (for now)
-    _.each(program.body, checkStmt);
+    _.forEach(program.body, checkStmt);
 
     // update block colors
-    _.each(Blockly.getMainWorkspace().getAllBlocks(), function (b) { b.updateColour(); });
+    _.forEach(Blockly.getMainWorkspace().getAllBlocks(), function (b) { b.updateColour(); });
 
     // update the toolbox in case the program contains any procedures
     RuthefjordBlockly.updateToolbox();
@@ -218,7 +218,7 @@ RuthefjordBlockly.updateToolbox = function() {
     var toolXML = '<xml id="toolbox" style="display: none">';
     var commands = _.extend({}, RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands);
     // check for commands that should be eliminated due to presence of replacement command
-    _.each(RuthefjordBlockly.CommandReplacements, function(obsolete, replacement) {
+    _.forEach(RuthefjordBlockly.CommandReplacements, function(obsolete, replacement) {
         if (_.has(current_tools, replacement) || RUTHEFJORD_CONFIG.features.unlock_all) {
             delete commands[obsolete]; // if we have the replacement, we can get rid of its predecessor
         } else if (!_.has(current_tools, obsolete)) {
@@ -226,7 +226,7 @@ RuthefjordBlockly.updateToolbox = function() {
         }
     });
     // assemble toolbox XML, adding in teaser blocks as appropriate
-    _.each(commands, function(data, name) {
+    _.forEach(commands, function(data, name) {
         if (_.contains(current_tools, name) || RUTHEFJORD_CONFIG.features.unlock_all) {
             toolXML += data.block;
         } else if (data.teaser && RuthefjordBlockly.isSandbox) {
@@ -244,10 +244,10 @@ RuthefjordBlockly.updateToolbox = function() {
 
     // add call for each defined procedure
     var procs = Blockly.Procedures.allProcedures(Blockly.getMainWorkspace())[0]; // returns [proceduresNoReturn, proceduresReturn]
-    _.each(procs, function(proc) { // proc is [name, arguments, hasReturnValue]
+    _.forEach(procs, function(proc) { // proc is [name, arguments, hasReturnValue]
         var name = proc[0];
         toolXML += '<block type="procedures_callnoreturn"><mutation name="' + name + '">';
-        _.each(proc[1], function(arg) {
+        _.forEach(proc[1], function(arg) {
             toolXML += '<arg name="' + arg + '"></arg>'
         });
         toolXML += '</mutation></block>';
@@ -258,7 +258,7 @@ RuthefjordBlockly.updateToolbox = function() {
     Blockly.getMainWorkspace().updateToolbox(toolXML);
 
     // lock blocks as necessary
-    _.each(Blockly.getMainWorkspace().flyout_.workspace_.getAllBlocks(), function(block) {
+    _.forEach(Blockly.getMainWorkspace().flyout_.workspace_.getAllBlocks(), function(block) {
         if (block.locked) {
             block.setDisabled(true);
             block.setEditable(false);
@@ -308,7 +308,7 @@ RuthefjordBlockly.getProgram = function() {
     var other = [];
 
     // iterate over top-level blocks, putting all function/procedure definitions first and everything else second
-    _.each(topBlocks, function(block) {
+    _.forEach(topBlocks, function(block) {
         if (block.getProcedureDef) {
             // prepend a symbol to avoid clashes with builtins
             var name = '$' + block.getFieldValue("NAME");
@@ -357,7 +357,7 @@ RuthefjordBlockly.generateBlock = function(name, text, params) {
         }
     };
     Blockly.JSONLangOps[name] = function(block) {
-        return {args:[],meta:{id:Number(block.id)},ident:name,type:"call"};
+        return {args:[],meta:{id:Number(block.id)},name:name,type:"execute"};
     };
     RuthefjordBlockly.AddonCommands[name] = {block: '<block type="'+name+'"></block>'};
 };

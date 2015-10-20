@@ -102,7 +102,7 @@ var RuthefjordDisplay = (function() {
         // cube geometry, materials
         cubeGeo = new THREE.BoxGeometry(1, 1, 1);
         var tex = THREE.ImageUtils.loadTexture("media/canvas_cube.png");
-        _.each(self.cubeColors, function (color) {
+        _.forEach(self.cubeColors, function (color) {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex}));
             cubes[color] = {count:0, meshes:[]};
         });

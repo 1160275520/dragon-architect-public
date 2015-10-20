@@ -1,0 +1,135 @@
+#lang imperative:1.0
+
+define Line5()
+    repeat 5 times # tower size - 1
+        PlaceCube(1)
+        Forward(1)
+
+define Line6()
+    repeat 6 times # tower size (must be even)
+        PlaceCube(1)
+        Forward(1)
+
+define Line7()
+    repeat 7 times # (wall length - gate width) ÷ 2
+        PlaceCube(1)
+        Forward(1)
+
+define Line20()
+    repeat 20 times # wall length
+        PlaceCube(1)
+        Forward(1)
+
+define WallLayer()
+    Line20()
+    Up(1)
+    Right()
+    Right()
+    Forward(1)
+
+define WallSheet()
+    repeat 10 times # wall height
+        WallLayer()
+    Right()
+    Forward(1)
+    Down(10) # wall height
+    Left()
+
+define Wall()
+    repeat 3 times # wall thickness
+        WallSheet()
+    Up(10) # wall height
+    Left()
+    Forward(1)
+    Right()
+    repeat 2 times # wall battlement height
+        WallLayer()
+    Down(12) # wall + battlement height
+    Right()
+    Forward(4)
+    Right()
+    Forward(1)
+
+define Gate()
+    repeat 3 times # gate wall thickness
+        repeat 9 times # gate height
+            Line7()
+            Forward(6) # gate width
+            Line7()
+            Up(1)
+            Right()
+            Right()
+            Forward(1)
+        repeat 1 times # wall above gate height
+            WallLayer()
+        Right()
+        Forward(1)
+        Down(10) # gate wall height
+        Left()
+    Up(10) # gate wall height
+    Left()
+    Forward(1)
+    Right()
+    repeat 2 times # gate battlement height
+        WallLayer()
+    Down(12) # gate height + gate battlement height
+    Right()
+    Forward(4)
+    Right()
+    Forward(1)
+
+define TowerLayer()
+    repeat 4 times
+        Line6()
+        Right()
+    Up(1)
+
+define Tower()
+    repeat 15 times # tower height
+        TowerLayer()
+    Down(1)
+    Forward(1)
+    Right()
+    Forward(1)
+    Roof()
+    Up(1)
+    Right()
+    Forward(6) # tower size
+    Right()
+    Forward(1)
+    Right()
+    Battlement()
+    Down(16) # tower height + 1 (from battlement)
+
+define Roof()
+    repeat 5 times # tower size - 1
+        Line5()
+        Left()
+        Forward(1)
+        Left()
+        Forward(5) # tower size - 1
+        Left()
+        Left()
+
+define Battlement()
+    repeat 4 times
+        repeat 3 times # tower size ÷ 2
+            PlaceCube(1)
+            Up(1)
+            PlaceCube(1)
+            Forward(1)
+            Down(1)
+            PlaceCube(1)
+            Forward(1)
+        Right()
+
+define Castle()
+    repeat 3 times
+        Wall()
+        Tower()
+        Right()
+        Forward(26)
+        Left()
+        Left()
+    Gate()
+    Tower()
