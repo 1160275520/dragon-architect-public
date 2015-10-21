@@ -1,0 +1,233 @@
+{
+  "body": [
+    {
+      "body": [
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 1
+          },
+          "name": "FixedWall",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 2
+          },
+          "name": "FixedTower",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 3
+          },
+          "name": "FixedWall",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 4
+          },
+          "name": "FixedTower",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 5
+          },
+          "name": "FixedWall",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 6
+          },
+          "name": "FixedTower",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 7
+          },
+          "name": "FixedWall",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 8
+          },
+          "name": "FixedTower",
+          "type": "execute"
+        }
+      ],
+      "meta": {
+        "attributes": {
+          "FrozenArgs": "one",
+          "FrozenBlocks": "one",
+          "NoArgs": "one"
+        },
+        "id": 9
+      },
+      "name": "FixedCastle",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "body": [
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 10
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 11
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 12
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 13
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 14
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 15
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 16
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 17
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 18
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 19
+          },
+          "name": "TowerLayer",
+          "type": "execute"
+        },
+        {
+          "args": [],
+          "meta": {
+            "attributes": {},
+            "id": 20
+          },
+          "name": "TowerTop",
+          "type": "execute"
+        }
+      ],
+      "meta": {
+        "attributes": {
+          "FrozenArgs": "one",
+          "FrozenBlocks": "one",
+          "NoArgs": "one"
+        },
+        "id": 21
+      },
+      "name": "FixedTower",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "body": [],
+      "meta": {
+        "attributes": {
+          "NoArgs": "one",
+          "NoDelete": "one"
+        },
+        "id": 22
+      },
+      "name": "FixedWall",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "args": [],
+      "meta": {
+        "attributes": {
+          "FrozenBlocks": "one"
+        },
+        "id": 23
+      },
+      "name": "FixedCastle",
+      "type": "execute"
+    }
+  ],
+  "meta": {
+    "language": "imperative_v02",
+    "version": 2
+  }
+}

@@ -19,22 +19,23 @@ var RuthefjordPuzzle = (function () {
                 count++;
             }
             if (stmt.type === "repeat") {
-                count += body_count(stmt.body, proc_name);
+                // HACK assume repeat number is an int, not an ident
+                count += stmt.number.value * body_count(stmt.body, proc_name);
             }
         });
         return count;
     }
 
     function count_calls(reqs, body, errors) {
-        return _.every(reqs, function(call_info) {
+        var ret = true;
+        _.forEach(reqs, function(call_info) {
             var count = body_count(body, call_info.proc_name);
-            if (count === call_info.count) {
-                return true;
-            } else {
+            if (count !== call_info.count) {
                 errors.push(call_info.error_msg);
-                return false;
+                ret = false;
             }
         });
+        return ret;
     }
 
     self.request_start_puzzle = function(info) {

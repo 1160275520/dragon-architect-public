@@ -388,64 +388,97 @@
     },
     "decomposition.fix_castle": {
         "name": "Fixer-Upper",
-        "component": "PuzDecompFixCastle",
+        "format_version": 2,
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["Tower", "Wall"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
         "procedures_only":true,
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "$FixedCastle": [
+                    {"proc_name": "Wall",
+                        "count": 4,
+                        "error_msg": "FixedCastle should use exactly four Wall blocks"
+                    },
+                    {"proc_name": "Tower",
+                        "count": 4,
+                        "error_msg": "FixedCastle should use exactly four Tower blocks"
+                    }
+                ]
+            }
+        },
         "instructions": {
             "summary": "Fill in {FixedCastleProc}. Use 4 {wall} and 4 {tower}.",
             "detail": "I don't want a castle with only three sides! Help me give my castle four walls and four towers. Try alternating Wall blocks and Tower blocks."
         },
-        "program": {"type":"resource", "value":"puzzle/decomposition.fix_castle"},
+        "program": {"type":"file", "value":"content/puzzle_code/decomposition.fix_castle.json"},
         "winmsg": "Nice work! Those towers look too short, so let's go make them taller.",
         "logging_id": "4a12dfff-d3ff-487e-a320-c9b6c10b48b2"
     },
     "decomposition.fix_towers": {
         "name": "Taller Towers",
-        "component": "PuzDecompFixTowers",
+        "format_version": 2,
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["TowerLayer", "TowerTop", "Wall"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "$FixedTower": [
+                    {"proc_name": "TowerLayer",
+                        "count": 10,
+                        "error_msg": "FixedTower should use exactly ten TowerLayer blocks"
+                    },
+                    {"proc_name": "TowerTop",
+                        "count": 1,
+                        "error_msg": "FixedTower should use exactly one TowerTop block"
+                    }
+                ]
+            }
+        },
         "procedures_only":true,
         "instructions": {
             "summary": "Fill in {FixedTowerProc}. Use at least 10 {towerlayer} and a {towertop}.",
             "detail": "Those towers are too short. I want big, impressive towers... at least 10 blocks high!"
         },
-        "program": {"type":"resource", "value":"puzzle/decomposition.fix_towers"},
+        "program": {"type":"file", "value":"content/puzzle_code/decomposition.fix_towers.json"},
         "winmsg": "Getting close! The walls look too thin, and you can help me fix them.",
         "logging_id": "af3a9547-66d5-4571-bf69-d89ddb07a6c3"
     },
     "decomposition.fix_walls": {
         "name": "Better Walls",
-        "component": "PuzDecompFixWalls",
+        "format_version": 2,
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["WallSheet", "WallTop", "TowerLayer", "TowerTop"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "$FixedWall": [
+                    {"proc_name": "WallSheet",
+                        "count": 3,
+                        "error_msg": "FixedWall should use exactly 3 WallSheet blocks"
+                    },
+                    {"proc_name": "WallTop",
+                        "count": 1,
+                        "error_msg": "FixedWall should use exactly one WallTop block"
+                    }
+                ]
+            }
+        },
         "procedures_only":true,
         "instructions": {
             "summary": "Fill in {FixedWallProc}. Use at least 3 {wallsheet} and a {walltop}.",
             "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all."
         },
-        "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
+        "program": {"type":"file", "value":"content/puzzle_code/decomposition.fix_walls.json"},
         "winmsg": "At last, the perfect castle!",
         "logging_id": "759d34a7-6982-424f-91d3-3f7f5a0ac62c"
     },

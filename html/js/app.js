@@ -594,8 +594,13 @@ $(function() {
         });
 
         $("#btn-done").on('click', function() {
-            RuthefjordManager.Simulator.set_program(RuthefjordBlockly.getProgram());
+            // things get weird if we are running
+            RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.finished);
+            //var prog = RuthefjordBlockly.getProgram();
+            //RuthefjordManager.Simulator.set_program(prog);
             //RuthefjordManager.Simulator.set_execution_time(1);
+            // HACK temporary
+            RuthefjordManager.Simulator.get_final_state(RuthefjordBlockly.getProgram(), RuthefjordWorldState);
             RuthefjordPuzzle.check_submit_predicate();
         });
 
@@ -967,7 +972,7 @@ handler.onProgramStateChange = function(type) {
         // highlight current block
 
         if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing && !Blockly.getMainWorkspace().dragMode) {
-            console.log(RuthefjordManager.Simulator.current_code_elements);
+            //console.log(RuthefjordManager.Simulator.current_code_elements);
             if (RuthefjordManager.Simulator.current_code_elements.length > 0) {
                 var callStackIndex = RuthefjordManager.Simulator.current_code_elements.length - 2;
                 // add new highlights for currently executing block and all surrounding blocks

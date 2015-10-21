@@ -199,7 +199,12 @@ var RuthefjordManager = (function() {
                     } else { // we only support int literals and identifiers
                         count = stmt.number.value;
                     }
-                    var new_repeat = shallow_copy(stmt);
+                    var new_repeat = {
+                        body: stmt.body,
+                        number: shallow_copy(stmt.number),
+                        type: "repeat",
+                        meta: stmt.meta
+                    };
                     new_repeat.number.type = "int";
                     new_repeat.number.value = count - 1;
                     if (new_repeat.number.value > 0) {
