@@ -366,7 +366,7 @@ function setState_sandbox() {
     RuthefjordBlockly.isSandbox = true;
     RuthefjordUI.State.goToSandbox(function() {
         Storage.load('sandbox_world_data', function(wd) {
-            RuthefjordWorldState.restoreFromSave(wd);
+            RuthefjordWorldState.setFromSave(wd);
             onRuthefjordEvent("onSandboxStart");
         });
     });
@@ -478,7 +478,7 @@ $(function() {
                 dont_expand_instructions = true;
                 RuthefjordUI.State.goToSandbox(function() {
                     Storage.load('sandbox_world_data', function(wd) {
-                        RuthefjordWorldState.restoreFromSave(wd);
+                        RuthefjordWorldState.setFromSave(wd);
                         onRuthefjordEvent("onSandboxStart");
                     });
                     sandboxProgAddon = item.program;

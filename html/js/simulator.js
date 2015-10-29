@@ -33,7 +33,7 @@ var RuthefjordManager = (function() {
             if (self.run_state === rs) return;
             if (rs === module.RunState.stopped && self.edit_mode === module.EditMode.workshop) {
                 if (self.save_state) {
-                    RuthefjordWorldState.restoreFromSave(self.save_state);
+                    RuthefjordWorldState.setFromSave(self.save_state);
                 } else {
                     throw new Error("no save state available when stopping in workshop mode");
                 }
@@ -64,7 +64,10 @@ var RuthefjordManager = (function() {
         };
 
         self.set_execution_time = function (x) {
-            throw new Error("not yet implemented");
+            if (self.states) {
+                self.set_run_state(module.RunState.paused);
+                RuthefjordWorldState.setFromClone(self.states[Math.floor(self.states.length * x)]);
+            }
         };
 
         self.execute_program_to = function (ast, t) {
@@ -257,6 +260,14 @@ var RuthefjordManager = (function() {
             state.dirty = true;
         }
 
+        if (typeof window !== "undefined" && window.Worker) {
+            self.worker = new Worker("js/worker.js");
+            self.worker.onmessage = function (e) {
+                self.states = JSON.parse(e.data);
+                RuthefjordUI.TimeSlider.setEnabled(true);
+            };
+        }
+
         self.set_program = function (ast) {
             self.last_program_sent = ast;
             if (self.edit_mode === module.EditMode.workshop && self.save_state === null) {
@@ -269,6 +280,11 @@ var RuthefjordManager = (function() {
 
             if (ast.body) { // we may be passed a null program
                 push_stack_state(ast.body, [], self);
+                RuthefjordUI.TimeSlider.setEnabled(false);
+                self.states = null;
+                if (self.worker) {
+                    //self.worker.postMessage(JSON.stringify({globals:module.globals, ast: ast, state: RuthefjordWorldState.clone()}));
+                }
             }
         };
 

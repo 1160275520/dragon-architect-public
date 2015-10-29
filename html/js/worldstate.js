@@ -21,13 +21,18 @@ RuthefjordWorldState = (function() {
     };
 
     // loads the world state from a JSON string
-    self.restoreFromSave = function(save) {
+    self.setFromSave = function(save) {
         if (save) {
-            save = JSON.parse(save);
+            self.setFromClone(JSON.parse(save));
+        }
+    };
+
+    self.setFromClone = function(c) {
+        if (c) {
             self.robot = {};
-            self.robot.pos = new THREE.Vector3(save.robot.pos.x, save.robot.pos.y, save.robot.pos.z);
-            self.robot.dir = new THREE.Vector3(save.robot.dir.x, save.robot.dir.y, save.robot.dir.z);
-            self.grid = save.grid;
+            self.robot.pos = new THREE.Vector3(c.robot.pos.x, c.robot.pos.y, c.robot.pos.z);
+            self.robot.dir = new THREE.Vector3(c.robot.dir.x, c.robot.dir.y, c.robot.dir.z);
+            self.grid = c.grid;
             self.dirty = true;
         }
     };
