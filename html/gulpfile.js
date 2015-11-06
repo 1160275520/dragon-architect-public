@@ -9,6 +9,9 @@ var preprocess = require('gulp-preprocess');
 var rev = require('gulp-rev');
 var rimraf = require('rimraf');
 
+var argv = require('minimist')(process.argv.slice(2));
+console.log(argv);
+
 var BUILD_DIR = __dirname + '/../dist/';
 
 gulp.task('clean', function(cb) {
@@ -17,7 +20,7 @@ gulp.task('clean', function(cb) {
 
 gulp.task('usemin_index', ['clean'], function() {
     return gulp.src('index.html')
-        .pipe(preprocess({context: {}}))
+        .pipe(preprocess({context: argv}))
         .pipe(usemin({
             css: [minifyCss(), 'concat'],
             html: [minifyHtml({empty: true})],
@@ -28,7 +31,7 @@ gulp.task('usemin_index', ['clean'], function() {
 
 gulp.task('usemin_frame', ['clean'], function() {
     return gulp.src(['frame.html'])
-        .pipe(preprocess({context: {}}))
+        .pipe(preprocess({context: argv}))
         .pipe(usemin({
             css: [minifyCss(), 'concat'],
             html: [minifyHtml({empty: true})],
@@ -38,7 +41,7 @@ gulp.task('usemin_frame', ['clean'], function() {
 });
 
 gulp.task('copy_generated', ['clean'], function() {
-    return gulp.src(['generated/*.js', 'generated/*.unity3d'])
+    return gulp.src(['generated/*.js'])
         .pipe(gulp.dest(BUILD_DIR + 'generated/'));
 });
 

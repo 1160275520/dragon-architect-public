@@ -682,9 +682,7 @@ $(function() {
         }
 
         console.info('EVERYTHING IS READY!');
-        if (window.parent && window.parent.CgsGames) {
-            window.parent.CgsGames.onWidgetReady(window.frameElement.id, "1.0");
-        }
+        RuthefjordCopilot.onWidgetReady();
 
         // HACK add blockly change listener for saving
         Blockly.getMainWorkspace().addChangeListener(onProgramEdit);
