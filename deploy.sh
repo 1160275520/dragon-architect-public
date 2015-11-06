@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
-host=awb@gigantor.cs.washington.edu
-webroot=/srv/www/dragonarchitect
+HOST=webdeploy@dragonarchitect.net
+WEBROOT=/srv/www/play/
+KEYFILE=deploykey
 
-ssh $host rm -rf $webroot/dist
-ssh $host rm -rf $webroot/$1
-scp -r dist $host:$webroot/
-ssh $host mv $webroot/dist $webroot/$1
-ssh $host chmod -R g+w $webroot/$1
+ssh -i $KEYFILE $HOST "rm -rf $WEBROOT/$1"
+rsync -avz -e "ssh -i $KEYFILE" dist $HOST:$WEBROOT
+ssh -i $KEYFILE $HOST mv $WEBROOT/dist $WEBROOT/$1
+

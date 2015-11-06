@@ -26,9 +26,8 @@ unity/*.csproj
 html/generated/
 html/node_modules/
 server/venv*/
-analysis/venv*/
-analysis/bin/dbpasswd.py
 dist/
+deploykey
 *.aux
 *.bbl
 *.log
