@@ -1,0 +1,32 @@
+{
+  "body": [
+    {
+      "body": [],
+      "meta": {
+        "attributes": {
+          "NoArgs": "one",
+          "NoDelete": "one"
+        },
+        "id": 1
+      },
+      "name": "FixedCastle",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "args": [],
+      "meta": {
+        "attributes": {
+          "FrozenBlocks": "one"
+        },
+        "id": 2
+      },
+      "name": "FixedCastle",
+      "type": "execute"
+    }
+  ],
+  "meta": {
+    "language": "imperative_v02",
+    "version": 2
+  }
+}

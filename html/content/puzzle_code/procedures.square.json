@@ -1,0 +1,30 @@
+{
+  "body": [
+    {
+      "body": [],
+      "meta": {
+        "attributes": {
+          "NoArgs": "one",
+          "NoDelete": "one"
+        },
+        "id": 1
+      },
+      "name": "Square",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "args": [],
+      "meta": {
+        "attributes": {},
+        "id": 2
+      },
+      "name": "Square",
+      "type": "execute"
+    }
+  ],
+  "meta": {
+    "language": "imperative_v02",
+    "version": 2
+  }
+}

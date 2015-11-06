@@ -11,7 +11,7 @@ module.State = (function(){ "use strict";
     var current_state;
 
     function hideAll() {
-        RuthefjordUnity.Player.hide();
+        RuthefjordDisplay.hide();
         $('.view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
@@ -37,18 +37,22 @@ module.State = (function(){ "use strict";
 
         hideAll();
         $('.codeEditor').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
         cb();
     };
 
     self.goToIntro = function(cb) {
-        if (current_state !== 'title') {
-            throw new Error('can only transition to intro from title!');
-        }
+        // title has been removed (for now)
+        //if (current_state !== 'title') {
+        //    throw new Error('can only transition to intro from title!');
+        //}
         current_state = 'intro';
 
+        hideAll();
+        $('.codeEditor').show();
+        RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
 
@@ -68,7 +72,7 @@ module.State = (function(){ "use strict";
     self.goToPuzzle = function(cb) {
         hideAll();
         $('.codeEditor, .puzzleModeUI').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -76,7 +80,7 @@ module.State = (function(){ "use strict";
     self.goToSandbox = function(cb) {
         hideAll();
         $('.codeEditor, .sandboxModeUI').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -96,7 +100,7 @@ module.State = (function(){ "use strict";
     self.goToViewer = function(cb) {
         hideAll();
         $('.viewerModeUI').show();
-        RuthefjordUnity.Player.show();
+        RuthefjordDisplay.show();
         RuthefjordUI.CameraControls.viewMode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
         cb();
@@ -147,7 +151,8 @@ module.Share = (function() {
             callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
             show_buttons: false,
         });
-        RuthefjordUnity.Call.render_current_frame("share-thumb");
+        RuthefjordDisplay.screenshot("share-thumb");
+        RuthefjordUI.State.goToShare(function () {});
         $("#btn-share-submit").off('click'); // clear previous handler
         $("#btn-share-submit").on('click', function () {submit(cb);});
     };
@@ -179,7 +184,7 @@ module.Gallery = (function() {
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
         function viewItem() {
-            RuthefjordUnity.Call.execute_program_to(item.program, 1);
+            RuthefjordManager.Simulator.execute_program_to(item.program, 1);
             RuthefjordUI.State.goToViewer(function () {});
         }
         $(viewBtn).on('click', viewItem);
@@ -202,7 +207,7 @@ module.Gallery = (function() {
     self.create = function(items, sandboxCallback) {
         var selector = $(".galleryItems");
         selector.empty();
-        _.each(items, function(item) {
+        _.forEach(items, function(item) {
             if (item.name) {
                 var i = makeItem(item, sandboxCallback);
                 selector.append(i);
@@ -244,7 +249,7 @@ module.PackSelect = (function() {
         if (pack.learn && pack.learn.length > 0) {
             $(span).append("<u>You will learn how to:</u>");
             var learnList = document.createElement("ul");
-            _.each(pack.learn, function(item) {
+            _.forEach(pack.learn, function(item) {
                 var e = document.createElement("li");
                 e.innerHTML = item;
                 $(learnList).append(e);
@@ -257,7 +262,7 @@ module.PackSelect = (function() {
     self.create = function(packs, progress, onSelectCallback) {
         var selector = $(".packOptions");
         selector.empty();
-        _.each(packs, function(pack) {
+        _.forEach(packs, function(pack) {
             if (pack.name && (!pack.prereq || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))) {
                 var m = makePack(pack, progress.is_pack_completed(pack));
                 $(m).on('click', function () {
@@ -285,11 +290,11 @@ module.LevelSelect = (function() {
 
         var graph = new dagre.Digraph();
 
-        _.each(pack.nodes, function(id) {
+        _.forEach(pack.nodes, function(id) {
             graph.addNode(id, {label: scenes[id].name, id: id});
         });
 
-        _.each(pack.edges, function(edge) {
+        _.forEach(pack.edges, function(edge) {
             graph.addEdge(null, edge[0], edge[1]);
         });
 
@@ -525,7 +530,7 @@ module.Instructions = (function() {
         // load new errors, if any
         if (errors) {
             $("#instructions-errors-title").html("Here are some things to fix:");
-            _.each(errors, function(error) {
+            _.forEach(errors, function(error) {
                 var item = document.createElement("li");
                 $(item).html(error);
                 list[0].appendChild(item);
@@ -658,12 +663,12 @@ module.CameraControls = (function() {
 
     self.viewMode = function() {
         self.cameraMode = "viewmode";
-        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
     };
 
     self.gameMode = function() {
         self.cameraMode = "gamemode";
-        RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
     };
 
     return self;
@@ -817,7 +822,7 @@ module.WinMessage = (function() {
 
     self.show = function(msg, btn_msg, cb) {
         var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
-        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 4000);
+        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
         var btn = $(div).find("button");
         btn.css('font-size', '20pt');
         btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
@@ -921,7 +926,7 @@ module.confirmBackspaceNavigations = function() {
             return "Are you sure you want to leave this page?"
         }
     });
-}
+};
 
 return module;
 }());

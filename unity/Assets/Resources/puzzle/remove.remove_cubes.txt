@@ -1,9 +1,0 @@
-#lang imperative:1.0
-Forward(1)
-Forward(1)
-Forward(1)
-RemoveCube()
-Forward(1)
-Forward(1)
-RemoveCube()
-

@@ -6,13 +6,16 @@ var RUTHEFJORD_CONFIG = {
     },
     logging: {
         url: 'http://gigantor.cs.washington.edu:27895',
-        release_id: '5938095d-62ae-487b-a43c-2c1c8851ade7',
+        release_id: 'ea191350-8356-11e5-968d-a35ac1b12bbc',
         release_name: 'latest',
         release_key: ''
     },
     features: {
         is_debugging: true,
         no_login_prompt: true
+    },
+    gallery: {
+        group: "cgs_web"
     }
 };
 

@@ -22,23 +22,32 @@
     <script src="lib/dagre/dagre.js"></script>
     <script src="lib/dagre-d3/dagre-d3.js"></script>
     <script src="lib/purl/purl.js"></script>
-    <script src="lib/unity/UnityObject2.js"></script>
     <script src="lib/papika.js"></script>
     <script src="lib/fermata/fermata.js"></script>
     <script src="lib/bowser/bowser.js"></script>
     <script src="lib/editinplace/editinplace.js"></script>
     <script src="lib/bootstrap-slider/bootstrap-slider.js"></script>
     <script src="lib/fetch/fetch.js"></script>
+    <script src="lib/three/three.min.js"></script>
+    <script src="lib/three/stats.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/db.js"></script>
-    <script src="js/unity.js"></script>
+    <script src="js/worldstate.js"></script>
+    <script src="js/display.js"></script>
+    <script src="js/simulator.js"></script>
+    <script src="js/puzzle.js"></script>
     <script src="js/app.js"></script>
     <script src="js/logging.js"></script>
     <script src="js/blockly/customBlocks.js"></script>
     <script src="js/blockly/ruthefjord.js"></script>
     <!-- endbuild -->
     <title>Dragon Architect</title>
+    <script>
+      function init() {
+        return onRuthefjordEvent.widgetAPI;
+      }
+    </script>
   </head>
   <body>
     <header id="header">
@@ -67,9 +76,7 @@
       </div>
     </header>
     <div class="view-loading">
-      <p id="msg-missing-unity">It appears that your browser does not have the Unity Player installed. To play this game, <a href="https://unity3d.com/webplayer">please install it here</a>.</p>
       <p id="msg-loading">Loading...</p>
-      <p id="msg-plugin-blocked">Unity is taking a long time to load! It is possible that your browser is blocking the plugin. In Chrome, you can check the right side of the address bar for a blocked plugin icon. It's also possibile that there is a bug in our program or your browser is unsupported.</p>
       <p id="msg-not-loading">Something is going wrong with initializing the game! This game is still in development, so it is likely there is a bug.</p>
     </div>
     <div id="player-consent" class="intro-msg" data-tosid="1">
@@ -111,7 +118,7 @@
         <h2 id="share-edit-title">(click to add a title)</h2>
       </div>
       <div id="share-body">
-        <img id="share-thumb"></img>
+        <img id="share-thumb"/>
       </div>
       <button id="btn-share-submit" class="control-btn">Share</button>
       <div id="share-message"></div>
@@ -130,7 +137,7 @@
           </div>
           <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop</button>
         </div>
-        <div id="unity-player"></div>
+        <div id="three-js"></div>
         <div id="game-controls-bar-bottom" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <div id="time-controls" class="game-control tools-debug">
             <button id="btn-time-slider-back" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-left"></i></button>

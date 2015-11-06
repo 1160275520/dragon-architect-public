@@ -7,7 +7,7 @@
     },
     "tutorial.movement2d_part1": {
         "name": "2D Movement part 1",
-        "component": "PuzMovement2D_1",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": [],
@@ -16,7 +16,8 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d"},
+        "program": {"type": "file", "value":"content/puzzle_code/tutorial.movement2d.json"},
+        "goal": {"source":"run_only"},
         "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
             "summary": "Click {go} to have me run my program!",
@@ -25,7 +26,7 @@
     },
     "tutorial.movement2d_part2": {
         "name": "2D Movement part 2",
-        "component": "PuzMovement2D_2",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
@@ -37,7 +38,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part2"},
+        "program": {"type":"file", "value":"content/puzzle_code/tutorial.movement2d_part2.json"},
+        "solution": "content/puzzle_code/tutorial.movement2d_part2.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
         "instructions": {
             "summary": "I need to get to the {pinkboxGround}, and my program doesn't move me far enough.",
@@ -46,7 +49,7 @@
     },
     "tutorial.movement2d_part3": {
         "name": "2D Movement part 3",
-        "component": "PuzMovement2D_3",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
@@ -58,7 +61,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.movement2d_part3"},
+        "program": {"type":"file", "value":"content/puzzle_code/tutorial.movement2d_part3.json"},
+        "solution": "content/puzzle_code/tutorial.movement2d_part3.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
         "instructions": {
             "summary": "The {pinkboxGround} has moved. Change my program to help me get there!",
@@ -67,7 +72,7 @@
     },
     "tutorial.place_cubes": {
         "name": "Placing Cubes",
-        "component": "PuzPlacement",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
@@ -76,7 +81,11 @@
         "tutorial": {
             "highlighted": ["PlaceCube", "Forward"]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.placement"},
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"file", "value":"content/puzzle_code/tutorial.placement.json"},
+        "goal": {"source":"min_cubes", "value":4},
         "instructions": {
             "summary": "I want to place some cubes. Help me place 4 of them!",
             "detail": "Use several {forward} and {placecube} together to place a bunch of cubes."
@@ -85,7 +94,7 @@
     },
     "remove.remove_cubes":{
         "name": "Removing Cubes",
-        "component": "PuzRemove",
+        "format_version": 2,
         "library": {
             "required": ["move2", "place"],
             "granted": ["remove"]
@@ -94,14 +103,16 @@
             "highlighted": ["RemoveCube"]
         },
         "world": {
-            "cubes": {"type":"json", "data":[
-                {"pos": [3,0,0], "blk": 0},
-                {"pos": [4,0,0], "blk": 0},
-                {"pos": [5,0,0], "blk": 0}
-            ]},
+            "cubes": [
+                {"pos": [3,0,0], "color": 1},
+                {"pos": [4,0,0], "color": 1},
+                {"pos": [5,0,0], "color": 1}
+            ],
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/remove.remove_cubes"},
+        "program": {"type":"file", "value":"content/puzzle_code/remove.remove_cubes.json"},
+        "solution": "content/puzzle_code/remove.remove_cubes.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
             "summary": "Help me remove those three cubes!",
             "detail": "Add one more {removecube} to fix my program."
@@ -110,7 +121,7 @@
     },
     "up.what_is_up":{
         "name": "What is Up?",
-        "component": "PuzWhatIsUp",
+        "format_version": 2,
         "library": {
             "required": ["move2"],
             "granted": ["up"]
@@ -121,7 +132,9 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/up.what_is_up"},
+        "program": {"type":"file", "value":"content/puzzle_code/up.what_is_up.json"},
+        "solution": "content/puzzle_code/up.what_is_up.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "instructions": {
             "summary": "Help me get to the {pinkboxUp}!",
             "detail": "Use two {up} to complete my program."
@@ -130,7 +143,7 @@
     },
     "up.what_is_down":{
         "name": "What is Down?",
-        "component": "PuzWhatIsDown",
+        "format_version": 2,
         "library": {
             "required": ["move2"],
             "granted": ["down"]
@@ -139,8 +152,10 @@
             "highlighted": ["Down"]
         },
         "world": {
-            "robots": [{"pos": [2, 3, 0], "dir":[-1, 0, 0]}]
+            "robots": [{"pos": [0, -2, 3], "dir":[0, 1, 0]}]
         },
+        "solution": "content/puzzle_code/up.what_is_down.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "instructions": {
             "summary": "Help me get to the {pinkboxGround}!",
             "detail": "Use three {down} to get me there."
@@ -149,15 +164,17 @@
     },
     "up.bridge":{
         "name": "Building a Bridge",
-        "component": "PuzBridge",
+        "format_version": 2,
         "library": {
             "required": ["move2", "place", "up", "down"],
             "granted": []
         },
         "world": {
-            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+            "robots": [{"pos": [0, 0, 0], "dir":[0, -1, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/up.bridge"},
+        "program": {"type":"file", "value":"content/puzzle_code/up.bridge.json"},
+        "solution": "content/puzzle_code/up.bridge.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
             "summary": "Use what you've learned to help me put a cube in each blue space: {bridge}",
             "detail": ""
@@ -179,7 +196,7 @@
     },
     "repeat.arguments":{
         "name": "Winning Arguments",
-        "component": "PuzMovementArgs",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": [],
@@ -192,12 +209,14 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/tutorial.arguments"},
+        "program": {"type":"file", "value":"content/puzzle_code/repeat.arguments.json"},
+        "solution": "content/puzzle_code/repeat.arguments.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
     },
     "repeat.repeat_args":{
         "name": "Line Time",
-        "component": "PuzRepeatArgs",
+        "format_version": 2,
         "library": {
             "restricted":["blocks"],
             "required": [],
@@ -208,14 +227,16 @@
             "detail": ""
         },
         "world": {
-            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+            "robots": [{"pos": [0, 0, 0], "dir":[0, -1, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/repeat.repeat_args"},
+        "program": {"type":"file", "value":"content/puzzle_code/repeat.repeat_args.json"},
+        "solution": "content/puzzle_code/repeat.repeat_args.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "340d5fc0-6c16-45ea-8681-b3d27324f92f"
     },
     "repeat.repeat_nested":{
         "name": "Square Dancing",
-        "component": "PuzRepeatNested",
+        "format_version": 2,
         "library": {
             "restricted":["move2", "place", "up", "down", "defproc", "remove"],
             "required":["repeat"],
@@ -225,7 +246,9 @@
             "summary": "Put {repeat4} around my code to have me build a square.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/repeat.repeat_nested"},
+        "program": {"type":"file", "value":"content/puzzle_code/repeat.repeat_nested.json"},
+        "solution": "content/puzzle_code/repeat.repeat_nested.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "d1405e1a-cf4f-4580-9dd1-cd85c8b5849c"
     },
     "repeat.repeat_fixedProgram": {
@@ -263,7 +286,7 @@
     },
     "repeat.repeat_tower": {
         "name": "A Towering Achievement",
-        "component": "PuzRepeatTower",
+        "format_version": 2,
         "library": {
             "required": ["move2", "place", "up"],
             "granted": ["repeat"]
@@ -272,11 +295,13 @@
             "summary": "Fill in the blueprint to have me build a tower!",
             "detail": "Each layer of the tower is a 5 by 5 square. The tower has 5 layers."
         },
+        "solution": "content/puzzle_code/repeat.repeat_tower.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "7f8b0b15-5ffb-4340-8166-5502e4bfb999"
     },
     "procedures.square": {
         "name": "A Square Deal",
-        "component": "PuzProceduresSquare",
+        "format_version": 2,
         "library": {
             "restricted": ["defproc_noargs", "defproc"],
             "required": [],
@@ -287,12 +312,14 @@
             "summary": "Put blocks inside {SquareProc} to have me build a square.",
             "detail": ""
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.square"},
+        "program": {"type":"file", "value":"content/puzzle_code/procedures.square.json"},
+        "solution": "content/puzzle_code/procedures.square.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "ff93d5bd-b26f-4614-90a2-0d420b3f105a"
     },
     "procedures.call": {
         "name": "Up By Any Other Name",
-        "component": "PuzProceduresCall",
+        "format_version": 2,
         "library": {
             "restricted": ["up", "place", "defproc", "defproc_noargs"],
             "required": [],
@@ -308,12 +335,14 @@
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
-        "program": {"type":"resource", "value":"puzzle/procedures.call"},
+        "program": {"type":"file", "value":"content/puzzle_code/procedures.call.json"},
+        "solution": "content/puzzle_code/procedures.call.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "5b4e957f-9d07-4537-8d62-abd3f42cd65c"
     },
     "procedures.def": {
         "name": "Standard Operating Procedure",
-        "component": "PuzProceduresDef",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -327,20 +356,29 @@
             "summary": "Use {procDef} to get me to the {pinkboxUp}!",
             "detail": ""
         },
+        "solution": "content/puzzle_code/procedures.def.solution.json",
+        "goal": {"source":"solution", "type":"robot"},
         "logging_id": "c74cf758-09d3-4989-9058-3d73e3ee7b3d"
     },
     "decomposition.castle": {
         "name": "Do You Wanna Build a Castle?",
-        "component": "PuzDecompCastle",
+        "format_version": 2,
         "library": {
             "restricted": ["blocks"],
             "required": ["Castle"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "MAIN": [
+                    {"proc_name": "Castle",
+                     "count": 1,
+                     "error_msg": "Run the program with one Castle block to see what it does"
+                    }
+                ]
+            }
+        },
         "instructions": {
             "summary": "Let's see if the block you have builds the castle I want. Run a program with one {castle} and click {done} when it finishes.",
             "detail": ""
@@ -350,70 +388,103 @@
     },
     "decomposition.fix_castle": {
         "name": "Fixer-Upper",
-        "component": "PuzDecompFixCastle",
+        "format_version": 2,
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["Tower", "Wall"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
         "procedures_only":true,
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "$FixedCastle": [
+                    {"proc_name": "Wall",
+                        "count": 4,
+                        "error_msg": "FixedCastle should use exactly four Wall blocks"
+                    },
+                    {"proc_name": "Tower",
+                        "count": 4,
+                        "error_msg": "FixedCastle should use exactly four Tower blocks"
+                    }
+                ]
+            }
+        },
         "instructions": {
             "summary": "Fill in {FixedCastleProc}. Use 4 {wall} and 4 {tower}.",
             "detail": "I don't want a castle with only three sides! Help me give my castle four walls and four towers. Try alternating Wall blocks and Tower blocks."
         },
-        "program": {"type":"resource", "value":"puzzle/decomposition.fix_castle"},
+        "program": {"type":"file", "value":"content/puzzle_code/decomposition.fix_castle.json"},
         "winmsg": "Nice work! Those towers look too short, so let's go make them taller.",
         "logging_id": "4a12dfff-d3ff-487e-a320-c9b6c10b48b2"
     },
     "decomposition.fix_towers": {
         "name": "Taller Towers",
-        "component": "PuzDecompFixTowers",
+        "format_version": 2,
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["TowerLayer", "TowerTop", "Wall"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "$FixedTower": [
+                    {"proc_name": "TowerLayer",
+                        "count": 10,
+                        "error_msg": "FixedTower should use exactly ten TowerLayer blocks"
+                    },
+                    {"proc_name": "TowerTop",
+                        "count": 1,
+                        "error_msg": "FixedTower should use exactly one TowerTop block"
+                    }
+                ]
+            }
+        },
         "procedures_only":true,
         "instructions": {
             "summary": "Fill in {FixedTowerProc}. Use at least 10 {towerlayer} and a {towertop}.",
             "detail": "Those towers are too short. I want big, impressive towers... at least 10 blocks high!"
         },
-        "program": {"type":"resource", "value":"puzzle/decomposition.fix_towers"},
+        "program": {"type":"file", "value":"content/puzzle_code/decomposition.fix_towers.json"},
         "winmsg": "Getting close! The walls look too thin, and you can help me fix them.",
         "logging_id": "af3a9547-66d5-4571-bf69-d89ddb07a6c3"
     },
     "decomposition.fix_walls": {
         "name": "Better Walls",
-        "component": "PuzDecompFixWalls",
+        "format_version": 2,
         "library": {
             "restricted": ["move2", "place", "up", "down", "defproc", "defproc_noargs", "remove"],
             "required": ["WallSheet", "WallTop", "TowerLayer", "TowerTop"],
             "granted": ["speed_slider", "time_slider"],
-            "autoimports": [{"type":"resource", "value":"module/castle.pieces.bad"}]
+            "autoimports": [{"type":"file", "value":"content/puzzle_code/castle.pieces.bad.json"}]
         },
-        "goals": [{
-            "type": "submit"
-        }],
+        "goal": {"source": "code_count", "type": "submit",
+            "calls": {
+                "$FixedWall": [
+                    {"proc_name": "WallSheet",
+                        "count": 3,
+                        "error_msg": "FixedWall should use exactly 3 WallSheet blocks"
+                    },
+                    {"proc_name": "WallTop",
+                        "count": 1,
+                        "error_msg": "FixedWall should use exactly one WallTop block"
+                    }
+                ]
+            }
+        },
         "procedures_only":true,
         "instructions": {
             "summary": "Fill in {FixedWallProc}. Use at least 3 {wallsheet} and a {walltop}.",
             "detail": "Perhaps you could help me make the walls thicker. A castle is supposed to be sturdy after all."
         },
-        "program": {"type":"resource", "value":"puzzle/decomposition.fix_walls"},
+        "program": {"type":"file", "value":"content/puzzle_code/decomposition.fix_walls.json"},
         "winmsg": "At last, the perfect castle!",
         "logging_id": "759d34a7-6982-424f-91d3-3f7f5a0ac62c"
     },
     "challenges.house": {
         "name": "Homemaker",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -423,11 +494,12 @@
             "summary": "Try and build a house!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "8894A795-34CB-49E5-9EF9-2F2C2A1E0377"
     },
     "challenges.name": {
         "name": "Name Game",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -437,11 +509,12 @@
             "summary": "Try and spell your name with cubes!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "C69065D3-2592-4FA0-BE0B-4E235CB12189"
     },
     "challenges.rainbow": {
         "name": "Over the Rainbow",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -451,11 +524,12 @@
             "summary": "Try and make a rainbow!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "029CB012-495E-467C-86D8-C101AF1FD27E"
     },
     "challenges.tree": {
         "name": "Tree of Life",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -465,11 +539,12 @@
             "summary": "Try and build a tree!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "E1F6F3B9-82C7-4696-827F-43846EC50ABB"
     },
     "challenges.dragon": {
-        "name": "Self Portrait",
-        "component": "UnsolvablePuzzle",
+        "name": "Zoology",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -479,11 +554,12 @@
             "summary": "Try and make a dragon!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "FC44805E-1767-444B-B9FD-6523F5CE90F8"
     },
     "challenges.castle": {
         "name": "Castlemania",
-        "component": "UnsolvablePuzzle",
+        "format_version": 2,
         "library": {
             "restricted": [],
             "required": [],
@@ -493,6 +569,7 @@
             "summary": "Try and build a castle!",
             "detail": ""
         },
+        "goal": {"source": "none"},
         "logging_id": "B3B19370-9D1B-4941-BEDD-8A0391DD0A10"
     }
 }

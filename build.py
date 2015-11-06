@@ -40,8 +40,6 @@ def build_html(mode):
     check(subprocess.call(['gulp'], cwd='html/', shell=shell))
 
 build_steps = {
-    'gamelib': build_gamelib,
-    'unity': build_unity,
     'blockly': build_blockly,
     'html': build_html,
 }
@@ -58,8 +56,7 @@ def main(args):
     start_time = timeit.default_timer()
 
     build_order = {}
-    build_order['allunity'] = ['gamelib', 'unity']
-    build_order['all'] = ['gamelib', 'unity', 'blockly', 'html']
+    build_order['all'] = ['blockly', 'html']
     mode = args.mode
     target = args.target
 
@@ -82,7 +79,7 @@ if __name__ == '__main__':
     Does not do dependency checking, simply builds them all in order.
     You can only build one step of the process by passing in something other than 'all'.
     '''
-    targets = ['all', 'allunity', 'gamelib', 'unity', 'blockly', 'html']
+    targets = ['all', 'blockly', 'html']
 
     parser = argparse.ArgumentParser(description=_desc)
     parser.add_argument('target', nargs='?', default='all', choices=targets, help='The target to build. Defaults to all.')

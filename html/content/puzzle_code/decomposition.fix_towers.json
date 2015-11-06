@@ -1,0 +1,82 @@
+{
+  "body": [
+    {
+      "body": [
+        {
+          "body": [
+            {
+              "args": [],
+              "meta": {
+                "attributes": {},
+                "id": 2
+              },
+              "name": "Wall",
+              "type": "execute"
+            },
+            {
+              "args": [],
+              "meta": {
+                "attributes": {},
+                "id": 3
+              },
+              "name": "FixedTower",
+              "type": "execute"
+            }
+          ],
+          "meta": {
+            "attributes": {},
+            "id": 4
+          },
+          "number": {
+            "meta": {
+              "attributes": {},
+              "id": 1
+            },
+            "type": "int",
+            "value": 4
+          },
+          "type": "repeat"
+        }
+      ],
+      "meta": {
+        "attributes": {
+          "FrozenArgs": "one",
+          "FrozenBlocks": "one",
+          "NoArgs": "one"
+        },
+        "id": 5
+      },
+      "name": "FixedCastle",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "body": [],
+      "meta": {
+        "attributes": {
+          "NoArgs": "one",
+          "NoDelete": "one"
+        },
+        "id": 6
+      },
+      "name": "FixedTower",
+      "params": [],
+      "type": "procedure"
+    },
+    {
+      "args": [],
+      "meta": {
+        "attributes": {
+          "FrozenBlocks": "one"
+        },
+        "id": 7
+      },
+      "name": "FixedCastle",
+      "type": "execute"
+    }
+  ],
+  "meta": {
+    "language": "imperative_v02",
+    "version": 2
+  }
+}

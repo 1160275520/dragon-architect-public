@@ -1,7 +1,0 @@
-#lang imperative:1.0
-@FrozenBlocks=true
-@FrozenArgs=true
-repeat 5 times
-    Forward(1)
-    PlaceCube(1)
-Right()

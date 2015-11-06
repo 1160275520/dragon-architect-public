@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My first Three.js app</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+    </style>
+</head>
+<body>
+<script src="lib/three/three.min.js"></script>
+<script src="lib/three/stats.min.js"></script>
+<script src="lib/three/ColladaLoader.js"></script>
+<script>
+    var stats = new Stats();
+    stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+    // align top-left
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+
+    document.body.appendChild( stats.domElement );
+
+    var camera, scene, renderer, clock;
+    var cubeGeo, cubeMat;
+    var cubes, robot;
+    var WobblePeriod = 4.0;
+    var WobbleMagnitude = 0.05;
+    var relativeCamPos = new THREE.Vector3(0,12,10);
+
+    init();
+    var update = function () {
+        stats.begin();
+        makeScene();
+        render();
+        stats.end();
+        requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        clock = new THREE.Clock();
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(450, 350);
+        camera.aspect = 450/350;
+        camera.updateProjectionMatrix();
+        document.body.appendChild(renderer.domElement);
+
+        cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+        var tex = THREE.ImageUtils.loadTexture("../unity/Assets/Textures/outlined_green_cube.png");
+        cubeMat = new THREE.MeshBasicMaterial({map: tex});
+
+        var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
+        tex = THREE.ImageUtils.loadTexture("../unity/Assets/Textures/outlined_cube.png");
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set( 100, 100 );
+        var material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
+        var plane = new THREE.Mesh( geometry, material );
+        scene.add( plane );
+
+        camera.rotation.x = Math.PI / 4;
+        camera.lookAt(new THREE.Vector3(0,0,0));
+
+        plane.rotation.x = Math.PI / 2;
+
+        geometry = new THREE.SphereGeometry(0.5, 32, 32);
+        material = new THREE.MeshLambertMaterial( {color: 0xf56e90} );
+        robot = new THREE.Mesh(geometry, material);
+        var robotDir = new THREE.ArrowHelper(new THREE.Vector3(0,0,-1),new THREE.Vector3(0,0,0),1,0xff0000,0.5,0.2);
+        robot.add(robotDir);
+        scene.add(robot);
+        robot.position.set(0.5,0.5,0.5);
+        robot.quaternion.setFromUnitVectors(new THREE.Vector3( 0, 0, -1 ), new THREE.Vector3(0, 0, -1));
+//        scene.add(buildAxes(100));
+
+        var light = new THREE.DirectionalLight(0xffffff, 1.0);
+        light.position.set(-1.7,0.5,2.9);
+        light.rotation.x = 50/180*Math.PI;
+        light.rotation.y = 330/180*Math.PI;
+        scene.add(light);
+
+        clock.start();
+    }
+
+    function makeScene() {
+        if (cubes) {
+            cubes.forEach(function (cube) {
+                scene.remove(cube);
+            });
+        }
+        cubes = [];
+        for (var i = 0; i < 100; i++) {
+            cubes.push(new THREE.Mesh(cubeGeo, cubeMat));
+        }
+        for (var x = 0; x < 3; x++) {
+            for (var z = 0; z < 3; z++) {
+//                var cube = cubes[x * 3 + z];
+//                scene.add(cube);
+//                cube.position.set(x + 0.5, clock.getElapsedTime() % 3 + 0.5, z + 0.5);
+            }
+        }
+
+    }
+
+    function render() {
+        var t = clock.getElapsedTime();
+        var y = WobbleMagnitude * Math.sin(t * 4 * Math.PI / WobblePeriod);
+        var x = WobbleMagnitude * Math.cos(t * 2 * Math.PI / WobblePeriod);
+        var v = new THREE.Vector3(x, y, 0);
+
+//        robot.rotation.y += 0.01;
+        camera.position.copy( v.add(relativeCamPos).add(robot.position) );
+        camera.lookAt(robot.position);
+
+        renderer.render( scene, camera );
+    }
+
+    function buildAxes( length ) {
+        var axes = new THREE.Object3D();
+
+        axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( length, 0, 0 ), 0xFF0000, false ) ); // +X
+        axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( -length, 0, 0 ), 0xFF0000, true) ); // -X
+        axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, length, 0 ), 0x00FF00, false ) ); // +Y
+        axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, -length, 0 ), 0x00FF00, true ) ); // -Y
+        axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, length ), 0x0000FF, false ) ); // +Z
+        axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -length ), 0x0000FF, true ) ); // -Z
+
+        return axes;
+
+    }
+
+    function buildAxis( src, dst, colorHex, dashed ) {
+        var geom = new THREE.Geometry(),
+                mat;
+
+        if(dashed) {
+            mat = new THREE.LineDashedMaterial({ linewidth: 3, color: colorHex, dashSize: 3, gapSize: 3 });
+        } else {
+            mat = new THREE.LineBasicMaterial({ linewidth: 3, color: colorHex });
+        }
+
+        geom.vertices.push( src.clone() );
+        geom.vertices.push( dst.clone() );
+        geom.computeLineDistances(); // This one is SUPER important, otherwise dashed lines will appear as simple plain lines
+
+        var axis = new THREE.Line( geom, mat, THREE.LinePieces );
+
+        return axis;
+
+    }
+
+//    function smoothLookAt() {
+//        // Create a vector from the camera towards the player.
+//        var relativeRobotPos = new THREE.Vector3();
+//        relativeRobotPos.subVectors(robot.position, camera.position);
+//
+//        // Create a rotation based on the relative position of the player being the forward vector.
+//        var lookAtRotation = new THREE.Quaternion();
+//        LookRotation(relPlayerPosition, Vector3.up);
+//
+//        //transform.rotation = lookAtRotation;
+//
+//        // Lerp the camera's rotation between it's current rotation and the rotation that looks at the player.
+//        transform.rotation = Quaternion.Lerp(transform.rotation, lookAtRotation, RotationSmoothness * Time.deltaTime);
+//    }
+</script>
+</body>
+</html>
