@@ -11,6 +11,7 @@
     "gulp-rev": "^4.0.0",
     "gulp-uglify": "^1.2.0",
     "gulp-usemin": "^0.3.11",
+    "minimist": "^1.2.0",
     "rimraf": "^2.4.0"
   }
 }
