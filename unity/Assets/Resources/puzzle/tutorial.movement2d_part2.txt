@@ -1,3 +1,0 @@
-#lang imperative:1.0
-Forward(1)
-

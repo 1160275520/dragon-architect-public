@@ -7,12 +7,11 @@ Contents:
 How to build
 ============================================================================
 
-Requries Windows (64-bit) or Mac OSX, because Unity.
+Requries Windows (64-bit) or Mac OSX.
 64-bit because I was lazy and hard-coded paths to "C:\Program Files (x86)".
 
 Dependencies:
 - either Visual Studio 2013 or MonoDevelop 5 (aka Xamarin Studio)
-- Unity 5.1
 - python 2.7+ (does NOT work with 3.X)
 - nodejs + npm + gulp
 
@@ -44,7 +43,7 @@ All buildable components (labled "buildable" below) can be build with
     The final output directory. Static html will be in here after a build.
 - doc:
     Miscellaneous documentation for the project.
-- gamelib (buildable):
+- gamelib (buildable): DEPRECATED
     The code for the .NET library that contains most of the system logic.
     Also contains some unit tests and utility projects.
 - html (buildable):
@@ -55,7 +54,5 @@ All buildable components (labled "buildable" below) can be build with
 - server:
     The server backend, for the game to communicate with a database and
     proxy telemetry requests, among other things.
-- unity (buildable):
-    The Unity project.
-    Requires 'gamelib'.
+
 
