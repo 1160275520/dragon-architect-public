@@ -1,3 +1,5 @@
+document.domain = document.domain; // null out port to head off cross-origin errors
+
 var onRuthefjordEvent = (function(){ "use strict";
 
 var handler = {};
@@ -680,6 +682,9 @@ $(function() {
         }
 
         console.info('EVERYTHING IS READY!');
+        if (window.parent && window.parent.CgsGames) {
+            window.parent.CgsGames.onWidgetReady(window.frameElement.id, "1.0");
+        }
 
         // HACK add blockly change listener for saving
         Blockly.getMainWorkspace().addChangeListener(onProgramEdit);
@@ -1121,6 +1126,46 @@ handler.onErrorMessages = function(errors) {
     RuthefjordUI.Instructions.displayErrors(JSON.parse(errors));
 };
 
+onRuthefjordEvent.widgetAPI = (function () {
+    'use strict';
+    var self = {};
+
+    self.setWidgetId = function(messageId, widgetId) {
+        self.widgetId = widgetId;
+        window.parent.CgsGames.onMessageComplete(self.widgetId, messageId, true);
+    };
+
+    self.startActivity = function(messageId, userList, activityDef, details) {
+        // for now we'll conform to the existing infrastructure and
+        // assume this means starting a pack, going to level select
+        console.log(activityDef);
+        current_puzzle_runner = create_puzzle_runner(game_info.packs[activityDef.activityData.pack], "pack");
+        window.parent.CgsGames.onMessageComplete(self.widgetId, messageId, true);
+    };
+
+    self.stopActivity = function (messageId, details) {
+        throw new Error("not yet implemented");
+    };
+
+    self.setPaused = function (messageId, isPaused, details) {
+        throw new Error("not yet implemented");
+    };
+
+    self.addUser = function (messageId, uid, userState, details) {
+        throw new Error("not yet implemented");
+    };
+
+    self.removeUser = function (messageId, uid) {
+        throw new Error("not yet implemented");
+    };
+
+    self.commandToWidget = function (messageId, command, args) {
+        throw new Error("not yet implemented");
+    };
+
+    return self;
+}());
+
 return onRuthefjordEvent;
 }());
 
@@ -1131,4 +1176,3 @@ function devmode() {
 function toSandbox() {
     onRuthefjordEvent('onToSandbox')
 }
-
