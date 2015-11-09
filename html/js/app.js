@@ -1,5 +1,3 @@
-document.domain = document.domain; // null out port to head off cross-origin errors
-
 var onRuthefjordEvent = (function(){ "use strict";
 
 var handler = {};
@@ -1174,3 +1172,14 @@ function devmode() {
 function toSandbox() {
     onRuthefjordEvent('onToSandbox')
 }
+
+// process messages from the student client
+function receiveMessage(event) {
+    if (onRuthefjordEvent.widgetAPI.hasOwnProperty(event.data.command)) {
+        onRuthefjordEvent.widgetAPI[event.data.command].apply(null, event.data.arguments);
+    } else {
+        throw new Error("unrecognized copilot command " + event.data.command);
+    }
+}
+
+window.addEventListener("message", receiveMessage, false);

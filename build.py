@@ -17,19 +17,15 @@ def check(code):
 def build_gamelib(mode):
     check(subprocess.call(['python', 'gamelib/build.py', mode]))
 
-# the Unity project
-def build_unity(mode):
-    check(subprocess.call(['python', 'unity/build.py']))
-
 # blockly
-def build_blockly(mode):
-    check(subprocess.call(['python', 'build.py'], cwd='blockly'))
+def build_blockly(mode, flags):
+    check(subprocess.call(['python', 'build.py', *flags], cwd='blockly'))
 
 # HACK HACK HACK
 config_file = None
 
 # the actual webpage
-def build_html(mode):
+def build_html(mode, flags):
     if config_file is not None:
         print("Copying config file %s to html/js/config.js..." % config_file)
         shutil.copyfile(config_file, 'html/js/config.js')
@@ -37,16 +33,16 @@ def build_html(mode):
     # for some reason shell=True is required on windows but breaks on Mac?
     shell = platform.system() == 'Windows'
     check(subprocess.call(['npm', 'install'], cwd='html/', shell=shell))
-    check(subprocess.call(['gulp'], cwd='html/', shell=shell))
+    check(subprocess.call(['gulp', *flags], cwd='html/', shell=shell))
 
 build_steps = {
     'blockly': build_blockly,
     'html': build_html,
 }
 
-def build(target, mode):
+def build(target, mode, flags):
     print("Building '%s'..." % target)
-    build_steps[target](mode)
+    build_steps[target](mode, flags)
     print("Done building '%s'." % target)
 
 def main(args):
@@ -59,12 +55,15 @@ def main(args):
     build_order['all'] = ['blockly', 'html']
     mode = args.mode
     target = args.target
+    flags = {}
+    flags['html'] = ["--" + args.gulpflag]
+    flags['blockly'] = []
 
     try:
         if target in build_order:
-            for t in build_order[target]: build(t, mode)
+            for t in build_order[target]: build(t, mode, flags[t])
         else:
-            build(target, mode)
+            build(target, mode, flags[target])
     except:
         traceback.print_exc()
         sys.stderr.write("BUILD FAILED :(\n")
@@ -94,6 +93,10 @@ if __name__ == '__main__':
 
     parser.add_argument('--config', '-c', dest='config', default=None,
         help="Config file to use in place of default (this should be something from build/ for production builds!)"
+    )
+
+    parser.add_argument('--gulpflag', '-g', dest='gulpflag', default="",
+        help="Flag to pass to gulp when it builds the html target"
     )
 
     main(parser.parse_args())
