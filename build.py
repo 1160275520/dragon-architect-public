@@ -19,7 +19,7 @@ def build_gamelib(mode):
 
 # blockly
 def build_blockly(mode, flags):
-    check(subprocess.call(['python', 'build.py', flags], cwd='blockly'))
+    check(subprocess.call(['python', 'build.py'], cwd='blockly'))
 
 # HACK HACK HACK
 config_file = None
@@ -30,10 +30,8 @@ def build_html(mode, flags):
         print("Copying config file %s to html/js/config.js..." % config_file)
         shutil.copyfile(config_file, 'html/js/config.js')
 
-    # for some reason shell=True is required on windows but breaks on Mac?
-    shell = platform.system() == 'Windows'
-    check(subprocess.call(['npm', 'install'], cwd='html/', shell=shell))
-    check(subprocess.call(['gulp', flags], cwd='html/', shell=shell))
+    check(subprocess.call(['npm', 'install'], cwd='html/'))
+    check(subprocess.call(['gulp', flags], cwd='html/'))
 
 build_steps = {
     'blockly': build_blockly,
