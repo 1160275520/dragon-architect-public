@@ -19,7 +19,7 @@ def build_gamelib(mode):
 
 # blockly
 def build_blockly(mode, flags):
-    check(subprocess.call(['python', 'build.py', *flags], cwd='blockly'))
+    check(subprocess.call(['python', 'build.py', flags], cwd='blockly'))
 
 # HACK HACK HACK
 config_file = None
@@ -33,7 +33,7 @@ def build_html(mode, flags):
     # for some reason shell=True is required on windows but breaks on Mac?
     shell = platform.system() == 'Windows'
     check(subprocess.call(['npm', 'install'], cwd='html/', shell=shell))
-    check(subprocess.call(['gulp', *flags], cwd='html/', shell=shell))
+    check(subprocess.call(['gulp', flags], cwd='html/', shell=shell))
 
 build_steps = {
     'blockly': build_blockly,
@@ -56,8 +56,8 @@ def main(args):
     mode = args.mode
     target = args.target
     flags = {}
-    flags['html'] = ["--" + args.gulpflag]
-    flags['blockly'] = []
+    flags['html'] = "--" + args.gulpflag
+    flags['blockly'] = ""
 
     try:
         if target in build_order:
