@@ -1128,7 +1128,10 @@ onRuthefjordEvent.widgetAPI = (function () {
 
     self.setWidgetId = function(messageId, widgetId) {
         self.widgetId = widgetId;
-        window.parent.CgsGames.onMessageComplete(self.widgetId, messageId, true);
+        var data = {};
+        data.command = "onMessageComplete";
+        data.arguments = [self.widgetId, messageId, true];
+        e.source.postMessage(data, e.origin);
     };
 
     self.startActivity = function(messageId, userList, activityDef, details) {
@@ -1136,7 +1139,10 @@ onRuthefjordEvent.widgetAPI = (function () {
         // assume this means starting a pack, going to level select
         console.log(activityDef);
         current_puzzle_runner = create_puzzle_runner(game_info.packs[activityDef.activityData.pack], "pack");
-        window.parent.CgsGames.onMessageComplete(self.widgetId, messageId, true);
+        var data = {};
+        data.command = "onMessageComplete";
+        data.arguments = [self.widgetId, messageId, true];
+        e.source.postMessage(data, e.origin);
     };
 
     self.stopActivity = function (messageId, details) {
