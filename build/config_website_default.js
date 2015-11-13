@@ -12,7 +12,8 @@ var RUTHEFJORD_CONFIG = {
     },
     features: {
         is_debugging: true,
-        no_login_prompt: true
+        no_login_prompt: true,
+        workshop_only: true
     },
     gallery: {
         group: "cgs_web"
