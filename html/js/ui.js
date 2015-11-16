@@ -750,9 +750,9 @@ module.CubeCounter = (function() {
     var self = {};
 
     self.setVisible = function(isVisible) {
-        $('#cube-counter').css('display', isVisible ? 'block' : 'none');
-        var n = 0;
-        $('#cube-counter').html(n.toString() + " cubes placed.");
+        //$('#cube-counter').css('display', isVisible ? 'block' : 'none');
+        //var n = 0;
+        //$('#cube-counter').html(n.toString() + " cubes placed.");
     };
 
     self.update = function(count) {
