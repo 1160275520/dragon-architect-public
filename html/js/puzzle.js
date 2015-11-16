@@ -82,9 +82,10 @@ var RuthefjordPuzzle = (function () {
                                 break;
                             case "cubes":
                                 RuthefjordDisplay.addCubeTargets(final_state.grid);
+                                // sort cube positions in case solution program put them down in a different order
                                 win_predicate = function () {
                                     return is_running_but_done_executing() &&
-                                        _.isEqual(Object.keys(final_state.grid), Object.keys(RuthefjordWorldState.grid));
+                                        _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(RuthefjordWorldState.grid).sort());
                                 };
                                 break;
                             default:
