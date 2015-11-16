@@ -51,7 +51,7 @@ blocklyIframeLoaded = function() {
  */
 
 RuthefjordBlockly.makeNumXML = function(num) {
-    return '<block type="math_number" default="true"><field name="NUM">' + num + '</field></block>';
+    return '<shadow type="math_number"><field name="NUM">' + num + '</field></shadow>';
 };
 
 // list of custom block xml, in the order they should appear in the library
@@ -65,8 +65,8 @@ RuthefjordBlockly.Commands = {
     repeat: { block: '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>',
         teaser: '<block type="controls_repeat_teaser"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', pack: 'repeat'},
     defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
-    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'}
-    // ['number', '<block type="math_number"><field name="NUM">1</field></block>']
+    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
+    //number: { block: '<block type="math_number"><field name="NUM">1</field></block>'}
 };
 
 RuthefjordBlockly.CommandReplacements = {

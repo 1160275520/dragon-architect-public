@@ -133,7 +133,7 @@ Blockly.Blocks['Forward'] = {
             message0: "forward by %1",
             args0: [
                 {
-                    type: "param_value",
+                    type: "input_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -157,7 +157,7 @@ Blockly.Blocks['Up'] = {
             message0: "up by %1",
             args0: [
                 {
-                    type: "param_value",
+                    type: "input_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -176,7 +176,7 @@ Blockly.Blocks['Up_teaser'] = {
             message0: "up by %1",
             args0: [
                 {
-                    type: "param_value",
+                    type: "input_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -202,7 +202,7 @@ Blockly.Blocks['Down'] = {
             message0: "down by %1",
             args0: [
                 {
-                    type: "param_value",
+                    type: "input_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -221,7 +221,7 @@ Blockly.Blocks['Down_teaser'] = {
             message0: "down by %1",
             args0: [
                 {
-                    type: "param_value",
+                    type: "input_value",
                     name: "VALUE",
                     check: "Number"
                 }
@@ -295,7 +295,7 @@ Blockly.Blocks['controls_repeat_teaser'] = {
           Blockly.Msg.CONTROLS_REPEAT_INPUT_DO + " %3",
       "args0": [
         {
-          "type": "param_value",
+          "type": "input_value",
           "name": "TIMES",
           "check": "Number"
         },
@@ -351,6 +351,10 @@ Blockly.Blocks['procedures_noargs_defnoreturn'] = {
         this.setStatements_(true);
         this.setInputsInline(true);
         this.statementConnection_ = null;
+
+        // make inner procedure connections immune to freezing
+        var inputs = this.inputList.filter(function (input) { return input.type === Blockly.NEXT_STATEMENT; });
+        inputs.forEach(function (input) { input.connection.neverFrozen = true; });
     },
     validate: Blockly.Blocks['procedures_defnoreturn'].validate,
     setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
