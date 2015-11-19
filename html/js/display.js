@@ -66,9 +66,9 @@ var RuthefjordDisplay = (function() {
         stats.domElement.style.position = 'absolute';
         stats.domElement.style.left = '0px';
         stats.domElement.style.top = '0px';
-        <!-- @ifdef DEV -->
+        // @ifdef DEV
         parent.append(stats.domElement);
-        <!-- @endif -->
+        // @endif
 
         // skybox
         var path = "media/skybox/";

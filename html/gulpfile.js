@@ -1,7 +1,10 @@
 
 var gulp = require('gulp');
 
-var usemin = require('gulp-usemin');
+var useref = require('gulp-useref');
+var debug = require('gulp-debug');
+var lazypipe = require('lazypipe');
+var gulpif = require('gulp-if');
 var uglify = require('gulp-uglify');
 var minifyHtml = require('gulp-minify-html');
 var minifyCss = require('gulp-minify-css');
@@ -18,25 +21,27 @@ gulp.task('clean', function(cb) {
     rimraf(BUILD_DIR, cb);
 });
 
+var handle_js = lazypipe()
+    .pipe(preprocess, {context: argv})
+    .pipe(uglify);
+
 gulp.task('usemin_index', ['clean'], function() {
     return gulp.src('index.html')
         .pipe(preprocess({context: argv}))
-        .pipe(usemin({
-            css: [minifyCss(), 'concat'],
-            html: [minifyHtml({empty: true})],
-            js: [uglify()]
-        }))
+        .pipe(useref())
+        .pipe(gulpif('*.js', handle_js()))
+        .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulpif('*.html', minifyHtml({empty: true})))
         .pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task('usemin_frame', ['clean'], function() {
     return gulp.src(['frame.html'])
         .pipe(preprocess({context: argv}))
-        .pipe(usemin({
-            css: [minifyCss(), 'concat'],
-            html: [minifyHtml({empty: true})],
-            js: [uglify()]
-        }))
+        .pipe(useref())
+        .pipe(gulpif('*.js', handle_js()))
+        .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulpif('*.html', minifyHtml({empty: true})))
         .pipe(gulp.dest(BUILD_DIR));
 });
 
