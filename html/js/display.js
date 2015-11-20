@@ -247,7 +247,6 @@ var RuthefjordDisplay = (function() {
         camera.quaternion.slerp(newCamQ, ROTATION_SMOOTHNESS * tDelta);
 
         renderer.render( scene, camera );
-        //requestAnimationFrame(render); // include when omitting fps display
     }
 
     function Vector3FromString(str) {

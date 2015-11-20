@@ -47,6 +47,10 @@
       .blocklyDebugHighlight>.blocklyPathLight {
         display: none;
       }
+      #flyoutMask>rect {
+        -webkit-transition: width 0.5s ease;
+        transition: width 0.5s ease;
+      }
       #blocklyLabels {
         text-align: center;
         display: flex;
@@ -54,6 +58,12 @@
       }
       #libraryLabel {
         background-color: #ccebff;
+        -webkit-transition: width 0.5s ease;
+        transition: width 0.5s ease;
+      }
+      #codeLabel {
+        -webkit-transition: width 0.5s ease;
+        transition: width 0.5s ease;
       }
     </style>
     <script>
@@ -76,9 +86,10 @@
         if (toolboxWidth < 100) { // hide when toolbox is empty
           $("#blocklyLabels").hide();
         } else {
-          $("#blocklyLabels").show()
+          $("#blocklyLabels").show();
           $("#libraryLabel").width(toolboxWidth);
-          $("#codeLabel").width(Blockly.getMainWorkspace().getMetrics().viewWidth - $("#libraryLabel").width());
+          $("#flyoutMask").find("rect").attr("width", toolboxWidth);
+          $("#codeLabel").width(Blockly.getMainWorkspace().getMetrics().viewWidth - toolboxWidth);
         }
       }
     </script>

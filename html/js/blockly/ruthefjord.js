@@ -42,6 +42,14 @@ blocklyIframeLoaded = function() {
     // no undo button currently
     Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
 
+    Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseenter = function () {
+        Blockly.getMainWorkspace().flyout_.show_all();
+    };
+
+    Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseleave = function () {
+        Blockly.getMainWorkspace().flyout_.show_cutoff();
+    };
+
     q_defer.resolve();
 };
 
@@ -50,22 +58,27 @@ blocklyIframeLoaded = function() {
  BlocklyApps.LANG + '.js"></script>\n');
  */
 
-RuthefjordBlockly.makeNumXML = function(num) {
+RuthefjordBlockly.makeShadowNum = function(num) {
     return '<shadow type="math_number"><field name="NUM">' + num + '</field></shadow>';
 };
 
 // list of custom block xml, in the order they should appear in the library
 // block name, standard xml, locked xml, pack name
 RuthefjordBlockly.Commands = {
-    move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
+    move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
     place: { block: '<block type="PlaceCube"></block>'},
-    up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', pack: 'up'},
-    down: { block: '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">'+RuthefjordBlockly.makeNumXML(1)+'</value></block>', pack: 'up'},
+    up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', pack: 'up'},
+    down: { block: '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', pack: 'up'},
     remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
-    repeat: { block: '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>',
-        teaser: '<block type="controls_repeat_teaser"><value name="TIMES">'+RuthefjordBlockly.makeNumXML(10)+'</value></block>', pack: 'repeat'},
+    repeat: { block: '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeShadowNum(10)+'</value></block>',
+        teaser: '<block type="controls_repeat_teaser"><value name="TIMES">'+RuthefjordBlockly.makeShadowNum(10)+'</value></block>', pack: 'repeat'},
     defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
     defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
+    counting_loop: { block: '<block type="controls_for"><value name="COUNTER"><block type="variables_get"><field name="VAR">i</field></block></value>' +
+        '<value name="FROM">' + RuthefjordBlockly.makeShadowNum(0) + '</value>' +
+        '<value name="TO">' + RuthefjordBlockly.makeShadowNum(10) + '</value>' +
+        '<value name="BY">' + RuthefjordBlockly.makeShadowNum(1) + '</value>' +
+        '</block>'}
     //number: { block: '<block type="math_number"><field name="NUM">1</field></block>'}
 };
 

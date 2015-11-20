@@ -499,7 +499,7 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 } else if (stmt.name === 'PlaceCube') {
                     return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
                 } else {
-                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><value name="VALUE">' + RuthefjordBlockly.makeNumXML(stmt.args[0].value) + '</value>';
+                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.args[0].value) + '</value>';
                 }
             } else if (Blockly.Blocks[stmt.name]) { // block generated from library import, assumes no parameters
                 return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '">';
@@ -507,7 +507,7 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 return '<block type="procedures_callnoreturn" id="' + stmt.meta.id + '"><mutation name="' + stmt.name + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
-            return '<block type="controls_repeat" id="' + stmt.meta.id + '"><value name="TIMES">' + RuthefjordBlockly.makeNumXML(stmt.number.value) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
+            return '<block type="controls_repeat" id="' + stmt.meta.id + '"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
         }
     }
     return '';
