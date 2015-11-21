@@ -24,6 +24,17 @@
       }
       .blocklyFlyoutBackground {
         fill: #ccebff !important;
+        pointer-events: all;
+      }
+      .blocklyFlyout {
+        pointer-events: none;
+      }
+      .blocklyDraggable {
+        pointer-events: all;
+      }
+      #flyoutMask>rect {
+        -webkit-transition: width 0.5s ease;
+        transition: width 0.5s ease;
       }
       .blocklySelected.placeholder>.blocklyPath {
         fill-opacity: 0;
@@ -46,10 +57,6 @@
       }
       .blocklyDebugHighlight>.blocklyPathLight {
         display: none;
-      }
-      #flyoutMask>rect {
-        -webkit-transition: width 0.5s ease;
-        transition: width 0.5s ease;
       }
       #blocklyLabels {
         text-align: center;
