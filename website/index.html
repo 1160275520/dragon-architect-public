@@ -1,16 +1,85 @@
 <!doctype html>
 <html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
+<head>
+    <link rel="stylesheet" type="text/css"
+          href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
     <link rel="stylesheet" type="text/css" href="style.css">
-  </head>
-  <body>
+    <!--<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>-->
+    <script src="../html/lib/jquery/jquery.js"></script>
+</head>
+<body>
+<div id="ui-container">
     <div id="welcome-container">
-      <img src="media/dragon_icon.png"/>
-      <div id="welcome-msg">
-        <h1>Welcome to Dragon Architect!</h1>
-        <a id="play-btn" href="http://dragonarchitect.net/play/latest">PLAY NOW</a>
-      </div>
+        <img src="media/dragon_icon.png"/>
+
+        <div id="welcome-msg">
+            <h1>Welcome to Dragon Architect!</h1>
+            <a id="play-btn" href="http://dragonarchitect.net/play/latest">PLAY NOW</a>
+        </div>
     </div>
-  </body>
+    <div id="menu-items">
+        <span id="item-about" class="menu-item">About</span>
+        <span id="item-research" class="menu-item">Research</span>
+        <span id="item-contact" class="menu-item">Contact Us</span>
+    </div>
+    <div id="about-msg" class="msg-container" style="display:none">
+        <p>
+            We've found a dragon that only speaks code! In <em>Dragon Architect</em> you learn it's language and help
+            this peculiar creature construct wondrous things in a fun 3D building game. You'll use basic programming
+            concepts to solve puzzles and build 3D structures out of cubes.
+        </p>
+
+        <p>
+            <em>Dragon Architect</em> is created by <a href="http://homes.cs.washington.edu/~awb/">Aaron Bauer</a> and <a
+                href="http://ericbutler.net">Eric Butler</a> as part of the <a href="http://centerforgamescience.org">Center
+            for Game Science</a> at the University of Washington. The Center for Game Science is part of the <a
+                href="http://cs.washington.edu">Computer Science & Engineering Department</a>.
+        </p>
+    </div>
+    <div id="research-msg" class="msg-container" style="display:none">
+        <p>Research is an important part of the development of <em>Dragon Architect</em>. We are interested in exploring
+            questions relating to computer science education, problem solving, and computational thinking.</p>
+
+        <p>We are always looking for exciting collaborations! If you are interested in using <em>Dragon Architect</em> as part of
+            your program or in your research, please send email to awb &lt;at&gt; cs &lt;dot&gt; washington &lt;dot&gt;
+            edu.</p>
+
+        <p>Below is a selection of published work based on <em>Dragon Architect</em>.</p>
+
+        <table>
+            <tbody>
+            <td>
+                <a href="./media/Bauer_BlocksAndBeyond_2015.pdf">
+                    <img alt="" src="./media/castle-decomp.png" width="150"
+                         border="1"/>
+                </a>
+            </td>
+            <td>
+                Aaron Bauer, Eric Butler, Zoran Popovi&#263;, <em>Approaches for Teaching Computational Thinking
+                Strategies in an Educational Game: A Position Paper</em>, in Proceedings of the Blocks and Beyond
+                workshop at the IEEE Symposium on Visual Languages and Human-Centric Computing (VL/HCC 2015). [<a
+                    href="./media/Bauer_BlocksAndBeyond_2015.pdf">pdf</a>]
+            </td>
+            </tbody>
+        </table>
+    </div>
+    <div id="contact-msg" class="msg-container" style="display:none">
+        <p>We'd love to hear from you! Please send any comments, questions, and feedback to cgs-feedback.</p>
+    </div>
+</div>
+<script>
+    function show_msg(id) {
+        var msg_sel = "#" + id.split("-")[1] + "-msg";
+        $(".msg-container").filter(":not(" + msg_sel + ")").hide();
+        $("#ui-container").css("margin-top", "100px");
+        $(msg_sel).slideDown(400);
+    }
+
+    $(".menu-item").on('click', function () {
+        $(".menu-item").removeClass("selected");
+        $(this).addClass("selected");
+        show_msg(this.id);
+    });
+</script>
+</body>
 </html>

@@ -4,20 +4,74 @@ body {
     background-size: cover;
 }
 
-#welcome-container {
-    background-color: rgba(200,200,200,0.7);
+td {
+    vertical-align: top;
+    padding-bottom: 15px;
+    padding-right: 10px;
+}
+
+#ui-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    background-color: rgba(200,200,200,0.7);
     border-radius: 20px;
     padding: 10px;
     width: 800px;
     margin: auto;
     margin-top: 200px;
+    transition: margin-top 0.4s ease;
+}
+
+#welcome-container {
+    display: flex;
+    flex-direction: row;
 }
 
 #welcome-msg {
     display: flex;
     flex-direction: column;
+}
+
+#menu-items {
+    display: flex;
+    margin: auto;
+    width: 800px;
+    align-content: space-between;
+    border-radius: 10px;
+    background-color: rgba(100,100,100,0.5);
+    margin-top: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.menu-item {
+    margin: auto;
+    font-size: 25px;
+    background-color: rgba(119,181,90,0.5);
+    box-sizing: border-box;
+    width: 200px;
+    height: 35px;
+    border-radius: 5px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+    background-color: rgba(119,181,90,1);
+    border-left: solid black;
+    border-right: solid black;
+    border-width: 4px;
+}
+
+.menu-item.selected {
+    background-color: rgba(151,230,114,1);
+    border-left: solid black;
+    border-right: solid black;
+    border-width: 4px;
+}
+
+.msg-container {
+    font-size: 20px;
 }
 
 /* generated using http://www.bestcssbuttongenerator.com/ */
