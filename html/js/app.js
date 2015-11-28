@@ -972,7 +972,7 @@ handler.onProgramStateChange = function(type) {
     if (type === 'current_state') {
         // highlight current block
 
-        if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing && !Blockly.getMainWorkspace().dragMode) {
+        if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing && Blockly.dragMode_ === 0) {
             //console.log(RuthefjordManager.Simulator.current_code_elements);
             if (RuthefjordManager.Simulator.current_code_elements.length > 0) {
                 var callStackIndex = RuthefjordManager.Simulator.current_code_elements.length - 2;

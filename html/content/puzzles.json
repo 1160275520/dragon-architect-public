@@ -238,7 +238,7 @@
         "name": "Square Dancing",
         "format_version": 2,
         "library": {
-            "restricted":["move2", "place", "up", "down", "defproc", "remove"],
+            "restricted":["move2", "place", "up", "down", "remove"],
             "required":["repeat"],
             "granted": []
         },

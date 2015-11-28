@@ -44,10 +44,12 @@ blocklyIframeLoaded = function() {
 
     Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseenter = function () {
         Blockly.getMainWorkspace().flyout_.show_all();
+        $(".blocklyDraggable", $(".blocklyFlyout", $("#blockly").contents())).css('pointer-events', '')
     };
 
     Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseleave = function () {
         Blockly.getMainWorkspace().flyout_.show_cutoff();
+        $(".blocklyDraggable", $(".blocklyFlyout", $("#blockly").contents())).css('pointer-events', 'none')
     };
 
     q_defer.resolve();
@@ -74,7 +76,7 @@ RuthefjordBlockly.Commands = {
         teaser: '<block type="controls_repeat_teaser"><value name="TIMES">'+RuthefjordBlockly.makeShadowNum(10)+'</value></block>', pack: 'repeat'},
     defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
     defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
-    counting_loop: { block: '<block type="controls_for"><value name="COUNTER"><block type="variables_get"><field name="VAR">i</field></block></value>' +
+    counting_loop: { block: '<block type="controls_for"><value name="COUNTER"><block type="variables_get" default="true"><field name="VAR">i</field></block></value>' +
         '<value name="FROM">' + RuthefjordBlockly.makeShadowNum(0) + '</value>' +
         '<value name="TO">' + RuthefjordBlockly.makeShadowNum(10) + '</value>' +
         '<value name="BY">' + RuthefjordBlockly.makeShadowNum(1) + '</value>' +
@@ -83,7 +85,7 @@ RuthefjordBlockly.Commands = {
 };
 
 RuthefjordBlockly.CommandReplacements = {
-    defproc:'defproc_noargs'
+    defproc_noargs:'defproc'
 };
 
 RuthefjordBlockly.AddonCommands = {};
@@ -309,6 +311,10 @@ RuthefjordBlockly.setLevel = function(scene_info, library) {
     RuthefjordBlockly.scene_info = scene_info;
 
     RuthefjordBlockly.updateToolbox();
+
+    // since the flyout starts cutoff, we need to make the flyout_.svgBackground_
+    // the correct size with this call
+    Blockly.getMainWorkspace().flyout_.show_cutoff();
 };
 
 /**

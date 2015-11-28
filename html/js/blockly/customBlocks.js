@@ -62,7 +62,7 @@ Blockly.Procedures.rename = function(text) {
         // why is 'this' bound to an object for some arbitrary function? Who knows! But make sure to preserve it.
         var newName = old_rename_func.call(this, text);
         // blockly friggin explodes if the toolbox is updated while something is being dragged
-        if (!Blockly.mainWorkspace.dragMode) {
+        if (Blockly.dragMode_ === 0) {
             RuthefjordBlockly.updateToolbox();
         }
         return newName;
@@ -74,14 +74,14 @@ var old_changed_func = Blockly.Mutator.prototype.workspaceChanged_;
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
     old_changed_func.call(this);
     // blockly friggin explodes if the toolbox is updated while something is being dragged
-    if (!Blockly.mainWorkspace.dragMode) {
+    if (Blockly.dragMode_ === 0) {
         RuthefjordBlockly.updateToolbox();
     }
 };
 
 Blockly.addCanvasListener("blocklyBlockDeleted", function() {
     // console.log('delete event!');
-    if (!Blockly.mainWorkspace.dragMode) {
+    if (Blockly.dragMode_ === 0) {
         RuthefjordBlockly.updateToolbox();
     }
 });
@@ -99,9 +99,9 @@ function makeIdent(name) {
 }
 
 function makeSingleArg(block, inputName) {
-    var input = block.getInlineInput(inputName, "NUM");
+    var input = block.getInlineInputValue(inputName, "NUM");
     if (input === null) {
-        input = block.getInlineInput(inputName, "VAR");
+        input = block.getInlineInputValue(inputName, "VAR");
         return makeIdent(input);
     }
     return makeLiteral(input);
@@ -333,6 +333,19 @@ Blockly.JSONLangOps['controls_repeat'] = function(block, children) {
     };
 };
 
+// COUNTING LOOP
+Blockly.JSONLangOps['controls_for'] = function(block, children) {
+    return {
+        meta: {id:Number(block.id)},
+        counter: makeSingleArg(block, "COUNTER"),
+        from: makeSingleArg(block, "FROM"),
+        to: makeSingleArg(block, "TO"),
+        by: makeSingleArg(block, "BY"),
+        body: children.map(Blockly.JSONLangOps.convertCallback),
+        type: "counting_loop"
+    };
+};
+
 Blockly.Blocks['procedures_noargs_defnoreturn'] = {
     init: function() {
         this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
@@ -426,11 +439,11 @@ Blockly.JSONLangOps['procedures_callnoreturn'] = function(block) {
     var args = [];
     block.setWarningText(null);
     for (var i = 0; i < block.arguments_.length; i++) {
-        var type = block.getInlineInputType("ARG" + i);
+        var type = block.getInlineInputValueType("ARG" + i);
         if (!type) {
             block.setWarningText('Help me know what to do by filling in all the parameters', RuthefjordBlockly.dragonIcon);
         } else {
-            var data = block.getInlineInput("ARG" + i, type);
+            var data = block.getInlineInputValue("ARG" + i, type);
             if (type === "VAR") {
                 args.push(makeIdent(data));
             } else {
