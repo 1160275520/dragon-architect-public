@@ -106,7 +106,7 @@ var RuthefjordDisplay = (function() {
         var tex = THREE.ImageUtils.loadTexture("media/canvas_cube.png");
         _.forEach(self.cubeColors, function (color) {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex}));
-            cubes[color] = {count:0, meshes:[]};
+            cubes[color] = {meshes:[]};
         });
         targetGeo = new THREE.BoxGeometry(1.1, 1.1, 1.1);
         cubeTargetMat = new THREE.MeshLambertMaterial({color:"#4078E6", transparent: true, opacity:0.5});
@@ -165,19 +165,23 @@ var RuthefjordDisplay = (function() {
     var update = function () {
         stats.begin();
         var t = self.clock.getElapsedTime();
-        var dt = t - self.oldTime;
+        var dt = Math.min(t - self.oldTime, 0.1);
         self.oldTime = t;
-        var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
-        RuthefjordPuzzle.check_win_predicate();
-        if (RuthefjordWorldState.dirty) {
-            self.setDisplayFromWorld(transition_time);
-        }
-        render(dt, t);
-        if (self.renderOut) {
-            console.log(renderer.domElement.toDataURL());
-            onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src:renderer.domElement.toDataURL()});
-            self.renderOut = false;
-        }
+        //if (dt > 0.1) {
+        //    console.error("large dt", dt);
+        //} else {
+            var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
+            RuthefjordPuzzle.check_win_predicate();
+            if (RuthefjordWorldState.dirty) {
+                self.setDisplayFromWorld(transition_time);
+            }
+            render(dt, t);
+            if (self.renderOut) {
+                console.log(renderer.domElement.toDataURL());
+                onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
+                self.renderOut = false;
+            }
+        //}
         stats.end();
         requestAnimationFrame(update);
     };
@@ -275,23 +279,45 @@ var RuthefjordDisplay = (function() {
 
         if (grid) {
             // set cubes
-            // clear previous cubes, reset counts
+            // clear removed cubes, establish list of available meshes
+            var available = [];
+            var available_index = 0;
+            var filled = {};
+            // loop over existing meshes
             self.cubeColors.forEach(function (color) {
-                cubes[color].meshes.forEach(function (mesh) {
-                    scene.remove(mesh);
+                available[color] = [];
+                cubes[color].meshes.forEach(function (obj) {
+                    if (!grid.hasOwnProperty(obj.pos)) { // previously allocated & positioned mesh no longer present
+                        scene.remove(obj.mesh);
+                        obj.pos = null;
+                    } else {
+                        filled[obj.pos] = true; // record this position as already filled
+                    }
+                    if (obj.pos === null) {
+                        available[color].push(obj); // mesh unassigned, available to be positioned
+                    }
                 });
-                cubes[color].count = 0;
             });
-            // add cubes to scene
+            // loop over positions that need meshes
             for (var cubePos in grid) {
                 var color = self.cubeColors[grid[cubePos]];
-                // add a new mesh, if necessary
-                if (cubes[color].count >= cubes[color].meshes.length) {
-                    cubes[color].meshes.push(new THREE.Mesh(cubeGeo, cubeMats[grid[cubePos]]));
+                // check if mesh already in place
+                if (!filled[cubePos]) {
+                    var cube;
+                    if (available[color][available_index]) { // use existing mesh
+                        cube = available[color][available_index++];
+                        cube.pos = cubePos;
+                    } else { // no free existing mesh, allocate a new mesh
+                        cube = {
+                            mesh: new THREE.Mesh(cubeGeo, cubeMats[grid[cubePos]]),
+                            pos: cubePos
+                        };
+                        cubes[color].meshes.push(cube);
+                    }
+                    // add mesh to scene, position mesh
+                    scene.add(cube.mesh);
+                    cube.mesh.position.copy(Vector3FromString(cubePos)).add(cubeOffset);
                 }
-                var cube = cubes[color].meshes[(cubes[color].count)++];
-                scene.add(cube);
-                cube.position.copy(Vector3FromString(cubePos)).add(cubeOffset);
             }
         }
     };
