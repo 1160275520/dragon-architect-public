@@ -233,7 +233,7 @@ RuthefjordBlockly.updateToolbox = function() {
     var toolXML = '<xml id="toolbox" style="display: none">';
     var commands = _.extend({}, RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands);
     // check for commands that should be eliminated due to presence of replacement command
-    _.forEach(RuthefjordBlockly.CommandReplacements, function(obsolete, replacement) {
+    _.forEach(RuthefjordBlockly.CommandReplacements, function(replacement, obsolete) {
         if (_.has(current_tools, replacement) || RUTHEFJORD_CONFIG.features.unlock_all) {
             delete commands[obsolete]; // if we have the replacement, we can get rid of its predecessor
         } else if (!_.has(current_tools, obsolete)) {
