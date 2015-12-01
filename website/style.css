@@ -1,7 +1,8 @@
 body {
     font-family: "Open Sans";
     background-image: url("media/colorful-castle-blur.png");
-    background-size: cover;
+    background-size: 2000px;
+    background-repeat: no-repeat;
 }
 
 td {
