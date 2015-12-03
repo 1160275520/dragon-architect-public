@@ -87,7 +87,7 @@ header > h1 {
     font-family: "Open Sans";
     background-color: #fff;
     margin: 0;
-    padding: 0;
+    padding: 25px;
     z-index: 1;
 }
 
@@ -97,7 +97,8 @@ header > h1 {
 }
 #alpha-msg > button {
     margin: auto;
-    font-size: 16pt;
+    font-size: 300%;
+    height: auto;
 }
 /* main area and two main vertical divs */
 /************************************************************/
@@ -316,6 +317,7 @@ header button, .control-btn, .control-icon-btn {
     width: 100%;
     padding: 0;
     margin: 0;
+    margin-top: 10px;
 }
 
 #three-js:after {
@@ -325,29 +327,6 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #three-js canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    position: absolute;
-}
-
-#unity-player {
-    position: relative;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-/* some hilarious hacks to keep fixed aspect ratio */
-#unity-player:after {
-    padding-top: 75%;
-    display: block;
-    content: '';
-}
-
-#unity-player embed {
     display: block;
     width: 100%;
     height: 100%;
@@ -623,7 +602,7 @@ header button, .control-btn, .control-icon-btn {
 
 #btn-consent-continue {
     display: inline-block;
-    font-size: 130%;
+    font-size: 300%;
     font-weight: bold;
     padding: 10px;
     margin: 20px 0 0 200px;

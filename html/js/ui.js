@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordDisplay.hide();
-        $('.view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
+        $('#main-view-game, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -36,7 +36,7 @@ module.State = (function(){ "use strict";
         current_state = 'title';
 
         hideAll();
-        $('.codeEditor').show();
+        $('.codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
@@ -51,7 +51,7 @@ module.State = (function(){ "use strict";
         current_state = 'intro';
 
         hideAll();
-        $('.codeEditor').show();
+        $('.codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
@@ -71,7 +71,7 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
-        $('.codeEditor, .puzzleModeUI').show();
+        $('.codeEditor, #main-view-game, .puzzleModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -79,7 +79,7 @@ module.State = (function(){ "use strict";
 
     self.goToSandbox = function(cb) {
         hideAll();
-        $('.codeEditor, .sandboxModeUI').show();
+        $('.codeEditor, #main-view-game, .sandboxModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -645,12 +645,12 @@ module.CameraControls = (function() {
 
     self.cameraMode = "gamemode";
 
-    self.setVisible = function(components) {
-        // making all camera controls always enabled
-        // var isRotate = _.contains(components, 'camera_rotate');
-        // var isTilt = _.contains(components, 'camera_tilt');
-        // $('.camera-controls-rotate').css('display', isRotate ? 'inline-block' : 'none');
-        // $('.camera-controls-tilt').css('display', isTilt ? 'inline-block' : 'none');
+    self.setVisible = function(isVisible) {
+        isVisible ? $('#camera-controls').show() : $('#camera-controls').hide();
+        $("#game-controls-bar-top").show();
+        // check if we should hide or show the area containing camera controls (by checking if everything in it is hidden)
+        $("#game-controls-bar-top").children().toArray().every(function (e) { return $(e).is(":hidden");}) ?
+            $("#game-controls-bar-top").hide() : $("#game-controls-bar-top").show();
     };
 
     self.toggleMode = function() {

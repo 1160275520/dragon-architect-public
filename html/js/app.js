@@ -714,7 +714,7 @@ $(function() {
                         });
                     } else {
                         $("#btn-alpha-continue").on('click', function() {
-                            setState_intro();
+                            current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
                         });
                     }
                 });
@@ -729,17 +729,6 @@ $(function() {
 });
 
 // SPECIFIC HANDLER FUNCTIONS
-
-handler.onTitleButtonClicked = function(button) {
-    switch (button) {
-        case 'tutorial':
-            setState_intro();
-            break;
-        default:
-            throw new Error('uknown title button ' + button);
-            break;
-    }
-};
 
 function clear_level_listeners() {
     _.forEach(levelListeners, function (listener) {
@@ -771,13 +760,15 @@ function start_editor(info) {
 
         RuthefjordBlockly.setLevel(info.puzzle, library);
         if (!RUTHEFJORD_CONFIG.features.debugging_always && !RUTHEFJORD_CONFIG.features.unlock_all) {
-            RuthefjordUI.SpeedSlider.setVisible(_.contains(library.all, 'speed_slider'));
-            RuthefjordUI.TimeSlider.setVisible(_.contains(library.all, 'time_slider'));
+            RuthefjordUI.SpeedSlider.setVisible(_.includes(library.all, 'speed_slider'));
+            RuthefjordUI.TimeSlider.setVisible(_.includes(library.all, 'time_slider'));
         }
-        RuthefjordUI.CameraControls.setVisible(library.all);
+        RuthefjordUI.CameraControls.setVisible(_.includes(library.all, 'camera_controls'));
         RuthefjordUI.CubeCounter.setVisible(info.puzzle.goal && info.puzzle.goal.type === "cube_count");
         RuthefjordUI.DoneButton.setVisible(info.puzzle.goal && info.puzzle.goal.type === "submit");
         RuthefjordUI.UndoButton.update();
+
+        _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
 
         // reset history to prevent undo from restoring whatever code happened to be around before
         RuthefjordBlockly.history = [];

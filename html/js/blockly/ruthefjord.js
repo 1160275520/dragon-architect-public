@@ -69,19 +69,18 @@ RuthefjordBlockly.makeShadowNum = function(num) {
 RuthefjordBlockly.Commands = {
     move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
     place: { block: '<block type="PlaceCube"></block>'},
+    remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
     up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', pack: 'up'},
     down: { block: '<block type="Down"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', pack: 'up'},
-    remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
     repeat: { block: '<block type="controls_repeat"><value name="TIMES">'+RuthefjordBlockly.makeShadowNum(10)+'</value></block>',
         teaser: '<block type="controls_repeat_teaser"><value name="TIMES">'+RuthefjordBlockly.makeShadowNum(10)+'</value></block>', pack: 'repeat'},
-    defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
-    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
     counting_loop: { block: '<block type="controls_for"><value name="COUNTER"><block type="variables_get" default="true"><field name="VAR">i</field></block></value>' +
         '<value name="FROM">' + RuthefjordBlockly.makeShadowNum(0) + '</value>' +
         '<value name="TO">' + RuthefjordBlockly.makeShadowNum(10) + '</value>' +
         '<value name="BY">' + RuthefjordBlockly.makeShadowNum(1) + '</value>' +
-        '</block>'}
-    //number: { block: '<block type="math_number"><field name="NUM">1</field></block>'}
+        '</block>'},
+    defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
+    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures'},
 };
 
 RuthefjordBlockly.CommandReplacements = {
@@ -234,7 +233,7 @@ RuthefjordBlockly.updateToolbox = function() {
     var commands = _.extend({}, RuthefjordBlockly.Commands, RuthefjordBlockly.AddonCommands);
     // check for commands that should be eliminated due to presence of replacement command
     _.forEach(RuthefjordBlockly.CommandReplacements, function(replacement, obsolete) {
-        if (_.has(current_tools, replacement) || RUTHEFJORD_CONFIG.features.unlock_all) {
+        if (_.includes(current_tools, replacement) || RUTHEFJORD_CONFIG.features.unlock_all) {
             delete commands[obsolete]; // if we have the replacement, we can get rid of its predecessor
         } else if (!_.has(current_tools, obsolete)) {
             delete commands[replacement]; // otherwise if we don't have the predecessor, hide the replacement until we do
@@ -242,7 +241,7 @@ RuthefjordBlockly.updateToolbox = function() {
     });
     // assemble toolbox XML, adding in teaser blocks as appropriate
     _.forEach(commands, function(data, name) {
-        if (_.contains(current_tools, name) || RUTHEFJORD_CONFIG.features.unlock_all) {
+        if (_.includes(current_tools, name) || RUTHEFJORD_CONFIG.features.unlock_all) {
             toolXML += data.block;
         } else if (data.teaser && RuthefjordBlockly.isSandbox) {
             var pack = RuthefjordBlockly.game_info.packs[data.pack];

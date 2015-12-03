@@ -215,6 +215,18 @@ var RuthefjordManager = (function() {
                     }
                     push_stack_state(stmt.body, [], sim);
                     break;
+                case "counting_loop":
+                    var new_loop = {
+                        body: stmt.body,
+                        counter: shallow_copy(stmt.counter),
+                        from: shallow_copy(stmt.from),
+                        to: shallow_copy(stmt.to),
+                        by: shallow_copy(stmt.by),
+                        type: "counting_loop",
+                        meta: stmt.meta
+                    };
+
+                    break;
                 case "command": // imperative robot instructions
                     apply_command(stmt, state, sim);
                     break;
