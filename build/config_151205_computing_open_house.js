@@ -15,6 +15,9 @@ var RUTHEFJORD_CONFIG = {
         no_login_prompt: true,
         workshop_only: true
     },
+    hide_packs: [
+        "decomposition"
+    ],
     gallery: {
         group: "cgs_web"
     }
