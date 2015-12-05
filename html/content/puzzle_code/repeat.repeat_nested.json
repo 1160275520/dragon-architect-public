@@ -42,7 +42,8 @@
       "meta": {
         "attributes": {
           "FrozenArgs": "one",
-          "FrozenBlocks": "one"
+          "FrozenBlocks": "one",
+          "Instructions": "one"
         },
         "id": 6
       },

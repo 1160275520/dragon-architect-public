@@ -5,7 +5,8 @@
       "meta": {
         "attributes": {
           "NoArgs": "one",
-          "NoDelete": "one"
+          "NoDelete": "one",
+          "Instructions": "one"
         },
         "id": 1
       },

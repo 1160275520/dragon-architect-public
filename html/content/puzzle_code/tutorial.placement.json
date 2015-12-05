@@ -4,6 +4,7 @@
       "args": [
         {
           "meta": {
+            "attributes": {},
             "id": 1
           },
           "type": "int",
@@ -11,7 +12,26 @@
         }
       ],
       "meta": {
+        "attributes": {},
         "id": 2
+      },
+      "name": "PlaceCube",
+      "type": "execute"
+    },
+    {
+      "args": [
+        {
+          "meta": {
+            "attributes": {},
+            "id": 3
+          },
+          "type": "int",
+          "value": 1
+        }
+      ],
+      "meta": {
+        "attributes": {},
+        "id": 4
       },
       "name": "Forward",
       "type": "execute"
@@ -20,14 +40,16 @@
       "args": [
         {
           "meta": {
-            "id": 3
+            "attributes": {},
+            "id": 5
           },
           "type": "int",
           "value": 1
         }
       ],
       "meta": {
-        "id": 4
+        "attributes": {},
+        "id": 6
       },
       "name": "PlaceCube",
       "type": "execute"

@@ -28,7 +28,7 @@
     <script src="lib/editinplace/editinplace.js"></script>
     <script src="lib/bootstrap-slider/bootstrap-slider.js"></script>
     <script src="lib/fetch/fetch.js"></script>
-    <script src="lib/three/three.min.js"></script>
+    <script src="lib/three/three.js"></script>
     <script src="lib/three/stats.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/ui.js"></script>
@@ -56,8 +56,8 @@
       <div>
         <p class="sandboxModeUI">You are in the sandbox!</p>
         <button id="btn-packs" class="sandboxModeUI">Learn more</button>
-        <button id="btn-gallery" class="sandboxModeUI puzzleModeUI galleryAccess">Gallery</button>
-        <button id="btn-share" class="sandboxModeUI puzzleModeUI galleryAccess">Share!</button>
+        <button id="btn-gallery" class="galleryAccess">Gallery</button>
+        <button id="btn-share" class="galleryAccess">Share!</button>
         <button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear everything</button>
         <button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button>
         <button id="btn-back-selector-pack" class="puzzleModeUI puzzleSelector hideTutorial">Try a different pack</button>
@@ -126,6 +126,19 @@
       <div id="share-message"></div>
     </div>
     <div id="main">
+      <div id="instructions-display" class="instructions">
+        <div>
+          <img id="instructions-icon" src="media/dragon_icon.png">
+        </div>
+        <div id="instructions-goal"></div>
+        <!--<p id="instructions-detail"></p>-->
+        <!--<div id="instructions-errors">-->
+        <!--<p id="instructions-errors-title"></p>-->
+        <!--<ul id="instructions-errors-list">-->
+        <!--</ul>-->
+        <!--</div>-->
+        <!--<button id="btn-instructions-hide" class="notTitle">Click to hide</button>-->
+      </div>
       <div id="main-view-game">
         <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <div id="camera-controls" class="game-control">
@@ -161,22 +174,6 @@
         <!-- <img id="dialog-icon" src="media/dragon_icon.png"> -->
       </div>
       <div id="main-view-code" class="codeEditor">
-        <div id="instructions-container">
-          <div id="instructions-display">
-            <div id="instructions-header">
-              <img id="instructions-icon" src="media/dragon_icon.png">
-              <p id="instructions-reminder"></p>
-              <p id="instructions-goal"></p>
-            </div>
-            <p id="instructions-detail"></p>
-            <div id="instructions-errors">
-              <p id="instructions-errors-title"></p>
-              <ul id="instructions-errors-list">
-              </ul>
-            </div>
-            <button id="btn-instructions-hide" class="notTitle">Click to hide</button>
-          </div>
-        </div>
         <div id="code-area">
           <iframe id="blockly" src="frame.html"></iframe>
           <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">

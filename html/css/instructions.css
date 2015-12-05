@@ -1,21 +1,14 @@
-
-#instructions-container {
-    z-index: 1;
-    height: 110px;
-    max-height: 110px;
-    min-height: 110px;
-    overflow: visible;
-    flex: none;
-    position: relative;
-}
-
 #instructions-display {
     padding: 10px;
-    background: rgba(59,54,36,0.94);
+    background: rgba(59,54,36,0.50);
     border-radius:10px;
-    width: 100%;
     color: white;
     font-family: "Ubuntu Mono";
+    position: absolute;
+    z-index: 1;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+    display: flex;
 }
 
 #instructions-header {
@@ -27,7 +20,11 @@
 }
 
 #instructions-goal {
-    font-size: 16pt;
+    font-size: 12pt;
+}
+
+#instructions-goal > p {
+    padding-bottom: 8px;
 }
 
 #instructions-detail {
@@ -96,7 +93,12 @@
     float: left;
     padding-right: 10px;
     position: relative;
-    height: 80px;
+    height: 50px;
+    box-sizing: content-box;
+}
+
+.instructions-img {
+    height: 20px;
 }
 
 @-webkit-keyframes speechBubble {

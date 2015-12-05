@@ -838,21 +838,16 @@ function start_editor(info) {
             win_msg = "Yay, you win!"
         }
     }
-    if (dont_expand_instructions) {
-        dont_expand_instructions = false;
-        RuthefjordUI.Instructions.show(info.puzzle.instructions, null, false);
-    } else {
-        RuthefjordUI.Instructions.show(info.puzzle.instructions, null, true);
-    }
+    // HACK we have to wait long enough for a render to happen, so we get the right screen coordinates
+    setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
 }
 
-// TODO remove duplicate code from this an onPuzzleChange
 handler.onSandboxStart = function() {
     current_scene = "sandbox";
 
     clear_level_listeners();
-    RuthefjordDisplay.clearTargets(); // remove target objects put in the scene by puzzles
     RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
+    RuthefjordPuzzle.clear_puzzle(); // clear win predicate and puzzle targets
 
     var summary = "Have fun and build stuff!";
     if (!RUTHEFJORD_CONFIG.features.sandbox_only) {

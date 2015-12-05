@@ -20,8 +20,13 @@
         "goal": {"source":"run_only"},
         "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461",
         "instructions": {
-            "summary": "Click {go} to have me run my program!",
-            "detail": "My program tells me what to do. You can see it below."
+            "targets": [
+                {
+                    "type": "ui",
+                    "name": "#btn-run",
+                    "text": "Click {go} to have me run my program!"
+                }
+            ]
         }
     },
     "tutorial.movement2d_part2": {
@@ -43,8 +48,18 @@
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
         "instructions": {
-            "summary": "I need to get to the {pinkboxGround}, and my program doesn't move me far enough.",
-            "detail": "Add a {forward} to complete my program and click {go}."
+            "detail": "Add a {forward} to complete my program and click {go}.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "I need to get to the {pinkboxGround}"
+                },{
+                    "type": "toolbox",
+                    "name": "Forward",
+                    "text": "A forward block could help!",
+                    "delay": 2500
+                }
+            ]
         }
     },
     "tutorial.movement2d_part3": {
@@ -66,8 +81,18 @@
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
         "instructions": {
-            "summary": "The {pinkboxGround} has moved. Change my program to help me get there!",
-            "detail": "Add a {right} to my program and click {go}."
+            "detail": "Add a {right} to my program and click {go}.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "{pinkboxGround} moved. Help me get there!"
+                },{
+                    "type": "toolbox",
+                    "name": "Right",
+                    "text": "A right turn block let me turn right",
+                    "delay": 2500
+                }
+            ]
         }
     },
     "tutorial.place_cubes": {
@@ -87,8 +112,18 @@
         "program": {"type":"file", "value":"content/puzzle_code/tutorial.placement.json"},
         "goal": {"source":"min_cubes", "value":4},
         "instructions": {
-            "summary": "I want to place some cubes. Help me place 4 of them!",
-            "detail": "Use several {forward} and {placecube} together to place a bunch of cubes."
+            "detail": "Use several {forward} and {placecube} together to place a bunch of cubes.",
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Help me place 4 {cube}!"
+                },{
+                    "type": "toolbox",
+                    "name": "PlaceCube",
+                    "text": "You'll need some place cube blocks!",
+                    "delay": 2500
+                }
+            ]
         },
         "logging_id": "aad39525-99a7-4833-a3d2-87ad9d5cbec3"
     },
@@ -114,8 +149,13 @@
         "solution": "content/puzzle_code/remove.remove_cubes.solution.json",
         "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
-            "summary": "Help me remove those three cubes!",
-            "detail": "Add one more {removecube} to fix my program."
+            "detail": "Add one more {removecube} to fix my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me remove all the {purple_cube}"
+                }
+            ]
         },
         "logging_id": "f927a173-7fdf-4850-9888-1b23d9e8f89e"
     },
@@ -136,8 +176,13 @@
         "solution": "content/puzzle_code/up.what_is_up.solution.json",
         "goal": {"source":"solution", "type":"robot"},
         "instructions": {
-            "summary": "Help me get to the {pinkboxUp}!",
-            "detail": "Use two {up} to complete my program."
+            "detail": "Use two {up} to complete my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me get to the {pinkboxUp}!"
+                }
+            ]
         },
         "logging_id": "a9f31eea-a109-4c79-954a-8cc0957ee745"
     },
@@ -157,8 +202,13 @@
         "solution": "content/puzzle_code/up.what_is_down.solution.json",
         "goal": {"source":"solution", "type":"robot"},
         "instructions": {
-            "summary": "Help me get to the {pinkboxGround}!",
-            "detail": "Use three {down} to get me there."
+            "detail": "Use three {down} to get me there.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me get to the {pinkboxGround}!"
+                }
+            ]
         },
         "logging_id": "b8619792-bda0-4e38-a233-0fa91225b296"
     },
@@ -167,7 +217,7 @@
         "format_version": 2,
         "library": {
             "required": ["move2", "place", "up", "down"],
-            "granted": []
+            "granted": ["camera_controls"]
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[0, -1, 0]}]
@@ -176,8 +226,12 @@
         "solution": "content/puzzle_code/up.bridge.solution.json",
         "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
-            "summary": "Use what you've learned to help me put a cube in each blue space: {bridge}",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "I want to put a cube in each blue space: {bridge}"
+                }
+            ]
         },
         "logging_id": "3464281b-7176-464e-a599-5b5a5fc01500"
     },
@@ -203,8 +257,13 @@
             "granted": []
         },
         "instructions": {
-            "summary":  "Help me put cubes on the blue boxes!",
-            "detail": "The number in each {forward} tells me how many spaces to move. Change the numbers to complete my program."
+            "detail": "The number in each {forward} tells me how many spaces to move. Change the numbers to complete my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me put cubes on the blue boxes!"
+                }
+            ]
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
@@ -223,8 +282,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Help me fill in the whole line by repeating 5 times! {repeat5}",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "block",
+                    "text": "Repeat 5 times to have me fill in the whole line."
+                }
+            ]
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[0, -1, 0]}]
@@ -243,8 +306,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Put {repeat4} around my code to have me build a square.",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "block",
+                    "text": "Put a repeat around this code to make the square."
+                }
+            ]
         },
         "program": {"type":"file", "value":"content/puzzle_code/repeat.repeat_nested.json"},
         "solution": "content/puzzle_code/repeat.repeat_nested.solution.json",
@@ -292,8 +359,13 @@
             "granted": ["repeat"]
         },
         "instructions": {
-            "summary": "Fill in the blueprint to have me build a tower!",
-            "detail": "Each layer of the tower is a 5 by 5 square. The tower has 5 layers."
+            "detail": "Each layer of the tower is a 5 by 5 square. The tower has 5 layers.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "I want to build this tower!"
+                }
+            ]
         },
         "solution": "content/puzzle_code/repeat.repeat_tower.solution.json",
         "goal": {"source":"solution", "type":"cubes"},
@@ -309,8 +381,12 @@
         },
         "procedures_only":true,
         "instructions": {
-            "summary": "Put blocks inside {SquareProc} to have me build a square.",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "block",
+                    "text": "Put blocks inside here to have me build a square."
+                }
+            ]
         },
         "program": {"type":"file", "value":"content/puzzle_code/procedures.square.json"},
         "solution": "content/puzzle_code/procedures.square.solution.json",
@@ -326,8 +402,13 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Use {UpCubeCall} to help fill in the blue spaces.",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "toolbox",
+                    "name": "procedures_callnoreturn",
+                    "text": "Use UpCube to help fill in the blue spaces."
+                }
+            ]
         },
         "tutorial": {
             "highlighted": ["procedures_callnoreturn"]
@@ -353,8 +434,13 @@
         },
         "procedures_only":true,
         "instructions": {
-            "summary": "Use {procDef} to get me to the {pinkboxUp}!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "toolbox",
+                    "name": "procedures_noargs_defnoreturn",
+                    "text": "Get me to {pinkboxUp} using a procedure!"
+                }
+            ]
         },
         "solution": "content/puzzle_code/procedures.def.solution.json",
         "goal": {"source":"solution", "type":"robot"},
@@ -491,8 +577,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Try and build a house!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Try and build a house!"
+                }
+            ]
         },
         "goal": {"source": "none"},
         "logging_id": "8894A795-34CB-49E5-9EF9-2F2C2A1E0377"
@@ -506,8 +596,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Try and spell your name with cubes!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Try and spell your name with cubes!"
+                }
+            ]
         },
         "goal": {"source": "none"},
         "logging_id": "C69065D3-2592-4FA0-BE0B-4E235CB12189"
@@ -521,8 +615,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Try and make a rainbow!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Try and make a rainbow!"
+                }
+            ]
         },
         "goal": {"source": "none"},
         "logging_id": "029CB012-495E-467C-86D8-C101AF1FD27E"
@@ -536,8 +634,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Try and build a tree!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Try and build a tree!"
+                }
+            ]
         },
         "goal": {"source": "none"},
         "logging_id": "E1F6F3B9-82C7-4696-827F-43846EC50ABB"
@@ -551,8 +653,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Try and make a dragon!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Try and make a dragon!"
+                }
+            ]
         },
         "goal": {"source": "none"},
         "logging_id": "FC44805E-1767-444B-B9FD-6523F5CE90F8"
@@ -566,8 +672,12 @@
             "granted": []
         },
         "instructions": {
-            "summary": "Try and build a castle!",
-            "detail": ""
+            "targets": [
+                {
+                    "type": "general",
+                    "text": "Try and build a castle!"
+                }
+            ]
         },
         "goal": {"source": "none"},
         "logging_id": "B3B19370-9D1B-4941-BEDD-8A0391DD0A10"

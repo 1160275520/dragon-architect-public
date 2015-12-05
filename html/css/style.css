@@ -233,7 +233,7 @@ header button, .control-btn, .control-icon-btn {
     border-color: rgb(100,100,100);
 }
 
-/* run/pause buttons */
+/* run/pause/step/undo buttons */
 /************************************************************/
 
 #game-control-bar-playback {
@@ -309,7 +309,7 @@ header button, .control-btn, .control-icon-btn {
     right: 10px;
 }
 
-/* unity player */
+/* three js */
 /************************************************************/
 
 #three-js {

@@ -51,48 +51,31 @@
       "type": "procedure"
     },
     {
-      "args": [
-        {
-          "meta": {
-            "attributes": {},
-            "id": 6
-          },
-          "type": "int",
-          "value": 1
-        }
-      ],
+      "args": [],
+      "meta": {
+        "attributes": {},
+        "id": 6
+      },
+      "name": "UpCube",
+      "type": "execute"
+    },
+    {
+      "args": [],
       "meta": {
         "attributes": {},
         "id": 7
       },
-      "name": "Forward",
+      "name": "UpCube",
       "type": "execute"
     },
     {
-      "body": [
-        {
-          "args": [],
-          "meta": {
-            "attributes": {},
-            "id": 9
-          },
-          "name": "UpCube",
-          "type": "execute"
-        }
-      ],
+      "args": [],
       "meta": {
         "attributes": {},
-        "id": 10
+        "id": 8
       },
-      "number": {
-        "meta": {
-          "attributes": {},
-          "id": 8
-        },
-        "type": "int",
-        "value": 5
-      },
-      "type": "repeat"
+      "name": "UpCube",
+      "type": "execute"
     }
   ],
   "meta": {

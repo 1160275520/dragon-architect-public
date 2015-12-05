@@ -282,7 +282,7 @@ var RuthefjordManager = (function() {
 
         self.set_program = function (ast) {
             self.last_program_sent = ast;
-            if (self.edit_mode === module.EditMode.workshop && self.save_state === null) {
+            if (self.edit_mode === module.EditMode.workshop && self.run_state === module.RunState.stopped) {
                 self.save_state = RuthefjordWorldState.save();
             }
 

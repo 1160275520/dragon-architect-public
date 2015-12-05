@@ -349,6 +349,27 @@ var RuthefjordDisplay = (function() {
         cubes.targets = [];
     };
 
+    self.getScreenCoordsForTargets = function() {
+        var width = parent.width(), height = parent.height();
+        var widthHalf = width / 2, heightHalf = height / 2;
+
+        var vector = new THREE.Vector3();
+        if (scene.getObjectById(robotTarget.id)) {
+            vector.setFromMatrixPosition(robotTarget.matrixWorld);
+        } else if (cubes.targets[0] && scene.getObjectById(cubes.targets[0])) {
+            vector.setFromMatrixPosition(cubes.targets[0].matrixWorld);
+        } else { // default to the middle
+            vector.x = widthHalf;
+            vector.y = heightHalf;
+            return vector;
+        }
+        vector.project(camera);
+
+        vector.x = ( vector.x * widthHalf ) + widthHalf;
+        vector.y = - ( vector.y * heightHalf ) + heightHalf;
+        return vector;
+    };
+
     self.rotateCamera = function(degrees) {
         var q = new THREE.Quaternion();
         q.setFromAxisAngle(RuthefjordWorldState.UP, radiansOfDegrees(degrees));

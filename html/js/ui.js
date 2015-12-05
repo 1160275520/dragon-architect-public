@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordDisplay.hide();
-        $('#main-view-game, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
+        $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -397,7 +397,9 @@ module.Instructions = (function() {
         walltop: "media/blockSvgs/walltop.svg",
         pillarProc: "media/blockSvgs/pillarProc.svg",
         procDef: "media/blockSvgs/procDef.svg",
-        bridge: "media/bridge.png"
+        bridge: "media/bridge.png",
+        cube: "media/cube.png",
+        purple_cube: "media/purple_cube.png",
     };
 
     var uiIdMap = {
@@ -502,22 +504,129 @@ module.Instructions = (function() {
     }
 
     self.hide = function() {
-        $('#instructions-container').css('visibility', 'hidden');
+        $('#instructions-display').hide();
     };
 
-    self.show = function(instructions, cb, doStartLarge) {
-        // clear old instructions
-        $('#instructions-goal').html("");
-        $('#instructions-detail').html("");
-        self.displayErrors();
-        // load new instructions, if any
-        if (instructions) {
-            $('#instructions-goal').html(processTemplate(instructions.summary));
-            $('#instructions-detail').html(processTemplate(instructions.detail));
+    function makeInstructions(target, container, dragon, content, next) {
+        // position and show box
+        var coords, shift_fn;
+        var editor = $("#blockly");
+        switch (target.type) {
+            case "ui":
+                coords = $(target.name).offset();
+                shift_fn = function () { return -container.innerWidth() * 1.1};
+                break;
+            case "world":
+                // for now we assume the only world target is either a robot target or a cube target
+                var vec = RuthefjordDisplay.getScreenCoordsForTargets();
+                var threejs = $("#three-js").offset();
+                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top};
+                shift_fn = function () { return -container.innerWidth() * 1.1};
+                break;
+            case "general":
+                container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
+                container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
+                shift_fn = function () { return -container.innerWidth() * 1.1};
+                break;
+            case "block":
+                var block = RuthefjordBlockly.instructions_block;
+                if (block) {
+                    coords = $(block.svgGroup_).offset();
+                    coords.left += editor.offset().left;
+                    coords.top += editor.offset().top;
+                } else {
+                    throw new Error("no block set as instructions_block");
+                }
+                shift_fn = function () { return -container.innerWidth() * 1.1};
+                break;
+            case "toolbox":
+                var toolbox = Blockly.getMainWorkspace().flyout_;
+                coords = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_).offset();
+                coords.left += editor.offset().left;
+                coords.top += editor.offset().top;
+                shift_fn = function () { return toolbox.svgBackground_.getBBox().width};
+                break;
+            default:
+                throw new Error(target.type + " not a recognized target type");
         }
-        $('#instructions-container').css('visibility', 'visible');
-        setSize(doStartLarge, cb, false)();
-        makeImgOnClick();
+        if (coords) {
+            container.css('left', (coords.left) + 'px');
+            container.css('top', (coords.top) + 'px');
+        }
+        function showContent() {
+            container.off('transitionend');
+            // animate and show content
+            dragon.show({effect: "scale"});
+            dragon.effect({
+                effect: "bounce", distance: "15", times: "4", duration: 600, complete: function () {
+                    var text = $("<p>" + processTemplate(target.text) + "</p>");
+                    text.hide();
+                    content.prepend(text);
+                    makeImgOnClick();
+                    text.show({
+                        effect: "slide", direction: "left", complete: function () {
+                            if (coords) {
+                                setTimeout(function () {
+                                    container.css('left', (coords.left + shift_fn()) + 'px');
+                                    container.css('top', (coords.top) + 'px');
+                                    if (next) { // if we have another target, schedule it
+                                        next();
+                                    }
+                                }, 400);
+                            }
+                        }
+                    });
+                    container.off('click');
+                    container.on('click', function () {
+                        self.goHome();
+                    });
+                }
+            });
+        }
+        if (container.is(":visible")) {
+            container.show();
+            container.off('transitionend');
+            container.on('transitionend', showContent);
+        } else {
+            container.show();
+            showContent()
+        }
+    }
+
+    function scheduleInstructions(targets, cb) {
+        if (targets.length > 0) {
+            var target = targets[0];
+            if (target.delay) {
+                setTimeout(function () {
+                    cb(target, function () {scheduleInstructions(targets.slice(1), cb);});
+                }, target.delay);
+            } else {
+                cb(target, function () {scheduleInstructions(targets.slice(1), cb);});
+            }
+        }
+    }
+
+    self.show = function(instructions) {
+        // setup
+        var container = $('#instructions-display');
+        container.css('width', '200px');
+        var dragon = $("#instructions-icon");
+        dragon.hide();
+        var content = $('#instructions-goal');
+        content.empty();
+
+        scheduleInstructions(instructions.targets, function (target, next) {
+            makeInstructions(target, container, dragon, content, next);
+        });
+    };
+
+    self.goHome = function() {
+        var container = $('#instructions-display');
+        var neighbor = $("#game-controls-bar-bottom");
+        container.off('click');
+        container.css('left', neighbor.offset().left + 'px');
+        container.css('top', (neighbor.offset().top + neighbor.height()) + 'px');
+        container.css('width', neighbor.width() + 'px');
     };
 
     self.displayErrors = function(errors) {

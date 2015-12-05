@@ -157,6 +157,7 @@ RuthefjordBlockly.init = function() {
 RuthefjordBlockly.clearProgram = function () {
     // clear existing blocks
     Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(false, false, false, true); });
+    RuthefjordBlockly.instructions_block = null;
 };
 
 /**
@@ -185,6 +186,9 @@ RuthefjordBlockly.setProgram = function(program) {
             }
             if (attr.NoDelete) {
                 block.setDeletable(false);
+            }
+            if (attr.Instructions) {
+                RuthefjordBlockly.instructions_block = block;
             }
         }
         if (stmt.body) { // recursively process children (e.g. blocks inside a repeat)

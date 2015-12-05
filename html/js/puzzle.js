@@ -38,6 +38,13 @@ var RuthefjordPuzzle = (function () {
         return ret;
     }
 
+    self.clear_puzzle = function() {
+        current_puzzzle_id = null;
+        win_predicate = function () { return false; };
+        submit_predicate = function () { return false; };
+        RuthefjordDisplay.clearTargets();
+    };
+
     self.request_start_puzzle = function(info) {
         current_puzzzle_id = info.id;
         var puzzle = info.puzzle;
@@ -46,6 +53,8 @@ var RuthefjordPuzzle = (function () {
         RuthefjordManager.Simulator.set_edit_mode(RuthefjordManager.EditMode.workshop);
         RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
         // set world state from info.world
+        RuthefjordWorldState.init();
+        RuthefjordWorldState.dirty = true;
         if (puzzle.world) {
             if (puzzle.world.robots[0]) { // assume 1 robot since we currently only support 1
                 RuthefjordWorldState.robot.pos.fromArray(puzzle.world.robots[0].pos);
@@ -56,19 +65,17 @@ var RuthefjordPuzzle = (function () {
                     RuthefjordWorldState.grid[cube.pos] = cube.color;
                 });
             }
-            RuthefjordWorldState.dirty = true;
         } else {
             console.warn("puzzle " + puzzle.name + " doesn't set a world state, using default");
-            RuthefjordWorldState.init();
-            RuthefjordWorldState.dirty = true;
         }
         // start_editor in app.js takes care of everything else except setting up and checking puzzle objectives
         RuthefjordDisplay.clearTargets();
         console.log(puzzle);
+        var solution_promise;
         if (puzzle.goal) {
             switch (puzzle.goal.source) {
                 case "solution":
-                    Q($.get(puzzle.solution)).then(function (json) {
+                    solution_promise = Q($.get(puzzle.solution)).then(function (json) {
                         var final_state = RuthefjordManager.Simulator.get_final_state(json, RuthefjordWorldState.clone());
                         switch(puzzle.goal.type) {
                             case "robot":
@@ -141,7 +148,13 @@ var RuthefjordPuzzle = (function () {
         }
 
         info.is_starting = true;
-        onRuthefjordEvent("onPuzzleChange", info);
+        if (solution_promise) {
+            solution_promise.then(function () {
+                onRuthefjordEvent("onPuzzleChange", info);
+            });
+        } else {
+            onRuthefjordEvent("onPuzzleChange", info);
+        }
     };
 
     function win_puzzle() {
