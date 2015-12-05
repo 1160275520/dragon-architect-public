@@ -594,7 +594,7 @@ module.Instructions = (function() {
     }
 
     function scheduleInstructions(targets, cb) {
-        if (targets.length > 0) {
+        if (targets && targets.length > 0) {
             var target = targets[0];
             if (target.delay) {
                 setTimeout(function () {
