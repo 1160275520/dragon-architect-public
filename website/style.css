@@ -55,6 +55,7 @@ td {
     border-radius: 5px;
     text-align: center;
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .menu-item:hover {
