@@ -89,7 +89,7 @@
                 },{
                     "type": "toolbox",
                     "name": "Right",
-                    "text": "A right turn block let me turn right",
+                    "text": "A right turn block lets me turn right",
                     "delay": 2500
                 }
             ]

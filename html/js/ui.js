@@ -573,6 +573,8 @@ module.Instructions = (function() {
                                         next();
                                     }
                                 }, 400);
+                            } else if (next) {
+                                next();
                             }
                         }
                     });

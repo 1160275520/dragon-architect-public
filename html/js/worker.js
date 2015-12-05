@@ -1,4 +1,4 @@
-importScripts("../lib/three/three.min.js", "../lib/lodash/lodash.js");
+importScripts("../lib/three/three.js", "../lib/lodash/lodash.js");
 
 var UP = new THREE.Vector3(0,0,1);
 var DOWN = new THREE.Vector3(0,0,-1);
