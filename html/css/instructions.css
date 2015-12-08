@@ -1,14 +1,9 @@
 #instructions-display {
-    padding: 10px;
-    background: rgba(59,54,36,0.50);
-    border-radius:10px;
-    color: white;
-    font-family: "Ubuntu Mono";
-    position: absolute;
-    z-index: 1;
     -webkit-transition: all 1s;
     transition: all 1s;
     display: flex;
+    position: absolute;
+    z-index: 1;
 }
 
 #instructions-header {
@@ -20,11 +15,30 @@
 }
 
 #instructions-goal {
-    font-size: 12pt;
+    padding: 10px;
+    background: rgba(59,54,36,0.50);
+    border-radius:4px;
+    color: white;
+    font-family: "Ubuntu Mono";
+    font-size: 13pt;
+    width: 100%;
+}
+
+#instructions-goal:before {
+    content: ' ';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 28px;
+    top: 2px;
+    border: 20px solid;
+    border-color: transparent rgba(59,54,36,0.50) transparent transparent;
 }
 
 #instructions-goal > p {
-    padding-bottom: 8px;
+    -webkit-transition: font-size 0.5s, padding-top 1s ease;
+    transition: font-size 0.5s, padding-top 1s ease;
+    padding-top: 2px;
 }
 
 #instructions-detail {

@@ -561,12 +561,16 @@ module.Instructions = (function() {
                 effect: "bounce", distance: "15", times: "4", duration: 600, complete: function () {
                     var text = $("<p>" + processTemplate(target.text) + "</p>");
                     text.hide();
+                    var current_text = $("p", content).first();
+                    current_text.css('font-size', '11pt');
+                    current_text.css('padding-top', '20px');
                     content.prepend(text);
                     makeImgOnClick();
+                    var shift_timeout;
                     text.show({
                         effect: "slide", direction: "left", complete: function () {
                             if (coords) {
-                                setTimeout(function () {
+                                shift_timeout = setTimeout(function () {
                                     container.css('left', (coords.left + shift_fn()) + 'px');
                                     container.css('top', (coords.top) + 'px');
                                     if (next) { // if we have another target, schedule it
@@ -580,7 +584,15 @@ module.Instructions = (function() {
                     });
                     container.off('click');
                     container.on('click', function () {
-                        self.goHome();
+                        container.off('click');
+                        if (shift_timeout) {
+                            clearTimeout(shift_timeout);
+                        }
+                        if (next) {
+                            next(true);
+                        } else {
+                            self.goHome();
+                        }
                     });
                 }
             });
@@ -595,15 +607,19 @@ module.Instructions = (function() {
         }
     }
 
-    function scheduleInstructions(targets, cb) {
+    function scheduleInstructions(targets, cb, now) {
         if (targets && targets.length > 0) {
             var target = targets[0];
-            if (target.delay) {
+            var remaining = targets.slice(1);
+            var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} : function () { setTimeout(self.goHome, 2500); };
+            if (now) {
+                cb(target, fn);
+            } else if (target.delay) {
                 setTimeout(function () {
-                    cb(target, function () {scheduleInstructions(targets.slice(1), cb);});
+                    cb(target, fn);
                 }, target.delay);
             } else {
-                cb(target, function () {scheduleInstructions(targets.slice(1), cb);});
+                cb(target, fn);
             }
         }
     }
@@ -611,7 +627,7 @@ module.Instructions = (function() {
     self.show = function(instructions) {
         // setup
         var container = $('#instructions-display');
-        container.css('width', '200px');
+        container.css('width', '250px');
         var dragon = $("#instructions-icon");
         dragon.hide();
         var content = $('#instructions-goal');
