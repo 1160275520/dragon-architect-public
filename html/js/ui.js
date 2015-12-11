@@ -509,27 +509,27 @@ module.Instructions = (function() {
 
     function makeInstructions(target, container, dragon, content, next) {
         // position and show box
-        var coords, shift_fn;
+        var coords, offset, block;
         var editor = $("#blockly");
         switch (target.type) {
             case "ui":
                 coords = $(target.name).offset();
-                shift_fn = function () { return -container.innerWidth() * 1.1};
+                offset = {left: -2 * $("#attention-arrow").width(), top: -dragon.height()};
+                coords.height = $(target.name).innerHeight();
                 break;
             case "world":
                 // for now we assume the only world target is either a robot target or a cube target
                 var vec = RuthefjordDisplay.getScreenCoordsForTargets();
                 var threejs = $("#three-js").offset();
-                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top};
-                shift_fn = function () { return -container.innerWidth() * 1.1};
+                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:20};
+                offset = {left: -2 * $("#attention-arrow").width(), top: -dragon.height()};
                 break;
             case "general":
                 container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
                 container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
-                shift_fn = function () { return -container.innerWidth() * 1.1};
                 break;
             case "block":
-                var block = RuthefjordBlockly.instructions_block;
+                block = RuthefjordBlockly.instructions_block;
                 if (block) {
                     coords = $(block.svgGroup_).offset();
                     coords.left += editor.offset().left;
@@ -537,73 +537,75 @@ module.Instructions = (function() {
                 } else {
                     throw new Error("no block set as instructions_block");
                 }
-                shift_fn = function () { return -container.innerWidth() * 1.1};
                 break;
             case "toolbox":
                 var toolbox = Blockly.getMainWorkspace().flyout_;
-                coords = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_).offset();
+                block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
+                coords = block.offset();
                 coords.left += editor.offset().left;
                 coords.top += editor.offset().top;
-                shift_fn = function () { return toolbox.svgBackground_.getBBox().width};
+                coords.height = block[0].getBoundingClientRect().height;
+                offset = {left: 2 * $("#attention-arrow").width(), top: dragon.height()};
                 break;
             default:
                 throw new Error(target.type + " not a recognized target type");
         }
         if (coords) {
-            container.css('left', (coords.left) + 'px');
-            container.css('top', (coords.top) + 'px');
+            container.css('left', (coords.left + offset.left) + 'px');
+            container.css('top', (coords.top + offset.top) + 'px');
         }
         function showContent() {
             container.off('transitionend');
+            container.off('click');
             // animate and show content
-            dragon.show({effect: "scale"});
-            dragon.effect({
-                effect: "bounce", distance: "15", times: "4", duration: 600, complete: function () {
-                    var text = $("<p>" + processTemplate(target.text) + "</p>");
-                    text.hide();
-                    var current_text = $("p", content).first();
-                    current_text.css('font-size', '11pt');
-                    current_text.css('padding-top', '20px');
-                    content.prepend(text);
-                    makeImgOnClick();
-                    var shift_timeout;
-                    text.show({
-                        effect: "slide", direction: "left", complete: function () {
-                            if (coords) {
-                                shift_timeout = setTimeout(function () {
-                                    container.css('left', (coords.left + shift_fn()) + 'px');
-                                    container.css('top', (coords.top) + 'px');
-                                    if (next) { // if we have another target, schedule it
-                                        next();
-                                    }
-                                }, 400);
-                            } else if (next) {
-                                next();
-                            }
-                        }
-                    });
-                    container.off('click');
+            dragon.show({duration: 1000, queue: false});
+            content.show({duration: 1000, queue: false, complete: function () {
+                makeImgOnClick();
+                var text = $("<p>" + processTemplate(target.text) + "</p>");
+                var current_text = $("p", content).first();
+                current_text.css('font-size', '11pt');
+                current_text.css('padding-top', '20px');
+                current_text.css('height', '');
+                content.prepend(text);
+                var h = text.innerHeight();
+                text.css("opacity", 0);
+                text.css("height", "0px");
+                text.animate({opacity:1, height:h+"px"}, 1000, function () {
+                    RuthefjordUI.Arrow.show(coords);
+                    if (next) {
+                        next();
+                    }
                     container.on('click', function () {
                         container.off('click');
-                        if (shift_timeout) {
-                            clearTimeout(shift_timeout);
-                        }
                         if (next) {
+                            if (self.timeouts) {
+                                _.forEach(self.timeouts, function (id) {
+                                    clearTimeout(id);
+                                });
+                                self.timeouts = [];
+                                container.finish();
+                                dragon.finish();
+                                content.finish();
+                                $("p", content).finish();
+                            }
                             next(true);
-                        } else {
-                            self.goHome();
                         }
                     });
-                }
-            });
+                });
+            }});
         }
         if (container.is(":visible")) {
-            container.show();
             container.off('transitionend');
             container.on('transitionend', showContent);
         } else {
-            container.show();
-            showContent()
+            container.show({duration: 400, queue: false, start: function () {
+                container.css('transition', '');
+                container.css('-webkit-transition', '');
+            }, done: function () {
+                container.css('transition', 'all 1s');
+                container.css('-webkit-transition', 'all 1s');
+            }});
+            showContent();
         }
     }
 
@@ -611,13 +613,14 @@ module.Instructions = (function() {
         if (targets && targets.length > 0) {
             var target = targets[0];
             var remaining = targets.slice(1);
-            var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} : function () { setTimeout(self.goHome, 2500); };
+            var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} :
+                function (n) { self.timeouts.push(setTimeout(function () {self.goHome()}, n ? 1 : 5000)); };
             if (now) {
                 cb(target, fn);
             } else if (target.delay) {
-                setTimeout(function () {
+                self.timeouts.push(setTimeout(function () {
                     cb(target, fn);
-                }, target.delay);
+                }, target.delay));
             } else {
                 cb(target, fn);
             }
@@ -626,12 +629,26 @@ module.Instructions = (function() {
 
     self.show = function(instructions) {
         // setup
+        if (self.timeouts) {
+            _.forEach(self.timeouts, function (id) {
+                clearTimeout(id);
+            });
+        }
+        self.timeouts = [];
         var container = $('#instructions-display');
+        container.finish();
+        container.hide();
         container.css('width', '250px');
         var dragon = $("#instructions-icon");
+        dragon.finish();
         dragon.hide();
         var content = $('#instructions-goal');
+        content.finish();
+        $("p", content).finish();
         content.empty();
+        content.hide();
+
+        self.targets = instructions.targets;
 
         scheduleInstructions(instructions.targets, function (target, next) {
             makeInstructions(target, container, dragon, content, next);
@@ -645,6 +662,16 @@ module.Instructions = (function() {
         container.css('left', neighbor.offset().left + 'px');
         container.css('top', (neighbor.offset().top + neighbor.height()) + 'px');
         container.css('width', neighbor.width() + 'px');
+        var instructions = $("p", $("#instructions-goal"));
+        instructions.css('padding-top', '0');
+        instructions = instructions.get().reverse();
+        if (self.targets && self.targets.length === instructions.length) {
+            for (var i = 0; i < self.targets.length; i++) {
+                if (self.targets[i].home_text) {
+                    instructions[i].innerHTML = processTemplate(self.targets[i].home_text);
+                }
+            }
+        }
     };
 
     self.displayErrors = function(errors) {
@@ -676,14 +703,24 @@ module.Arrow = (function() {
 
     self.positionLeftOf = function(uiElem) {
         var arrow = $("#attention-arrow");
-        arrow.css("top", (uiElem.offset().top - arrow.height()/2 + uiElem.outerHeight()/2) + 'px')
+        arrow.css("top", (uiElem.offset().top - arrow.height()/2 + uiElem.outerHeight()/2) + 'px');
         arrow.css("left", (uiElem.offset().left - arrow.width()) + 'px');
     };
 
     self.positionAt = function(top, left, height) {
         var arrow = $("#attention-arrow");
-        arrow.css("top", (top - arrow.height()/2 + height/2) + 'px')
+        arrow.css("top", (top - arrow.height()/2 + height/2) + 'px');
         arrow.css("left", (left - arrow.width()) + 'px');
+    };
+
+    self.show = function(coords) {
+        var arrow = $("#attention-arrow");
+        arrow.css("display", "block");
+        arrow.css("opacity", 0);
+        arrow.css("top", (coords.top - arrow.height()/2 + coords.height/2) + 'px');
+        arrow.css("left", (coords.left - arrow.width()) + 'px');
+        arrow.stop().animate({opacity: 1});
+        arrow.fadeOut(5000, "easeInExpo");
     };
 
     return self;

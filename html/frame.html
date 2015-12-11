@@ -51,10 +51,32 @@
       }
       .blocklyDebugHighlight>.blocklyPath {
         stroke-width: 3px;
-        stroke: #f33;
+        stroke: #C390D4;
         -webkit-animation: 1s pulsate infinite alternate;
         animation: 1s pulsate infinite alternate;
       }
+      /*.blocklyNew>.blocklyPath {*/
+        /*stroke-width: 1px;*/
+        /*stroke: #C390D4;*/
+        /*-webkit-animation: 3s pulsate infinite alternate ease-in-out;*/
+        /*animation: 3s pulsate infinite alternate ease-in-out;*/
+      /*}*/
+
+      @-webkit-keyframes pulsate {
+        0%   {stroke-width: 1px;}
+        50%  {stroke-width: 8px;}
+        100% {stroke-width: 1px;}
+      }
+
+      @keyframes pulsate {
+        0%   {stroke-width: 1px;}
+        50%  {stroke-width: 8px;}
+        100% {stroke-width: 1px;}
+      }
+
+      /*.blocklyNew>.blocklyPathLight {*/
+        /*display: none;*/
+      /*}*/
       .blocklyDebugHighlight>.blocklyPathLight {
         display: none;
       }

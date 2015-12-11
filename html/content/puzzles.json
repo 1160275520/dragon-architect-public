@@ -24,7 +24,8 @@
                 {
                     "type": "ui",
                     "name": "#btn-run",
-                    "text": "Click {go} to have me run my program!"
+                    "text": "Click this to have me run my program!",
+                    "home_text": "Click {go} to have me run my program!"
                 }
             ]
         }
@@ -52,12 +53,13 @@
             "targets": [
                 {
                     "type": "world",
-                    "text": "I need to get to the {pinkboxGround}"
+                    "text": "I need to get here",
+                    "home_text": "I need to get to the {pinkboxGround}"
                 },{
                     "type": "toolbox",
                     "name": "Forward",
                     "text": "A forward block could help!",
-                    "delay": 2500
+                    "delay": 5000
                 }
             ]
         }
