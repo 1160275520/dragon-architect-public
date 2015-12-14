@@ -60,7 +60,10 @@ blocklyIframeLoaded = function() {
  BlocklyApps.LANG + '.js"></script>\n');
  */
 
-RuthefjordBlockly.makeShadowNum = function(num) {
+RuthefjordBlockly.makeShadowNum = function(num, id) {
+    if (id) {
+        return '<shadow type="math_number" id="' + id + '"><field name="NUM">' + num + '</field></shadow>';
+    }
     return '<shadow type="math_number"><field name="NUM">' + num + '</field></shadow>';
 };
 
@@ -164,7 +167,7 @@ RuthefjordBlockly.clearProgram = function () {
  * set blocks making up current program
  */
 RuthefjordBlockly.setProgram = function(program) {
-    // console.info(program);
+     //console.info(program);
 
     RuthefjordBlockly.ignoreNextHistory = true;
     RuthefjordBlockly.clearProgram();
@@ -191,6 +194,12 @@ RuthefjordBlockly.setProgram = function(program) {
                 RuthefjordBlockly.instructions_block = block;
             }
         }
+        if (stmt.args) {
+            _.forEach(stmt.args, checkStmt);
+        }
+        if (stmt.number) { // check the repeat parameter block
+            checkStmt(stmt.number);
+        }
         if (stmt.body) { // recursively process children (e.g. blocks inside a repeat)
             _.forEach(stmt.body, checkStmt);
         }
@@ -215,7 +224,7 @@ RuthefjordBlockly.setProgram = function(program) {
  * loads new program and takes care of related adjustments
  */
 RuthefjordBlockly.loadBlocks = function (blocksXML) {
-    // console.info(blocksXML);
+     //console.info(blocksXML);
     var xml = Blockly.Xml.textToDom(blocksXML);
     Blockly.Xml.domToWorkspace(Blockly.getMainWorkspace(), xml);
 

@@ -42,7 +42,9 @@
       "args": [
         {
           "meta": {
-            "attributes": {},
+            "attributes": {
+              "Instructions": "one"
+            },
             "id": 5
           },
           "type": "int",

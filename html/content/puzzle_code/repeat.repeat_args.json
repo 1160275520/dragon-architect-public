@@ -41,14 +41,15 @@
       ],
       "meta": {
         "attributes": {
-          "FrozenBlocks": "one",
-          "Instructions": "one"
+          "FrozenBlocks": "one"
         },
         "id": 6
       },
       "number": {
         "meta": {
-          "attributes": {},
+          "attributes": {
+            "Instructions": "one"
+          },
           "id": 1
         },
         "type": "int",

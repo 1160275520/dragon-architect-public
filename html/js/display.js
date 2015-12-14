@@ -354,10 +354,13 @@ var RuthefjordDisplay = (function() {
         var widthHalf = width / 2, heightHalf = height / 2;
 
         var vector = new THREE.Vector3();
+        var dist;
         if (scene.getObjectById(robotTarget.id)) {
             vector.setFromMatrixPosition(robotTarget.matrixWorld);
-        } else if (cubes.targets[0] && scene.getObjectById(cubes.targets[0])) {
+            dist = camera.position.distanceTo(robotTarget.position);
+        } else if (cubes.targets[0] && scene.getObjectById(cubes.targets[0].id)) {
             vector.setFromMatrixPosition(cubes.targets[0].matrixWorld);
+            dist = camera.position.distanceTo(cubes.targets[0].position);
         } else { // default to the middle
             vector.x = widthHalf;
             vector.y = heightHalf;
@@ -367,6 +370,10 @@ var RuthefjordDisplay = (function() {
 
         vector.x = ( vector.x * widthHalf ) + widthHalf;
         vector.y = - ( vector.y * heightHalf ) + heightHalf;
+
+        var vFOV = camera.fov * Math.PI / 180;      // convert vertical fov to radians
+        vector.z = 2 * Math.tan( vFOV / 2 ) * dist; // visible height
+
         return vector;
     };
 

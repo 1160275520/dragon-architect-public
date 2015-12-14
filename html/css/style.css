@@ -347,9 +347,9 @@ header button, .control-btn, .control-icon-btn {
 }
 
 @-webkit-keyframes trash-arrow {
-    0%   {-webkit-transform: translate(0px,0px); }
+    0%   {-webkit-transform: translate(0px,0px);}
     50%  {-webkit-transform: translate(-25px,0px);}
-    100% {-webkit-transform: translate(0px,0px); }
+    100% {-webkit-transform: translate(0px,0px);}
 }
 
 @keyframes trash-arrow {
@@ -358,21 +358,31 @@ header button, .control-btn, .control-icon-btn {
     100% {transform: translate(0px,0px);}
 }
 
+@-webkit-keyframes trash-arrow-reverse {
+    0%   {-webkit-transform: translate(0px,0px) rotateY(180deg);}
+    50%  {-webkit-transform: translate(25px,0px) rotateY(180deg);}
+    100% {-webkit-transform: translate(0px,0px) rotateY(180deg);}
+}
+
+@keyframes trash-arrow-reverse {
+    0%   {transform: translate(0px,0px) rotateY(180deg);}
+    50%  {transform: translate(25px,0px) rotateY(180deg);}
+    100% {transform: translate(0px,0px) rotateY(180deg);}
+}
+
 #attention-arrow {
     position: absolute;
     width: 75px;
-    -webkit-animation-name: trash-arrow;
+    display: none;
+    z-index: 2;
     -webkit-animation-duration: 2s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-direction: alternate;
     -webkit-animation-timing-function: ease-in-out;
-    animation-name: trash-arrow;
     animation-duration: 2s;
     animation-iteration-count: infinite;
     animation-direction: alternate;
     animation-timing-function: ease-in-out;
-    display: none;
-    z-index: 2;
 }
 
 .slider-labels {

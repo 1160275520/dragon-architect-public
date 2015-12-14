@@ -58,7 +58,8 @@
                 },{
                     "type": "toolbox",
                     "name": "Forward",
-                    "text": "A forward block could help!",
+                    "text": "This block could help!",
+                    "home_text": "A forward block could help!",
                     "delay": 5000
                 }
             ]
@@ -87,12 +88,14 @@
             "targets": [
                 {
                     "type": "world",
-                    "text": "{pinkboxGround} moved. Help me get there!"
+                    "text": "Help me get there!",
+                    "home_text": "Help me get to {pinkboxGround}!"
                 },{
                     "type": "toolbox",
                     "name": "Right",
-                    "text": "A right turn block lets me turn right",
-                    "delay": 2500
+                    "text": "This block tells me to turn right",
+                    "home_text": "A right turn block tells me to turn right",
+                    "delay": 5000
                 }
             ]
         }
@@ -123,7 +126,7 @@
                     "type": "toolbox",
                     "name": "PlaceCube",
                     "text": "You'll need some place cube blocks!",
-                    "delay": 2500
+                    "delay": 5000
                 }
             ]
         },
@@ -154,7 +157,7 @@
             "detail": "Add one more {removecube} to fix my program.",
             "targets": [
                 {
-                    "type": "world",
+                    "type": "general",
                     "text": "Help me remove all the {purple_cube}"
                 }
             ]
@@ -182,7 +185,8 @@
             "targets": [
                 {
                     "type": "world",
-                    "text": "Help me get to the {pinkboxUp}!"
+                    "text": "Help me get to here!",
+                    "home_text": "Help me get to the {pinkboxUp}!"
                 }
             ]
         },
@@ -208,7 +212,8 @@
             "targets": [
                 {
                     "type": "world",
-                    "text": "Help me get to the {pinkboxGround}!"
+                    "text": "Help me get down there!",
+                    "home_text": "Help me get to the {pinkboxGround}!"
                 }
             ]
         },
@@ -231,7 +236,7 @@
             "targets": [
                 {
                     "type": "world",
-                    "text": "I want to put a cube in each blue space: {bridge}"
+                    "text": "I want to put a cube in each of these blue spaces, like this: {bridge}"
                 }
             ]
         },
@@ -263,7 +268,11 @@
             "targets": [
                 {
                     "type": "world",
-                    "text": "Help me put cubes on the blue boxes!"
+                    "text": "Help me put cubes on these blue boxes!"
+                },{
+                    "type": "block",
+                    "text": "Changing these numbers is the key!",
+                    "delay": 5000
                 }
             ]
         },
@@ -386,7 +395,8 @@
             "targets": [
                 {
                     "type": "block",
-                    "text": "Put blocks inside here to have me build a square."
+                    "text": "Put blocks inside here to have me build a square.",
+                    "home_text": "Put blocks inside Procedure Square to have me build a square."
                 }
             ]
         },

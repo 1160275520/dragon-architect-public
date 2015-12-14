@@ -509,20 +509,20 @@ module.Instructions = (function() {
 
     function makeInstructions(target, container, dragon, content, next) {
         // position and show box
-        var coords, offset, block;
+        var coords, offset, block, reverse;
         var editor = $("#blockly");
         switch (target.type) {
             case "ui":
                 coords = $(target.name).offset();
-                offset = {left: -2 * $("#attention-arrow").width(), top: -dragon.height()};
+                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
                 coords.height = $(target.name).innerHeight();
                 break;
             case "world":
                 // for now we assume the only world target is either a robot target or a cube target
                 var vec = RuthefjordDisplay.getScreenCoordsForTargets();
                 var threejs = $("#three-js").offset();
-                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:20};
-                offset = {left: -2 * $("#attention-arrow").width(), top: -dragon.height()};
+                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:vec.z};
+                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
                 break;
             case "general":
                 container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
@@ -534,6 +534,8 @@ module.Instructions = (function() {
                     coords = $(block.svgGroup_).offset();
                     coords.left += editor.offset().left;
                     coords.top += editor.offset().top;
+                    coords.height = $(block.svgGroup_).get()[0].getBoundingClientRect().height;
+                    offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
                 } else {
                     throw new Error("no block set as instructions_block");
                 }
@@ -541,11 +543,13 @@ module.Instructions = (function() {
             case "toolbox":
                 var toolbox = Blockly.getMainWorkspace().flyout_;
                 block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
+                var rect = block.get()[0].getBoundingClientRect();
                 coords = block.offset();
-                coords.left += editor.offset().left;
+                coords.left += editor.offset().left + rect.width;
                 coords.top += editor.offset().top;
-                coords.height = block[0].getBoundingClientRect().height;
-                offset = {left: 2 * $("#attention-arrow").width(), top: dragon.height()};
+                coords.height = rect.height;
+                reverse = true;
+                offset = {left: 20, top: dragon.height()};
                 break;
             default:
                 throw new Error(target.type + " not a recognized target type");
@@ -571,7 +575,9 @@ module.Instructions = (function() {
                 text.css("opacity", 0);
                 text.css("height", "0px");
                 text.animate({opacity:1, height:h+"px"}, 1000, function () {
-                    RuthefjordUI.Arrow.show(coords);
+                    if (coords) {
+                        RuthefjordUI.Arrow.show(coords, reverse);
+                    }
                     if (next) {
                         next();
                     }
@@ -647,6 +653,7 @@ module.Instructions = (function() {
         $("p", content).finish();
         content.empty();
         content.hide();
+        RuthefjordUI.Arrow.hide();
 
         self.targets = instructions.targets;
 
@@ -663,7 +670,7 @@ module.Instructions = (function() {
         container.css('top', (neighbor.offset().top + neighbor.height()) + 'px');
         container.css('width', neighbor.width() + 'px');
         var instructions = $("p", $("#instructions-goal"));
-        instructions.css('padding-top', '0');
+        instructions.css('height', '');
         instructions = instructions.get().reverse();
         if (self.targets && self.targets.length === instructions.length) {
             for (var i = 0; i < self.targets.length; i++) {
@@ -705,22 +712,42 @@ module.Arrow = (function() {
         var arrow = $("#attention-arrow");
         arrow.css("top", (uiElem.offset().top - arrow.height()/2 + uiElem.outerHeight()/2) + 'px');
         arrow.css("left", (uiElem.offset().left - arrow.width()) + 'px');
+        arrow.css("animation-name", "trash-arrow");
+        arrow.css("-webkit-animation-name", "trash-arrow");
     };
 
     self.positionAt = function(top, left, height) {
         var arrow = $("#attention-arrow");
         arrow.css("top", (top - arrow.height()/2 + height/2) + 'px');
         arrow.css("left", (left - arrow.width()) + 'px');
+        arrow.css("animation-name", "trash-arrow");
+        arrow.css("-webkit-animation-name", "trash-arrow");
     };
 
-    self.show = function(coords) {
+    self.show = function(coords, reverse) {
         var arrow = $("#attention-arrow");
         arrow.css("display", "block");
         arrow.css("opacity", 0);
         arrow.css("top", (coords.top - arrow.height()/2 + coords.height/2) + 'px');
-        arrow.css("left", (coords.left - arrow.width()) + 'px');
+        if (reverse) {
+            arrow.css("animation-name", "trash-arrow-reverse");
+            arrow.css("-webkit-animation-name", "trash-arrow-reverse");
+            arrow.css("left", (coords.left + 10) + 'px');
+        } else {
+            arrow.css("animation-name", "trash-arrow");
+            arrow.css("-webkit-animation-name", "trash-arrow");
+            arrow.css("left", (coords.left - arrow.width()) + 'px');
+        }
         arrow.stop().animate({opacity: 1});
         arrow.fadeOut(5000, "easeInExpo");
+    };
+
+    self.hide = function() {
+        $("#attention-arrow").hide();
+    };
+
+    self.width = function() {
+        return $("#attention-arrow").width();
     };
 
     return self;
