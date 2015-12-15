@@ -509,7 +509,7 @@ module.Instructions = (function() {
 
     function makeInstructions(target, container, dragon, content, next) {
         // position and show box
-        var coords, offset, block, reverse;
+        var coords, offset, block, reverse, rect;
         var editor = $("#blockly");
         switch (target.type) {
             case "ui":
@@ -521,7 +521,7 @@ module.Instructions = (function() {
                 // for now we assume the only world target is either a robot target or a cube target
                 var vec = RuthefjordDisplay.getScreenCoordsForTargets();
                 var threejs = $("#three-js").offset();
-                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:vec.z};
+                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
                 offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
                 break;
             case "general":
@@ -532,10 +532,12 @@ module.Instructions = (function() {
                 block = RuthefjordBlockly.instructions_block;
                 if (block) {
                     coords = $(block.svgGroup_).offset();
-                    coords.left += editor.offset().left;
+                    rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
+                    coords.left += editor.offset().left + rect.width;
                     coords.top += editor.offset().top;
-                    coords.height = $(block.svgGroup_).get()[0].getBoundingClientRect().height;
-                    offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+                    coords.height = rect.height;
+                    reverse = true;
+                    offset = {left: 20, top: dragon.height()};
                 } else {
                     throw new Error("no block set as instructions_block");
                 }
@@ -543,7 +545,7 @@ module.Instructions = (function() {
             case "toolbox":
                 var toolbox = Blockly.getMainWorkspace().flyout_;
                 block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
-                var rect = block.get()[0].getBoundingClientRect();
+                rect = block.get()[0].getBoundingClientRect();
                 coords = block.offset();
                 coords.left += editor.offset().left + rect.width;
                 coords.top += editor.offset().top;
@@ -667,8 +669,8 @@ module.Instructions = (function() {
         var neighbor = $("#game-controls-bar-bottom");
         container.off('click');
         container.css('left', neighbor.offset().left + 'px');
-        container.css('top', (neighbor.offset().top + neighbor.height()) + 'px');
-        container.css('width', neighbor.width() + 'px');
+        container.css('top', (neighbor.offset().top + neighbor.innerHeight()) + 'px');
+        container.css('width', neighbor.innerWidth() + 'px');
         var instructions = $("p", $("#instructions-goal"));
         instructions.css('height', '');
         instructions = instructions.get().reverse();
@@ -837,11 +839,18 @@ module.CameraControls = (function() {
     self.cameraMode = "gamemode";
 
     self.setVisible = function(isVisible) {
-        isVisible ? $('#camera-controls').show() : $('#camera-controls').hide();
-        $("#game-controls-bar-top").show();
+        var camera_controls = $('#camera-controls');
+        var control_bar = $("#game-controls-bar-top");
+        isVisible ? camera_controls.show() : camera_controls.hide();
+        control_bar.show();
         // check if we should hide or show the area containing camera controls (by checking if everything in it is hidden)
-        $("#game-controls-bar-top").children().toArray().every(function (e) { return $(e).is(":hidden");}) ?
-            $("#game-controls-bar-top").hide() : $("#game-controls-bar-top").show();
+        if (control_bar.children().toArray().every(function (e) { return $(e).is(":hidden");})) {
+            control_bar.hide();
+            $("#three-js").css("margin-top", "5px"); // make sure this margin is there since the control bar won't provide it
+        } else {
+            control_bar.show();
+            $("#three-js").css("margin-top", ""); // get rid of this margin since the control bar will provide it
+        }
     };
 
     self.toggleMode = function() {

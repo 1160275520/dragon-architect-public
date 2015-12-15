@@ -109,20 +109,17 @@ header > h1 {
     align-items: stretch;
     -webkit-align-items: stretch;
     width: 100%;
-    margin: 10px 0;
     flex-grow: 1;
     -webkit-flex-grow: 1;
-    min-height: 630px;
+    min-height: 620px;
 }
 
 #main-view-game {
     order: 1;
     -webkit-order: 1;
     width: 40%;
-    margin-left: 25px;
-    margin-right: 25px;
     background: #ccebff;
-    padding: 0 10px;
+    padding: 0 5px;
 }
 
 #main-view-code {
@@ -130,7 +127,6 @@ header > h1 {
     order: 0;
     -webkit-order: 0;
     width: 60%;
-    margin-left: 25px;
     display: flex;
     flex-direction: column;
     display: -webkit-flex;
@@ -166,7 +162,6 @@ header > h1 {
     -webkit-align-items: center;
     justify-content: space-between;
     -webkit-justify-content: space-between;
-    height: 75px;
     padding: 5px 0;
 }
 
@@ -200,9 +195,12 @@ div.game-control {
 header button, .control-btn, .control-icon-btn {
     display: block;
     height: 40px;
-    border: 2px solid rgb(160, 139, 72);
+    border: 1px solid transparent;
     border-radius: 4px;
     background-color: #d1bd7d;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 .control-icon-btn {
@@ -213,7 +211,6 @@ header button, .control-btn, .control-icon-btn {
 #game-controls-bar-bottom {
     flex-direction: column;
     -webkit-flex-direction: column;
-    height: 130px;
 }
 
 #time-controls {
@@ -252,6 +249,10 @@ header button, .control-btn, .control-icon-btn {
     width: 120px;
     margin-bottom: 10px;
     border-radius: 8px;
+    border: 1px solid transparent;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 #btn-run, #btn-pause.active {
@@ -317,7 +318,6 @@ header button, .control-btn, .control-icon-btn {
     width: 100%;
     padding: 0;
     margin: 0;
-    margin-top: 10px;
 }
 
 #three-js:after {

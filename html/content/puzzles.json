@@ -42,7 +42,7 @@
             "highlighted": ["Forward"]
         },
         "world": {
-            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+            "robots": [{"pos": [0, 0, 0], "dir":[0, 1, 0]}]
         },
         "program": {"type":"file", "value":"content/puzzle_code/tutorial.movement2d_part2.json"},
         "solution": "content/puzzle_code/tutorial.movement2d_part2.solution.json",
@@ -77,7 +77,7 @@
             "highlighted": ["Right"]
         },
         "world": {
-            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+            "robots": [{"pos": [0, 0, 0], "dir":[0, 1, 0]}]
         },
         "program": {"type":"file", "value":"content/puzzle_code/tutorial.movement2d_part3.json"},
         "solution": "content/puzzle_code/tutorial.movement2d_part3.solution.json",

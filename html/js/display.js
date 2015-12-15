@@ -405,14 +405,18 @@ var RuthefjordDisplay = (function() {
     };
 
     self.hide = function() {
-        $(parent).hide();
+        if (parent) {
+            parent.hide();
+        }
     };
 
     self.show = function() {
-        $(parent).show();
-        renderer.setSize(parent.width(), parent.height());
-        camera.aspect = parent.width() / parent.height();
-        camera.updateProjectionMatrix();
+        if (parent) {
+            parent.show();
+            renderer.setSize(parent.width(), parent.height());
+            camera.aspect = parent.width() / parent.height();
+            camera.updateProjectionMatrix();
+        }
     };
 
     return self;
