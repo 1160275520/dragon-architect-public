@@ -6,7 +6,7 @@ var RUTHEFJORD_CONFIG = {
     },
     logging: {
         url: 'http://dragonarchitect.net:27895',
-        release_id: 'ea191350-8356-11e5-968d-a35ac1b12bbc',
+        release_id: '0c7e35c6-a2c2-11e5-b814-8ba4865acbbb',
         release_name: 'latest',
         release_key: ''
     },
@@ -15,6 +15,9 @@ var RUTHEFJORD_CONFIG = {
         no_login_prompt: true,
         workshop_only: true
     },
+    hide_packs: [
+        "decomposition"
+    ],
     gallery: {
         group: "cgs_web"
     }
