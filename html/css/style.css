@@ -586,14 +586,16 @@ header button, .control-btn, .control-icon-btn {
 /************************************************************/
 
 #dialog {
-  background-color: rgba(74,170,227,0.9);
-  color: #fff;
-  border: 1px solid #ccc;
-  position: absolute;
-  border-radius: 8px;
-  box-shadow: 5px 5px 5px #888;
-  padding: 10px;
-  z-index: 1;
+    position: absolute;
+    z-index: 1;
+}
+
+.dialog-content {
+    background-color: rgba(59,54,36,0.50);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: "Ubuntu Mono";
 }
 
 #dialog button {
@@ -604,7 +606,8 @@ header button, .control-btn, .control-icon-btn {
     float: left;
     padding-right: 10px;
     position: relative;
-    height: 100px;
+    height: 75px;
+    box-sizing: content-box;
 }
 
 /* Consent form */

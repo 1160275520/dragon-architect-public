@@ -878,7 +878,7 @@ module.CameraControls = (function() {
 /// elemName is the name used for logging ui actions.
 function Slider(elemName, selector, labels, allElems) {
     var self = {};
-    self.SLIDER_DEFAULT = 0.25
+    self.SLIDER_DEFAULT = 0.25;
     var container;
     var slider;
 
@@ -979,33 +979,34 @@ module.Dialog = (function() {
         // clear out any old contents
         module.Dialog.destroy();
         
-        var dialog = document.getElementById('dialog');
+        var dialog = $('#dialog');
 
         // Copy all the specified styles to the dialog.
-        for (var name in style) {
-          dialog.style[name] = style[name];
-        }
-        dialog.appendChild(content);
+        _.forEach(style, function(value, key) {
+            dialog.css(key, value);
+        });
+        dialog.prepend(content);
 
-        $(dialog).show();
+        dialog.show();
     };
 
     self.defaultElems = function(msg, btn_msg) {
-        var div = document.createElement('div');
-        $(div).addClass("dialog-content");
-        var dialogContent = document.createElement('span');
-        dialogContent.appendChild(document.createTextNode(msg));
-        $(dialogContent).css("text-align", "center");
-        $(dialogContent).css("display", "block");
+        var div = $('<div></div>');
+        div.addClass("dialog-content");
+        var dialogContent = $('<span></span>');
+        dialogContent.append(document.createTextNode(msg));
+        dialogContent.css("display", "block");
+        dialogContent.css("text-align", "center");
+        dialogContent.css("padding", "5px 0");
 
-        var btn = document.createElement('button');
-        $(btn).css("margin", "0 auto");
-        $(btn).css("display", "block");
-        $(btn).addClass("control-btn");
-        $(btn).html(btn_msg);
+        var btn = $('<button></button>');
+        btn.css("margin", "0 auto");
+        btn.css("display", "block");
+        btn.addClass("control-btn");
+        btn.html(btn_msg);
 
-        div.appendChild(dialogContent);
-        div.appendChild(btn);
+        div.append(dialogContent);
+        div.append(btn);
         return div;
     };
 
@@ -1023,7 +1024,7 @@ module.WinMessage = (function() {
     self.show = function(msg, btn_msg, cb) {
         var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
         var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
-        var btn = $(div).find("button");
+        var btn = div.find("button");
         btn.css('font-size', '20pt');
         btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
@@ -1040,7 +1041,7 @@ module.UnlockBlockMsg = (function() {
         var div = document.createElement('div');
         $(div).addClass("dialog-content");
         var btn = document.createElement('button');
-        $(btn).css("font-size", "16pt");
+        $(btn).css("font-size", "15pt");
         $(btn).addClass("control-btn");
         $(btn).html("Unlock this here");
         $(btn).on('click', function () { RuthefjordUI.Dialog.destroy(); cb(); });

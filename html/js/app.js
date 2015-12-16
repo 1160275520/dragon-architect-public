@@ -835,7 +835,7 @@ function start_editor(info) {
         if (info.puzzle.winmsg) {
             win_msg = info.puzzle.winmsg;
         } else {
-            win_msg = "Yay, you win!"
+            win_msg = ["Yay, you win!", "Nice work!", "Great job!", "Way to go!", "Fantastic!"][Math.floor(Math.random() * 5)];
         }
     }
     // HACK we have to wait long enough for a render to happen, so we get the right screen coordinates
