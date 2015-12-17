@@ -21,6 +21,20 @@ gulp.task('clean', function(cb) {
     rimraf(BUILD_DIR, cb);
 });
 
+gulp.task('view_preprocess', function () {
+    var out = gulp.src(['index.html'])
+        .pipe(preprocess({context: argv}));
+    out.on('data', function(chunk) {
+        var contents = chunk.contents.toString().trim();
+        var bufLength = process.stdout.columns;
+        var hr = '\n\n' + Array(bufLength).join("_") + '\n\n'
+        if (contents.length > 1) {
+            process.stdout.write(chunk.path + '\n' + contents + '\n');
+            process.stdout.write(chunk.path + hr);
+        }
+    });
+});
+
 var handle_js = lazypipe()
     .pipe(preprocess, {context: argv})
     .pipe(uglify);
@@ -67,5 +81,5 @@ gulp.task('copy_fonts', ['clean'], function() {
 
 gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_content', 'copy_fonts']);
 
-gulp.task('default', ['usemin_index', 'usemin_frame', 'copy_static']);
+gulp.task('default', ['view_preprocess', 'usemin_index', 'usemin_frame', 'copy_static']);
 
