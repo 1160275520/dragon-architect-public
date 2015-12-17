@@ -1168,7 +1168,7 @@ function toSandbox() {
 // process messages from the student client
 function receiveMessage(event) {
     if (onRuthefjordEvent.widgetAPI.hasOwnProperty(event.data.command)) {
-        onRuthefjordEvent.widgetAPI[event.data.command].apply(null, event.data.arguments);
+        onRuthefjordEvent.widgetAPI[event.data.command].apply(null, event.data.args);
     } else {
         throw new Error("unrecognized copilot command " + event.data.command);
     }
