@@ -1112,12 +1112,14 @@ onRuthefjordEvent.widgetAPI = (function () {
     'use strict';
     var self = {};
 
+    // NOTE: the triggering event is passed as the this object
+
     self.setWidgetId = function(messageId, widgetId) {
         self.widgetId = widgetId;
         var data = {};
-        data.command = "onMessageComplete";
-        data.arguments = [self.widgetId, messageId, true];
-        e.source.postMessage(data, e.origin);
+        data.command = "CgsGames.onMessageComplete";
+        data.args = [self.widgetId, messageId, true];
+        this.source.postMessage(data, this.origin);
     };
 
     self.startActivity = function(messageId, userList, activityDef, details) {
@@ -1126,9 +1128,9 @@ onRuthefjordEvent.widgetAPI = (function () {
         console.log(activityDef);
         current_puzzle_runner = create_puzzle_runner(game_info.packs[activityDef.activityData.pack], "pack");
         var data = {};
-        data.command = "onMessageComplete";
-        data.arguments = [self.widgetId, messageId, true];
-        e.source.postMessage(data, e.origin);
+        data.command = "CgsGames.onMessageComplete";
+        data.args = [self.widgetId, messageId, true];
+        this.source.postMessage(data, this.origin);
     };
 
     self.stopActivity = function (messageId, details) {
@@ -1167,8 +1169,9 @@ function toSandbox() {
 
 // process messages from the student client
 function receiveMessage(event) {
+    console.log("recieved message", event);
     if (onRuthefjordEvent.widgetAPI.hasOwnProperty(event.data.command)) {
-        onRuthefjordEvent.widgetAPI[event.data.command].apply(null, event.data.args);
+        onRuthefjordEvent.widgetAPI[event.data.command].apply(event, event.data.args);
     } else {
         throw new Error("unrecognized copilot command " + event.data.command);
     }
