@@ -21,7 +21,7 @@ var sandboxProgAddon = "";
 var levelListeners = [];
 
 function send_json_get_request(url) {
-    return fetch(url, {
+    return fetchUrl(url, {
         method: 'get',
     }).then(function(response) {
         if (response.status === 200) {
@@ -33,7 +33,7 @@ function send_json_get_request(url) {
 }
 
 function send_json_put_request(url, params) {
-    return fetch(url, {
+    return fetchUrl(url, {
         method: 'put',
         headers: {
             'Content-Type': 'application/json'
@@ -604,11 +604,23 @@ $(function() {
             RuthefjordPuzzle.check_submit_predicate();
         });
 
-        // HACK to avoid button text wrapping on smaller screens
-        // THIS SHOULD BE IN CSS
-        if ($(document).width() < 1350) {
-            $("html").css("font-size", "10pt");
-        }
+        var show_menu_fn = function() {
+            var icon = $("#menu-icon");
+            icon.css('background', 'rgba(58,134,179,0.8)');
+            $("#menu-nav").show();
+            icon.off('click');
+            icon.click(hide_menu_fn);
+        };
+
+        var hide_menu_fn = function () {
+            var icon = $("#menu-icon");
+            icon.css('background', '');
+            $("#menu-nav").hide();
+            icon.off('click');
+            icon.click(show_menu_fn);
+        };
+
+        $("#menu-icon").click(show_menu_fn);
     }
 
     var isInitialized = false;

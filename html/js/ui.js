@@ -129,7 +129,7 @@ module.Share = (function() {
             var upload = {id: project_uuid, author: RuthefjordLogging.userid, name: self.title, 
                           time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()), 
                           screen: $("#share-thumb").attr('src'), world_data: "", group: RUTHEFJORD_CONFIG.gallery.group};
-            fetch(url + "/uploaded_project", {
+            fetchUrl(url + "/uploaded_project", {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json'
@@ -827,7 +827,8 @@ module.UndoButton = (function () {
     var self = {};
 
     self.update = function () {
-        $('#btn-undo').css('top', Blockly.getMainWorkspace().trashcan.top_ - $('#btn-undo').outerHeight(true));
+        var btn = $('#btn-undo');
+        btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - btn.outerHeight(true));
     };
 
     return self;
@@ -1038,19 +1039,20 @@ module.UnlockBlockMsg = (function() {
     var self = {};
 
     self.show = function(svg, cb) {
-        var div = document.createElement('div');
-        $(div).addClass("dialog-content");
-        var btn = document.createElement('button');
-        $(btn).css("font-size", "15pt");
-        $(btn).addClass("control-btn");
-        $(btn).html("Unlock this here");
-        $(btn).on('click', function () { RuthefjordUI.Dialog.destroy(); cb(); });
-        div.appendChild(btn);
+        var div = $('<div></div>');
+        div.addClass("dialog-content");
+        var btn = $('<button></button>');
+        btn.css("font-size", "15pt");
+        btn.addClass("control-btn");
+        btn.html("Click here to unlock");
+        btn.on('click', function () { RuthefjordUI.Dialog.destroy(); cb(); });
+        div.append(btn);
         var rect = svg.getBoundingClientRect();
-        var style = {width: '200px', top: (rect.top + $("#code-area").position().top) + 'px', left: (rect.left + 50) + 'px'};
-        $("#dialog").stop(true, true);
+        var style = {width: '240px', top: (rect.top + $("#code-area").position().top) + 'px', left: (rect.left + 50) + 'px'};
+        var dialog = $("#dialog");
+        dialog.stop(true, true);
         RuthefjordUI.Dialog.make(div, style);
-        $("#dialog").fadeOut(4000, "easeInExpo", function() { RuthefjordUI.Dialog.destroy(); });
+        dialog.fadeOut(4000, "easeInExpo", function() { RuthefjordUI.Dialog.destroy(); });
     };
 
     return self;

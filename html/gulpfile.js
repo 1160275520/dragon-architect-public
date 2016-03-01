@@ -36,8 +36,8 @@ gulp.task('view_preprocess', function () {
 });
 
 var handle_js = lazypipe()
-    .pipe(preprocess, {context: argv})
-    .pipe(uglify);
+    .pipe(preprocess, {context: argv});
+    //.pipe(uglify);
 
 gulp.task('usemin_index', ['clean'], function() {
     return gulp.src('index.html')
@@ -81,5 +81,5 @@ gulp.task('copy_fonts', ['clean'], function() {
 
 gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_content', 'copy_fonts']);
 
-gulp.task('default', ['view_preprocess', 'usemin_index', 'usemin_frame', 'copy_static']);
+gulp.task('default', ['usemin_index', 'usemin_frame', 'copy_static']);
 
