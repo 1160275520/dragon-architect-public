@@ -1,4 +1,5 @@
-RuthefjordWorldState = (function() {
+import {THREE} from 'three';
+export var RuthefjordWorldState = (function() {
     "use strict";
     var self = {};
 

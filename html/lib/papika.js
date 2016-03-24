@@ -4,7 +4,7 @@
  * Revision Id: 0ba1fb684a170345599afcca282f94939df46690
  */
 
-var papika = function(){
+export var papika = function(){
     "use strict";
     var mdl = {};
 

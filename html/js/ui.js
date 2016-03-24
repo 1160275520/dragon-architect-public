@@ -1,5 +1,10 @@
+import {RUTHEFJORD_CONFIG} from 'config';
+import {RuthefjordDisplay} from 'display';
+import {Blockly} from 'blockly/ruthefjord';
+import {RuthefjordLogging} from 'logging';
+var dagreD3 = require('dagre-d3');
 
-var RuthefjordUI = (function(){ "use strict";
+export var RuthefjordUI = (function(){ "use strict";
 var module = {};
 
 /**
@@ -125,22 +130,22 @@ module.Share = (function() {
         if (self.title) {
             // from http://stackoverflow.com/a/2117523
             var project_uuid = RuthefjordLogging.create_random_uuid();
-            
-            var upload = {id: project_uuid, author: RuthefjordLogging.userid, name: self.title, 
-                          time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()), 
+
+            var upload = {id: project_uuid, author: RuthefjordLogging.userid, name: self.title,
+                          time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()),
                           screen: $("#share-thumb").attr('src'), world_data: "", group: RUTHEFJORD_CONFIG.gallery.group};
-            fetchUrl(url + "/uploaded_project", {
+            fetch(url + "/uploaded_project", {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(upload)
-            }).then(function (response) { console.log(response); cb();});                   
+            }).then(function (response) { console.log(response); cb();});
         } else {
             message.html("Please enter a title");
             message.show();
             message.stop().animate({opacity: '100'});
-            message.fadeOut(2000, "easeInExpo", function () {message.html("");});
+            message.fadeOut(2000, "swing", function () {message.html("");});
         }
     };
 
@@ -178,7 +183,7 @@ module.Gallery = (function() {
         thumb.id = item.id;
         thumb.src = item.screen;
         $(content).append(thumb);
-        
+
         var controls = document.createElement("div");
         var viewBtn = document.createElement("button");
         viewBtn.innerHTML = "View";
@@ -198,7 +203,7 @@ module.Gallery = (function() {
         $(controls).append(viewBtn);
         $(controls).append(codeBtn);
         $(controls).css("flex-direction", "");
-        
+
         $(div).append(content);
         $(div).append(controls);
         return span;
@@ -266,7 +271,7 @@ module.PackSelect = (function() {
             if (pack.name && (!pack.prereq || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))) {
                 var m = makePack(pack, progress.is_pack_completed(pack));
                 $(m).on('click', function () {
-                    onSelectCallback(pack); 
+                    onSelectCallback(pack);
                 });
                 selector.append(m);
             }
@@ -288,22 +293,20 @@ module.LevelSelect = (function() {
      */
     self.create = function(pack, scenes, isSceneCompleted, onSelectCallback) {
 
-        var graph = new dagre.Digraph();
+        var graph = new dagreD3.graphlib.Graph().setGraph({rankdir: 'LR'});
 
         _.forEach(pack.nodes, function(id) {
-            graph.addNode(id, {label: scenes[id].name, id: id});
+            graph.setNode(id, {label: scenes[id].name, id: id});
         });
 
+        graph.setDefaultEdgeLabel(function() { return {}; });
         _.forEach(pack.edges, function(edge) {
-            graph.addEdge(null, edge[0], edge[1]);
+            graph.setEdge(edge[0], edge[1], {lineInterpolate: "basis"});
         });
 
-        // perform layout
-        var renderer = new dagreD3.Renderer();
-        renderer.zoom(false);
-        var layout = dagreD3.layout()
-                            .rankDir("LR");
-        renderer.layout(layout).run(graph, d3.select(".puzzleSelector svg g"));
+        // render graph
+        var renderer = new dagreD3.render();
+        renderer(d3.select(".puzzleSelector svg g"), graph);
 
         // color rectangles
         var nodes = $(".puzzleSelector .node");
@@ -317,7 +320,7 @@ module.LevelSelect = (function() {
             unavailable: "gray"
         };
 
-        nodes.each(function (index) { 
+        nodes.each(function (index) {
             var x = $(this)[0];
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
@@ -344,7 +347,7 @@ module.LevelSelect = (function() {
                     arrow.css("display", "block");
                     module.Arrow.positionLeftOf(uiElem);
                     arrow.stop().animate({opacity: '100'});
-                    arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
+                    arrow.fadeOut(5000, "swing", function() { arrowTarget = ""; });
                 });
             }
         });
@@ -418,7 +421,7 @@ module.Instructions = (function() {
         var html = "<object class=\"instructions-img\" data=\"" + file + "\" style=\"vertical-align:middle\"";
         if (uiId) {
             html += " data-uiid=\"#" + uiId + "\"";
-        } 
+        }
         html += "></object>";
         return html;
     }
@@ -427,13 +430,13 @@ module.Instructions = (function() {
     function processTemplate(str) {
         return str.replace(/{(\w+)}/g, function(match, id) {
             return typeof imgFileMap[id] != 'undefined'
-                ? makeImgHtml(imgFileMap[id], uiIdMap[id]) 
+                ? makeImgHtml(imgFileMap[id], uiIdMap[id])
                 : match
             ;
         });
     }
 
-    // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element 
+    // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element
     // when the image is clicked
     function makeImgOnClick() {
         $(".instructions-img").each(function() {
@@ -447,10 +450,10 @@ module.Instructions = (function() {
                         arrow.css("display", "block");
                         module.Arrow.positionLeftOf(uiElem);
                         arrow.stop().animate({opacity: '100'});
-                        arrow.fadeOut(5000, "easeInExpo", function() { arrowTarget = ""; });
+                        arrow.fadeOut(5000, "swing", function() { arrowTarget = ""; });
                     } else {
                         // shrink instructions in response to multiple clicks on same element
-                        setSize(false, null, true)(); 
+                        setSize(false, null, true)();
                     }
                 });
             }
@@ -741,7 +744,7 @@ module.Arrow = (function() {
             arrow.css("left", (coords.left - arrow.width()) + 'px');
         }
         arrow.stop().animate({opacity: 1});
-        arrow.fadeOut(5000, "easeInExpo");
+        arrow.fadeOut(5000, "swing");
     };
 
     self.hide = function() {
@@ -899,7 +902,7 @@ function Slider(elemName, selector, labels, allElems) {
 
         container.append(slider);
 
-        slider.bootstrapSlider({
+        slider.slider({
             value: self.SLIDER_DEFAULT,
             min: 0.0,
             max: 1.0,
@@ -923,10 +926,10 @@ function Slider(elemName, selector, labels, allElems) {
 
     self.setEnabled = function(isEnabled) {
         if (isEnabled) {
-            slider.bootstrapSlider("enable");
+            slider.slider("enable");
             $(allElems.join(', ')).removeClass("disabled");
         } else {
-            slider.bootstrapSlider("disable");
+            slider.slider("disable");
             $(allElems.join(', ')).addClass("disabled");
         }
         container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
@@ -934,9 +937,9 @@ function Slider(elemName, selector, labels, allElems) {
 
     self.value = function(x) {
         if (x === undefined) {
-            return slider.bootstrapSlider("getValue");
+            return slider.slider("getValue");
         } else {
-            slider.bootstrapSlider("setValue", x, false, false);
+            slider.slider("setValue", x, false, false);
         }
     };
 
@@ -979,7 +982,7 @@ module.Dialog = (function() {
     self.make = function(content, style) {
         // clear out any old contents
         module.Dialog.destroy();
-        
+
         var dialog = $('#dialog');
 
         // Copy all the specified styles to the dialog.
@@ -1052,7 +1055,7 @@ module.UnlockBlockMsg = (function() {
         var dialog = $("#dialog");
         dialog.stop(true, true);
         RuthefjordUI.Dialog.make(div, style);
-        dialog.fadeOut(4000, "easeInExpo", function() { RuthefjordUI.Dialog.destroy(); });
+        dialog.fadeOut(4000, "swing", function() { RuthefjordUI.Dialog.destroy(); });
     };
 
     return self;
@@ -1087,7 +1090,7 @@ module.DebugFeatureInfo = (function() {
 
         var div = RuthefjordUI.Dialog.defaultElems(msg, "Got it!");
         $(div).find('span').css('padding-bottom', '20px');
-        
+
         var arrow = $("#attention-arrow");
         if (uiElem) {
             arrow.css("display", "block");
@@ -1095,7 +1098,7 @@ module.DebugFeatureInfo = (function() {
             arrow.stop().animate({opacity: '100'});
         }
 
-        $(div).find("button").on('click', function () { RuthefjordUI.Dialog.destroy(); arrow.fadeOut(1000, "easeInExpo", function() { }); });
+        $(div).find("button").on('click', function () { RuthefjordUI.Dialog.destroy(); arrow.fadeOut(1000, "swing", function() { }); });
 
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "20pt"};
         if (uiElem) {

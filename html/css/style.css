@@ -501,7 +501,7 @@ header button, .control-btn, .control-icon-btn {
 #selector-puzzle .edgePath {
     stroke: #333;
     stroke-width: 1.5px;
-    fill: none;
+    fill: #333;
 }
 
 #selector-puzzle-instructions {

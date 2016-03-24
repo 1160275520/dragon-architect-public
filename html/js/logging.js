@@ -1,5 +1,6 @@
-
-var RuthefjordLogging = (function(){ "use strict";
+import {papika} from 'papika';
+import {RUTHEFJORD_CONFIG} from 'config';
+export var RuthefjordLogging = (function(){ "use strict";
 
 var is_initialized = false;
 var self = {};

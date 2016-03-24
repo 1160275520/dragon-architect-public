@@ -1,4 +1,22 @@
-var onRuthefjordEvent = (function(){ "use strict";
+import URI from 'urijs';
+import {RUTHEFJORD_CONFIG} from 'config';
+import {RuthefjordCopilot} from 'copilot';
+import {RuthefjordUI} from 'ui';
+import {RuthefjordLogging} from 'logging';
+import {RuthefjordBlockly} from 'blockly/ruthefjord';
+import {Blockly} from 'blockly/ruthefjord';
+import {RuthefjordManager} from 'simulator';
+import {RuthefjordPuzzle} from 'puzzle';
+import {RuthefjordWorldState} from 'worldstate';
+import {RuthefjordDisplay} from 'display';
+
+export var onRuthefjordEvent = (function(){ "use strict";
+
+//if (COPILOT) {
+//    require("copilot");
+//} else {
+//    require("no-copilot");
+//}
 
 var handler = {};
 var isDevMode = false;
@@ -16,12 +34,12 @@ var win_btn_msg;
 var dont_expand_instructions = false;
 
 // flag and data for when code from a gallery item is added to the sandbox
-var sandboxProgAddon = ""; 
+var sandboxProgAddon = "";
 
 var levelListeners = [];
 
 function send_json_get_request(url) {
-    return fetchUrl(url, {
+    return fetch(url, {
         method: 'get',
     }).then(function(response) {
         if (response.status === 200) {
@@ -33,7 +51,7 @@ function send_json_get_request(url) {
 }
 
 function send_json_put_request(url, params) {
-    return fetchUrl(url, {
+    return fetch(url, {
         method: 'put',
         headers: {
             'Content-Type': 'application/json'
@@ -201,14 +219,14 @@ var progress = (function(){
     };
 
     self.mark_puzzle_completed = function(id, puzzle) {
-        if (!_.contains(puzzles_completed, id)) {
+        if (!_.includes(puzzles_completed, id)) {
             puzzles_completed.push(id);
             Storage.save("puzzles_completed", puzzles_completed.toString());
         }
     };
 
     self.is_puzzle_completed = function(puzzle_id) {
-        return isDevMode || _.contains(puzzles_completed, puzzle_id);
+        return isDevMode || _.includes(puzzles_completed, puzzle_id);
     };
 
     self.completed_puzzles = function() {
@@ -225,7 +243,7 @@ var progress = (function(){
 
     self.get_library = function() {
         var libs = _.map(self.completed_puzzles(), function(p) { return p.library.granted; });
-        return _.unique(_.flatten(libs));
+        return _.uniq(_.flatten(libs));
     };
 
     return self;
@@ -266,9 +284,9 @@ function create_puzzle_runner(pack, sceneSelectType) {
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
                     if (progress.puzzles_remaining(pack) > 0) {
-                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.'); 
+                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
                     } else {
-                        $("#selector-puzzle-instructions").html('All done!'); 
+                        $("#selector-puzzle-instructions").html('All done!');
                         packSelectCB = function () {
                             var arrow = $("#attention-arrow");
                             arrow.css("display", "block");
@@ -467,7 +485,7 @@ $(function() {
 
         $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
-        
+
 
         $('#btn-packs').on('click', setState_packs);
         $('#btn-back-selector-pack').on('click', setState_packs);
@@ -489,7 +507,7 @@ $(function() {
             .then(function (data) {
                 if (data.projects) {
                     RuthefjordUI.Gallery.create(data.projects, sandboxCallback);
-                } 
+                }
                 RuthefjordUI.State.goToGallery(function () {});
             });
         }
@@ -556,7 +574,7 @@ $(function() {
         RuthefjordUI.Instructions.hide();
 
         RuthefjordUI.SpeedSlider.initialize(RuthefjordManager.Simulator.set_execution_speed);
-        
+
         $("#btn-turbo").on('click', function () {
             var toggleState;
 
@@ -580,11 +598,11 @@ $(function() {
 
         RuthefjordUI.TimeSlider.initialize(RuthefjordManager.Simulator.set_execution_time);
 
-        $("#btn-time-slider-back").on('click', function() { 
+        $("#btn-time-slider-back").on('click', function() {
             RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() - 0.01);
             RuthefjordManager.Simulator.set_execution_time(RuthefjordUI.TimeSlider.value());
         });
-        $("#btn-time-slider-forward").on('click', function() { 
+        $("#btn-time-slider-forward").on('click', function() {
             RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() + 0.01);
             RuthefjordManager.Simulator.set_execution_time(RuthefjordUI.TimeSlider.value());
         });
@@ -635,7 +653,8 @@ $(function() {
     // then initialize logging, then load save data, then get the experimental condition, then do all the things
     var username;
     if (RUTHEFJORD_CONFIG.features.no_login_prompt) {
-        username = $.url().param('username');
+        var uri = new URI(document.URL);
+        username = uri.search(true)['username'];
     } else {
         username = window.prompt("Please enter your usename", "");
     }
@@ -990,7 +1009,7 @@ handler.onProgramStateChange = function(type) {
                     }
                 }
             } else {
-                // clear final highlights 
+                // clear final highlights
                 clearHighlights();
             }
         }

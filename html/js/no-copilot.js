@@ -1,4 +1,4 @@
-var RuthefjordCopilot = (function () {
+export var RuthefjordCopilot = (function () {
     var self = {};
 
     self.onWidgetReady = function() {};

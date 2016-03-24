@@ -4,9 +4,6 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
     <script type="text/javascript" src="generated/blockly.js"></script>
-    <!-- build:js code/frame.js -->
-    <script src="lib/jquery/jquery.js"></script>
-    <!-- endbuild -->
     <style>
       html, body {
         font-family: "Open Sans";
@@ -96,8 +93,9 @@
       }
     </style>
     <script>
+      var $ = window.parent.$, jQuery = window.parent.jQuery;
       function init() {
-        window.parent.blocklyIframeLoaded();
+        window.parent.ruthefjord.blocklyIframeLoaded();
       }
       function create() {
         Blockly.inject(document.body, {
@@ -105,20 +103,22 @@
           trashcan: true,
           toolbox: document.getElementById('toolbox'),
           hasHScroll: true,
+          media: 'media/'
           // scrollbars: true
         });
-        document.addEventListener("toolboxUpdated", makeLabels);
+        window.addEventListener("toolboxUpdated", makeLabels);
         return Blockly;
       }
       function makeLabels() {
+        console.log("making lables");
         var toolboxWidth = Blockly.getMainWorkspace().flyout_.getMetrics_().viewWidth;
         if (toolboxWidth < 100) { // hide when toolbox is empty
-          $("#blocklyLabels").hide();
+          $("#blocklyLabels", document).hide();
         } else {
-          $("#blocklyLabels").show();
-          $("#libraryLabel").width(toolboxWidth);
-          $("#flyoutMask").find("rect").attr("width", toolboxWidth);
-          $("#codeLabel").width(Blockly.getMainWorkspace().getMetrics().viewWidth - toolboxWidth);
+          $("#blocklyLabels", document).show();
+          $("#libraryLabel", document).width(toolboxWidth);
+          $("#flyoutMask", document).find("rect").attr("width", toolboxWidth);
+          $("#codeLabel", document).width(Blockly.getMainWorkspace().getMetrics().viewWidth - toolboxWidth);
         }
       }
     </script>

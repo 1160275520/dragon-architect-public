@@ -1,4 +1,8 @@
-function RuthefjordBlocklyCustomInit() {
+import {Blockly} from 'blockly/ruthefjord';
+import {RuthefjordBlockly} from 'blockly/ruthefjord';
+import {RuthefjordDisplay} from 'display';
+
+export function RuthefjordBlocklyCustomInit() {
 'use strict';
 
 // Extensions to Blockly's language and JavaScript generator.
@@ -37,17 +41,6 @@ Blockly.JSONLangOps.processStructure = function (block) {
     }
 };
 
-// LEFT
-Blockly.Blocks['Left'] = {
-    init: function() {
-        this.setFullColor(COLOR_MOVE_1);
-        this.appendDummyInput()
-            .appendField("turn left");
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
-    }
-};
-
 var old_rename_func = Blockly.Procedures.rename;
 
 // monkey patch procedure renaming to change valid names, and also update library
@@ -79,7 +72,10 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     }
 };
 
-Blockly.addCanvasListener("blocklyBlockDeleted", function() {
+// recreation of the old Blockly.addCanvasListener function that upstream
+// updates got rid of
+var canvas = Blockly.mainWorkspace.getCanvas();
+Blockly.bindEvent_(canvas, "blocklyBlockDeleted", null, function() {
     // console.log('delete event!');
     if (Blockly.dragMode_ === 0) {
         RuthefjordBlockly.updateToolbox();
@@ -107,6 +103,17 @@ function makeSingleArg(block, inputName) {
     return makeLiteral(input);
 }
 
+// LEFT
+Blockly.Blocks['Left'] = {
+    init: function() {
+        this.setColour(COLOR_MOVE_1);
+        this.appendDummyInput()
+            .appendField("turn left");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+    }
+};
+
 Blockly.JSONLangOps['Left'] = function(block) {
     return newCall("Left", block.id, []);
 };
@@ -114,7 +121,7 @@ Blockly.JSONLangOps['Left'] = function(block) {
 // RIGHT
 Blockly.Blocks['Right'] = {
     init: function() {
-        this.setFullColor(COLOR_MOVE_1);
+        this.setColour(COLOR_MOVE_1);
         this.appendDummyInput()
             .appendField("turn right");
         this.setPreviousStatement(true);
@@ -243,7 +250,7 @@ Blockly.JSONLangOps['Down'] = function(block) {
 // PLACECUBE
 Blockly.Blocks['PlaceCube'] = {
     init: function() {
-        this.setFullColor(COLOR_BLOCK);
+        this.setColour(COLOR_BLOCK);
         this.appendDummyInput()
             .appendField("place cube")
             .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
@@ -259,7 +266,7 @@ Blockly.JSONLangOps['PlaceCube'] = function(block) {
 // REMOVECUBE
 Blockly.Blocks['RemoveCube'] = {
     init: function() {
-        this.setFullColor(COLOR_BLOCK);
+        this.setColour(COLOR_BLOCK);
         this.appendDummyInput()
             .appendField("remove cube");
         this.setPreviousStatement(true);
@@ -269,7 +276,7 @@ Blockly.Blocks['RemoveCube'] = {
 
 Blockly.Blocks['RemoveCube_teaser'] = {
     init: function() {
-        this.setFullColor(COLOR_TEASER);
+        this.setColour(COLOR_TEASER);
         this.appendDummyInput()
             .appendField("remove cube");
         this.setPreviousStatement(true);
@@ -349,7 +356,7 @@ Blockly.JSONLangOps['controls_for'] = function(block, children) {
 Blockly.Blocks['procedures_noargs_defnoreturn'] = {
     init: function() {
         this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
-        this.setFullColor(Blockly.Blocks.procedures.COLOR);
+        this.setColour(Blockly.Blocks.procedures.COLOR);
         var name = Blockly.Procedures.findLegalName(
             Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
         var nameField = new Blockly.FieldTextInput(name,
@@ -387,7 +394,7 @@ Blockly.Blocks['procedures_defnoreturn_teaser'] = {
     */
     init: function() {
         this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
-        this.setFullColor(Blockly.Blocks.procedures.COLOR);
+        this.setColour(Blockly.Blocks.procedures.COLOR);
         var name = Blockly.Procedures.findLegalName(
             Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
         this.appendDummyInput()
@@ -506,7 +513,7 @@ var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'D
 Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
     if (stmt) {
         if (stmt.type === "execute") {
-            if (_.contains(BUILT_INS, stmt.name)) { // built-in
+            if (_.includes(BUILT_INS, stmt.name)) { // built-in
                 // HACK assumes single argument
                 if (stmt.args.length === 0) {
                     return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '">';

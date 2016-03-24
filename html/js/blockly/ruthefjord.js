@@ -1,12 +1,15 @@
+import {RuthefjordBlocklyCustomInit} from 'blockly/customBlocks';
+import {RUTHEFJORD_CONFIG} from 'config';
+import {onRuthefjordEvent} from 'app';
 
-var blocklyIframeLoaded;
-var Blockly;
+export var blocklyIframeLoaded;
+export var Blockly;
 
-var RuthefjordBlockly = (function(){
+export var RuthefjordBlockly = (function(){
 'use strict';
 
 var current_tools = [];
-
+var foo = 5;
 /**
  * Create a namespace for the application.
  */
@@ -298,7 +301,7 @@ RuthefjordBlockly.updateToolbox = function() {
     // highlight blocks that should be used in the current puzzle
     if (RuthefjordBlockly.scene_info && RuthefjordBlockly.scene_info.tutorial && RuthefjordBlockly.scene_info.tutorial.highlighted) {
         Blockly.getMainWorkspace().flyout_.workspace_.getTopBlocks().forEach(function (b) {
-            if (_.contains(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
+            if (_.includes(RuthefjordBlockly.scene_info.tutorial.highlighted, b.type)) {
                 b.addNewGlow();
             }
         });
@@ -313,11 +316,11 @@ RuthefjordBlockly.updateToolbox = function() {
 RuthefjordBlockly.setLevel = function(scene_info, library) {
     // ignore scene_info.library, trust only the library parameter
     // console.log(scene_info);
-    current_tools = _.contains(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
+    current_tools = _.includes(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
 
     // filter out restricted blocks
     current_tools = _.filter(current_tools, function(value) {
-        return !_.contains(scene_info.library.restricted, value);
+        return !_.includes(scene_info.library.restricted, value);
     });
 
     RuthefjordBlockly.scene_info = scene_info;
@@ -374,7 +377,7 @@ RuthefjordBlockly.getXML = function() {
 RuthefjordBlockly.generateBlock = function(name, text, params) {
     Blockly.Blocks[name] = {
         init: function() {
-            this.setFullColor('#978B63');
+            this.setColour('#978B63');
             this.appendDummyInput()
                 .appendField(text);
             // assuming no parameters for now since necessary features don't exist yet

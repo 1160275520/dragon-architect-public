@@ -1,4 +1,9 @@
-var RuthefjordPuzzle = (function () {
+import {RuthefjordManager} from 'simulator';
+import {RuthefjordDisplay} from 'display';
+import {RuthefjordWorldState} from 'worldstate';
+import {onRuthefjordEvent} from 'app';
+
+export var RuthefjordPuzzle = (function () {
     "use strict";
     var self = {};
 

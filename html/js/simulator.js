@@ -1,4 +1,10 @@
-var RuthefjordManager = (function() {
+import {RuthefjordWorldState} from 'worldstate';
+import {onRuthefjordEvent} from 'app';
+import {RuthefjordBlockly} from 'blockly/ruthefjord';
+import {RuthefjordUI} from 'ui';
+import {RuthefjordDisplay} from 'display';
+import {THREE} from 'three';
+export var RuthefjordManager = (function() {
     "use strict";
     var module = {};
     module.globals = {};
