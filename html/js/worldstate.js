@@ -1,5 +1,6 @@
 import {THREE} from 'three';
-export var RuthefjordWorldState = (function() {
+import {Ruthefjord} from 'app';
+Ruthefjord.WorldState = (function() {
     "use strict";
     var self = {};
 

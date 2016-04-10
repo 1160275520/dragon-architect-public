@@ -10,7 +10,7 @@
 
 /* shrink the font on smaller screens */
 @media screen and (max-width: 1350px) {
-    * {
+    body {
         font-size: 10pt;
     }
 }
@@ -154,7 +154,7 @@ header > h1 {
 
 #alpha-msg > p {
     margin: 200px 200px 20px;
-    font-size: 20pt;
+    font-size: 150%;
 }
 #alpha-msg > button {
     margin: auto;

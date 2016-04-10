@@ -19,6 +19,7 @@ module.exports = {
             { test: /\.json$/, loader: 'json'},
         ],
         loaders: [
+            { test: /app\.js$/, loader: 'expose?core'},
             {
                 // pre-process every *.js file (except for ones in
                 // node_modules/) with Babel:
@@ -29,7 +30,12 @@ module.exports = {
                     'babel-loader?cacheDirectory&presets[]=es2015'
                 ]
             },
-        ],
+            { test: /jquery\.js$/, loader: 'expose?$' },
+            { test: /jquery\.js$/, loader: 'expose?jQuery' },
+            { test: /bootstrap-slider\.js$/, loader: 'expose?slider' },
+            { test: /q\.js$/, loader: 'expose?Q' },
+            { test: /lodash\.js$/, loader: 'expose?_' }
+        ]
 
     },
     node: {
@@ -38,21 +44,14 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            COPILOT: false
+            COPILOT: false,
+            DEBUG: true
         }),
         new webpack.ProvidePlugin({
             'fetch': 'imports?this=>global!exports?global.fetch!whatwg-fetch'
         }),
         new webpack.ProvidePlugin({
-            Q: 'q',
-            'window.Q': 'q'
-        }),
-        new webpack.ProvidePlugin({
-            _: 'lodash',
-            'window._': 'lodash'
-        }),
-        new webpack.ProvidePlugin({
-            Blockly: 'blockly',
+            'Blockly': 'blockly',
             'window.Blockly': 'blockly'
         })
     ]

@@ -1,7 +1,15 @@
-export var RuthefjordCopilot;
+import {Ruthefjord} from 'app';
+
+Ruthefjord.Copilot = (function () {
+    var self = {};
+
+    self.onWidgetReady = function() {};
+
+    return self;
+}());
 
 if (COPILOT) {
-    RuthefjordCopilot = (function () {
+    Ruthefjord.Copilot = (function () {
         var self = {};
 
         self.onWidgetReady = function () {
@@ -15,7 +23,7 @@ if (COPILOT) {
         return self;
     }());
 } else {
-    RuthefjordCopilot = (function () {
+    Ruthefjord.Copilot = (function () {
         var self = {};
 
         self.onWidgetReady = function() {};

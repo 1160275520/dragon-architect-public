@@ -1,17 +1,15 @@
-import {RuthefjordWorldState} from 'worldstate';
 import {onRuthefjordEvent} from 'app';
+import {Ruthefjord} from 'app';
 import {RuthefjordBlockly} from 'blockly/ruthefjord';
-import {RuthefjordUI} from 'ui';
-import {RuthefjordDisplay} from 'display';
 import {THREE} from 'three';
-export var RuthefjordManager = (function() {
+Ruthefjord.Manager = (function() {
     "use strict";
     var module = {};
     module.globals = {};
 
     module.EditMode = {
         workshop: "workshop",
-        sandbox: "sandbox"
+        persistent: "persistent"
     };
 
     module.RunState = {
@@ -39,7 +37,7 @@ export var RuthefjordManager = (function() {
             if (self.run_state === rs) return;
             if (rs === module.RunState.stopped && self.edit_mode === module.EditMode.workshop) {
                 if (self.save_state) {
-                    RuthefjordWorldState.setFromSave(self.save_state);
+                    Ruthefjord.WorldState.setFromSave(self.save_state);
                 } else {
                     throw new Error("no save state available when stopping in workshop mode");
                 }
@@ -48,12 +46,18 @@ export var RuthefjordManager = (function() {
                     self.set_program(RuthefjordBlockly.getProgram());
                 }
                 // reset last statement execution time so dt isn't super wrong next time
-                self.last_stmt_exec_time = RuthefjordDisplay.clock.getElapsedTime();
+                self.last_stmt_exec_time = Ruthefjord.Display.clock.getElapsedTime();
             } else if (rs === module.RunState.paused && self.run_state !== module.RunState.executing) {
                 throw new Error("cannot pause when not executing");
             }
 
             self.run_state = rs;
+            onRuthefjordEvent("onProgramStateChange", "run_state");
+        };
+
+        self.clear_run_state = function() {
+            self.save_state = null; // throw out temporary save state so it doesn't end up on the sandbox
+            self.run_state = module.RunState.stopped;
             onRuthefjordEvent("onProgramStateChange", "run_state");
         };
 
@@ -72,7 +76,7 @@ export var RuthefjordManager = (function() {
         self.set_execution_time = function (x) {
             if (self.states) {
                 self.set_run_state(module.RunState.paused);
-                RuthefjordWorldState.setFromClone(self.states[Math.floor(self.states.length * x)]);
+                Ruthefjord.WorldState.setFromClone(self.states[Math.floor(self.states.length * x)]);
             }
         };
 
@@ -256,11 +260,11 @@ export var RuthefjordManager = (function() {
                     cur_pos.add(cur_dir);
                     break;
                 case "up":
-                    cur_pos.add(RuthefjordWorldState.UP);
+                    cur_pos.add(Ruthefjord.WorldState.UP);
                     break;
                 case "down":
                     if (cur_pos.z > 0) {
-                        cur_pos.add(RuthefjordWorldState.DOWN);
+                        cur_pos.add(Ruthefjord.WorldState.DOWN);
                     }
                     break;
                 case "left":
@@ -282,14 +286,14 @@ export var RuthefjordManager = (function() {
             self.worker = new Worker("js/worker.js");
             self.worker.onmessage = function (e) {
                 self.states = JSON.parse(e.data);
-                RuthefjordUI.TimeSlider.setEnabled(true);
+                Ruthefjord.UI.TimeSlider.setEnabled(true);
             };
         }
 
         self.set_program = function (ast) {
             self.last_program_sent = ast;
             if (self.edit_mode === module.EditMode.workshop && self.run_state === module.RunState.stopped) {
-                self.save_state = RuthefjordWorldState.save();
+                self.save_state = Ruthefjord.WorldState.save();
             }
 
             self.call_stack = [];
@@ -298,10 +302,10 @@ export var RuthefjordManager = (function() {
 
             if (ast.body) { // we may be passed a null program
                 push_stack_state(ast.body, [], self);
-                RuthefjordUI.TimeSlider.setEnabled(false);
+                Ruthefjord.UI.TimeSlider.setEnabled(false);
                 self.states = null;
                 if (self.worker) {
-                    //self.worker.postMessage(JSON.stringify({globals:module.globals, ast: ast, state: RuthefjordWorldState.clone()}));
+                    //self.worker.postMessage(JSON.stringify({globals:module.globals, ast: ast, state: Ruthefjord.WorldState.clone()}));
                 }
             }
         };
@@ -361,7 +365,7 @@ export var RuthefjordManager = (function() {
                 var s = pop_next_statement(sim);
                 if (s) {
                     if (s.type === "command") { // record state before each update
-                        states.push(RuthefjordWorldState.cloneState(state));
+                        states.push(Ruthefjord.WorldState.cloneState(state));
                     }
                     step(s, state, sim);
                 }
@@ -397,7 +401,7 @@ export var RuthefjordManager = (function() {
                         self.current_code_elements.pop();
                     }
                     if (self.call_stack.length === 0) {
-                        self.set_run_state(self.edit_mode === module.EditMode.sandbox ? module.RunState.stopped : module.RunState.finished);
+                        self.set_run_state(self.edit_mode === module.EditMode.persistent ? module.RunState.stopped : module.RunState.finished);
                         return transition_time;
                     }
                 }

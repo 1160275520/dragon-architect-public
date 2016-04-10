@@ -1,4 +1,6 @@
-var RuthefjordDB = (function(){ "use strict";
+import {Ruthefjord} from 'app';
+
+Ruthefjord.DB = (function(){ "use strict";
 var module = {};
 
 var site = fermata.json("http://localhost:5000")

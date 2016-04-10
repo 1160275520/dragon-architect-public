@@ -1,9 +1,8 @@
-import {RuthefjordManager} from 'simulator';
-import {RuthefjordDisplay} from 'display';
-import {RuthefjordWorldState} from 'worldstate';
 import {onRuthefjordEvent} from 'app';
+import {Ruthefjord} from 'app';
+import {RuthefjordBlockly} from 'blockly/ruthefjord';
 
-export var RuthefjordPuzzle = (function () {
+Ruthefjord.Puzzle = (function () {
     "use strict";
     var self = {};
 
@@ -14,7 +13,7 @@ export var RuthefjordPuzzle = (function () {
     var current_puzzzle_id, win_time;
 
     function is_running_but_done_executing() {
-        return RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.finished;
+        return Ruthefjord.Manager.Simulator.run_state === Ruthefjord.Manager.RunState.finished;
     }
 
     function body_count(body, proc_name) {
@@ -47,7 +46,10 @@ export var RuthefjordPuzzle = (function () {
         current_puzzzle_id = null;
         win_predicate = function () { return false; };
         submit_predicate = function () { return false; };
-        RuthefjordDisplay.clearTargets();
+        Ruthefjord.Display.clearTargets();
+        RuthefjordBlockly.clearProgram(); // clear program so it doesn't get carried over to sandbox
+        Ruthefjord.WorldState.init(); // clear world state
+        console.log("puzzle cleared");
     };
 
     self.request_start_puzzle = function(info) {
@@ -55,49 +57,50 @@ export var RuthefjordPuzzle = (function () {
         var puzzle = info.puzzle;
 
         // puzzles are always in workshop mode
-        RuthefjordManager.Simulator.set_edit_mode(RuthefjordManager.EditMode.workshop);
-        RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
-        // set world state from info.world
-        RuthefjordWorldState.init();
-        RuthefjordWorldState.dirty = true;
+        Ruthefjord.Manager.Simulator.set_edit_mode(Ruthefjord.Manager.EditMode.workshop);
+        Ruthefjord.Manager.Simulator.clear_run_state();
+        // set world state from info.puzzle.world
+
+        Ruthefjord.WorldState.init();
+        Ruthefjord.WorldState.dirty = true;
         if (puzzle.world) {
             if (puzzle.world.robots[0]) { // assume 1 robot since we currently only support 1
-                RuthefjordWorldState.robot.pos.fromArray(puzzle.world.robots[0].pos);
-                RuthefjordWorldState.robot.dir.fromArray(puzzle.world.robots[0].dir);
+                Ruthefjord.WorldState.robot.pos.fromArray(puzzle.world.robots[0].pos);
+                Ruthefjord.WorldState.robot.dir.fromArray(puzzle.world.robots[0].dir);
             }
             if (puzzle.world.cubes) {
                 puzzle.world.cubes.forEach(function (cube) {
-                    RuthefjordWorldState.grid[cube.pos] = cube.color;
+                    Ruthefjord.WorldState.grid[cube.pos] = cube.color;
                 });
             }
         } else {
             console.warn("puzzle " + puzzle.name + " doesn't set a world state, using default");
         }
         // start_editor in app.js takes care of everything else except setting up and checking puzzle objectives
-        RuthefjordDisplay.clearTargets();
+        Ruthefjord.Display.clearTargets();
         console.log(puzzle);
         var solution_promise;
         if (puzzle.goal) {
             switch (puzzle.goal.source) {
                 case "solution":
                     solution_promise = Q($.get(puzzle.solution)).then(function (json) {
-                        var final_state = RuthefjordManager.Simulator.get_final_state(json, RuthefjordWorldState.clone());
+                        var final_state = Ruthefjord.Manager.Simulator.get_final_state(json, Ruthefjord.WorldState.clone());
                         switch(puzzle.goal.type) {
                             case "robot":
                                 // display target location
-                                RuthefjordDisplay.addRobotTarget(final_state.robot.pos);
+                                Ruthefjord.Display.addRobotTarget(final_state.robot.pos);
                                 // set up win predicate
                                 win_predicate = function () {
                                     return is_running_but_done_executing() &&
-                                        RuthefjordWorldState.robot.pos.equals(final_state.robot.pos);
+                                        Ruthefjord.WorldState.robot.pos.equals(final_state.robot.pos);
                                 };
                                 break;
                             case "cubes":
-                                RuthefjordDisplay.addCubeTargets(final_state.grid);
+                                Ruthefjord.Display.addCubeTargets(final_state.grid);
                                 // sort cube positions in case solution program put them down in a different order
                                 win_predicate = function () {
                                     return is_running_but_done_executing() &&
-                                        _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(RuthefjordWorldState.grid).sort());
+                                        _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(Ruthefjord.WorldState.grid).sort());
                                 };
                                 break;
                             default:
@@ -113,7 +116,7 @@ export var RuthefjordPuzzle = (function () {
                 case "min_cubes":
                     win_predicate = function () {
                         return is_running_but_done_executing() &&
-                                Object.keys(RuthefjordWorldState.grid).length >= puzzle.goal.value;
+                                Object.keys(Ruthefjord.WorldState.grid).length >= puzzle.goal.value;
                     };
                     break;
                 case "code_count":
@@ -136,7 +139,7 @@ export var RuthefjordPuzzle = (function () {
                             }
                         });
                         if (errors.length > 0) {
-                            RuthefjordUI.Instructions.displayErrors(errors);
+                            Ruthefjord.UI.Instructions.displayErrors(errors);
                         }
                         return ret;
                     };
@@ -166,7 +169,7 @@ export var RuthefjordPuzzle = (function () {
         console.log("level won!");
         win_predicate = function () { return false; };
         onRuthefjordEvent("onPuzzleComplete", current_puzzzle_id);
-        //if (RuthefjordDisplay.clock.getElapsedTime() > win_time + WIN_DELAY) {
+        //if (Ruthefjord.Display.clock.getElapsedTime() > win_time + WIN_DELAY) {
         //}
     }
 

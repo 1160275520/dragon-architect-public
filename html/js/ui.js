@@ -1,10 +1,10 @@
 import {RUTHEFJORD_CONFIG} from 'config';
-import {RuthefjordDisplay} from 'display';
 import {Blockly} from 'blockly/ruthefjord';
-import {RuthefjordLogging} from 'logging';
+import {RuthefjordBlockly} from 'blockly/ruthefjord';
+import {Ruthefjord} from 'app';
 var dagreD3 = require('dagre-d3');
 
-export var RuthefjordUI = (function(){ "use strict";
+Ruthefjord.UI = (function(){ "use strict";
 var module = {};
 
 /**
@@ -16,7 +16,7 @@ module.State = (function(){ "use strict";
     var current_state;
 
     function hideAll() {
-        RuthefjordDisplay.hide();
+        Ruthefjord.Display.hide();
         $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
@@ -42,7 +42,7 @@ module.State = (function(){ "use strict";
 
         hideAll();
         $('.codeEditor, #main-view-game').show();
-        RuthefjordDisplay.show();
+        Ruthefjord.Display.show();
         $(main_selector).addClass('title');
 
         cb();
@@ -57,7 +57,7 @@ module.State = (function(){ "use strict";
 
         hideAll();
         $('.codeEditor, #main-view-game').show();
-        RuthefjordDisplay.show();
+        Ruthefjord.Display.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
 
@@ -77,7 +77,7 @@ module.State = (function(){ "use strict";
     self.goToPuzzle = function(cb) {
         hideAll();
         $('.codeEditor, #main-view-game, .puzzleModeUI').show();
-        RuthefjordDisplay.show();
+        Ruthefjord.Display.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -85,7 +85,7 @@ module.State = (function(){ "use strict";
     self.goToSandbox = function(cb) {
         hideAll();
         $('.codeEditor, #main-view-game, .sandboxModeUI').show();
-        RuthefjordDisplay.show();
+        Ruthefjord.Display.show();
         $(main_selector).removeClass('title');
         cb();
     };
@@ -105,8 +105,8 @@ module.State = (function(){ "use strict";
     self.goToViewer = function(cb) {
         hideAll();
         $('.viewerModeUI').show();
-        RuthefjordDisplay.show();
-        RuthefjordUI.CameraControls.viewMode();
+        Ruthefjord.Display.show();
+        Ruthefjord.UI.CameraControls.viewMode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
         cb();
     };
@@ -129,9 +129,9 @@ module.Share = (function() {
         var message = $("#share-message");
         if (self.title) {
             // from http://stackoverflow.com/a/2117523
-            var project_uuid = RuthefjordLogging.create_random_uuid();
+            var project_uuid = Ruthefjord.Logging.create_random_uuid();
 
-            var upload = {id: project_uuid, author: RuthefjordLogging.userid, name: self.title,
+            var upload = {id: project_uuid, author: Ruthefjord.Logging.userid, name: self.title,
                           time: (new Date()).toUTCString(), program: JSON.stringify(RuthefjordBlockly.getProgram()),
                           screen: $("#share-thumb").attr('src'), world_data: "", group: RUTHEFJORD_CONFIG.gallery.group};
             fetch(url + "/uploaded_project", {
@@ -156,8 +156,8 @@ module.Share = (function() {
             callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
             show_buttons: false,
         });
-        RuthefjordDisplay.screenshot("share-thumb");
-        RuthefjordUI.State.goToShare(function () {});
+        Ruthefjord.Display.screenshot("share-thumb");
+        Ruthefjord.UI.State.goToShare(function () {});
         $("#btn-share-submit").off('click'); // clear previous handler
         $("#btn-share-submit").on('click', function () {submit(cb);});
     };
@@ -189,8 +189,8 @@ module.Gallery = (function() {
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
         function viewItem() {
-            RuthefjordManager.Simulator.execute_program_to(item.program, 1);
-            RuthefjordUI.State.goToViewer(function () {});
+            Ruthefjord.Manager.Simulator.execute_program_to(item.program, 1);
+            Ruthefjord.UI.State.goToViewer(function () {});
         }
         $(viewBtn).on('click', viewItem);
         var codeBtn = document.createElement("button");
@@ -517,15 +517,15 @@ module.Instructions = (function() {
         switch (target.type) {
             case "ui":
                 coords = $(target.name).offset();
-                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+                offset = {left: -2 * Ruthefjord.UI.Arrow.width(), top: -dragon.height()};
                 coords.height = $(target.name).innerHeight();
                 break;
             case "world":
                 // for now we assume the only world target is either a robot target or a cube target
-                var vec = RuthefjordDisplay.getScreenCoordsForTargets();
+                var vec = Ruthefjord.Display.getScreenCoordsForTargets();
                 var threejs = $("#three-js").offset();
                 coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
-                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+                offset = {left: -2 * Ruthefjord.UI.Arrow.width(), top: -dragon.height()};
                 break;
             case "general":
                 container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
@@ -581,7 +581,7 @@ module.Instructions = (function() {
                 text.css("height", "0px");
                 text.animate({opacity:1, height:h+"px"}, 1000, function () {
                     if (coords) {
-                        RuthefjordUI.Arrow.show(coords, reverse);
+                        Ruthefjord.UI.Arrow.show(coords, reverse);
                     }
                     if (next) {
                         next();
@@ -658,7 +658,7 @@ module.Instructions = (function() {
         $("p", content).finish();
         content.empty();
         content.hide();
-        RuthefjordUI.Arrow.hide();
+        Ruthefjord.UI.Arrow.hide();
 
         self.targets = instructions.targets;
 
@@ -867,12 +867,12 @@ module.CameraControls = (function() {
 
     self.viewMode = function() {
         self.cameraMode = "viewmode";
-        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+        //RuthefjordUnity.Call.control_camera(Ruthefjord.UI.CameraControls.cameraMode);
     };
 
     self.gameMode = function() {
         self.cameraMode = "gamemode";
-        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
+        //RuthefjordUnity.Call.control_camera(Ruthefjord.UI.CameraControls.cameraMode);
     };
 
     return self;
@@ -913,7 +913,7 @@ function Slider(elemName, selector, labels, allElems) {
             onChangeCallback(changeEvent.value.newValue);
         });
         slider.on("slideStart", function(slideEvent) {
-            var questLogger = RuthefjordLogging.activeTaskLogger;
+            var questLogger = Ruthefjord.Logging.activeTaskLogger;
             if (questLogger) {
                 questLogger.logDoUiAction(elemName, 'start', null);
             }
@@ -1026,13 +1026,13 @@ module.WinMessage = (function() {
     var self = {};
 
     self.show = function(msg, btn_msg, cb) {
-        var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
-        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
+        var div = Ruthefjord.UI.Dialog.defaultElems(msg, btn_msg);
+        var timeout = setTimeout(function () { Ruthefjord.UI.Dialog.destroy(); cb(); }, 5000);
         var btn = div.find("button");
         btn.css('font-size', '20pt');
-        btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
+        btn.on('click', function () { clearTimeout(timeout); Ruthefjord.UI.Dialog.destroy(); cb(); });
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
-        RuthefjordUI.Dialog.make(div, style);
+        Ruthefjord.UI.Dialog.make(div, style);
     };
 
     return self;
@@ -1048,14 +1048,14 @@ module.UnlockBlockMsg = (function() {
         btn.css("font-size", "15pt");
         btn.addClass("control-btn");
         btn.html("Click here to unlock");
-        btn.on('click', function () { RuthefjordUI.Dialog.destroy(); cb(); });
+        btn.on('click', function () { Ruthefjord.UI.Dialog.destroy(); cb(); });
         div.append(btn);
         var rect = svg.getBoundingClientRect();
         var style = {width: '240px', top: (rect.top + $("#code-area").position().top) + 'px', left: (rect.left + 50) + 'px'};
         var dialog = $("#dialog");
         dialog.stop(true, true);
-        RuthefjordUI.Dialog.make(div, style);
-        dialog.fadeOut(4000, "swing", function() { RuthefjordUI.Dialog.destroy(); });
+        Ruthefjord.UI.Dialog.make(div, style);
+        dialog.fadeOut(4000, "swing", function() { Ruthefjord.UI.Dialog.destroy(); });
     };
 
     return self;
@@ -1088,7 +1088,7 @@ module.DebugFeatureInfo = (function() {
         var msg = self.features[nextFeatureIndex][1];
         nextFeatureIndex++;
 
-        var div = RuthefjordUI.Dialog.defaultElems(msg, "Got it!");
+        var div = Ruthefjord.UI.Dialog.defaultElems(msg, "Got it!");
         $(div).find('span').css('padding-bottom', '20px');
 
         var arrow = $("#attention-arrow");
@@ -1098,7 +1098,7 @@ module.DebugFeatureInfo = (function() {
             arrow.stop().animate({opacity: '100'});
         }
 
-        $(div).find("button").on('click', function () { RuthefjordUI.Dialog.destroy(); arrow.fadeOut(1000, "swing", function() { }); });
+        $(div).find("button").on('click', function () { Ruthefjord.UI.Dialog.destroy(); arrow.fadeOut(1000, "swing", function() { }); });
 
         var style = {width: '300px', top: '400px', left: '200px', "font-size": "20pt"};
         if (uiElem) {
@@ -1107,7 +1107,7 @@ module.DebugFeatureInfo = (function() {
             style.left = (rect.left - 450) + 'px';
         }
 
-        RuthefjordUI.Dialog.make(div, style);
+        Ruthefjord.UI.Dialog.make(div, style);
     };
 
     return self;
