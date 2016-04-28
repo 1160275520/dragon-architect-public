@@ -36,8 +36,8 @@ gulp.task('view_preprocess', function () {
 });
 
 var handle_js = lazypipe()
-    .pipe(preprocess, {context: argv});
-    //.pipe(uglify);
+    .pipe(preprocess, {context: argv})
+    .pipe(uglify);
 
 gulp.task('usemin_index', ['clean'], function() {
     return gulp.src('index.html')
