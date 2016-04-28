@@ -1,9 +1,4 @@
-import {THREE} from 'three';
-import Stats from 'stats-js'
-import {onRuthefjordEvent} from 'app';
-import {Ruthefjord} from 'app';
-
-Ruthefjord.Display = (function() {
+var RuthefjordDisplay = (function() {
     "use strict";
     var self = {};
 
@@ -175,9 +170,9 @@ Ruthefjord.Display = (function() {
         //if (dt > 0.1) {
         //    console.error("large dt", dt);
         //} else {
-            var transition_time = Ruthefjord.Manager.Simulator.update(dt, t, Ruthefjord.WorldState);
-            Ruthefjord.Puzzle.check_win_predicate();
-            if (Ruthefjord.WorldState.dirty) {
+            var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
+            RuthefjordPuzzle.check_win_predicate();
+            if (RuthefjordWorldState.dirty) {
                 self.setDisplayFromWorld(transition_time);
             }
             render(dt, t);
@@ -196,9 +191,9 @@ Ruthefjord.Display = (function() {
         if (zLine) {
             zLine.geometry.dispose();
         }
-        var grid = Ruthefjord.WorldState.grid;
+        var grid = RuthefjordWorldState.grid;
         // find nearest filled cell below robot
-        // use robot.position (instead of Ruthefjord.WorldState.robot.pos), so height is correct when animating
+        // use robot.position (instead of RuthefjordWorldState.robot.pos), so height is correct when animating
         // use Math.floor to compensate for robotOffset
         var height = robot.position.z;
         for (var z = Math.floor(robot.position.z); z >= 0; z--) {
@@ -265,8 +260,8 @@ Ruthefjord.Display = (function() {
     }
 
     self.setDisplayFromWorld = function(dt) {
-        var bot = Ruthefjord.WorldState.robot;
-        var grid = Ruthefjord.WorldState.grid;
+        var bot = RuthefjordWorldState.robot;
+        var grid = RuthefjordWorldState.grid;
 
         if (bot) {
             // set robot goal position and direction
@@ -279,7 +274,7 @@ Ruthefjord.Display = (function() {
                 animTime = 0;
                 animStatus = "animating";
             }
-            Ruthefjord.WorldState.dirty = false;
+            RuthefjordWorldState.dirty = false;
         }
 
         if (grid) {
@@ -384,7 +379,7 @@ Ruthefjord.Display = (function() {
 
     self.rotateCamera = function(degrees) {
         var q = new THREE.Quaternion();
-        q.setFromAxisAngle(Ruthefjord.WorldState.UP, radiansOfDegrees(degrees));
+        q.setFromAxisAngle(RuthefjordWorldState.UP, radiansOfDegrees(degrees));
         relativeCamPos.applyQuaternion(q);
     };
 
@@ -393,10 +388,10 @@ Ruthefjord.Display = (function() {
         if (Math.abs(degrees) > 10) {
             console.warn("tilting by more than 10 degrees in a single step may bypass safeguards");
         }
-        var curDot = relativeCamPos.clone().normalize().dot(Ruthefjord.WorldState.UP);
+        var curDot = relativeCamPos.clone().normalize().dot(RuthefjordWorldState.UP);
         if ((curDot > 0.05 || degrees > 0) && (curDot < 0.95 || degrees < 0)) {
             var q = new THREE.Quaternion();
-            q.setFromAxisAngle(relativeCamPos.clone().cross(Ruthefjord.WorldState.UP).normalize(), radiansOfDegrees(degrees));
+            q.setFromAxisAngle(relativeCamPos.clone().cross(RuthefjordWorldState.UP).normalize(), radiansOfDegrees(degrees));
             relativeCamPos.applyQuaternion(q);
         }
     };

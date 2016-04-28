@@ -7,7 +7,7 @@ var lazypipe = require('lazypipe');
 var gulpif = require('gulp-if');
 var uglify = require('gulp-uglify');
 var minifyHtml = require('gulp-minify-html');
-var minifyCss = require('gulp-minify-css');
+var cleanCss = require('gulp-clean-css');
 var preprocess = require('gulp-preprocess');
 var rev = require('gulp-rev');
 var rimraf = require('rimraf');
@@ -44,7 +44,7 @@ gulp.task('usemin_index', ['clean'], function() {
         .pipe(preprocess({context: argv}))
         .pipe(useref())
         .pipe(gulpif('*.js', handle_js()))
-        .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulpif('*.css', cleanCss()))
         .pipe(gulpif('*.html', minifyHtml({empty: true})))
         .pipe(gulp.dest(BUILD_DIR));
 });
@@ -54,7 +54,7 @@ gulp.task('usemin_frame', ['clean'], function() {
         .pipe(preprocess({context: argv}))
         .pipe(useref())
         .pipe(gulpif('*.js', handle_js()))
-        .pipe(gulpif('*.css', minifyCss()))
+        .pipe(gulpif('*.css', cleanCss()))
         .pipe(gulpif('*.html', minifyHtml({empty: true})))
         .pipe(gulp.dest(BUILD_DIR));
 });

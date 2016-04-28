@@ -1,7 +1,4 @@
-import {Blockly} from 'blockly/ruthefjord';
-import {RuthefjordBlockly} from 'blockly/ruthefjord';
-
-export function RuthefjordBlocklyCustomInit() {
+function RuthefjordBlocklyCustomInit() {
 'use strict';
 
 // Extensions to Blockly's language and JavaScript generator.
@@ -17,8 +14,8 @@ var COLOR_TEASER = '#707070';
 
 Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
 Blockly.Blocks.procedures.COLOR = COLOR_PROCS;
-Blockly.FieldColour.COLOURS = core.Ruthefjord.Display.cubeColors;
-Blockly.FieldColour.COLUMNS = Math.min(core.Ruthefjord.Display.cubeColors.length, 8);
+Blockly.FieldColour.COLOURS = RuthefjordDisplay.cubeColors;
+Blockly.FieldColour.COLUMNS = Math.min(RuthefjordDisplay.cubeColors.length, 8);
 
 Blockly.JSONLangOps = {};
 

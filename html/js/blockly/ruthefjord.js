@@ -1,12 +1,7 @@
-import {RuthefjordBlocklyCustomInit} from 'blockly/customBlocks';
-import {RUTHEFJORD_CONFIG} from 'config';
-import {onRuthefjordEvent} from 'app';
-import {Ruthefjord} from 'app';
+var blocklyIframeLoaded;
+var Blockly;
 
-export var blocklyIframeLoaded;
-export var Blockly;
-
-export var RuthefjordBlockly = (function(){
+var RuthefjordBlockly = (function(){
     'use strict';
 
     var current_tools = [];

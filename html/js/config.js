@@ -1,5 +1,4 @@
-
-export var RUTHEFJORD_CONFIG = {
+var RUTHEFJORD_CONFIG = {
     server: {
         url: 'http://localhost:27246/api',
         storage: 'session'

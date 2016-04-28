@@ -1,8 +1,4 @@
-import {onRuthefjordEvent} from 'app';
-import {Ruthefjord} from 'app';
-import {RuthefjordBlockly} from 'blockly/ruthefjord';
-import {THREE} from 'three';
-Ruthefjord.Manager = (function() {
+var RuthefjordManager = (function() {
     "use strict";
     var module = {};
     module.globals = {};
@@ -37,7 +33,7 @@ Ruthefjord.Manager = (function() {
             if (self.run_state === rs) return;
             if (rs === module.RunState.stopped && self.edit_mode === module.EditMode.workshop) {
                 if (self.save_state) {
-                    Ruthefjord.WorldState.setFromSave(self.save_state);
+                    RuthefjordWorldState.setFromSave(self.save_state);
                 } else {
                     throw new Error("no save state available when stopping in workshop mode");
                 }
@@ -46,7 +42,7 @@ Ruthefjord.Manager = (function() {
                     self.set_program(RuthefjordBlockly.getProgram());
                 }
                 // reset last statement execution time so dt isn't super wrong next time
-                self.last_stmt_exec_time = Ruthefjord.Display.clock.getElapsedTime();
+                self.last_stmt_exec_time = RuthefjordDisplay.clock.getElapsedTime();
             } else if (rs === module.RunState.paused && self.run_state !== module.RunState.executing) {
                 throw new Error("cannot pause when not executing");
             }
@@ -76,7 +72,7 @@ Ruthefjord.Manager = (function() {
         self.set_execution_time = function (x) {
             if (self.states) {
                 self.set_run_state(module.RunState.paused);
-                Ruthefjord.WorldState.setFromClone(self.states[Math.floor(self.states.length * x)]);
+                RuthefjordWorldState.setFromClone(self.states[Math.floor(self.states.length * x)]);
             }
         };
 
@@ -260,11 +256,11 @@ Ruthefjord.Manager = (function() {
                     cur_pos.add(cur_dir);
                     break;
                 case "up":
-                    cur_pos.add(Ruthefjord.WorldState.UP);
+                    cur_pos.add(RuthefjordWorldState.UP);
                     break;
                 case "down":
                     if (cur_pos.z > 0) {
-                        cur_pos.add(Ruthefjord.WorldState.DOWN);
+                        cur_pos.add(RuthefjordWorldState.DOWN);
                     }
                     break;
                 case "left":
@@ -286,14 +282,14 @@ Ruthefjord.Manager = (function() {
             self.worker = new Worker("js/worker.js");
             self.worker.onmessage = function (e) {
                 self.states = JSON.parse(e.data);
-                Ruthefjord.UI.TimeSlider.setEnabled(true);
+                RuthefjordUI.TimeSlider.setEnabled(true);
             };
         }
 
         self.set_program = function (ast) {
             self.last_program_sent = ast;
             if (self.edit_mode === module.EditMode.workshop && self.run_state === module.RunState.stopped) {
-                self.save_state = Ruthefjord.WorldState.save();
+                self.save_state = RuthefjordWorldState.save();
             }
 
             self.call_stack = [];
@@ -302,10 +298,10 @@ Ruthefjord.Manager = (function() {
 
             if (ast.body) { // we may be passed a null program
                 push_stack_state(ast.body, [], self);
-                Ruthefjord.UI.TimeSlider.setEnabled(false);
+                RuthefjordUI.TimeSlider.setEnabled(false);
                 self.states = null;
                 if (self.worker) {
-                    //self.worker.postMessage(JSON.stringify({globals:module.globals, ast: ast, state: Ruthefjord.WorldState.clone()}));
+                    //self.worker.postMessage(JSON.stringify({globals:module.globals, ast: ast, state: RuthefjordWorldState.clone()}));
                 }
             }
         };
@@ -365,7 +361,7 @@ Ruthefjord.Manager = (function() {
                 var s = pop_next_statement(sim);
                 if (s) {
                     if (s.type === "command") { // record state before each update
-                        states.push(Ruthefjord.WorldState.cloneState(state));
+                        states.push(RuthefjordWorldState.cloneState(state));
                     }
                     step(s, state, sim);
                 }

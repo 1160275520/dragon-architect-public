@@ -1,7 +1,4 @@
-import {papika} from 'papika';
-import {RUTHEFJORD_CONFIG} from 'config';
-import {Ruthefjord} from 'app';
-Ruthefjord.Logging = (function(){ "use strict";
+var RuthefjordLogging = (function(){ "use strict";
 
 var is_initialized = false;
 var self = {};
@@ -198,7 +195,7 @@ self.logExperimentalCondition = function(experimentId, conditionId) {
         type: AID.PlayerExperimentalCondition,
         detail: {experiment:experimentId, condition:conditionId}
     });
-}
+};
 
 self.logPlayerLogin = function(loginId) {
     self.telemetry_client.log_event({
@@ -206,7 +203,7 @@ self.logPlayerLogin = function(loginId) {
         type: AID.PlayerLogin,
         detail: {id:loginId}
     });
-}
+};
 
 self.logStudentConsented = function(didPlayerConsent, tosId) {
     self.telemetry_client.log_event({
