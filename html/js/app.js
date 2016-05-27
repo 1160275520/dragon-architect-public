@@ -139,12 +139,12 @@ var Storage = (function() {
     mdl.save = function(key, value) {
         if (typeof key !== "string") throw new TypeError("keys must be strings!");
         if (value !== null && typeof value !== "string") throw new TypeError("can only save string values!");
-        console.info("saving " + value + " at " + key);
+        //console.info("saving " + value + " at " + key);
         storageImpl.setItem(key, value);
     };
 
     mdl.load = function(key, cb) {
-        console.info("loading " + storageImpl.getItem(key) + " from " + key);
+        //console.info("loading " + storageImpl.getItem(key) + " from " + key);
         cb(storageImpl.getItem(key));
     };
 

@@ -142,8 +142,8 @@ function cloneState(state) {
     return c;
 }
 
-function get_states(ast, state) {
-    var states = [];
+function get_total(ast, state) {
+    var count = 0;
     var sim = {};
     sim.call_stack = [];
     if (ast.body) { // we may be passed a null program
@@ -153,22 +153,50 @@ function get_states(ast, state) {
         var s = pop_next_statement(sim);
         if (s) {
             if (s.type === "command") { // record state before each update
-                states.push(cloneState(state));
+                count++;
             }
             step(s, state, sim);
         }
     }
-    return states;
+    return count;
+}
+
+function send_states(ast, state) {
+    var total = get_total(ast, cloneState(state));
+    postMessage({total:total, done:false});
+    var steps = Math.min(total, 100);
+    var threshold = total / steps + 1;
+    var count = 0;
+    var sim = {};
+    sim.call_stack = [];
+    if (ast.body) { // we may be passed a null program
+        push_stack_state(ast.body, [], sim);
+    }
+    while (sim.call_stack.length > 0) {
+        var s = pop_next_statement(sim);
+        if (s) {
+            if (s.type === "command") { // record state before each update
+                count++;
+                if (count >= threshold) {
+                    //console.log({count: count, threshold: threshold});
+                    postMessage({state: state, done: false});
+                    threshold += total / steps;
+                }
+            }
+            step(s, state, sim);
+        }
+    }
+    postMessage({state: state, done: false});
 }
 
 onmessage = function(e) {
-    data = JSON.parse(e.data);
+    data = e.data;
     globals = data.globals;
     // restore robot state data to Vector3 after stringification
     var state = data.state;
     state.robot.pos = new THREE.Vector3(state.robot.pos.x, state.robot.pos.y, state.robot.pos.z);
     state.robot.dir = new THREE.Vector3(state.robot.dir.x, state.robot.dir.y, state.robot.dir.z);
 
-    var states = get_states(data.ast, state);
-    postMessage(JSON.stringify(states));
+    send_states(data.ast, state);
+    postMessage({done: true});
 };

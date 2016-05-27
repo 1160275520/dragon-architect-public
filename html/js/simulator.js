@@ -43,9 +43,9 @@ var RuthefjordManager = (function() {
                 }
                 // reset last statement execution time so dt isn't super wrong next time
                 self.last_stmt_exec_time = RuthefjordDisplay.clock.getElapsedTime();
-            } else if (rs === module.RunState.paused && self.run_state !== module.RunState.executing) {
-                throw new Error("cannot pause when not executing");
-            }
+            }//} else if (rs === module.RunState.paused && self.run_state !== module.RunState.executing) {
+            //    throw new Error("cannot pause when not executing");
+            //}
 
             self.run_state = rs;
             onRuthefjordEvent("onProgramStateChange", "run_state");
@@ -281,8 +281,15 @@ var RuthefjordManager = (function() {
         if (typeof window !== "undefined" && window.Worker) {
             self.worker = new Worker("js/worker.js");
             self.worker.onmessage = function (e) {
-                self.states = JSON.parse(e.data);
-                RuthefjordUI.TimeSlider.setEnabled(true);
+                if (e.data.done) {
+                    //console.log(self.states);
+                    RuthefjordUI.TimeSlider.setEnabled(true);
+                } else if (e.data.total) {
+                    self.total_commands = e.data.total;
+                } else {
+                    //console.log(e.data.state);
+                    self.states.push(e.data.state);
+                }
             };
         }
 
@@ -294,14 +301,15 @@ var RuthefjordManager = (function() {
 
             self.call_stack = [];
             self.total_steps = 0;
+            self.current_commands = 0;
             self.current_code_elements = [];
 
             if (ast.body) { // we may be passed a null program
                 push_stack_state(ast.body, [], self);
                 RuthefjordUI.TimeSlider.setEnabled(false);
-                self.states = null;
+                self.states = [RuthefjordWorldState.clone()];
                 if (self.worker) {
-                    //self.worker.postMessage(JSON.stringify({globals:module.globals, ast: ast, state: RuthefjordWorldState.clone()}));
+                    self.worker.postMessage({globals:module.globals, ast: ast, state: self.states[0]});
                 }
             }
         };
@@ -392,6 +400,11 @@ var RuthefjordManager = (function() {
                         self.last_stmt_exec_time = t;
                         if (s.type === "command") {
                             num_steps--;
+                            self.current_commands++;
+                            if (self.total_commands) {
+                                console.log(self.current_commands + " out of " + self.total_commands);
+                                RuthefjordUI.TimeSlider.value(self.current_commands / self.total_commands);
+                            }
                         }
                     } else {
                         self.current_code_elements.pop();
