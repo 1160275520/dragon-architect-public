@@ -15,10 +15,6 @@ var RuthefjordManager = (function() {
         finished: "finished"
     };
 
-    function last(array) {
-        return array[array.length - 1];
-    }
-
     module.Simulator = (function () {
         var self = {};
         self.save_state = null;
@@ -37,6 +33,7 @@ var RuthefjordManager = (function() {
                 } else {
                     throw new Error("no save state available when stopping in workshop mode");
                 }
+                RuthefjordUI.TimeSlider.value(0);
             } else if (rs === module.RunState.executing) {
                 if (self.run_state === module.RunState.stopped) {
                     self.set_program(RuthefjordBlockly.getProgram());
@@ -70,9 +67,14 @@ var RuthefjordManager = (function() {
         };
 
         self.set_execution_time = function (x) {
-            if (self.states) {
+            if (self.sim_states) {
                 self.set_run_state(module.RunState.paused);
-                RuthefjordWorldState.setFromClone(self.states[Math.floor(self.states.length * x)]);
+                self.current_commands = Math.floor(self.sim_states.length * x);
+                // when current_commands indexes out of bounds, nothing for us to do (will happen when x is 1, i.e., slider all the way at the end)
+                if (self.current_commands < self.sim_states.length) {
+                    RuthefjordWorldState.setFromClone(self.sim_states[self.current_commands].state);
+                    self.call_stack = _.cloneDeep(self.sim_states[self.current_commands].cs);
+                }
             }
         };
 
@@ -145,7 +147,7 @@ var RuthefjordManager = (function() {
                 return null;
             }
 
-            var ss = last(sim.call_stack);
+            var ss = _.last(sim.call_stack);
 
             // if current stack state is empty, then go up a level
             if (ss.to_execute.length === 0) {
@@ -176,7 +178,7 @@ var RuthefjordManager = (function() {
             stmts.reverse();
             // copy parent context, or start with an empty one if this is the first thing.
             var context = sim.call_stack.length > 0
-                ? shallow_copy(last(sim.call_stack).context)
+                ? shallow_copy(_.last(sim.call_stack).context)
                 : {};
             args.forEach(function (arg) {
                 context[arg[0]] = arg[1];
@@ -188,12 +190,12 @@ var RuthefjordManager = (function() {
             //console.log(stmt);
             switch (stmt.type) {
                 case "procedure": // procedure definition
-                    last(sim.call_stack).context[stmt.name] = stmt;
+                    _.last(sim.call_stack).context[stmt.name] = stmt;
                     break;
                 case "execute": // procedure call
                     var proc;
-                    if (last(sim.call_stack).context[stmt.name]) {
-                        proc = last(sim.call_stack).context[stmt.name];
+                    if (_.last(sim.call_stack).context[stmt.name]) {
+                        proc = _.last(sim.call_stack).context[stmt.name];
                     } else if (module.globals[stmt.name]) {
                         proc = module.globals[stmt.name];
                     } else {
@@ -204,7 +206,7 @@ var RuthefjordManager = (function() {
                 case "repeat": // definite loop
                     var count;
                     if (stmt.number.type === "ident") {
-                        count = last(sim.call_stack).context[stmt.number.value].value;
+                        count = _.last(sim.call_stack).context[stmt.number.value].value;
                     } else { // we only support int literals and identifiers
                         count = stmt.number.value;
                     }
@@ -249,7 +251,7 @@ var RuthefjordManager = (function() {
                 case "cube":
                     // do nothing if something already occupies that space
                     if (!state.grid.hasOwnProperty(cur_pos.toArray())) {
-                        state.grid[cur_pos.toArray()] = last(sim.call_stack).context["color"].value;
+                        state.grid[cur_pos.toArray()] = _.last(sim.call_stack).context["color"].value;
                     }
                     break;
                 case "forward":
@@ -282,13 +284,13 @@ var RuthefjordManager = (function() {
             self.worker = new Worker("js/worker.js");
             self.worker.onmessage = function (e) {
                 if (e.data.done) {
-                    //console.log(self.states);
+                    //console.log(self.sim_states);
                     RuthefjordUI.TimeSlider.setEnabled(true);
                 } else if (e.data.total) {
                     self.total_commands = e.data.total;
                 } else {
                     //console.log(e.data.state);
-                    self.states.push(e.data.state);
+                    self.sim_states.push(e.data.sim_state);
                 }
             };
         }
@@ -307,9 +309,9 @@ var RuthefjordManager = (function() {
             if (ast.body) { // we may be passed a null program
                 push_stack_state(ast.body, [], self);
                 RuthefjordUI.TimeSlider.setEnabled(false);
-                self.states = [RuthefjordWorldState.clone()];
+                self.sim_states = [{state: RuthefjordWorldState.clone(), cs: self.call_stack}];
                 if (self.worker) {
-                    self.worker.postMessage({globals:module.globals, ast: ast, state: self.states[0]});
+                    self.worker.postMessage({globals:module.globals, ast: ast, state: self.sim_states[0].state});
                 }
             }
         };
@@ -357,6 +359,32 @@ var RuthefjordManager = (function() {
         //        apply_command(c.command, state, sim);
         //    });
         //};
+        self.next_state = function() {
+            while (true) {
+                var s = pop_next_statement(self);
+                if (s) {
+                    if (s.meta) {
+                        self.current_code_elements.push(s.meta.id);
+                    }
+                    step(s, RuthefjordWorldState, self);
+                    if (s.type === "command") {
+                        self.current_commands++;
+                        if (self.total_commands) {
+                            //console.log(self.current_commands + " out of " + self.total_commands);
+                            RuthefjordUI.TimeSlider.value(self.current_commands / self.total_commands);
+                        }
+                        break;
+                    }
+                } else {
+                    self.current_code_elements.pop();
+                }
+                if (self.call_stack.length === 0) {
+                    self.set_run_state(self.edit_mode === module.EditMode.persistent ? module.RunState.stopped : module.RunState.finished);
+                    return;
+                }
+            }
+            onRuthefjordEvent("onProgramStateChange", "current_state");
+        };
 
         self.get_states = function(ast, state) {
             var states = [];
@@ -402,7 +430,7 @@ var RuthefjordManager = (function() {
                             num_steps--;
                             self.current_commands++;
                             if (self.total_commands) {
-                                console.log(self.current_commands + " out of " + self.total_commands);
+                                //console.log(self.current_commands + " out of " + self.total_commands);
                                 RuthefjordUI.TimeSlider.value(self.current_commands / self.total_commands);
                             }
                         }

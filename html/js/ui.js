@@ -874,9 +874,8 @@ module.CameraControls = (function() {
 
 /// a horizontal slider.
 /// elemName is the name used for logging ui actions.
-function Slider(elemName, selector, labels, allElems) {
+function Slider(elemName, selector, labels, allElems, default_val) {
     var self = {};
-    self.SLIDER_DEFAULT = 0.25;
     var container;
     var slider;
 
@@ -897,7 +896,7 @@ function Slider(elemName, selector, labels, allElems) {
         container.append(slider);
 
         slider.slider({
-            value: self.SLIDER_DEFAULT,
+            value: default_val,
             min: 0.0,
             max: 1.0,
             step: 0.01,
@@ -910,6 +909,12 @@ function Slider(elemName, selector, labels, allElems) {
             var questLogger = RuthefjordLogging.activeTaskLogger;
             if (questLogger) {
                 questLogger.logDoUiAction(elemName, 'start', null);
+            }
+        });
+        slider.on("slideStop", function(slideEvent) {
+            var questLogger = RuthefjordLogging.activeTaskLogger;
+            if (questLogger) {
+                questLogger.logDoUiAction(elemName, 'stop', null);
             }
         });
     };
@@ -940,9 +945,9 @@ function Slider(elemName, selector, labels, allElems) {
     return self;
 }
 
-module.SpeedSlider = Slider('speed-slider', '#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], ["#speed-controls"]);
+module.SpeedSlider = Slider('speed-slider', '#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], ["#speed-controls"], 0.25);
 
-module.TimeSlider = Slider('time-slider', '#time-slider', ['Start', '<----- Time ----->', 'End'], ["#time-controls", ".btn-time-slider"]);
+module.TimeSlider = Slider('time-slider', '#time-slider', ['Start', '<----- Time ----->', 'End'], ["#time-controls", ".btn-time-slider"], 0);
 
 module.CubeCounter = (function() {
     var self = {};

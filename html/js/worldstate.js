@@ -33,7 +33,7 @@ var RuthefjordWorldState = (function() {
             self.robot = {};
             self.robot.pos = new THREE.Vector3(c.robot.pos.x, c.robot.pos.y, c.robot.pos.z);
             self.robot.dir = new THREE.Vector3(c.robot.dir.x, c.robot.dir.y, c.robot.dir.z);
-            self.grid = c.grid;
+            self.grid = _.clone(c.grid);
             self.dirty = true;
         }
     };
@@ -44,7 +44,7 @@ var RuthefjordWorldState = (function() {
             pos: self.robot.pos.clone(),
             dir: self.robot.dir.clone()
         };
-        c.grid = JSON.parse(JSON.stringify(self.grid));
+        c.grid = _.clone(self.grid);
         return c;
     };
 
@@ -56,7 +56,7 @@ var RuthefjordWorldState = (function() {
             pos: state.robot.pos.clone(),
             dir: state.robot.dir.clone()
         };
-        c.grid = JSON.parse(JSON.stringify(state.grid));
+        c.grid = _.clone(state.grid);
         return c;
     };
 

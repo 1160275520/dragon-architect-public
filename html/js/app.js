@@ -536,12 +536,13 @@ $(function() {
             }
         });
 
-        // $('#btn-step').on('click', function() {
-        //     if (RuthefjordLogging.activeTaskLogger) {
-        //         RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
-        //     }
-        //     RuthefjordUnity.Call.next_interesting_step();
-        // });
+         $('#btn-step').on('click', function() {
+             if (RuthefjordLogging.activeTaskLogger) {
+                 RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
+             }
+             RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.paused);
+             RuthefjordManager.Simulator.next_state();
+         });
 
         // camera
         $('#camera-zoom-in').click(function(){RuthefjordDisplay.zoomCamera(0.8);});
@@ -564,7 +565,7 @@ $(function() {
 
             if (RuthefjordUI.SpeedSlider.value() === 1) { // switch from turbo to normal
                 toggleState = 1;
-                RuthefjordUI.SpeedSlider.value(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT)
+                RuthefjordUI.SpeedSlider.value(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT);
                 RuthefjordManager.Simulator.set_execution_speed(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT);
                 RuthefjordUI.TurboButton.update(false);
             } else { // switch from normal to turbo

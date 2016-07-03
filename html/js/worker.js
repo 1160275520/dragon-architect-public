@@ -4,17 +4,13 @@ var UP = new THREE.Vector3(0,0,1);
 var DOWN = new THREE.Vector3(0,0,-1);
 var globals = {};
 
-function last(array) {
-    return array[array.length - 1];
-}
-
 function pop_next_statement(sim) {
     // if call stack is empty, nothing left to do!
     if (sim.call_stack.length === 0) {
         return null;
     }
 
-    var ss = last(sim.call_stack);
+    var ss = _.last(sim.call_stack);
 
     // if current stack state is empty, then go up a level
     if (ss.to_execute.length === 0) {
@@ -24,6 +20,23 @@ function pop_next_statement(sim) {
 
     // otherwise pop an element off the current stack state.
     return ss.to_execute.pop();
+}
+
+function peek_next_statement(sim) {
+    // if call stack is empty, nothing left to do!
+    if (sim.call_stack.length === 0) {
+        return null;
+    }
+
+    var ss = _.last(sim.call_stack);
+
+    // if current stack state is empty
+    if (ss.to_execute.length === 0) {
+        return null;
+    }
+
+    // otherwise return element off the current stack state.
+    return _.last(ss.to_execute);
 }
 
 function shallow_copy(object) {
@@ -42,7 +55,7 @@ function push_stack_state(to_execute, args, sim) {
     stmts.reverse();
     // copy parent context, or start with an empty one if this is the first thing.
     var context = sim.call_stack.length > 0
-        ? shallow_copy(last(sim.call_stack).context)
+        ? shallow_copy(_.last(sim.call_stack).context)
         : {};
     args.forEach(function (arg) {
         context[arg[0]] = arg[1];
@@ -54,12 +67,12 @@ function step(stmt, state, sim) {
     //console.log(stmt);
     switch (stmt.type) {
         case "procedure": // procedure definition
-            last(sim.call_stack).context[stmt.name] = stmt;
+            _.last(sim.call_stack).context[stmt.name] = stmt;
             break;
         case "execute": // procedure call
             var proc;
-            if (last(sim.call_stack).context[stmt.name]) {
-                proc = last(sim.call_stack).context[stmt.name];
+            if (_.last(sim.call_stack).context[stmt.name]) {
+                proc = _.last(sim.call_stack).context[stmt.name];
             } else if (globals[stmt.name]) {
                 proc = globals[stmt.name];
             } else {
@@ -70,7 +83,7 @@ function step(stmt, state, sim) {
         case "repeat": // definite loop
             var count;
             if (stmt.number.type === "ident") {
-                count = last(sim.call_stack).context[stmt.number.value].value;
+                count = _.last(sim.call_stack).context[stmt.number.value].value;
             } else { // we only support int literals and identifiers
                 count = stmt.number.value;
             }
@@ -103,7 +116,7 @@ function apply_command(c, state, sim) {
         case "cube":
             // do nothing if something already occupies that space
             if (!state.grid.hasOwnProperty(cur_pos.toArray())) {
-                state.grid[cur_pos.toArray()] = last(sim.call_stack).context["color"].value;
+                state.grid[cur_pos.toArray()] = _.last(sim.call_stack).context["color"].value;
             }
             break;
         case "forward":
@@ -138,7 +151,7 @@ function cloneState(state) {
         pos: state.robot.pos.clone(),
         dir: state.robot.dir.clone()
     };
-    c.grid = JSON.parse(JSON.stringify(state.grid));
+    c.grid = _.clone(state.grid);
     return c;
 }
 
@@ -173,20 +186,22 @@ function send_states(ast, state) {
         push_stack_state(ast.body, [], sim);
     }
     while (sim.call_stack.length > 0) {
-        var s = pop_next_statement(sim);
+        var s = peek_next_statement(sim); // peek to avoid needing to copy to send correct call_stack
         if (s) {
             if (s.type === "command") { // record state before each update
                 count++;
                 if (count >= threshold) {
                     //console.log({count: count, threshold: threshold});
-                    postMessage({state: state, done: false});
+                    postMessage({sim_state: {state: state, cs: sim.call_stack}, done: false});
                     threshold += total / steps;
                 }
             }
-            step(s, state, sim);
+            step(pop_next_statement(sim), state, sim);
+        } else {
+            pop_next_statement(sim); // need to pop to keep things moving since we just peeked above
         }
     }
-    postMessage({state: state, done: false});
+    postMessage({sim_state: {state: state, cs: sim.call_stack}, done: false});
 }
 
 onmessage = function(e) {
