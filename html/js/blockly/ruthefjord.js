@@ -344,7 +344,7 @@ var RuthefjordBlockly = (function(){
                 var name = '$' + block.getFieldValue("NAME");
                 var params = block.arguments_;
                 var body = Blockly.JSONLangOps.processStructure(block);
-                procs.push({type:"procedure", meta:{id:Number(block.id)}, name:name, params:params, body:body});
+                procs.push({type:"procedure", meta:{id:block.id}, name:name, params:params, body:body});
             } else {
                 other = other.concat(Blockly.JSONLangOps.processStructure(block));
             }
@@ -387,7 +387,7 @@ var RuthefjordBlockly = (function(){
             }
         };
         Blockly.JSONLangOps[name] = function(block) {
-            return {args:[],meta:{id:Number(block.id)},name:name,type:"execute"};
+            return {args:[],meta:{id:block.id},name:name,type:"execute"};
         };
         RuthefjordBlockly.AddonCommands[name] = {block: '<block type="'+name+'"></block>'};
     };

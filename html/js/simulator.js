@@ -15,11 +15,149 @@ var RuthefjordManager = (function() {
         finished: "finished"
     };
 
+    module.Runtime = (function () {
+        var self = {};
+        self.MAX_STACK_LENGTH = 50000;
+
+        self.pop_next_statement = function(sim) {
+            // if call stack is empty, nothing left to do!
+            if (sim.call_stack.length === 0) {
+                return null;
+            }
+
+            var ss = _.last(sim.call_stack);
+
+            // if current stack state is empty, then go up a level
+            if (ss.to_execute.length === 0) {
+                sim.call_stack.pop();
+                return null;
+            }
+
+            // otherwise pop an element off the current stack state.
+            return ss.to_execute.pop();
+        };
+
+        // to_execute is a list of statements, args is a list of two-element lists where the first element is the
+        // parameter name, and the second element is the argument value
+        // we include the meta for the relevant block (when applicable) to facilitate highlighting
+        self.push_stack_state = function(to_execute, args, meta, sim) {
+            if (sim.call_stack.length >= self.MAX_STACK_LENGTH) {
+                throw new Error("max stack size exceeded!");
+            }
+
+            var stmts = to_execute.slice();
+            stmts.reverse();
+            // copy parent context, or start with an empty one if this is the first thing.
+            var context = sim.call_stack.length > 0
+                ? _.clone(_.last(sim.call_stack).context)
+                : {};
+            args.forEach(function (arg) {
+                context[arg[0]] = arg[1];
+            });
+            sim.call_stack.push({to_execute: stmts, context: context, meta: meta});
+        };
+
+        self.step = function(stmt, state, sim) {
+            //console.log(stmt);
+            switch (stmt.type) {
+                case "procedure": // procedure definition
+                    _.last(sim.call_stack).context[stmt.name] = stmt;
+                    break;
+                case "execute": // procedure call
+                    var proc;
+                    if (_.last(sim.call_stack).context[stmt.name]) {
+                        proc = _.last(sim.call_stack).context[stmt.name];
+                    } else if (module.globals[stmt.name]) {
+                        proc = module.globals[stmt.name];
+                    } else {
+                        throw new Error(stmt.name + " not found");
+                    }
+                    self.push_stack_state(proc.body, _.zip(proc.params, stmt.args), stmt.meta, sim);
+                    break;
+                case "repeat": // definite loop
+                    var count;
+                    if (stmt.number.type === "ident") {
+                        count = _.last(sim.call_stack).context[stmt.number.value].value;
+                    } else { // we only support int literals and identifiers
+                        count = stmt.number.value;
+                    }
+                    var new_repeat = {
+                        body: stmt.body,
+                        number: _.clone(stmt.number),
+                        type: "repeat",
+                        meta: stmt.meta
+                    };
+                    new_repeat.number.type = "int";
+                    new_repeat.number.value = count - 1;
+                    if (new_repeat.number.value > 0) {
+                        self.push_stack_state([new_repeat], [], new_repeat.meta, sim);
+                    }
+                    self.push_stack_state(stmt.body, [], null, sim);
+                    break;
+                case "counting_loop":
+                    var new_loop = {
+                        body: stmt.body,
+                        counter: _.clone(stmt.counter),
+                        from: _.clone(stmt.from),
+                        to: _.clone(stmt.to),
+                        by: _.clone(stmt.by),
+                        type: "counting_loop",
+                        meta: stmt.meta
+                    };
+
+                    break;
+                case "command": // imperative robot instructions
+                    self.apply_command(stmt, state, sim);
+                    break;
+                default:
+                    throw new Error("statement type " + stmt.type + " not recognized");
+
+            }
+        };
+
+        self.apply_command = function(c, state, sim) {
+            var cur_pos = state.robot.pos;
+            var cur_dir = state.robot.dir;
+            switch (c.name) {
+                case "cube":
+                    // do nothing if something already occupies that space
+                    if (!state.grid.hasOwnProperty(cur_pos.toArray())) {
+                        state.grid[cur_pos.toArray()] = _.last(sim.call_stack).context["color"].value;
+                    }
+                    break;
+                case "forward":
+                    cur_pos.add(cur_dir);
+                    break;
+                case "up":
+                    cur_pos.add(RuthefjordWorldState.UP);
+                    break;
+                case "down":
+                    if (cur_pos.z > 0) {
+                        cur_pos.add(RuthefjordWorldState.DOWN);
+                    }
+                    break;
+                case "left":
+                    state.robot.dir = new THREE.Vector3(-cur_dir.y, cur_dir.x, 0);
+                    break;
+                case "right":
+                    state.robot.dir = new THREE.Vector3(cur_dir.y, -cur_dir.x, 0);
+                    break;
+                case "remove":
+                    delete state.grid[cur_pos.toArray()];
+                    break;
+                default:
+                    throw new Error(c.name + " not a recognized command");
+            }
+            state.dirty = true;
+        };
+
+        return self;
+    }());
+
     module.Simulator = (function () {
         var self = {};
         self.save_state = null;
 
-        self.MAX_STACK_LENGTH = 50000;
         self.MAX_STEP_COUNT = 100000;
         self.TICKS_PER_SECOND = 60;
         self.ticks_per_step = 30; // controlled by speed slider
@@ -69,12 +207,16 @@ var RuthefjordManager = (function() {
         self.set_execution_time = function (x) {
             if (self.sim_states) {
                 self.set_run_state(module.RunState.paused);
-                self.current_commands = Math.floor(self.sim_states.length * x);
+                var state_index = Math.floor((self.sim_states.length - 1) * x); // subtract 1 since indices begin at 0
+                self.current_commands = Math.floor(state_index * self.total_commands / (self.sim_states.length - 1)); // total_commands does not include start state
+                //console.log("set_execution_time: " + self.current_commands + " out of " + self.total_commands);
                 // when current_commands indexes out of bounds, nothing for us to do (will happen when x is 1, i.e., slider all the way at the end)
-                if (self.current_commands < self.sim_states.length) {
-                    RuthefjordWorldState.setFromClone(self.sim_states[self.current_commands].state);
-                    self.call_stack = _.cloneDeep(self.sim_states[self.current_commands].cs);
+                if (state_index < self.sim_states.length) {
+                    RuthefjordWorldState.setFromClone(self.sim_states[state_index].state);
+                    self.call_stack = _.cloneDeep(self.sim_states[state_index].cs);
+                    self.current_code_elements = _.map(_.filter(self.call_stack, function(x) { return x.meta }), function(x) { return x.meta.id; });
                 }
+                onRuthefjordEvent("onProgramStateChange", "current_state");
             }
         };
 
@@ -141,145 +283,6 @@ var RuthefjordManager = (function() {
             });
         };
 
-        function pop_next_statement(sim) {
-            // if call stack is empty, nothing left to do!
-            if (sim.call_stack.length === 0) {
-                return null;
-            }
-
-            var ss = _.last(sim.call_stack);
-
-            // if current stack state is empty, then go up a level
-            if (ss.to_execute.length === 0) {
-                sim.call_stack.pop();
-                return null;
-            }
-
-            // otherwise pop an element off the current stack state.
-            return ss.to_execute.pop();
-        }
-
-        function shallow_copy(object) {
-            var copy = {};
-            for (var id in object) {
-                copy[id] = object[id];
-            }
-            return copy;
-        }
-
-        // to_execute is a list of statements, args is a list of two-element lists where the first element is the
-        // parameter name, and the second element is the argument value
-        function push_stack_state(to_execute, args, sim) {
-            if (sim.call_stack.length >= self.MAX_STACK_LENGTH) {
-                throw new Error("max stack size exceeded!");
-            }
-
-            var stmts = to_execute.slice();
-            stmts.reverse();
-            // copy parent context, or start with an empty one if this is the first thing.
-            var context = sim.call_stack.length > 0
-                ? shallow_copy(_.last(sim.call_stack).context)
-                : {};
-            args.forEach(function (arg) {
-                context[arg[0]] = arg[1];
-            });
-            sim.call_stack.push({to_execute: stmts, context: context});
-        }
-
-        function step(stmt, state, sim) {
-            //console.log(stmt);
-            switch (stmt.type) {
-                case "procedure": // procedure definition
-                    _.last(sim.call_stack).context[stmt.name] = stmt;
-                    break;
-                case "execute": // procedure call
-                    var proc;
-                    if (_.last(sim.call_stack).context[stmt.name]) {
-                        proc = _.last(sim.call_stack).context[stmt.name];
-                    } else if (module.globals[stmt.name]) {
-                        proc = module.globals[stmt.name];
-                    } else {
-                        throw new Error(stmt.name + " not found");
-                    }
-                    push_stack_state(proc.body, _.zip(proc.params, stmt.args), sim);
-                    break;
-                case "repeat": // definite loop
-                    var count;
-                    if (stmt.number.type === "ident") {
-                        count = _.last(sim.call_stack).context[stmt.number.value].value;
-                    } else { // we only support int literals and identifiers
-                        count = stmt.number.value;
-                    }
-                    var new_repeat = {
-                        body: stmt.body,
-                        number: shallow_copy(stmt.number),
-                        type: "repeat",
-                        meta: stmt.meta
-                    };
-                    new_repeat.number.type = "int";
-                    new_repeat.number.value = count - 1;
-                    if (new_repeat.number.value > 0) {
-                        push_stack_state([new_repeat], [], sim);
-                    }
-                    push_stack_state(stmt.body, [], sim);
-                    break;
-                case "counting_loop":
-                    var new_loop = {
-                        body: stmt.body,
-                        counter: shallow_copy(stmt.counter),
-                        from: shallow_copy(stmt.from),
-                        to: shallow_copy(stmt.to),
-                        by: shallow_copy(stmt.by),
-                        type: "counting_loop",
-                        meta: stmt.meta
-                    };
-
-                    break;
-                case "command": // imperative robot instructions
-                    apply_command(stmt, state, sim);
-                    break;
-                default:
-                    throw new Error("statement type " + stmt.type + " not recognized");
-
-            }
-        }
-
-        function apply_command(c, state, sim) {
-            var cur_pos = state.robot.pos;
-            var cur_dir = state.robot.dir;
-            switch (c.name) {
-                case "cube":
-                    // do nothing if something already occupies that space
-                    if (!state.grid.hasOwnProperty(cur_pos.toArray())) {
-                        state.grid[cur_pos.toArray()] = _.last(sim.call_stack).context["color"].value;
-                    }
-                    break;
-                case "forward":
-                    cur_pos.add(cur_dir);
-                    break;
-                case "up":
-                    cur_pos.add(RuthefjordWorldState.UP);
-                    break;
-                case "down":
-                    if (cur_pos.z > 0) {
-                        cur_pos.add(RuthefjordWorldState.DOWN);
-                    }
-                    break;
-                case "left":
-                    state.robot.dir = new THREE.Vector3(-cur_dir.y, cur_dir.x, 0);
-                    break;
-                case "right":
-                    state.robot.dir = new THREE.Vector3(cur_dir.y, -cur_dir.x, 0);
-                    break;
-                case "remove":
-                    delete state.grid[cur_pos.toArray()];
-                    break;
-                default:
-                    throw new Error(c.name + " not a recognized command");
-            }
-            state.dirty = true;
-        }
-
         if (typeof window !== "undefined" && window.Worker) {
             self.worker = new Worker("js/worker.js");
             self.worker.onmessage = function (e) {
@@ -288,30 +291,37 @@ var RuthefjordManager = (function() {
                     RuthefjordUI.TimeSlider.setEnabled(true);
                 } else if (e.data.total) {
                     self.total_commands = e.data.total;
+                    RuthefjordUI.TimeSlider.setStepSize(Math.max(RuthefjordUI.TimeSlider.MIN_STEP_SIZE, 1 / self.total_commands));
                 } else {
-                    //console.log(e.data.state);
                     self.sim_states.push(e.data.sim_state);
                 }
             };
         }
 
         self.set_program = function (ast) {
-            self.last_program_sent = ast;
-            if (self.edit_mode === module.EditMode.workshop && self.run_state === module.RunState.stopped) {
-                self.save_state = RuthefjordWorldState.save();
-            }
-
             self.call_stack = [];
-            self.total_steps = 0;
             self.current_commands = 0;
             self.current_code_elements = [];
-
             if (ast.body) { // we may be passed a null program
-                push_stack_state(ast.body, [], self);
-                RuthefjordUI.TimeSlider.setEnabled(false);
-                self.sim_states = [{state: RuthefjordWorldState.clone(), cs: self.call_stack}];
-                if (self.worker) {
-                    self.worker.postMessage({globals:module.globals, ast: ast, state: self.sim_states[0].state});
+                module.Runtime.push_stack_state(ast.body, [], null, self);
+            }
+            if (!_.isEqual(ast, self.last_program_sent)) {
+                self.last_program_sent = ast;
+                if (self.edit_mode === module.EditMode.workshop && self.run_state === module.RunState.stopped) {
+                    self.save_state = RuthefjordWorldState.save();
+                }
+
+                self.total_steps = 0;
+
+                if (ast.body) {
+                    RuthefjordUI.TimeSlider.setEnabled(false);
+                    self.sim_states = [{
+                        state: RuthefjordWorldState.clone(),
+                        cs: _.cloneDeep(self.call_stack)
+                    }];
+                    if (self.worker) {
+                        self.worker.postMessage({globals: module.globals, ast: ast, state: self.sim_states[0].state});
+                    }
                 }
             }
         };
@@ -322,10 +332,10 @@ var RuthefjordManager = (function() {
             var sim = {};
             sim.call_stack = [];
             if (ast.body) { // we may be passed a null program
-                push_stack_state(ast.body, [], sim);
+                module.Runtime.push_stack_state(ast.body, [], null, sim);
             }
             while (sim.call_stack.length > 0) {
-                var s = pop_next_statement(sim);
+                var s = module.Runtime.pop_next_statement(sim);
                 if (s) {
                     step(s, state, sim);
                 }
@@ -333,76 +343,29 @@ var RuthefjordManager = (function() {
             return state;
         };
 
-        // returns a list of the commands generated by simulating ast
-        //self.get_commands = function(ast, state) {
-        //    var commands = [];
-        //    var sim = {};
-        //    sim.call_stack = [];
-        //    if (ast.body) { // we may be passed a null program
-        //        push_stack_state(ast.body, [], sim);
-        //    }
-        //    while (sim.call_stack.length > 0) {
-        //        var s = pop_next_statement(sim);
-        //        if (s) {
-        //            if (s.type === "command") {
-        //                commands.push({command: s, call_stack: sim.call_stack.slice()});
-        //            }
-        //            step(s, state, sim);
-        //        }
-        //    }
-        //    return commands;
-        //};
-        //
-        //self.apply_commands = function(commands, state) {
-        //    _.forEach(commands, function(c) {
-        //        var sim = {call_stack: c.call_stack};
-        //        apply_command(c.command, state, sim);
-        //    });
-        //};
         self.next_state = function() {
             while (true) {
-                var s = pop_next_statement(self);
+                var s = module.Runtime.pop_next_statement(self);
+                // extract the block ids to highlight from the call stack
+                self.current_code_elements = _.map(_.filter(self.call_stack, function(x) { return x.meta }), function(x) { return x.meta.id; });
                 if (s) {
-                    if (s.meta) {
-                        self.current_code_elements.push(s.meta.id);
-                    }
-                    step(s, RuthefjordWorldState, self);
+                    module.Runtime.step(s, RuthefjordWorldState, self);
                     if (s.type === "command") {
                         self.current_commands++;
                         if (self.total_commands) {
-                            //console.log(self.current_commands + " out of " + self.total_commands);
+                            //console.log("next_state: " + self.current_commands + " out of " + self.total_commands);
                             RuthefjordUI.TimeSlider.value(self.current_commands / self.total_commands);
                         }
                         break;
                     }
-                } else {
-                    self.current_code_elements.pop();
                 }
                 if (self.call_stack.length === 0) {
                     self.set_run_state(self.edit_mode === module.EditMode.persistent ? module.RunState.stopped : module.RunState.finished);
+                    //RuthefjordUI.TimeSlider.value(1); // move time slider to the end
                     return;
                 }
             }
             onRuthefjordEvent("onProgramStateChange", "current_state");
-        };
-
-        self.get_states = function(ast, state) {
-            var states = [];
-            var sim = {};
-            sim.call_stack = [];
-            if (ast.body) { // we may be passed a null program
-                push_stack_state(ast.body, [], sim);
-            }
-            while (sim.call_stack.length > 0) {
-                var s = pop_next_statement(sim);
-                if (s) {
-                    if (s.type === "command") { // record state before each update
-                        states.push(RuthefjordWorldState.cloneState(state));
-                    }
-                    step(s, state, sim);
-                }
-            }
-            return states;
         };
 
         self.update = function(dt, t, state) {
@@ -419,12 +382,15 @@ var RuthefjordManager = (function() {
 
                 var transition_time = num_steps === 1 ? t - self.last_stmt_exec_time : 0;
                 while (num_steps > 0) {
-                    var s = pop_next_statement(self);
+                    var s = module.Runtime.pop_next_statement(self);
+                    // extract the block ids to highlight from the call stack
+                    self.current_code_elements = _.map(_.filter(self.call_stack, function(x) { return x.meta }), function(x) { return x.meta.id; });
+
                     if (s) {
-                        if (s.meta) {
-                            self.current_code_elements.push(s.meta.id);
-                        }
-                        step(s, state, self);
+                        //if (s.meta) {
+                        //    self.current_code_elements.push(s.meta.id);
+                        //}
+                        module.Runtime.step(s, state, self);
                         self.last_stmt_exec_time = t;
                         if (s.type === "command") {
                             num_steps--;
@@ -435,7 +401,7 @@ var RuthefjordManager = (function() {
                             }
                         }
                     } else {
-                        self.current_code_elements.pop();
+                        //self.current_code_elements.pop();
                     }
                     if (self.call_stack.length === 0) {
                         self.set_run_state(self.edit_mode === module.EditMode.persistent ? module.RunState.stopped : module.RunState.finished);

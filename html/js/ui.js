@@ -876,6 +876,7 @@ module.CameraControls = (function() {
 /// elemName is the name used for logging ui actions.
 function Slider(elemName, selector, labels, allElems, default_val) {
     var self = {};
+    self.MIN_STEP_SIZE = 0.01;
     var container;
     var slider;
 
@@ -899,24 +900,36 @@ function Slider(elemName, selector, labels, allElems, default_val) {
             value: default_val,
             min: 0.0,
             max: 1.0,
-            step: 0.01,
+            step: self.MIN_STEP_SIZE,
             tooltip: 'hide'
         });
         slider.on("change", function(changeEvent) {
+            var questLogger = RuthefjordLogging.activeTaskLogger;
+                if (questLogger) {
+                    questLogger.logDoUiAction(elemName, 'change', changeEvent.value);
+                }
             onChangeCallback(changeEvent.value.newValue);
         });
-        slider.on("slideStart", function(slideEvent) {
-            var questLogger = RuthefjordLogging.activeTaskLogger;
-            if (questLogger) {
-                questLogger.logDoUiAction(elemName, 'start', null);
-            }
-        });
-        slider.on("slideStop", function(slideEvent) {
-            var questLogger = RuthefjordLogging.activeTaskLogger;
-            if (questLogger) {
-                questLogger.logDoUiAction(elemName, 'stop', null);
-            }
-        });
+        //slider.on("slideStart", function(slideEvent) {
+        //    var questLogger = RuthefjordLogging.activeTaskLogger;
+        //    if (questLogger) {
+        //        questLogger.logDoUiAction(elemName, 'start', null);
+        //    }
+        //});
+        //slider.on("slideStop", function(slideEvent) {
+        //    var questLogger = RuthefjordLogging.activeTaskLogger;
+        //    if (questLogger) {
+        //        questLogger.logDoUiAction(elemName, 'stop', null);
+        //    }
+        //});
+    };
+
+    self.setStepSize = function(s) {
+        slider.slider("setAttribute", "step", s);
+    };
+
+    self.getStepSize = function() {
+        return slider.slider("getAttribute", "step");
     };
 
     self.setVisible = function(isVisible) {
@@ -932,6 +945,10 @@ function Slider(elemName, selector, labels, allElems, default_val) {
             $(allElems.join(', ')).addClass("disabled");
         }
         container.attr('title', isEnabled ? '' : "Can only use time slider in workshop mode.");
+    };
+
+    self.isEnabled = function() {
+        return slider.slider("isEnabled");
     };
 
     self.value = function(x) {

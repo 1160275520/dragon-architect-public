@@ -385,16 +385,10 @@ function setState_packs() {
 }
 
 function onProgramEdit() {
-    var p = JSON.stringify(RuthefjordBlockly.getProgram());
-
-    if (p !== RuthefjordManager.Simulator.last_program_sent) {
-        if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing) {
-            RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
-        }
-        RuthefjordManager.Simulator.set_program(p);
-        RuthefjordManager.Simulator.last_program_sent = p;
-        clearHighlights();
+    if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing) {
+        RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.stopped);
     }
+    clearHighlights();
 
     if (current_scene === 'sandbox') {
         var prog = RuthefjordBlockly.getXML();
@@ -540,6 +534,9 @@ $(function() {
              if (RuthefjordLogging.activeTaskLogger) {
                  RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
              }
+             if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.stopped) {
+                 RuthefjordManager.Simulator.set_program(RuthefjordBlockly.getProgram());
+             }
              RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.paused);
              RuthefjordManager.Simulator.next_state();
          });
@@ -584,11 +581,17 @@ $(function() {
         RuthefjordUI.TimeSlider.initialize(RuthefjordManager.Simulator.set_execution_time);
 
         $("#btn-time-slider-back").on('click', function() {
-            RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() - 0.01);
+            if (RuthefjordLogging.activeTaskLogger) {
+                RuthefjordLogging.activeTaskLogger.logDoUiAction('button-time-slider-back', 'click', null);
+            }
+            RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() - RuthefjordUI.TimeSlider.getStepSize());
             RuthefjordManager.Simulator.set_execution_time(RuthefjordUI.TimeSlider.value());
         });
         $("#btn-time-slider-forward").on('click', function() {
-            RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() + 0.01);
+            if (RuthefjordLogging.activeTaskLogger) {
+                RuthefjordLogging.activeTaskLogger.logDoUiAction('button-time-slider-forward', 'click', null);
+            }
+            RuthefjordUI.TimeSlider.value(RuthefjordUI.TimeSlider.value() + RuthefjordUI.TimeSlider.getStepSize());
             RuthefjordManager.Simulator.set_execution_time(RuthefjordUI.TimeSlider.value());
         });
 
@@ -761,9 +764,6 @@ function start_editor(info) {
         console.error("Invalid puzzle info version '" + info.puzzle.version + "'!");
         return;
     }
-
-    // reset program dirty bit so we always send the new program to unity
-    RuthefjordManager.Simulator.last_program_sent = undefined;
 
     if (info.is_starting) {
         var library = {
@@ -959,11 +959,6 @@ handler.onProgramStateChange = function(type) {
         if (rs === RuthefjordManager.RunState.stopped && current_scene === 'sandbox') {
             Storage.save('sandbox_world_data', RuthefjordWorldState.save());
         }
-
-        // flush program edits on stop
-        if (rs === RuthefjordManager.RunState.stopped) {
-            onProgramEdit();
-        }
     }
 
     // clear current highlights when not paused or currently unpausing
@@ -972,36 +967,30 @@ handler.onProgramStateChange = function(type) {
     }
 
     if (type === 'current_state') {
+        // clear current highlights before setting new ones
+        clearHighlights();
         // highlight current block
-
-        if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.executing && Blockly.dragMode_ === 0) {
+        if (Blockly.dragMode_ === 0) { // make sure we're not currently modifying the code (I don't think this can currently happen, but better safe than sorry)
             //console.log(RuthefjordManager.Simulator.current_code_elements);
             if (RuthefjordManager.Simulator.current_code_elements.length > 0) {
                 var callStackIndex = RuthefjordManager.Simulator.current_code_elements.length - 2;
                 // add new highlights for currently executing block and all surrounding blocks
-                var block = Blockly.getMainWorkspace().getBlockById(RuthefjordManager.Simulator.current_code_elements[RuthefjordManager.Simulator.current_code_elements.length - 1].toString());
+                var block = Blockly.getMainWorkspace().getBlockById(_.last(RuthefjordManager.Simulator.current_code_elements));
                 if (block) {
                     block.addHighlight(true);
                     while(block.getSurroundParent()) {
                         block.getSurroundParent().addHighlight();
-                        if (block.getSurroundParent().type === "procedures_defnoreturn") {
+                        if (block.getSurroundParent().type === "procedures_defnoreturn" || block.getSurroundParent().type === "procedures_noargs_defnoreturn") {
                             // add highlight to the function call that we're in
-                            block = Blockly.getMainWorkspace().getBlockById(RuthefjordManager.Simulator.current_code_elements[callStackIndex--].toString());
+                            block = Blockly.getMainWorkspace().getBlockById(RuthefjordManager.Simulator.current_code_elements[callStackIndex--]);
                             block.addHighlight();
                         } else {
                             block = block.getSurroundParent();
                         }
                     }
                 }
-            } else {
-                // clear final highlights
-                clearHighlights();
             }
         }
-
-        // set time slider position
-
-        //RuthefjordUI.TimeSlider.value(parseFloat(s.execution_progress));
     }
 };
 

@@ -79,7 +79,7 @@ Blockly.bindEvent_(canvas, "blocklyBlockDeleted", null, function() {
 });
 
 function newCall(name, id, args) {
-    return {args:args,meta:{id:Number(id)},name:name,type:"execute"};
+    return {args:args,meta:{id:id},name:name,type:"execute"};
 }
 
 function makeLiteral(value) {
@@ -329,7 +329,7 @@ Blockly.Blocks['controls_repeat_teaser'] = {
 // REPEAT
 Blockly.JSONLangOps['controls_repeat'] = function(block, children) {
     return {
-        meta: {id:Number(block.id)},
+        meta: {id:block.id},
         number: makeSingleArg(block, "TIMES"),
         body: children.map(Blockly.JSONLangOps.convertCallback),
         type: "repeat"
@@ -339,7 +339,7 @@ Blockly.JSONLangOps['controls_repeat'] = function(block, children) {
 // COUNTING LOOP
 Blockly.JSONLangOps['controls_for'] = function(block, children) {
     return {
-        meta: {id:Number(block.id)},
+        meta: {id:block.id},
         counter: makeSingleArg(block, "COUNTER"),
         from: makeSingleArg(block, "FROM"),
         to: makeSingleArg(block, "TO"),
@@ -455,7 +455,7 @@ Blockly.JSONLangOps['procedures_callnoreturn'] = function(block) {
         }
     }
 
-    return {args:args,meta:{id:Number(block.id)},name:'$' + block.getFieldValue("NAME"),type:"execute"};
+    return {args:args,meta:{id:block.id},name:'$' + block.getFieldValue("NAME"),type:"execute"};
 };
 
 /// Transform a program from its serialized JSON representation to blockly XML representation.
