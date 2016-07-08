@@ -11,6 +11,7 @@ module.State = (function(){ "use strict";
 
     function hideAll() {
         RuthefjordDisplay.hide();
+        RuthefjordDisplay.exit_viewer_mode(); // disable view & keyboard controls (HACK: this is only actually necessary when leaving the viewer, but this seems like a good place to put it)
         $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
@@ -98,9 +99,9 @@ module.State = (function(){ "use strict";
 
     self.goToViewer = function(cb) {
         hideAll();
-        $('.viewerModeUI').show();
+        $('.viewerModeUI, #main-view-game').show();
         RuthefjordDisplay.show();
-        RuthefjordUI.CameraControls.viewMode();
+        RuthefjordDisplay.viewer_mode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
         cb();
     };
@@ -122,7 +123,6 @@ module.Share = (function() {
     var submit = function (cb) {
         var message = $("#share-message");
         if (self.title) {
-            // from http://stackoverflow.com/a/2117523
             var project_uuid = RuthefjordLogging.create_random_uuid();
 
             var upload = {id: project_uuid, author: RuthefjordLogging.userid, name: self.title,
@@ -146,10 +146,13 @@ module.Share = (function() {
     self.create = function (cb) {
         self.title = "";
         $("#share-edit-title").text("(click to add a title)");
-        $("#share-edit-title").editInPlace({
-            callback: function(unused, enteredText) { self.title = enteredText; return enteredText; },
-            show_buttons: false,
-        });
+        $("#share-edit-title").editable(
+            function(enteredText, unused) { self.title = enteredText; return enteredText; },
+            {
+                tooltip: 'Click to edit...',
+                style: "font-size:95%"
+            }
+        );
         RuthefjordDisplay.screenshot("share-thumb");
         RuthefjordUI.State.goToShare(function () {});
         $("#btn-share-submit").off('click'); // clear previous handler
@@ -183,7 +186,9 @@ module.Gallery = (function() {
         viewBtn.innerHTML = "View";
         $(viewBtn).addClass("control-btn galleryButton");
         function viewItem() {
-            RuthefjordManager.Simulator.execute_program_to(item.program, 1);
+            // HACK: could clobber some important state, probably not a problem in workshop mode
+            RuthefjordWorldState.init();
+            RuthefjordManager.Simulator.get_final_state(JSON.parse(item.program), RuthefjordWorldState);
             RuthefjordUI.State.goToViewer(function () {});
         }
         $(viewBtn).on('click', viewItem);
@@ -834,8 +839,6 @@ module.UndoButton = (function () {
 module.CameraControls = (function() {
     var self = {};
 
-    self.cameraMode = "gamemode";
-
     self.setVisible = function(isVisible) {
         var camera_controls = $('#camera-controls');
         var control_bar = $("#game-controls-bar-top");
@@ -849,24 +852,6 @@ module.CameraControls = (function() {
             control_bar.show();
             $("#three-js").css("margin-top", ""); // get rid of this margin since the control bar will provide it
         }
-    };
-
-    self.toggleMode = function() {
-        if (self.cameraMode === "gamemode") {
-            self.cameraMode = "viewmode";
-        } else {
-            self.cameraMode = "gamemode";
-        }
-    };
-
-    self.viewMode = function() {
-        self.cameraMode = "viewmode";
-        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
-    };
-
-    self.gameMode = function() {
-        self.cameraMode = "gamemode";
-        //RuthefjordUnity.Call.control_camera(RuthefjordUI.CameraControls.cameraMode);
     };
 
     return self;

@@ -2,9 +2,10 @@ var RuthefjordDisplay = (function() {
     "use strict";
     var self = {};
 
-    var camera, scene, renderer, stats, parent;
+    var camera, viewer_camera, scene, renderer, stats, parent;
     var cubeGeo, targetGeo, cubeTargetMat;
     var cubes, robot, zLine, zLineMat, zCuePlane, robotTarget, targetShadow;
+    var controls;
 
     // constants
     var WOBBLE_PERIOD = 4.0;
@@ -33,6 +34,112 @@ var RuthefjordDisplay = (function() {
         return deg / 180 * Math.PI;
     }
 
+    self.viewer_mode = function() {
+        if (parent) {
+            viewer_camera.position.copy(camera.position);
+            viewer_camera.lookAt(robot.position);
+            var elem = parent[0];
+            elem.requestPointerLock = elem.requestPointerLock || elem.mozRequestPointerLock || elem.webkitRequestPointerLock;
+            elem.requestPointerLock();
+            controlsEnabled = true;
+            controls.enabled = true;
+        }
+    };
+
+    self.exit_viewer_mode = function() {
+        if (controls) { // may be called before controls is initialized
+            controls.enabled = false;
+            controlsEnabled = false;
+        }
+    };
+
+    var controlsEnabled = false;
+    var moveForward = false;
+    var moveBackward = false;
+    var strafeLeft = false;
+    var strafeRight = false;
+    var moveUp = false;
+    var moveDown = false;
+    var headingVel = 0;
+    var orthoVel = 0;
+    var vertVel = 0;
+
+    var onKeyDown = function ( event ) {
+
+        switch ( event.keyCode ) {
+
+            case 38: // up
+            case 87: // w
+                moveForward = true;
+                break;
+
+            case 37: // left
+            case 65: // a
+                strafeLeft = true;
+                break;
+
+            case 40: // down
+            case 83: // s
+                moveBackward = true;
+                break;
+
+            case 39: // right
+            case 68: // d
+                strafeRight = true;
+                break;
+
+            case 82: // r
+            case 32: // space
+                moveUp = true;
+                break;
+
+            case 70: // r
+            case 16: // space
+                moveDown = true;
+                break;
+        }
+
+    };
+
+    var onKeyUp = function ( event ) {
+
+        switch( event.keyCode ) {
+
+            case 38: // up
+            case 87: // w
+                moveForward = false;
+                break;
+
+            case 37: // left
+            case 65: // a
+                strafeLeft = false;
+                break;
+
+            case 40: // down
+            case 83: // s
+                moveBackward = false;
+                break;
+
+            case 39: // right
+            case 68: // d
+                strafeRight = false;
+                break;
+
+            case 82: // r
+            case 32: // space
+                moveUp = false;
+                break;
+
+            case 70: // r
+            case 16: // space
+                moveDown = false;
+                break;
+        }
+
+    };
+
+    $(document).on( 'keydown', onKeyDown);
+    $(document).on( 'keyup', onKeyUp);
     /**
      * AXES
      * positive x is forward
@@ -58,6 +165,13 @@ var RuthefjordDisplay = (function() {
         camera.updateProjectionMatrix();
         parent.append(renderer.domElement);
         self.renderOut = false;
+
+        viewer_camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+        viewer_camera.aspect = parent.width() / parent.height();
+        viewer_camera.up.set(0,0,1);
+        viewer_camera.updateProjectionMatrix();
+        controls = new THREE.PointerLockControls( viewer_camera );
+        scene.add( viewer_camera );
 
         // FPS display
         stats = new Stats();
@@ -152,8 +266,9 @@ var RuthefjordDisplay = (function() {
         self.rotateCamera(-10);
 
         robot.position.copy(robotOffset);
-
+        window.addEventListener( 'resize', self.onWindowResize, false );
         self.clock.start();
+
         requestAnimationFrame(update); // change to render to omit fps display
     };
 
@@ -170,17 +285,47 @@ var RuthefjordDisplay = (function() {
         //if (dt > 0.1) {
         //    console.error("large dt", dt);
         //} else {
-            var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
-            RuthefjordPuzzle.check_win_predicate();
-            if (RuthefjordWorldState.dirty) {
-                self.setDisplayFromWorld(transition_time);
-            }
-            render(dt, t);
-            if (self.renderOut) {
-                console.log(renderer.domElement.toDataURL());
-                onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
-                self.renderOut = false;
-            }
+        var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
+        RuthefjordPuzzle.check_win_predicate();
+        if (RuthefjordWorldState.dirty) {
+            self.setDisplayFromWorld(transition_time);
+        }
+
+        if ( controlsEnabled ) {
+
+            headingVel -= headingVel * 10.0 * dt;
+            orthoVel -= orthoVel * 10.0 * dt;
+            vertVel -= vertVel * 10.0 * dt;
+
+            if ( strafeLeft ) orthoVel -= 4.0 * dt;
+            if ( strafeRight ) orthoVel += 4.0 * dt;
+
+            if ( moveUp ) vertVel += 4.0 * dt;
+            if ( moveDown ) vertVel -= 4.0 * dt;
+
+            if ( moveForward ) headingVel += 4.0 * dt;
+            if ( moveBackward ) headingVel -= 4.0 * dt;
+
+            var heading = new THREE.Vector3();
+            var ortho = new THREE.Vector3();
+            viewer_camera.getWorldDirection(heading);
+            heading.z = 0; // just get the heading the in x-y plane
+            heading.normalize();
+            ortho.copy(heading);
+
+            viewer_camera.position.add(heading.multiplyScalar(headingVel));
+            viewer_camera.translateZ(vertVel);
+            ortho.cross(RuthefjordWorldState.UP).multiplyScalar(orthoVel);
+            viewer_camera.position.add(ortho);
+            console.log(viewer_camera.position);
+        }
+
+        render(dt, t);
+        if (self.renderOut) {
+            console.log(renderer.domElement.toDataURL());
+            onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
+            self.renderOut = false;
+        }
         //}
         stats.end();
         requestAnimationFrame(update);
@@ -250,7 +395,11 @@ var RuthefjordDisplay = (function() {
         camera.quaternion.copy(oldCamQ);
         camera.quaternion.slerp(newCamQ, ROTATION_SMOOTHNESS * tDelta);
 
-        renderer.render( scene, camera );
+        if (controls.enabled) {
+            renderer.render(scene, viewer_camera);
+        } else {
+            renderer.render(scene, camera);
+        }
     }
 
     function Vector3FromString(str) {
@@ -404,6 +553,16 @@ var RuthefjordDisplay = (function() {
         }
     };
 
+    self.onWindowResize = function() {
+
+        renderer.setSize(parent.width(), parent.height());
+        camera.aspect = parent.width() / parent.height();
+        camera.updateProjectionMatrix();
+        viewer_camera.aspect = parent.width() / parent.height();
+        viewer_camera.updateProjectionMatrix();
+
+    };
+
     self.hide = function() {
         if (parent) {
             parent.hide();
@@ -413,9 +572,7 @@ var RuthefjordDisplay = (function() {
     self.show = function() {
         if (parent) {
             parent.show();
-            renderer.setSize(parent.width(), parent.height());
-            camera.aspect = parent.width() / parent.height();
-            camera.updateProjectionMatrix();
+            self.onWindowResize();
         }
     };
 

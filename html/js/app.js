@@ -473,11 +473,11 @@ $(function() {
                 current_scene = 'transition';
                 dont_expand_instructions = true;
                 RuthefjordUI.State.goToSandbox(function() {
+                    sandboxProgAddon = item.program;
                     Storage.load('sandbox_world_data', function(wd) {
                         RuthefjordWorldState.setFromSave(wd);
                         onRuthefjordEvent("onSandboxStart");
                     });
-                    sandboxProgAddon = item.program;
                 });
             }
 
@@ -627,6 +627,7 @@ $(function() {
         };
 
         $("#menu-icon").click(show_menu_fn);
+        $("#menu-icon").hide(); // menu hidden initially since nothing in it will be visible
     }
 
     var isInitialized = false;
@@ -785,6 +786,13 @@ function start_editor(info) {
         RuthefjordUI.UndoButton.update();
 
         _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
+
+        // only show navigation menu if there's something visible in it
+        if ($("#menu-nav").find("button").map(function(i, x) {return $(x).css("display")}).toArray().some(x => x !== "none")) {
+            $("#menu-icon").show();
+        } else {
+            $("#menu-icon").hide();
+        }
 
         // reset history to prevent undo from restoring whatever code happened to be around before
         RuthefjordBlockly.history = [];

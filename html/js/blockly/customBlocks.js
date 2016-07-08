@@ -460,7 +460,8 @@ Blockly.JSONLangOps['procedures_callnoreturn'] = function(block) {
 
 /// Transform a program from its serialized JSON representation to blockly XML representation.
 Blockly.JSONLangOps.XMLOfJSON = function(program) {
-    var funcCount = 0;
+    var funcCount = 1;
+    var y_offset = Math.floor(Math.random() * 25) + 5;
     var xml = '<xml>';
 
     // pull out all top-level procedure definitions
@@ -468,19 +469,19 @@ Blockly.JSONLangOps.XMLOfJSON = function(program) {
         return stmt.type === 'procedure' ? 'procedure' : 'other';
     });
 
-    // HACK NOTE: we don't deal with the prepended $ correctly yet but this sorta fixes itself when the program gets immediately sent to unity
+    // HACK NOTE: leave off the first character of procedure names due to prepended $
     _.forEach(groups.procedure, function(proc) {
-        var x = 260 + 200*(funcCount % 2);
-        var y = 150 + 250*Math.floor(funcCount/2);
+        var x = 260 + 215*funcCount;
+        var y = y_offset;
         var type = proc.params.length === 0 ? "procedures_noargs_defnoreturn" : "procedures_defnoreturn";
-        xml += '<block type="' + type + '" id="' + proc.meta.id + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name + '</field><statement name="STACK">';
+        xml += '<block type="' + type + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name.slice(1) + '</field><statement name="STACK">';
         xml += Blockly.JSONLangOps.bodyToXML(proc.body, program);
         xml += '</statement></block>';
         funcCount += 1;
     });
 
     var main = Blockly.JSONLangOps.bodyToXML(groups.other, program);
-    var pos = ' x="260" y="15"';
+    var pos = ' x="260" y="' + y_offset + '"';
     var insertIndex = main.indexOf(">", main.indexOf("block"));
     main = main.substring(0, insertIndex) + pos + main.substring(insertIndex);
     xml += main;
@@ -512,19 +513,19 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
             if (_.includes(BUILT_INS, stmt.name)) { // built-in
                 // HACK assumes single argument
                 if (stmt.args.length === 0) {
-                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '">';
+                    return '<block type="' + stmt.name + '">';
                 } else if (stmt.name === 'PlaceCube') {
-                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value - 1] + '</field>';
+                    return '<block type="' + stmt.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value] + '</field>';
                 } else {
-                    return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.args[0].value, stmt.args[0].meta.id) + '</value>';
+                    return '<block type="' + stmt.name + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.args[0].value) + '</value>';
                 }
             } else if (Blockly.Blocks[stmt.name]) { // block generated from library import, assumes no parameters
-                return '<block type="' + stmt.name + '" id="' + stmt.meta.id + '">';
-            } else { // procedure call
-                return '<block type="procedures_callnoreturn" id="' + stmt.meta.id + '"><mutation name="' + stmt.name + '"></mutation>';
+                return '<block type="' + stmt.name + '">';
+            } else { // procedure call, leave off the first character of procedure names due to prepended $
+                return '<block type="procedures_callnoreturn"><mutation name="' + stmt.name.slice(1) + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
-            return '<block type="controls_repeat" id="' + stmt.meta.id + '"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value, stmt.number.meta.id) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
+            return '<block type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
         }
     }
     return '';

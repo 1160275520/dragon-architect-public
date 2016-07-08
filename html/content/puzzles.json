@@ -106,7 +106,7 @@
         "library": {
             "restricted": ["blocks"],
             "required": ["move2"],
-            "granted": ["place", "time_slider", "speed_slider"]
+            "granted": ["place", "time_slider", "speed_slider", "gallery"]
         },
         "tutorial": {
             "highlighted": ["PlaceCube", "Forward"]

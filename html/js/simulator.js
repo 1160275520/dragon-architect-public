@@ -210,6 +210,7 @@ var RuthefjordManager = (function() {
                 var state_index = Math.floor((self.sim_states.length - 1) * x); // subtract 1 since indices begin at 0
                 self.current_commands = Math.floor(state_index * self.total_commands / (self.sim_states.length - 1)); // total_commands does not include start state
                 //console.log("set_execution_time: " + self.current_commands + " out of " + self.total_commands);
+                RuthefjordUI.TimeSlider.value(self.current_commands / self.total_commands);
                 // when current_commands indexes out of bounds, nothing for us to do (will happen when x is 1, i.e., slider all the way at the end)
                 if (state_index < self.sim_states.length) {
                     RuthefjordWorldState.setFromClone(self.sim_states[state_index].state);
@@ -337,7 +338,7 @@ var RuthefjordManager = (function() {
             while (sim.call_stack.length > 0) {
                 var s = module.Runtime.pop_next_statement(sim);
                 if (s) {
-                    step(s, state, sim);
+                    module.Runtime.step(s, state, sim);
                 }
             }
             return state;

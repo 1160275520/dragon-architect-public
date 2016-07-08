@@ -224,7 +224,7 @@ var RuthefjordBlockly = (function(){
      */
     RuthefjordBlockly.loadBlocks = function (blocksXML) {
         //console.info(blocksXML);
-        var xml = Blockly.Xml.textToDom(blocksXML);
+        var xml = Blockly.Xml.textToDom(blocksXML.length > 0 ? blocksXML : "<xml></xml>");
         Blockly.Xml.domToWorkspace(Blockly.getMainWorkspace(), xml);
 
         // update the toolbox in case the program contains any procedures

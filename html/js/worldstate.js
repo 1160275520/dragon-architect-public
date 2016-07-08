@@ -13,7 +13,7 @@ var RuthefjordWorldState = (function() {
         self.robot.pos = new THREE.Vector3(0,0,0);
         self.robot.dir = new THREE.Vector3(1,0,0);
         self.grid = {};
-        self.dirty = false;
+        self.dirty = true;
     };
 
     // returns a JSON string representing the world state
