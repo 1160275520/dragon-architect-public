@@ -43,7 +43,11 @@ gulp.task('usemin_index', ['clean'], function() {
     return gulp.src('index.html')
         .pipe(preprocess({context: argv}))
         .pipe(useref())
-        .pipe(gulpif('*.js', handle_js()))
+        .pipe(gulpif('*.js', handle_js()
+    .on('error', function(e) {
+            console.log(e);
+        })
+                    ))
         .pipe(gulpif('*.css', cleanCss()))
         .pipe(gulpif('*.html', minifyHtml({empty: true})))
         .pipe(gulp.dest(BUILD_DIR));

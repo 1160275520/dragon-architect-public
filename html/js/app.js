@@ -788,7 +788,7 @@ function start_editor(info) {
         _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
 
         // only show navigation menu if there's something visible in it
-        if ($("#menu-nav").find("button").map(function(i, x) {return $(x).css("display")}).toArray().some(x => x !== "none")) {
+        if ($("#menu-nav").find("button").map(function(i, x) {return $(x).css("display")}).toArray().some(function(x) {return x !== "none";})) {
             $("#menu-icon").show();
         } else {
             $("#menu-icon").hide();
