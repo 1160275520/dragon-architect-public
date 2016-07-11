@@ -12,7 +12,7 @@
                     "id": 2
                   },
                   "type": "int",
-                  "value": 1
+                  "value": 0
                 }
               ],
               "meta": {
@@ -76,7 +76,7 @@
                     "id": 9
                   },
                   "type": "int",
-                  "value": 1
+                  "value": 0
                 }
               ],
               "meta": {
@@ -140,7 +140,7 @@
                     "id": 16
                   },
                   "type": "int",
-                  "value": 1
+                  "value": 0
                 }
               ],
               "meta": {
@@ -204,7 +204,7 @@
                     "id": 23
                   },
                   "type": "int",
-                  "value": 1
+                  "value": 0
                 }
               ],
               "meta": {
@@ -1466,7 +1466,7 @@
                         "id": 163
                       },
                       "type": "int",
-                      "value": 1
+                      "value": 0
                     }
                   ],
                   "meta": {
@@ -1502,7 +1502,7 @@
                         "id": 167
                       },
                       "type": "int",
-                      "value": 1
+                      "value": 0
                     }
                   ],
                   "meta": {
@@ -1556,7 +1556,7 @@
                         "id": 173
                       },
                       "type": "int",
-                      "value": 1
+                      "value": 0
                     }
                   ],
                   "meta": {

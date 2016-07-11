@@ -28,7 +28,7 @@
             "id": 3
           },
           "type": "int",
-          "value": 1
+          "value": 0
         }
       ],
       "meta": {
@@ -64,7 +64,7 @@
             "id": 7
           },
           "type": "int",
-          "value": 1
+          "value": 0
         }
       ],
       "meta": {
@@ -109,7 +109,7 @@
             "id": 12
           },
           "type": "int",
-          "value": 1
+          "value": 0
         }
       ],
       "meta": {
