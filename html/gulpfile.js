@@ -68,6 +68,11 @@ gulp.task('copy_generated', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR + 'generated/'));
 });
 
+gulp.task('copy_extra_code', ['clean'], function() {
+    return gulp.src(['js/worker.js', 'js/simulator.js'])
+        .pipe(gulp.dest(BUILD_DIR + 'js/'));
+});
+
 gulp.task('copy_media', ['clean'], function() {
     return gulp.src(['media/**'])
         .pipe(gulp.dest(BUILD_DIR + 'media/'));
@@ -83,7 +88,7 @@ gulp.task('copy_fonts', ['clean'], function() {
         .pipe(gulp.dest(BUILD_DIR + 'fonts/'));
 });
 
-gulp.task('copy_static', ['copy_generated', 'copy_media', 'copy_content', 'copy_fonts']);
+gulp.task('copy_static', ['copy_generated', 'copy_extra_code', 'copy_media', 'copy_content', 'copy_fonts']);
 
 gulp.task('default', ['usemin_index', 'usemin_frame', 'copy_static']);
 
