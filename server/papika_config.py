@@ -2,6 +2,8 @@ DEBUG=False
 SQLALCHEMY_DATABASE_URI = 'postgresql:///ruthefjord_logging'
 PORT = 27895
 SERVER = 'production'
+SSL_KEY = "/srv/certs/privkey.pem"
+SSL_CRT = "/srv/certs/fullchain.pem"
 PAPIKA_EXPERIMENTS = {
     '00000000-0000-0000-0000-000000000000': {
         'conditions': [

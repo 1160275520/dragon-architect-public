@@ -6,6 +6,8 @@ from tornado.ioloop import IOLoop
 
 DEV_PORT=5000
 PRD_PORT=27246
+SSL_KEY = "/srv/certs/privkey.pem"
+SSL_CRT = "/srv/certs/fullchain.pem"
 
 def create_app(args):
     from . import app
@@ -21,7 +23,14 @@ def _go(args):
         app.app.run(port=DEV_PORT)
     elif args.mode == 'prd':
         port = PRD_PORT
-        http_server = HTTPServer(WSGIContainer(app.app))
+        appl = WSGIContainer(app.app)
+        if True: # TODO make this configurable, 'SSL_KEY' in app.app.config:
+            http_server = HTTPServer(appl, ssl_options={
+                "certfile": SSL_CRT,
+                "keyfile": SSL_KEY,
+            })
+        else:
+            http_server = HTTPServer(appl)
         http_server.listen(port)
         print("Starting production server on port %d..." % port)
         IOLoop.instance().start()
