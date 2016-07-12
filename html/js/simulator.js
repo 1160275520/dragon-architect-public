@@ -227,6 +227,10 @@ var RuthefjordManager = (function() {
 
         // simulate stdlib to set up globals
         self.init = function (addons) {
+            // clear any vestigial program
+            self.set_program({});
+            delete self.sim_states;
+
             var stdlib = {
                 "body": [{
                     "body": [{
@@ -303,7 +307,7 @@ var RuthefjordManager = (function() {
             self.call_stack = [];
             self.current_commands = 0;
             self.current_code_elements = [];
-            if (ast.body) { // we may be passed a null program
+            if (ast.body && ast.body.length > 0) { // we may be passed a null program
                 module.Runtime.push_stack_state(ast.body, [], null, self);
             }
             if (!_.isEqual(ast, self.last_program_sent)) {
@@ -314,7 +318,7 @@ var RuthefjordManager = (function() {
 
                 self.total_steps = 0;
 
-                if (ast.body) {
+                if (ast.body && ast.body.length > 0) {
                     RuthefjordUI.TimeSlider.setEnabled(false);
                     self.sim_states = [{
                         state: RuthefjordWorldState.clone(),
@@ -332,7 +336,7 @@ var RuthefjordManager = (function() {
         self.get_final_state = function(ast, state) {
             var sim = {};
             sim.call_stack = [];
-            if (ast.body) { // we may be passed a null program
+            if (ast.body && ast.body.length > 0) { // we may be passed a null program
                 module.Runtime.push_stack_state(ast.body, [], null, sim);
             }
             while (sim.call_stack.length > 0) {

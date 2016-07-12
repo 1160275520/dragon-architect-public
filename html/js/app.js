@@ -609,25 +609,6 @@ $(function() {
             RuthefjordManager.Simulator.get_final_state(RuthefjordBlockly.getProgram(), RuthefjordWorldState);
             RuthefjordPuzzle.check_submit_predicate();
         });
-
-        var show_menu_fn = function() {
-            var icon = $("#menu-icon");
-            icon.css('background', 'rgba(58,134,179,0.8)');
-            $("#menu-nav").show();
-            icon.off('click');
-            icon.click(hide_menu_fn);
-        };
-
-        var hide_menu_fn = function () {
-            var icon = $("#menu-icon");
-            icon.css('background', '');
-            $("#menu-nav").hide();
-            icon.off('click');
-            icon.click(show_menu_fn);
-        };
-
-        $("#menu-icon").click(show_menu_fn);
-        $("#menu-icon").hide(); // menu hidden initially since nothing in it will be visible
     }
 
     var isInitialized = false;
@@ -670,6 +651,32 @@ $(function() {
         // set up default values, needs to happen here to ensure Blocky has been loaded
         RuthefjordManager.Simulator.set_edit_mode(RuthefjordManager.EditMode.persistent);
         RuthefjordManager.Simulator.clear_run_state();
+
+        // set up nav menu behavior, also needs to be after blockly
+        var show_menu_fn = function() {
+            var icon = $("#menu-icon");
+            icon.css('background', 'rgba(58,134,179,0.8)');
+            $("#menu-nav").show();
+            icon.off('click');
+            icon.click(hide_menu_fn);
+        };
+
+        var hide_menu_fn = function () {
+            var icon = $("#menu-icon");
+            icon.css('background', '');
+            $("#menu-nav").hide();
+            icon.off('click');
+            icon.click(show_menu_fn);
+        };
+
+        $("#menu-nav button").click(hide_menu_fn);
+        $(window).click(hide_menu_fn); // clicking anywhere dismisses the menu...
+        $("body", $("#blockly").contents()).click(hide_menu_fn);
+        $("#menu-btn").click(function(event){
+            event.stopPropagation();
+        }); // ...except clicking on part the menu itself
+        $("#menu-icon").click(show_menu_fn);
+        $("#menu-icon").hide(); // menu hidden initially since nothing in it will be visible
 
         isInitialized = true;
 

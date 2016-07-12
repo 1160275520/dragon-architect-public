@@ -103,6 +103,7 @@ module.State = (function(){ "use strict";
         RuthefjordDisplay.show();
         RuthefjordDisplay.viewer_mode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
+        RuthefjordDisplay.onWindowResize();
         cb();
     };
 
@@ -150,7 +151,9 @@ module.Share = (function() {
             function(enteredText, unused) { self.title = enteredText; return enteredText; },
             {
                 tooltip: 'Click to edit...',
-                style: "font-size:95%"
+                style: "font-size:95%",
+                select: true, // text starts selected
+                onblur: 'submit' // clicking outside keeps instead of cancels changes
             }
         );
         RuthefjordDisplay.screenshot("share-thumb");

@@ -36,7 +36,7 @@ function get_total(ast, state) {
     var count = 0;
     var sim = {};
     sim.call_stack = [];
-    if (ast.body) { // we may be passed a null program
+    if (ast.body && ast.body.length > 0) { // we may be passed a null program
         RuthefjordManager.Runtime.push_stack_state(ast.body, [], null, sim);
     }
     while (sim.call_stack.length > 0) {
@@ -59,7 +59,7 @@ function send_states(ast, state) {
     var count = 0;
     var sim = {};
     sim.call_stack = [];
-    if (ast.body) { // we may be passed a null program
+    if (ast.body && ast.body.length > 0) { // we may be passed a null program
         RuthefjordManager.Runtime.push_stack_state(ast.body, [], null, sim);
     }
     while (sim.call_stack.length > 0) {

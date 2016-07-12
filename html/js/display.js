@@ -93,8 +93,8 @@ var RuthefjordDisplay = (function() {
                 moveUp = true;
                 break;
 
-            case 70: // r
-            case 16: // space
+            case 70: // f
+            case 16: // shift
                 moveDown = true;
                 break;
         }
@@ -130,8 +130,8 @@ var RuthefjordDisplay = (function() {
                 moveUp = false;
                 break;
 
-            case 70: // r
-            case 16: // space
+            case 70: // f
+            case 16: // shift
                 moveDown = false;
                 break;
         }
@@ -314,19 +314,16 @@ var RuthefjordDisplay = (function() {
             ortho.copy(heading);
 
             viewer_camera.position.add(heading.multiplyScalar(headingVel));
-            viewer_camera.translateZ(vertVel);
+            viewer_camera.position.setZ(viewer_camera.position.z + vertVel);
             ortho.cross(RuthefjordWorldState.UP).multiplyScalar(orthoVel);
             viewer_camera.position.add(ortho);
-            console.log(viewer_camera.position);
         }
 
         render(dt, t);
         if (self.renderOut) {
-            console.log(renderer.domElement.toDataURL());
             onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
             self.renderOut = false;
         }
-        //}
         stats.end();
         requestAnimationFrame(update);
     };

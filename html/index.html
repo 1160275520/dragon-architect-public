@@ -188,6 +188,22 @@
           <button id="btn-turbo" class="control-btn tools-no-debug">X</button>
           <!-- <p id="cube-counter" class="game-control">X</p> -->
         </div>
+        <div id="viewer-instructions" style="width: 700px; margin: 0 auto; padding-top: 15px" class="viewerModeUI">
+          <div class="dialog-content">
+            <div>
+              <img class="dialog-icon" src="media/dragon_icon.png">
+            </div>
+            <span style="display: block; text-align: left; padding: 5px 0px; font-size: 16pt; line-height: 20pt;">
+              Press <span class="keyboard-key">Esc</span> to get the mouse back
+              <br>Use the arrow keys or
+              <div style="display: inline-flex; flex-direction: column; font-size: 10pt; vertical-align: middle; line-height: 14pt; align-items: center;">
+                <div><span class="keyboard-key">W</span></div>
+                <div style="flex-direction: row"><span class="keyboard-key">A</span><span class="keyboard-key">S</span><span class="keyboard-key">D</span></div>
+              </div> to move around
+              <br>Use <span class="keyboard-key">shift</span> or <span class="keyboard-key">F</span> to go down and <span class="keyboard-key">space</span> or <span class="keyboard-key">R</span> to go up
+            </span>
+          </div>
+        </div>
         <!--<div id="code-entry" class="devModeOnly">-->
           <!--<textarea id="code-entry-area" placeholder="devmode-only text-to-code-blocks input"></textarea>-->
           <!--<button id="btn-code-entry">Submit</button>-->
@@ -195,7 +211,7 @@
       </div>
       <div id="dialog" class="dialogUI">
         <div>
-          <img id="dialog-icon" src="media/dragon_icon_speech.png">
+          <img class="dialog-icon" src="media/dragon_icon_speech.png">
         </div>
       </div>
       <div id="main-view-code" class="codeEditor">

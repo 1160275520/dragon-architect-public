@@ -608,6 +608,12 @@ header button, .control-btn, .control-icon-btn {
     width: 100px;
 }
 
+.keyboard-key {
+    border: 1px black solid;
+    border-radius: 3px;
+    padding: 2px;
+}
+
 /* share screen */
 /************************************************************/
 
@@ -663,7 +669,7 @@ header button, .control-btn, .control-icon-btn {
     color: #000;
 }
 
-#dialog-icon {
+.dialog-icon {
     float: left;
     padding-right: 10px;
     position: relative;
