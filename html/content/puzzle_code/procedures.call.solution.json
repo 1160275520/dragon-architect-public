@@ -46,7 +46,7 @@
         },
         "id": 5
       },
-      "name": "UpCube",
+      "name": "$UpCube",
       "params": [],
       "type": "procedure"
     },
@@ -56,7 +56,7 @@
         "attributes": {},
         "id": 6
       },
-      "name": "UpCube",
+      "name": "$UpCube",
       "type": "execute"
     },
     {
@@ -65,7 +65,7 @@
         "attributes": {},
         "id": 7
       },
-      "name": "UpCube",
+      "name": "$UpCube",
       "type": "execute"
     },
     {
@@ -74,7 +74,7 @@
         "attributes": {},
         "id": 8
       },
-      "name": "UpCube",
+      "name": "$UpCube",
       "type": "execute"
     }
   ],

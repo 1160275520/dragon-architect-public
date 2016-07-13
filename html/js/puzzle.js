@@ -46,7 +46,7 @@ var RuthefjordPuzzle = (function () {
         RuthefjordBlockly.clearProgram(); // clear program so it doesn't get carried over to sandbox
         RuthefjordWorldState.init(); // clear world state
         RuthefjordWorldState.dirty = true;
-        console.log("puzzle cleared");
+        // console.log("puzzle cleared");
     };
 
     self.request_start_puzzle = function(info) {

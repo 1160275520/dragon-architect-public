@@ -158,8 +158,11 @@ var RuthefjordBlockly = (function(){
 
     RuthefjordBlockly.clearProgram = function () {
         // clear existing blocks
-        Blockly.mainWorkspace.getTopBlocks().map(function (b) { b.dispose(false, false, false, true); });
+        while (Blockly.mainWorkspace.topBlocks_.length) {
+            Blockly.mainWorkspace.topBlocks_[0].dispose(false, false, false, true);
+        }
         RuthefjordBlockly.instructions_block = null;
+        RuthefjordBlockly.updateToolbox(); // procedure definitions may have been cleared
     };
 
     /**

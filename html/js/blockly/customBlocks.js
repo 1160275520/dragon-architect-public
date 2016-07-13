@@ -474,7 +474,8 @@ Blockly.JSONLangOps.XMLOfJSON = function(program) {
         var x = 260 + 215*funcCount;
         var y = y_offset;
         var type = proc.params.length === 0 ? "procedures_noargs_defnoreturn" : "procedures_defnoreturn";
-        xml += '<block type="' + type + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name.slice(1) + '</field><statement name="STACK">';
+        proc.meta.id = Blockly.genUid();
+        xml += '<block id="' + proc.meta.id + '" type="' + type + '" x="' + x + '" y="' + y + '"><field name="NAME">' + proc.name.slice(1) + '</field><statement name="STACK">';
         xml += Blockly.JSONLangOps.bodyToXML(proc.body, program);
         xml += '</statement></block>';
         funcCount += 1;
@@ -509,23 +510,26 @@ var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'D
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
     if (stmt) {
+        stmt.meta.id = Blockly.genUid(); // record the ids we give to each block so we can refer to them later
         if (stmt.type === "execute") {
             if (_.includes(BUILT_INS, stmt.name)) { // built-in
                 // HACK assumes single argument
                 if (stmt.args.length === 0) {
-                    return '<block type="' + stmt.name + '">';
+                    return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '">';
                 } else if (stmt.name === 'PlaceCube') {
-                    return '<block type="' + stmt.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value] + '</field>';
+                    return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value] + '</field>';
                 } else {
-                    return '<block type="' + stmt.name + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.args[0].value) + '</value>';
+                    stmt.args[0].meta.id = Blockly.genUid();
+                    return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.args[0].value, stmt.args[0].meta.id) + '</value>';
                 }
             } else if (Blockly.Blocks[stmt.name]) { // block generated from library import, assumes no parameters
-                return '<block type="' + stmt.name + '">';
+                return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '">';
             } else { // procedure call, leave off the first character of procedure names due to prepended $
-                return '<block type="procedures_callnoreturn"><mutation name="' + stmt.name.slice(1) + '"></mutation>';
+                return '<block id="' + stmt.meta.id + '" type="procedures_callnoreturn"><mutation name="' + stmt.name.slice(1) + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
-            return '<block type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
+            stmt.number.meta.id = Blockly.genUid();
+            return '<block id="' + stmt.meta.id + '" type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value, stmt.number.meta.id) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
         }
     }
     return '';

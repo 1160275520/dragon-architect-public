@@ -46,7 +46,7 @@
         },
         "id": 5
       },
-      "name": "UpCube",
+      "name": "$UpCube",
       "params": [],
       "type": "procedure"
     }

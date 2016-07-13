@@ -269,12 +269,26 @@ module.PackSelect = (function() {
     self.create = function(packs, progress, onSelectCallback) {
         var selector = $(".packOptions");
         selector.empty();
+        $("#selector-pack-instructions").hide();
         _.forEach(packs, function(pack) {
             if (pack.name && (!pack.prereq || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))) {
-                var m = makePack(pack, progress.is_pack_completed(pack));
-                $(m).on('click', function () {
-                    onSelectCallback(pack);
-                });
+                var completed = progress.is_pack_completed(pack);
+                var m = makePack(pack, completed);
+                if (completed) {
+                    var instructions = $("#selector-pack-instructions");
+                    $(m).click(function () {
+                        instructions.html("You've completed that pack already. Try something new!");
+                        instructions.slideDown();
+                        $(m).click(function () {
+                            instructions.css("animation-name", "bounce-up");
+                            setTimeout(function() { instructions.css("animation-name", ""); }, 300);
+                        })
+                    });
+                } else {
+                    $(m).click(function () {
+                        onSelectCallback(pack);
+                    });
+                }
                 selector.append(m);
             }
         });
@@ -405,6 +419,7 @@ module.Instructions = (function() {
         bridge: "media/bridge.png",
         cube: "media/cube.png",
         purple_cube: "media/purple_cube.png",
+        menu_btn: "media/menu_btn.png"
     };
 
     var uiIdMap = {
@@ -416,7 +431,8 @@ module.Instructions = (function() {
         workshop: "btn-workshop",
         clear: "btn-header-clear-sandbox",
         speedSlider: "speed-slider",
-        done: "btn-done"
+        done: "btn-done",
+        menu_btn: "menu-btn"
     };
 
     function makeImgHtml(file, uiId) {

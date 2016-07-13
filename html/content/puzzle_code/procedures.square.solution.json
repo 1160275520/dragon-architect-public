@@ -89,7 +89,7 @@
         },
         "id": 10
       },
-      "name": "Square",
+      "name": "$Square",
       "params": [],
       "type": "procedure"
     },
@@ -99,7 +99,7 @@
         "attributes": {},
         "id": 11
       },
-      "name": "Square",
+      "name": "$Square",
       "type": "execute"
     }
   ],

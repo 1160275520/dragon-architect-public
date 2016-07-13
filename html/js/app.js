@@ -261,42 +261,46 @@ function create_puzzle_runner(pack, sceneSelectType) {
         win_btn_msg = finish_msg;
     }
 
-    self.onPuzzleFinish = function() {
+    self.onPuzzleFinish = function(first) { // first flag needed for jump to pack menu to work for completed packs
         switch (sceneSelectType) {
             case "pack":
                 var packSelectCB = function (){};
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
-                    if (progress.puzzles_remaining(pack) > 0) {
+                    if (progress.puzzles_remaining(pack) > 0 || first) {
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
                     } else {
-                        $("#selector-puzzle-instructions").html('All done!');
-                        packSelectCB = function () {
-                            var arrow = $("#attention-arrow");
-                            arrow.css("display", "block");
-                            RuthefjordUI.Arrow.positionLeftOf($("#btn-back-selector-pack"));
-                            arrow.stop().animate({opacity: '100'});
-                            arrow.fadeOut(8000, function() { });
-                        }
+                        // $("#selector-puzzle-instructions").html('All done!');
+                        // packSelectCB = function () {
+                        //     var arrow = $("#attention-arrow");
+                        //     arrow.css("display", "block");
+                        //     RuthefjordUI.Arrow.positionLeftOf($("#btn-back-selector-pack"));
+                        //     arrow.stop().animate({opacity: '100'});
+                        //     arrow.fadeOut(8000, function() { });
+                        // }
+                        setState_packs();
+                        break;
                     }
                 } else {
-                    if (progress.puzzles_remaining(pack) > 0) {
-                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"/> if you want to go back.');
+                    if (progress.puzzles_remaining(pack) > 0 || first) {
+                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Use <img class="instructions-img" src="media/menu_btn.png" style="vertical-align:middle" data-uiid="#menu-btn"/> if you want to go back.');
                     } else {
-                        $("#selector-puzzle-instructions").html('All done! Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"/> to go back.');
-                        packSelectCB = function () {
-                            var arrow = $("#attention-arrow");
-                            arrow.css("display", "block");
-                            RuthefjordUI.Arrow.positionLeftOf($("#btn-back-sandbox"));
-                            arrow.stop().animate({opacity: '100'});
-                            arrow.fadeOut(8000, function() { });
-                        }
+                        // $("#selector-puzzle-instructions").html('All done! Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"/> to go back.');
+                        // packSelectCB = function () {
+                        //     var arrow = $("#attention-arrow");
+                        //     arrow.css("display", "block");
+                        //     RuthefjordUI.Arrow.positionLeftOf($("#btn-back-sandbox"));
+                        //     arrow.stop().animate({opacity: '100'});
+                        //     arrow.fadeOut(8000, function() { });
+                        // }
+                        setState_sandbox();
+                        break;
                     }
                 }
                 // bring up the level select
                 RuthefjordUI.State.goToSceneSelect(function() {
                     RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                            setState_puzzle(pid, "Go to puzzle select");
+                            setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
                     });
                 });
                 packSelectCB();
@@ -331,7 +335,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
     };
 
     // call onPuzzleComplete to trigger the first puzzle
-    self.onPuzzleFinish();
+    self.onPuzzleFinish(true);
 
     return self;
 }
@@ -847,6 +851,8 @@ function start_editor(info) {
                 case "file":
                     Q($.get(info.puzzle.program.value)).then(function (program) {
                         RuthefjordBlockly.setProgram(program);
+                    }, function (error) {
+                        console.log(error);
                     });
                     break;
                 case "xml":

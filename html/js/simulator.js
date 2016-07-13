@@ -218,6 +218,9 @@ var RuthefjordManager = (function() {
                     self.current_code_elements = _.map(_.filter(self.call_stack, function(x) { return x.meta }), function(x) { return x.meta.id; });
                 }
                 onRuthefjordEvent("onProgramStateChange", "current_state");
+                if (state_index === self.sim_states.length - 1) { // if we are at the end of the program
+                    self.set_run_state(module.RunState.finished);
+                }
             }
         };
 
