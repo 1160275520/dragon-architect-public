@@ -13,17 +13,17 @@ var RUTHEFJORD_CONFIG = {
     experiment: {
         id: '322d194c-4914-11e6-aa49-570e0189cf71'
     },
+    features: {
+        no_login_prompt: true,
+        workshop_only: true
+    },
     feature_conditions: {
         1: {
             is_debugging: true,
-            debugging_always: true,
-            no_login_prompt: true,
-            workshop_only: true
+            debugging_always: true
         },
         2: {
-            is_debugging: false,
-            no_login_prompt: true,
-            workshop_only: true
+            is_debugging: false
         }
     },
     hide_packs: [
