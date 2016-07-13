@@ -566,8 +566,8 @@ $(function() {
 
             if (RuthefjordUI.SpeedSlider.value() === 1) { // switch from turbo to normal
                 toggleState = 1;
-                RuthefjordUI.SpeedSlider.value(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT);
-                RuthefjordManager.Simulator.set_execution_speed(RuthefjordUI.SpeedSlider.SLIDER_DEFAULT);
+                RuthefjordUI.SpeedSlider.value(RuthefjordUI.SpeedSlider.DEFAULT_VALUE);
+                RuthefjordManager.Simulator.set_execution_speed(RuthefjordUI.SpeedSlider.DEFAULT_VALUE);
                 RuthefjordUI.TurboButton.update(false);
             } else { // switch from normal to turbo
                 toggleState = 0;
@@ -923,9 +923,9 @@ handler.onSandboxStart = function() {
         sandboxProgAddon = "";
     }
 
-    if (RUTHEFJORD_CONFIG.features.debugging_always && RuthefjordUI.DebugFeatureInfo.hasNext()) {
-        RuthefjordUI.DebugFeatureInfo.showNext();
-    }
+    // if (RUTHEFJORD_CONFIG.features.debugging_always && RuthefjordUI.DebugFeatureInfo.hasNext()) {
+    //     RuthefjordUI.DebugFeatureInfo.showNext();
+    // }
 
     // enforce workshop_only feature if necessary
     if (RUTHEFJORD_CONFIG.features.workshop_only) {

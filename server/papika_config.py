@@ -23,4 +23,10 @@ PAPIKA_EXPERIMENTS = {
             {'id':2, 'name': 'turbo button only'},
         ],
     },
+    '322d194c-4914-11e6-aa49-570e0189cf71': {
+        'conditions': [
+                {'id':1, 'name': 'debugging tools'},
+                {'id':2, 'name': 'turbo button only'},
+        ],
+    }
 }

@@ -249,6 +249,10 @@ div.game-control {
     padding: 5px;
 }
 
+.tools-debug {
+    margin: 5px;
+}
+
 .control-element {
     margin: 0 2px 0 0;
 }

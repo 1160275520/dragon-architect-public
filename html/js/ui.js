@@ -967,6 +967,7 @@ function Slider(elemName, selector, labels, allElems, default_val) {
 }
 
 module.SpeedSlider = Slider('speed-slider', '#speed-slider', ['Slow', ' <----- Speed ----->', 'Fast'], ["#speed-controls"], 0.25);
+module.SpeedSlider.DEFAULT_VALUE = 0.25;
 
 module.TimeSlider = Slider('time-slider', '#time-slider', ['Start', '<----- Time ----->', 'End'], ["#time-controls", ".btn-time-slider"], 0);
 
