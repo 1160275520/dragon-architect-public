@@ -184,7 +184,7 @@ class GitEngine(object):
     def does_exist(self):
         """Returns boolean indicating whether the dependency currently locally exists."""
         try:
-            _getcmdcode(['git', 'log', '-n', '0'], self)
+            _getcmdcode(['git', '--no-pager', 'log', '-n', '0'], self)
             return True
         except:
             return False
