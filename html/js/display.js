@@ -192,7 +192,8 @@ var RuthefjordDisplay = (function() {
         var texes = [path + "px" + format, path + "nx" + format,
             path + "py" + format, path + "ny" + format,
             path + "pz" + format, path + "nz" + format];
-        var cubeMap = THREE.ImageUtils.loadTextureCube(texes);
+        var cubeLoader = new THREE.CubeTextureLoader();
+        var cubeMap = cubeLoader.load(texes);
         //cubeMap.format = THREE.RGBFormat;
         // code from http://blog.romanliutikov.com/post/58705840698/skybox-and-environment-map-in-threejs
         var shader = THREE.ShaderLib['cube']; // init cube shader from built-in lib
@@ -216,12 +217,14 @@ var RuthefjordDisplay = (function() {
         scene.add(skybox);
 
         // cube geometry, materials
+        var loader = new THREE.TextureLoader();
         cubeGeo = new THREE.BoxGeometry(1, 1, 1);
-        var tex = THREE.ImageUtils.loadTexture("media/canvas_cube.png");
+        var tex = loader.load("media/canvas_cube.png");
         _.forEach(self.cubeColors, function (color) {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex}));
             cubes[color] = {meshes:[]};
         });
+
         targetGeo = new THREE.BoxGeometry(1.1, 1.1, 1.1);
         cubeTargetMat = new THREE.MeshLambertMaterial({color:"#4078E6", transparent: true, opacity:0.5});
         robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:"#df67be", transparent: true, opacity:0.5}));
@@ -230,7 +233,7 @@ var RuthefjordDisplay = (function() {
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
-        tex = THREE.ImageUtils.loadTexture("media/outlined_cube.png");
+        tex = loader.load("media/outlined_cube.png");
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         tex.repeat.set(100, 100);
@@ -240,17 +243,15 @@ var RuthefjordDisplay = (function() {
 
         // robot
         geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        material = new THREE.MeshLambertMaterial( {color: "#f56e90"} );
-        robot = new THREE.Mesh(geometry, material);
+        robot = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial( {color: "#f56e90"} ));
         var robotDir = new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
         robot.add(robotDir);
         zLineMat = new THREE.MeshBasicMaterial( {color: 0xf2c2ce} );
         geometry = new THREE.PlaneBufferGeometry(1, 1, 32);
-        tex = THREE.ImageUtils.loadTexture("media/y-cue.png");
+        tex = loader.load("media/y-cue.png");
         material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
         zCuePlane = new THREE.Mesh(geometry, material);
         scene.add(zCuePlane);
-        //zCuePlane.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI/2);
         scene.add(robot);
 
         // lights
