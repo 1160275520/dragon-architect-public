@@ -151,6 +151,9 @@ var RuthefjordBlockly = (function(){
     };
 
     RuthefjordBlockly.clearProgram = function () {
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("RuthefjordBlockly.clearProgram", null);
+        }
         // clear existing blocks
         while (Blockly.mainWorkspace.topBlocks_.length) {
             Blockly.mainWorkspace.topBlocks_[0].dispose(false, false, false, true);
@@ -158,6 +161,9 @@ var RuthefjordBlockly = (function(){
         RuthefjordBlockly.instructions_block = null;
         RuthefjordBlockly.updateToolbox(); // procedure definitions may have been cleared
         RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("RuthefjordBlockly.clearProgram", null);
+        }
     };
 
     /**
@@ -165,6 +171,9 @@ var RuthefjordBlockly = (function(){
      */
     RuthefjordBlockly.setProgram = function(program) {
         //console.info(program);
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("RuthefjordBlockly.setProgram", program);
+        }
 
         RuthefjordBlockly.ignoreNextHistory = true;
         RuthefjordBlockly.clearProgram();
@@ -215,18 +224,28 @@ var RuthefjordBlockly = (function(){
 
         // set maximum blocks to 15 per function
         // Blockly.mainWorkspace.maxBlocks = Object.keys(program.procedures).length * 15;
+
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("RuthefjordBlockly.setProgram", null);
+        }
     };
 
     /**
      * loads new program and takes care of related adjustments
      */
     RuthefjordBlockly.loadBlocks = function (blocksXML) {
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("RuthefjordBlockly.loadBlocks", blocksXML);
+        }
         //console.info(blocksXML);
         var xml = Blockly.Xml.textToDom(blocksXML.length > 0 ? blocksXML : "<xml></xml>");
         Blockly.Xml.domToWorkspace(Blockly.getMainWorkspace(), xml);
 
         // update the toolbox in case the program contains any procedures
         RuthefjordBlockly.updateToolbox();
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("RuthefjordBlockly.loadBlocks", null);
+        }
     };
 
     /**
@@ -308,6 +327,9 @@ var RuthefjordBlockly = (function(){
      * @param library The tools that should be active.
      */
     RuthefjordBlockly.setLevel = function(scene_info, library) {
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("RuthefjordBlockly.setLevel", [scene_info, library]);
+        }
         // ignore scene_info.library, trust only the library parameter
         // console.log(scene_info);
         current_tools = _.includes(scene_info.library.restricted, 'blocks') ? library.puzzle : library.all;
@@ -324,6 +346,9 @@ var RuthefjordBlockly = (function(){
         // since the flyout starts cutoff, we need to make the flyout_.svgBackground_
         // the correct size with this call
         Blockly.getMainWorkspace().flyout_.show_cutoff();
+        if (RuthefjordLogging.activeTaskLogger) {
+            RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("RuthefjordBlockly.setLevel", null);
+        }
     };
 
     /**

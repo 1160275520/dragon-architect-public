@@ -519,6 +519,9 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 } else if (stmt.name === 'PlaceCube') {
                     return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value] + '</field>';
                 } else {
+                    if (!_.has(stmt.args[0], 'meta')) {
+                        stmt.args[0].meta = {};
+                    }
                     stmt.args[0].meta.id = Blockly.genUid();
                     return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.args[0].value, stmt.args[0].meta.id) + '</value>';
                 }
@@ -528,6 +531,9 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 return '<block id="' + stmt.meta.id + '" type="procedures_callnoreturn"><mutation name="' + stmt.name.slice(1) + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
+            if (!_.has(stmt.number, 'meta')) {
+                stmt.number.meta = {};
+            }
             stmt.number.meta.id = Blockly.genUid();
             return '<block id="' + stmt.meta.id + '" type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value, stmt.number.meta.id) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
         }

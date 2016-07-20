@@ -95,6 +95,9 @@ var AID = {
     // generic ui action, since we have so dang many
     DoUiAction: 20101,
 
+    LevelSetupCallStart: 30001,
+    LevelSetupCallEnd: 30002,
+
     Unused: 0 // to prevent comma sadness
 };
 
@@ -173,6 +176,14 @@ self.startTask = function(gid, checksum, name) {
 
     tl.logDoUiAction = function(element, action, data) {
         log(AID.DoUiAction, {element: element, action: action, data: data});
+    };
+
+    tl.logLevelSetupCallStart = function(call, data) {
+        log(AID.LevelSetupCallStart, {call: call, data: data});
+    };
+
+    tl.logLevelSetupCallEnd = function(call, data) {
+        log(AID.LevelSetupCallEnd, {call: call, data: data});
     };
 
     tl.logTaskEnd = function() {

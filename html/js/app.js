@@ -808,6 +808,7 @@ function start_editor(info) {
         }
         // then start new quest logger if this is not an empty level
         RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum, info.puzzle.name);
+        RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("start_editor", info);
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
         RuthefjordBlockly.AddonCommands = {};
@@ -874,6 +875,7 @@ function start_editor(info) {
     }
     // HACK we have to wait long enough for a render to happen, so we get the right screen coordinates
     setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
+    RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("start_editor", null);
 }
 
 handler.onSandboxStart = function() {
