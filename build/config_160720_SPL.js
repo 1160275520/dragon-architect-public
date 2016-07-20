@@ -1,12 +1,13 @@
+
 var RUTHEFJORD_CONFIG = {
     server: {
-        url: 'http://localhost:27246/api',
+        url: 'https://dragonarchitect.net:27246/api',
         storage: 'local'
     },
     logging: {
-        url: 'http://localhost:27895',
-        release_id: '0c7e35c6-a2c2-11e5-b814-8ba4865acbbb',
-        release_name: 'latest',
+        url: 'https://dragonarchitect.net:27895',
+        release_id: '7fb0e4f6-4e22-11e6-b3d0-33a56ee67727',
+        release_name: 'spl_2016_v2',
         release_key: ''
     },
     experiment: {
@@ -30,7 +31,7 @@ var RUTHEFJORD_CONFIG = {
         "decomposition"
     ],
     gallery: {
-        group: "cgs_web"
+        group: "spl_2016"
     }
 };
 

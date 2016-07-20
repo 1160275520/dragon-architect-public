@@ -72,7 +72,7 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
 // updates got rid of
 var canvas = Blockly.mainWorkspace.getCanvas();
 Blockly.bindEvent_(canvas, "blocklyBlockDeleted", null, function() {
-    // console.log('delete event!');
+    console.log('delete event!');
     if (Blockly.dragMode_ === 0) {
         RuthefjordBlockly.updateToolbox();
     }

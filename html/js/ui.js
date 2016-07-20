@@ -353,6 +353,16 @@ module.LevelSelect = (function() {
         });
 
         // set up image of back to sandbox button
+        module.makeImgOnClick();
+
+    };
+
+    return self;
+}());
+
+    // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element
+    // when the image is clicked
+    module.makeImgOnClick = function() {
         $(".instructions-img").each(function() {
             if ($(this).attr("data-uiid")) {
                 var uiElem = $($(this).attr("data-uiid"));
@@ -367,17 +377,11 @@ module.LevelSelect = (function() {
                 });
             }
         });
-
     };
-
-    return self;
-}());
 
 module.Instructions = (function() {
 
     var self = {};
-    var isLarge = false;
-    var arrowTarget = "";
 
     var imgFileMap = {
         forward: "media/blockSvgs/forward.svg",
@@ -454,77 +458,12 @@ module.Instructions = (function() {
         });
     }
 
-    // set up click handlers for images in the instructions to cause an arrow to point to the actual UI element
-    // when the image is clicked
-    function makeImgOnClick() {
-        $(".instructions-img").each(function() {
-            if ($(this).attr("data-uiid")) {
-                var uiElem = $($(this).attr("data-uiid"));
-                $(this).on('click', function (ev) {
-                    ev.stopPropagation();
-                    if (arrowTarget === "" || arrowTarget !== $(this).attr("data-uiid")) {
-                        arrowTarget = $(this).attr("data-uiid");
-                        var arrow = $("#attention-arrow");
-                        arrow.css("display", "block");
-                        module.Arrow.positionLeftOf(uiElem);
-                        arrow.stop().animate({opacity: '100'});
-                        arrow.fadeOut(5000, "swing", function() { arrowTarget = ""; });
-                    } else {
-                        // shrink instructions in response to multiple clicks on same element
-                        setSize(false, null, true)();
-                    }
-                });
-            }
-        });
-    }
-
-    function setOnExpandAnimationDone(f) {
-        setTimeout(f, 1000);
-    }
-
-    function setSize(doMakeLarge, clickCallback, doAnimate) {
-
-        return function() {
-            isLarge = doMakeLarge;
-            var container = $("#instructions-container")[0];
-            container.onclick = null;
-
-            if (doAnimate) {
-                $("#instructions-display").removeClass("no-transition");
-            } else {
-                $("#instructions-display").addClass("no-transition");
-            }
-
-            if (doMakeLarge) {
-                $("#instructions-display").addClass("expanded");
-                $("#btn-instructions-hide").show();
-            } else {
-                $("#instructions-display").removeClass("expanded");
-                $("#btn-instructions-hide").hide();
-            }
-
-            function onDone() {
-                if (isLarge === doMakeLarge) {
-                    $("#instructions-reminder").html(isLarge ? "(Shrink)" : "(Expand)");
-                    container.onclick = clickCallback ? clickCallback : setSize(!doMakeLarge, null, true);
-                }
-                // iframes can't use click handlers, so we put ours on the body inside
-                if (isLarge && !clickCallback) {
-                    $('#blockly').contents().find("body").on('click', setSize(false, null, true));
-                } else {
-                    $('#blockly').contents().find("body").off('click');
-                }
-            }
-
-            if (doAnimate) {
-                setOnExpandAnimationDone(onDone);
-            } else {
-                onDone();
-            }
-        }
-    }
-
     self.hide = function() {
+        if (self.timeouts) {
+            _.forEach(self.timeouts, function (id) {
+                clearTimeout(id);
+            });
+        }
         $('#instructions-display').hide();
     };
 
@@ -587,13 +526,13 @@ module.Instructions = (function() {
             // animate and show content
             dragon.show({duration: 1000, queue: false});
             content.show({duration: 1000, queue: false, complete: function () {
-                makeImgOnClick();
                 var text = $("<p>" + processTemplate(target.text) + "</p>");
                 var current_text = $("p", content).first();
                 current_text.css('font-size', '11pt');
                 current_text.css('padding-top', '20px');
                 current_text.css('height', '');
                 content.prepend(text);
+                module.makeImgOnClick();
                 var h = text.innerHeight();
                 text.css("opacity", 0);
                 text.css("height", "0px");

@@ -38,7 +38,6 @@ var RuthefjordBlockly = (function(){
         // block limit currently set to infinity, no need for counter; disabling it since it disrupts DebugFeaturesInfo's use of the arrow
         // Blockly.addChangeListener(RuthefjordBlockly.makeCounter);
 
-        // no undo button currently
         Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
 
         Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseenter = function () {
@@ -53,11 +52,6 @@ var RuthefjordBlockly = (function(){
 
         q_defer.resolve();
     };
-
-    /* XXX edbutler: was this suppossed to be changed? It currently loads a non-existent file, so I commented it out.
-     document.write('<script type="text/javascript" src="generated/' +
-     BlocklyApps.LANG + '.js"></script>\n');
-     */
 
     RuthefjordBlockly.makeShadowNum = function(num, id) {
         if (id) {
@@ -163,6 +157,7 @@ var RuthefjordBlockly = (function(){
         }
         RuthefjordBlockly.instructions_block = null;
         RuthefjordBlockly.updateToolbox(); // procedure definitions may have been cleared
+        RuthefjordBlockly.curProgramStr = RuthefjordBlockly.getXML();
     };
 
     /**

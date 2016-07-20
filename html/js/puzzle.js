@@ -165,6 +165,7 @@ var RuthefjordPuzzle = (function () {
     function win_puzzle() {
         console.log("level won!");
         win_predicate = function () { return false; };
+        RuthefjordUI.Instructions.hide();
         onRuthefjordEvent("onPuzzleComplete", current_puzzzle_id);
         //if (RuthefjordDisplay.clock.getElapsedTime() > win_time + WIN_DELAY) {
         //}

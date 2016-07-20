@@ -270,14 +270,6 @@ function create_puzzle_runner(pack, sceneSelectType) {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
                     } else {
-                        // $("#selector-puzzle-instructions").html('All done!');
-                        // packSelectCB = function () {
-                        //     var arrow = $("#attention-arrow");
-                        //     arrow.css("display", "block");
-                        //     RuthefjordUI.Arrow.positionLeftOf($("#btn-back-selector-pack"));
-                        //     arrow.stop().animate({opacity: '100'});
-                        //     arrow.fadeOut(8000, function() { });
-                        // }
                         setState_packs();
                         break;
                     }
@@ -285,14 +277,6 @@ function create_puzzle_runner(pack, sceneSelectType) {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Use <img class="instructions-img" src="media/menu_btn.png" style="vertical-align:middle" data-uiid="#menu-btn"/> if you want to go back.');
                     } else {
-                        // $("#selector-puzzle-instructions").html('All done! Click <img class="instructions-img" src="media/backToSandboxButton.png" style="vertical-align:middle" data-uiid="#btn-back-sandbox"/> to go back.');
-                        // packSelectCB = function () {
-                        //     var arrow = $("#attention-arrow");
-                        //     arrow.css("display", "block");
-                        //     RuthefjordUI.Arrow.positionLeftOf($("#btn-back-sandbox"));
-                        //     arrow.stop().animate({opacity: '100'});
-                        //     arrow.fadeOut(8000, function() { });
-                        // }
                         setState_sandbox();
                         break;
                     }
@@ -348,10 +332,12 @@ function onRuthefjordEvent(func, arg) {
     handler[func](arg);
 }
 
+// NOTE: not currently used
 function setState_title() {
     RuthefjordUI.State.goToTitle(function(){});
 }
 
+// NOTE: not currently used
 function setState_intro() {
     var d = '<p>I\'m a Dragon who can build things out of cubes. I follow instructions written in <b>code</b>. Click anywhere to start learning <b>code</b>, so we can build things together!</p>' +
         '<button id="button_startTutorial">Get Started!</button>';
@@ -416,18 +402,29 @@ $(function() {
 
     function fetch_experimental_condition(userid) {
         var d = Q.defer();
+        function assign_condition(cond) {
+            console.info("got condition " + cond);
+            // copy the experimental condition info the config object
+            _.extend(RUTHEFJORD_CONFIG.features, RUTHEFJORD_CONFIG.feature_conditions[cond]);
+            RuthefjordLogging.logExperimentalCondition(RUTHEFJORD_CONFIG.experiment.id, cond);
+            if (RUTHEFJORD_CONFIG.experiment.condition_in_storage) {
+                Storage.save("experimental_condition", String(cond));
+            }
+            d.resolve();
+        }
 
         if (RUTHEFJORD_CONFIG.experiment) {
-            console.log('logging experiment!');
-            RuthefjordLogging.telemetry_client.query_experimental_condition({
-                user: userid,
-                experiment: RUTHEFJORD_CONFIG.experiment.id
-            }).then(function(cond) {
-                console.info('got condition! ' + cond);
-                // copy the experimental condition info the config object
-                _.extend(RUTHEFJORD_CONFIG.features, RUTHEFJORD_CONFIG.feature_conditions[cond]);
-                RuthefjordLogging.logExperimentalCondition(RUTHEFJORD_CONFIG.experiment.id, cond);
-                d.resolve();
+            Storage.load("experimental_condition", function (cond) {
+                if (cond === null) {
+                    console.info("querying database for experimental condition");
+                    RuthefjordLogging.telemetry_client.query_experimental_condition({
+                        user: userid,
+                        experiment: RUTHEFJORD_CONFIG.experiment.id
+                    }).then(assign_condition);
+                } else {
+                    console.info("using experimental condition from " + RUTHEFJORD_CONFIG.server.storage);
+                    assign_condition(Number(cond));
+                }
             });
         } else {
             d.resolve();
@@ -805,9 +802,6 @@ function start_editor(info) {
             $("#menu-icon").hide();
         }
 
-        // reset history to prevent undo from restoring whatever code happened to be around before
-        RuthefjordBlockly.history = [];
-
         // clear old quest logger if it exists
         if (RuthefjordLogging.activeTaskLogger) {
             RuthefjordLogging.activeTaskLogger.logTaskEnd();
@@ -869,6 +863,9 @@ function start_editor(info) {
             RuthefjordBlockly.clearProgram();
         }
 
+        // reset history to prevent undo from restoring whatever code happened to be around before
+        RuthefjordBlockly.history = [];
+
         if (info.puzzle.winmsg) {
             win_msg = info.puzzle.winmsg;
         } else {
@@ -888,7 +885,7 @@ handler.onSandboxStart = function() {
 
     var summary = "Have fun and build stuff!";
     if (!RUTHEFJORD_CONFIG.features.sandbox_only) {
-        summary += " Click {learn} to start unlocking new abilities."
+        summary += ' Use <img class="instructions-img" src="media/menu_btn.png" style="vertical-align:middle" data-uiid="#menu-btn"/> and go to {learn} to start unlocking new abilities.'
     }
 
     Storage.load('sandbox_program', function(sandbox_program) {
@@ -901,11 +898,12 @@ handler.onSandboxStart = function() {
                 library: {required:[],granted:[]},
                 program: {type: 'xml', value: sandbox_program},
                 instructions: {
-                    summary: summary,
-                    detail:
-                        "Any cubes you place will stick around <b>permanently</b>. " +
-                        "Click on {workshop} to make it so you can test code without cubes sticking around. " +
-                        "You can also clear away all of your code and cubes by clicking {clear}."
+                    targets: [
+                        {
+                            type: 'general',
+                            text: summary,
+                        }
+                    ]
                 },
                 name: "sandbox"
             }
