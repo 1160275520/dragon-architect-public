@@ -6,7 +6,7 @@
 			"local":"blockly",
 			"engine":"git",
 			"remote":"https://github.com/edbutler/blockly.git",
-			"revision":"0b5209f1caf08f49deb3cf3c63c58d1eb0f7be62",
+			"revision":"94b620b32de4170bfc1f9f4e079126e2df8980f3",
 			"branch":"ruthefjord"
 		},
 		{

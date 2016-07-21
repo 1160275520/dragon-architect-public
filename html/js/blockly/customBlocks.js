@@ -370,6 +370,7 @@ Blockly.Blocks['procedures_noargs_defnoreturn'] = {
     decompose: Blockly.Blocks['procedures_defnoreturn'].decompose,
     compose: Blockly.Blocks['procedures_defnoreturn'].compose,
     dispose: function () {
+        // avoid recursively updating toolbox by only doing the update when the block being disposed in not in the toolbox
         var flyout = this.isInFlyout;
         Blockly.Blocks['procedures_defnoreturn'].dispose.apply(this, arguments);
         if (Blockly.dragMode_ === 0 && !flyout) {
