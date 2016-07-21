@@ -68,16 +68,6 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     }
 };
 
-// recreation of the old Blockly.addCanvasListener function that upstream
-// updates got rid of
-var canvas = Blockly.mainWorkspace.getCanvas();
-Blockly.bindEvent_(canvas, "blocklyBlockDeleted", null, function() {
-    console.log('delete event!');
-    if (Blockly.dragMode_ === 0) {
-        RuthefjordBlockly.updateToolbox();
-    }
-});
-
 function newCall(name, id, args) {
     return {args:args,meta:{id:id},name:name,type:"execute"};
 }
@@ -379,7 +369,13 @@ Blockly.Blocks['procedures_noargs_defnoreturn'] = {
     domToMutation: Blockly.Blocks['procedures_defnoreturn'].domToMutation,
     decompose: Blockly.Blocks['procedures_defnoreturn'].decompose,
     compose: Blockly.Blocks['procedures_defnoreturn'].compose,
-    dispose: Blockly.Blocks['procedures_defnoreturn'].dispose,
+    dispose: function () {
+        var flyout = this.isInFlyout;
+        Blockly.Blocks['procedures_defnoreturn'].dispose.apply(this, arguments);
+        if (Blockly.dragMode_ === 0 && !flyout) {
+            RuthefjordBlockly.updateToolbox();
+        }
+    },
     getProcedureDef: Blockly.Blocks['procedures_defnoreturn'].getProcedureDef
 };
 

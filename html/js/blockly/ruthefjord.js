@@ -155,6 +155,7 @@ var RuthefjordBlockly = (function(){
             RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("RuthefjordBlockly.clearProgram", null);
         }
         // clear existing blocks
+        Blockly.WidgetDiv.hide(); // to prevent blockly from crashing if we remove a block that's currently being edited
         while (Blockly.mainWorkspace.topBlocks_.length) {
             Blockly.mainWorkspace.topBlocks_[0].dispose(false, false, false, true);
         }
