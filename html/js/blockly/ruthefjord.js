@@ -119,9 +119,10 @@ var RuthefjordBlockly = (function(){
     RuthefjordBlockly.undo = function () {
         if (RuthefjordBlockly.history.length > 0) {
             RuthefjordBlockly.ignoreNextHistory = true;
-            RuthefjordBlockly.curProgramStr = RuthefjordBlockly.history.pop();
+            var h = RuthefjordBlockly.history.pop();
             RuthefjordBlockly.clearProgram();
-            RuthefjordBlockly.loadBlocks(RuthefjordBlockly.curProgramStr);
+            RuthefjordBlockly.loadBlocks(h);
+            RuthefjordBlockly.curProgramStr = h;
         }
     };
 
