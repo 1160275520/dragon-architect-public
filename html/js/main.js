@@ -11,7 +11,6 @@ require('three');
 require('stats-js');
 require('urijs');
 require('config');
-require('copilot');
 require('display');
 require('ui');
 require('worldstate');

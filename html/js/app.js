@@ -406,7 +406,7 @@ $(function() {
             console.info("got condition " + cond);
             // copy the experimental condition info the config object
             _.extend(RUTHEFJORD_CONFIG.features, RUTHEFJORD_CONFIG.feature_conditions[cond]);
-            RuthefjordLogging.logExperimentalCondition(RUTHEFJORD_CONFIG.experiment.id, cond);
+            // RuthefjordLogging.logExperimentalCondition(RUTHEFJORD_CONFIG.experiment.id, cond);
             if (RUTHEFJORD_CONFIG.experiment.condition_in_storage) {
                 Storage.save("experimental_condition", String(cond));
             }
@@ -415,16 +415,16 @@ $(function() {
 
         if (RUTHEFJORD_CONFIG.experiment) {
             Storage.load("experimental_condition", function (cond) {
-                if (cond === null) {
-                    console.info("querying database for experimental condition");
-                    RuthefjordLogging.telemetry_client.query_experimental_condition({
-                        user: userid,
-                        experiment: RUTHEFJORD_CONFIG.experiment.id
-                    }).then(assign_condition);
-                } else {
-                    console.info("using experimental condition from " + RUTHEFJORD_CONFIG.server.storage);
-                    assign_condition(Number(cond));
-                }
+                // if (cond === null) {
+                //     console.info("querying database for experimental condition");
+                //     RuthefjordLogging.telemetry_client.query_experimental_condition({
+                //         user: userid,
+                //         experiment: RUTHEFJORD_CONFIG.experiment.id
+                //     }).then(assign_condition);
+                // } else {
+                console.info("using experimental condition from " + RUTHEFJORD_CONFIG.server.storage);
+                assign_condition(Number(cond));
+                // }
             });
         } else {
             d.resolve();
@@ -630,13 +630,12 @@ $(function() {
         username = window.prompt("Please enter your usename", "");
     }
 
-    RuthefjordLogging.initialize(username).then(function(uid) {
-        RuthefjordLogging.userid = uid;
-        return load_save_data(RuthefjordLogging.userid);
-    })
+    RuthefjordLogging.userid = RuthefjordLogging.create_random_uuid();
+
+    load_save_data(RuthefjordLogging.userid)
     .then(function() {
         // log the user id to link logging/game server accounts, then fetch experimental conditions (if any)
-        RuthefjordLogging.logPlayerLogin(Storage.id());
+        // RuthefjordLogging.logPlayerLogin(Storage.id());
         return fetch_experimental_condition(RuthefjordLogging.userid);
     })
     .then(function() {
@@ -708,7 +707,6 @@ $(function() {
         }
 
         console.info('EVERYTHING IS READY!');
-        RuthefjordCopilot.onWidgetReady();
 
         // HACK add blockly change listener for saving
         Blockly.getMainWorkspace().addChangeListener(onProgramEdit);
@@ -734,7 +732,7 @@ $(function() {
             } else {
                 RuthefjordUI.State.goToConsent();
                 $("#btn-consent-continue").on('click', function() {
-                    RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
+                    // RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
                     RuthefjordUI.State.goToAlphaMsg();
                     if (RUTHEFJORD_CONFIG.features.sandbox_only) {
                         $("#btn-alpha-continue").on('click', function() {
@@ -807,8 +805,8 @@ function start_editor(info) {
             RuthefjordLogging.activeTaskLogger.logTaskEnd();
         }
         // then start new quest logger if this is not an empty level
-        RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum, info.puzzle.name);
-        RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("start_editor", info);
+        // RuthefjordLogging.startTask(info.puzzle.logging_id, info.checksum, info.puzzle.name);
+        // RuthefjordLogging.activeTaskLogger.logLevelSetupCallStart("start_editor", info);
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
         RuthefjordBlockly.AddonCommands = {};
@@ -875,7 +873,7 @@ function start_editor(info) {
     }
     // HACK we have to wait long enough for a render to happen, so we get the right screen coordinates
     setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
-    RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("start_editor", null);
+    // RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("start_editor", null);
 }
 
 handler.onSandboxStart = function() {
@@ -1134,54 +1132,6 @@ handler.onErrorMessages = function(errors) {
     RuthefjordUI.Instructions.displayErrors(JSON.parse(errors));
 };
 
-onRuthefjordEvent.widgetAPI = (function () {
-    'use strict';
-    var self = {};
-
-    // NOTE: the triggering event is passed as the this object
-
-    self.setWidgetId = function(messageId, widgetId) {
-        self.widgetId = widgetId;
-        var data = {};
-        data.command = "CgsGames.onMessageComplete";
-        data.args = [self.widgetId, messageId, true];
-        this.source.postMessage(data, this.origin);
-    };
-
-    self.startActivity = function(messageId, userList, activityDef, details) {
-        // for now we'll conform to the existing infrastructure and
-        // assume this means starting a pack, going to level select
-        console.log(activityDef);
-        current_puzzle_runner = create_puzzle_runner(game_info.packs[activityDef.activityData.pack], "pack");
-        var data = {};
-        data.command = "CgsGames.onMessageComplete";
-        data.args = [self.widgetId, messageId, true];
-        this.source.postMessage(data, this.origin);
-    };
-
-    self.stopActivity = function (messageId, details) {
-        throw new Error("not yet implemented");
-    };
-
-    self.setPaused = function (messageId, isPaused, details) {
-        throw new Error("not yet implemented");
-    };
-
-    self.addUser = function (messageId, uid, userState, details) {
-        throw new Error("not yet implemented");
-    };
-
-    self.removeUser = function (messageId, uid) {
-        throw new Error("not yet implemented");
-    };
-
-    self.commandToWidget = function (messageId, command, args) {
-        throw new Error("not yet implemented");
-    };
-
-    return self;
-}());
-
 return onRuthefjordEvent;
 }());
 
@@ -1192,15 +1142,3 @@ function devmode() {
 function toSandbox() {
     onRuthefjordEvent('onToSandbox')
 }
-
-// process messages from the student client
-function receiveMessage(event) {
-    console.log("recieved message", event);
-    if (onRuthefjordEvent.widgetAPI.hasOwnProperty(event.data.command)) {
-        onRuthefjordEvent.widgetAPI[event.data.command].apply(event, event.data.args);
-    } else {
-        throw new Error("unrecognized copilot command " + event.data.command);
-    }
-}
-
-window.addEventListener("message", receiveMessage, false);
