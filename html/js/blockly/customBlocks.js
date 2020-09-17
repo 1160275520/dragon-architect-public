@@ -143,6 +143,30 @@ Blockly.JSONLangOps['Forward'] = function(block) {
     return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
+// BACKWARD
+    Blockly.Blocks['Backward'] = {
+        init: function() {
+            this.jsonInit({
+                message0: "backward by %1",
+                args0: [
+                    {
+                        type: "input_value",
+                        name: "VALUE",
+                        check: "Number"
+                    }
+                ],
+                previousStatement:true,
+                nextStatement:true,
+                inputsInline:true,
+                colour:COLOR_MOVE_1
+            });
+        }
+    };
+
+    Blockly.JSONLangOps['Backward'] = function(block) {
+        return newCall("Backward", block.id, [makeSingleArg(block, "VALUE")]);
+    };
+
 // UP
 Blockly.Blocks['Up'] = {
     init: function() {
@@ -502,7 +526,7 @@ Blockly.JSONLangOps.bodyToXML = function (body, program) {
     return xml;
 };
 
-var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
+var BUILT_INS = ['Forward', 'Backward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.JSONLangOps.stmtToXML = function (stmt, program) {

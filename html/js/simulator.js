@@ -128,6 +128,9 @@ var RuthefjordManager = (function() {
                 case "forward":
                     cur_pos.add(cur_dir);
                     break;
+                case "backward":
+                    cur_pos.add(-1*cur_dir);
+                    break;
                 case "up":
                     cur_pos.add(RuthefjordWorldState.UP);
                     break;
@@ -241,6 +244,12 @@ var RuthefjordManager = (function() {
                         "number": {"type": "ident", "value": "x"},
                         "type": "repeat"
                     }], "name": "Forward", "params": ["x"], "type": "procedure"
+                }, {
+                    "body": [{
+                        "body": [{"args": [], "name": "backward", "type": "command"}],
+                        "number": {"type": "ident", "value": "x"},
+                        "type": "repeat"
+                    }], "name": "Backward", "params": ["x"], "type": "procedure"
                 }, {
                     "body": [{"args": [], "name": "left", "type": "command"}],
                     "name": "Left",

@@ -64,6 +64,7 @@ var RuthefjordBlockly = (function(){
 // block name, standard xml, locked xml, pack name
     RuthefjordBlockly.Commands = {
         move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
+        moveB: { block: '<block type="Backward"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
         place: { block: '<block type="PlaceCube"></block>'},
         remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
         up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', pack: 'up'},
