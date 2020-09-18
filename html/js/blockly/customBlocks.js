@@ -144,28 +144,28 @@ Blockly.JSONLangOps['Forward'] = function(block) {
 };
 
 // BACKWARD
-    Blockly.Blocks['Backward'] = {
-        init: function() {
-            this.jsonInit({
-                message0: "backward by %1",
-                args0: [
-                    {
-                        type: "input_value",
-                        name: "VALUE",
-                        check: "Number"
-                    }
-                ],
-                previousStatement:true,
-                nextStatement:true,
-                inputsInline:true,
-                colour:COLOR_MOVE_1
-            });
-        }
-    };
+Blockly.Blocks['Backward'] = {
+    init: function() {
+        this.jsonInit({
+            message0: "backward by %1",
+            args0: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                }
+            ],
+            previousStatement:true,
+            nextStatement:true,
+            inputsInline:true,
+            colour:COLOR_MOVE_1
+        });
+    }
+};
 
-    Blockly.JSONLangOps['Backward'] = function(block) {
-        return newCall("Backward", block.id, [makeSingleArg(block, "VALUE")]);
-    };
+Blockly.JSONLangOps['Backward'] = function(block) {
+    return newCall("Backward", block.id, [makeSingleArg(block, "VALUE")]);
+};
 
 // UP
 Blockly.Blocks['Up'] = {
