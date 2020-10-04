@@ -152,7 +152,7 @@ var RuthefjordDisplay = (function() {
         // camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
 
         //new code for camera
-        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+        camera = new THREE.PerspectiveCamera(899, window.innerWidth / window.innerHeight, 1, 1000000);
         camera.position.set( 0, 75, 100 );
 
         self.clock = new THREE.Clock();
@@ -165,16 +165,16 @@ var RuthefjordDisplay = (function() {
         renderer = new THREE.WebGLRenderer( {antialias: true} );
         parent = $(parentSelector);
         renderer.setSize(parent.width(), parent.height());
-        // camera.aspect = parent.width() / parent.height();
-        // camera.up.set(0,0,1);
-        // camera.updateProjectionMatrix();
+        camera.aspect = parent.width() / parent.height();
+        camera.up.set(0,0,1);
+        camera.updateProjectionMatrix();
         parent.append(renderer.domElement);
         self.renderOut = false;
 
         viewer_camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-        viewer_camera.aspect = parent.width() / parent.height();
-        viewer_camera.up.set(0,0,1);
-        viewer_camera.updateProjectionMatrix();
+        // viewer_camera.aspect = parent.width() / parent.height();
+        // viewer_camera.up.set(0,0,1);
+        // viewer_camera.updateProjectionMatrix();
         controls = new THREE.PointerLockControls( viewer_camera );
         scene.add( viewer_camera );
 
