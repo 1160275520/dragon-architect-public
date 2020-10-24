@@ -730,20 +730,20 @@ $(function() {
                     });
                 }
             } else {
-                // RuthefjordUI.State.goToConsent();
-                // $("#btn-consent-continue").on('click', function() {
-                //     // RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
-                //     RuthefjordUI.State.goToAlphaMsg();
-                //     if (RUTHEFJORD_CONFIG.features.sandbox_only) {
-                //         $("#btn-alpha-continue").on('click', function() {
-                //             setState_sandbox();
-                //         });
-                //     } else {
-                //         $("#btn-alpha-continue").on('click', function() {
-                //             current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
-                //         });
-                //     }
-                // });
+                RuthefjordUI.State.goToConsent();
+                $("#btn-consent-continue").on('click', function() {
+                    // RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
+                    RuthefjordUI.State.goToAlphaMsg();
+                    if (RUTHEFJORD_CONFIG.features.sandbox_only) {
+                        $("#btn-alpha-continue").on('click', function() {
+                            setState_sandbox();
+                        });
+                    } else {
+                        $("#btn-alpha-continue").on('click', function() {
+                            current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
+                        });
+                    }
+                });
                 current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
             }
         });
