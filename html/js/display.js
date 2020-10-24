@@ -149,11 +149,11 @@ var RuthefjordDisplay = (function() {
 
     self.init = function(parentSelector) {
         scene = new THREE.Scene();
-        // camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
 
-        //new code for camera
-        camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 10, 1000);
-        camera.position.set( 0, 0, 0 );
+        // new code for camera
+        // camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 10, 1000);
+        // camera.position.set( 0, 0, 0 );
 
         self.clock = new THREE.Clock();
         self.oldTime = 0;
@@ -172,9 +172,9 @@ var RuthefjordDisplay = (function() {
         self.renderOut = false;
 
         viewer_camera = new THREE.PerspectiveCamera(10, window.innerWidth / window.innerHeight, 1, 1000);
-        // viewer_camera.aspect = parent.width() / parent.height();
-        // viewer_camera.up.set(0,0,1);
-        // viewer_camera.updateProjectionMatrix();
+        viewer_camera.aspect = parent.width() / parent.height();
+        viewer_camera.up.set(0,0,1);
+        viewer_camera.updateProjectionMatrix();
         controls = new THREE.PointerLockControls( viewer_camera );
         scene.add( viewer_camera );
 
@@ -278,31 +278,6 @@ var RuthefjordDisplay = (function() {
 
         requestAnimationFrame(update); // change to render to omit fps display
     };
-
-    //generate grass texture for plane
-    function generateTexture() {
-
-        var canvas = document.createElement( 'canvas' );
-        canvas.width = 512;
-        canvas.height = 512;
-
-        var context = canvas.getContext( '2d' );
-
-        for ( var i = 0; i < 20000; i ++ ) {
-
-            context.fillStyle = 'hsl(0,0%,' + ( Math.random() * 50 + 50 ) + '%)';
-            context.beginPath();
-            context.arc( Math.random() * canvas.width, Math.random() * canvas.height, Math.random() + 0.15, 0, Math.PI * 2, true );
-            context.fill();
-
-        }
-
-        context.globalAlpha = 0.075;
-        context.globalCompositeOperation = 'lighter';
-
-        return canvas;
-
-    }
 
     self.screenshot = function(id) {
         self.renderOut = {id: id};
