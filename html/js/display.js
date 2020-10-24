@@ -238,29 +238,14 @@ var RuthefjordDisplay = (function() {
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
-        // tex = loader.load("media/outlined_cube.png");
-        // tex.wrapS = THREE.RepeatWrapping;
-        // tex.wrapT = THREE.RepeatWrapping;
-        // tex.repeat.set(100, 100);
-        // var material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
-        // var plane = new THREE.Mesh(geometry, material);
-        // scene.add( plane );
-        var texture = new THREE.CanvasTexture( generateTexture() );
-        for ( var i = 0; i < 15; i ++ ) {
 
-            var material = new THREE.MeshBasicMaterial( {
-                color: new THREE.Color().setHSL( 0.3, 0.75, ( i / 15 ) * 0.4 + 0.1 ),
-                map: texture,
-                depthTest: false,
-                depthWrite: false,
-                transparent: true
-            } );
-
-            var mesh = new THREE.Mesh( geometry, material );
-            mesh.position.y = i * 0.25;
-            mesh.rotation.x = - Math.PI / 2;
-            scene.add( mesh );
-        }
+        tex = loader.load("media/grass_texture.png");
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(100, 100);
+        var material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
+        var plane = new THREE.Mesh(geometry, material);
+        scene.add( plane );
 
         // robot
         geometry = new THREE.SphereGeometry(0.5, 32, 32);
