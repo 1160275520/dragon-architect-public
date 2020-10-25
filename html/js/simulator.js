@@ -174,7 +174,7 @@ var RuthefjordManager = (function() {
                 RuthefjordUI.TimeSlider.value(0);
             } else if (rs === module.RunState.executing) {
                 if (self.run_state === module.RunState.stopped) {
-                    RuthefjordTranslate.buildString();
+                    RuthefjordTranslate.getPythonCode();
                     self.set_program(RuthefjordBlockly.getProgram());
                 }
                 // reset last statement execution time so dt isn't super wrong next time
