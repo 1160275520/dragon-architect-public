@@ -23,7 +23,8 @@
         padding: 0;
       }
       .blocklyFlyoutBackground {
-        fill: #ccebff !important;
+        fill: #1f6f8b !important;
+        fill-opacity: 1 !important;
         pointer-events: all;
       }
       .blocklyFlyout {
@@ -84,14 +85,14 @@
         text-align: center;
         display: flex;
         display: -webkit-flex;
+        height: 63px;
       }
       #libraryLabel {
         background-color: #1f6f8b;
         font-family: "Roboto Slab";
-        margin: 10px;
+        /*margin: 10px;*/
         -webkit-transition: width 0.3s ease;
         transition: width 0.3s ease;
-        width: ;
       }
       #codeLabel {
         -webkit-transition: width 0.3s ease;
@@ -100,15 +101,21 @@
       .blocklyLabels_block {
         font-family: "Roboto Slab";
         color: #ffffff;
-        margin: auto;
+        margin: 0;
         font-size: 20px;
         background-color: #1f6f8b;
+        display: flex;
+        padding: 20px 17px;
+        min-width: 116px;
+        text-align: center;
       }
       .blocklyLabels_code {
         font-family: "Roboto Slab";
         color: #ffffff;
         margin: auto;
         font-size: 30px;
+        text-align: left;
+        padding-left: 20px;
       }
 
     </style>
@@ -134,7 +141,7 @@
           $("#blocklyLabels", document).hide();
         } else {
           $("#blocklyLabels", document).show();
-          $("#libraryLabel", document).width(toolboxWidth);
+          $("#libraryLabel", document).width("105px");
           $("#flyoutMask", document).find("rect").attr("width", toolboxWidth);
           $("#codeLabel", document).width(Blockly.getMainWorkspace().getMetrics().viewWidth - toolboxWidth);
         }

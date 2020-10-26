@@ -22,7 +22,7 @@ p {
 
 html {
     font-family: "Open Sans";
-    height: 100%;
+    /*height: 100%;*/
 }
 
 body {
@@ -209,6 +209,7 @@ header > h1 {
     width: 80%;
     background: #1c2b2d;
     padding: 0 5px;
+    height: fit-content;
 }
 
 #main-view-code {
@@ -252,12 +253,13 @@ header > h1 {
     justify-content: space-between;
     -webkit-justify-content: space-between;
     padding: 5px 0;
+    /*background-color: #1f6f8b;*/
 }
 
 .game-control {
     height: 52px;
     border-radius: 6px;
-    background: rgba(74, 170, 227, 0.7);
+    /*background: rgba(74, 170, 227, 0.7);*/
 }
 
 .game-control.disabled {
@@ -297,6 +299,11 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .control-icon-btn {
+    background-color: transparent;
+    color: #ffffff;
+}
+
+.control-icon-btn {
     width: 40px;
     margin: 0 0 0 5px;
 }
@@ -333,7 +340,7 @@ header button, .control-btn, .control-icon-btn {
     -webkit-flex-direction: column;
     position: absolute;
     right: 10px;
-    top: 30px;
+    top: 50px;
 }
 
 .game-control-btn-playback {
@@ -346,10 +353,13 @@ header button, .control-btn, .control-icon-btn {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    font-size: 12px;
+    font-family: "Roboto Slab";
 }
 
-#btn-run, #btn-pause.active {
-    background-color: #11d800;
+#btn-run, #btn-revert.active {
+    background-color: #E6E6E6;
+    font-family: "Roboto Slab";
 }
 
 #btn-run {
@@ -358,31 +368,34 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-run.active {
-    background-color: #b03737;
-    font-size: 24pt;
+    background-color: transparent;
+    color: #E6E6E6;
+    border: 3px solid #E6E6E6;
+    /*font-size: 24pt;*/
 }
 
-#btn-pause {
-    background-color: #f5d46f;
+#btn-revert {
+    background-color: #E6E6E6;
     height: 40px;
     line-height: 36px;
-    font-size: 20pt;
+    /*font-size: 20pt;*/
 }
 
-#btn-pause.active {
-    font-size: 20pt;
+#btn-revert.active {
+    /*font-size: 20pt;*/
+    background-color: #E6E6E6;
 }
 
-#btn-pause.disabled {
+#btn-revert.disabled {
     background-color: #BBB;
     color: #777;
 }
 
 #btn-step {
-    background-color: #11d800;
+    background-color: #E6E6E6;
     height: 40px;
     line-height: 36px;
-    font-size: 17pt;
+    /*font-size: 17pt;*/
 }
 
 #btn-step.disabled {
