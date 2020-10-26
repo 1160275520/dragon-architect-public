@@ -46,7 +46,7 @@ header {
     height: 60px;
     flex: none;
     -webkit-flex: none;
-    background: #4aaae3;
+    background: #1c2b2d;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -68,9 +68,12 @@ header > div * {
 }
 
 header > h1 {
-    margin: 0 10px;
+    position: relative;
+    font-family: 'Gravitas One', cursive;
+    margin: auto;
     flex-grow: 0;
     -webkit-flex-grow: 0;
+    color: #E7F2F9;
 }
 
 #header-items {
@@ -122,6 +125,31 @@ header > h1 {
     position: relative;
     background-color: #d1bd7d;
     margin: 0 0 4px 0;
+}
+
+
+/* menu bar */
+
+.menu-bar{
+    background-color: #e6d5b8;
+    font-family: 'Roboto Slab', serif;
+}
+
+.menu-bar_list {
+    display: flex;
+    font-color: #1c2b2d
+}
+
+.menu-bar_item {
+    font-family: "Roboto Slab";
+    fonr-weight: 300;
+    position: relative;
+    margin: 0 100px;
+}
+
+.menu-bar .current{
+    color: #ffffff;
+    text-decoration: underline;
 }
 
 /* loading pane */
@@ -178,8 +206,8 @@ header > h1 {
 #main-view-game {
     order: 1;
     -webkit-order: 1;
-    width: 40%;
-    background: #ccebff;
+    width: 80%;
+    background: #1c2b2d;
     padding: 0 5px;
 }
 
