@@ -10,7 +10,7 @@
     <style>
       html, body {
         font-family: "Open Sans";
-        background-color: #fff;
+        background-color: #1c2b2d;
         margin: 0;
         padding: 0;
         overflow: hidden;
@@ -86,14 +86,31 @@
         display: -webkit-flex;
       }
       #libraryLabel {
-        background-color: #ccebff;
+        background-color: #1f6f8b;
+        font-family: "Roboto Slab";
+        margin: 10px;
         -webkit-transition: width 0.3s ease;
         transition: width 0.3s ease;
+        width: ;
       }
       #codeLabel {
         -webkit-transition: width 0.3s ease;
         transition: width 0.3s ease;
       }
+      .blocklyLabels_block {
+        font-family: "Roboto Slab";
+        color: #ffffff;
+        margin: auto;
+        font-size: 20px;
+        background-color: #1f6f8b;
+      }
+      .blocklyLabels_code {
+        font-family: "Roboto Slab";
+        color: #ffffff;
+        margin: auto;
+        font-size: 30px;
+      }
+
     </style>
     <script>
       function init() {
@@ -126,8 +143,8 @@
   </head>
   <body onload="init()">
     <div id="blocklyLabels">
-      <div id="libraryLabel">Code Blocks</div>
-      <div id="codeLabel">Drag blocks here</div>
+      <div id="libraryLabel" class="blocklyLabels_block">Code Blocks</div>
+      <div id="codeLabel" class="blocklyLabels_code">Drag blocks here</div>
     </div>
     <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
     <xml id="toolbox" style="display: none">

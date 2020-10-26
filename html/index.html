@@ -5,6 +5,7 @@
     <link rel="shortcut icon" type="image/png" href="media/favicon.png">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic">
+    <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Roboto+Slab&display=swap" rel="stylesheet">
     <!-- we need to put css in a subdir so font-awesome font urls work -->
     <!-- build:css code/style.css -->
     <link rel="stylesheet" type="text/css" href="lib/normalize/normalize.css">
@@ -58,42 +59,50 @@
   <body>
     <header id="header">
       <h1>Dragon Architect</h1>
-      <div id="header-items">
-        <div id="menu-btn">
-          <div id="menu-icon">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-          </div>
-          <div id="menu-nav">
-            <ul>
-              <li><button id="btn-packs" class="sandboxModeUI">Learn more</button></li>
-              <li><button id="btn-gallery" class="galleryAccess">Gallery</button></li>
-              <li><button id="btn-share" class="galleryAccess">Share!</button></li>
-              <li><button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear everything</button></li>
-              <li><button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button></li>
-              <li><button id="btn-back-selector-pack" class="puzzleModeUI puzzleSelector hideTutorial">Try a different pack</button></li>
-              <li><button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector packSelector gallerySelector viewerModeUI hideTutorial shareModeUI">Go back to sandbox</button></li>
-              <li><button id="btn-back-gallery" class="viewerModeUI">Go back to gallery</button></li>
-            </ul>
-          </div>
-        </div>
-        <!--<p class="sandboxModeUI">You are in the sandbox!</p>-->
-        <!-- leave the div around, even when not in dev mode, because the button spacing relies on it existing -->
-        <div>
-          <!-- @ifdef DEV -->
-          <div id="dev-controls" style="display: flex; flex-direction: row; align-items: center">
-            <select id="dev-select-pack">
-              <option>- Jump to Pack -</option>
-            </select>
-            <button id="btn-header-sandbox">Sandbox</button>
-            <button id="btn-devmode" onclick="devmode()">Dev Mode</button>
-            <!--<button id="btn-clear-save-data">Delete Save Data</button>-->
-          </div>
-          <!-- @endif -->
-        </div>
-      </div>
+<!--&lt;!&ndash;      <div id="header-items">&ndash;&gt;-->
+<!--&lt;!&ndash;        <div id="menu-btn">&ndash;&gt;-->
+<!--&lt;!&ndash;          <div id="menu-icon">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="bar"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="bar"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="bar"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;          <div id="menu-nav">&ndash;&gt;-->
+<!--&lt;!&ndash;            <ul>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-packs" class="sandboxModeUI">Learn more</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-gallery" class="galleryAccess">Gallery</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-share" class="galleryAccess">Share!</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear everything</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-back-selector-pack" class="puzzleModeUI puzzleSelector hideTutorial">Try a different pack</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector packSelector gallerySelector viewerModeUI hideTutorial shareModeUI">Go back to sandbox</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;              <li><button id="btn-back-gallery" class="viewerModeUI">Go back to gallery</button></li>&ndash;&gt;-->
+<!--&lt;!&ndash;            </ul>&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--        &lt;!&ndash;<p class="sandboxModeUI">You are in the sandbox!</p>&ndash;&gt;-->
+<!--        &lt;!&ndash; leave the div around, even when not in dev mode, because the button spacing relies on it existing &ndash;&gt;-->
+<!--        <div>-->
+<!--          &lt;!&ndash; @ifdef DEV &ndash;&gt;-->
+<!--          <div id="dev-controls" style="display: flex; flex-direction: row; align-items: center">-->
+<!--            <select id="dev-select-pack">-->
+<!--              <option>- Jump to Pack -</option>-->
+<!--            </select>-->
+<!--            <button id="btn-header-sandbox">Sandbox</button>-->
+<!--            <button id="btn-devmode" onclick="devmode()">Dev Mode</button>-->
+<!--            &lt;!&ndash;<button id="btn-clear-save-data">Delete Save Data</button>&ndash;&gt;-->
+<!--          </div>-->
+<!--          &lt;!&ndash; @endif &ndash;&gt;-->
+<!--        </div>-->
+<!--      </div>-->
     </header>
+    <div class="menu-bar">
+      <ul class="menu-bar_list">
+        <div class="menu-bar_item current">Home</div>
+        <div class="menu-bar_item">Puzzle</div>
+        <div class="menu-bar_item">Sandbox</div>
+        <div class="menu-bar_item">Rule</div>
+      </ul>
+    </div>
     <div class="view-loading">
       <p id="msg-loading">Loading...</p>
       <p id="msg-not-loading">Something is going wrong with initializing the game! This game is still in development, so it is likely there is a bug.</p>
