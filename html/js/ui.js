@@ -737,7 +737,7 @@ module.RunButton = (function() {
 
     self.update = function(isRunning, isWorkshopMode) {
         var at = isWorkshopMode ? "Reset" : "Stop";
-        update_button('#btn-run', true, isRunning, "Go!", at);
+        update_button('#btn-run', true, isRunning, "RUN", at);
     };
 
     return self;
@@ -767,7 +767,7 @@ module.PauseButton = (function() {
     var self = {};
 
     self.update = function(isEnabled, isPaused) {
-        update_button('#btn-pause', isEnabled, isPaused, "Pause", "Resume");
+        update_button('#btn-revert', isEnabled, isPaused, "Revert One Step", "Resume");
     };
 
     return self;
@@ -777,7 +777,7 @@ module.StepButton = (function() {
     var self = {};
 
     self.update = function(isEnabled) {
-        update_button('#btn-step', isEnabled, false, "One Step", "One Step");
+        update_button('#btn-step', isEnabled, false, "Run One Step", "One Step");
     };
 
     return self;

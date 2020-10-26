@@ -522,7 +522,7 @@ $(function() {
             RuthefjordManager.Simulator.set_edit_mode(newEM);
         });
 
-        $('#btn-pause').on('click', function() {
+        $('#btn-revert').on('click', function() {
             var oldRS = RuthefjordManager.Simulator.run_state;
             if (oldRS === RuthefjordManager.RunState.executing || oldRS === RuthefjordManager.RunState.paused) {
                 var newRS = oldRS === RuthefjordManager.RunState.executing ? RuthefjordManager.RunState.paused : RuthefjordManager.RunState.executing;
