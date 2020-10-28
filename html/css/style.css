@@ -133,6 +133,15 @@ header > h1 {
 .menu-bar{
     background-color: #e6d5b8;
     font-family: 'Roboto Slab', serif;
+    display: flex;
+    border-top: 6px solid #1c2b2d;
+}
+
+.menu-bar_title {
+    font-family: 'Gravitas One';
+    color: #1c2b2d;
+    margin: auto 45px;
+    font-size: 24px;
 }
 
 .menu-bar_list {
