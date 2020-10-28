@@ -28,9 +28,38 @@
   vertical-align: middle;
   position: relative;
 }
+
+
+.slider-labels {
+  display: -webkit-flex;
+  width: auto;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: 'Roboto Slab';
+}
+
+.speed-slider_label{
+  position: absolute;
+  display: flex;
+  top: 96px;
+  right: 18px;
+  color: #ffffff;
+}
+.speed-slider_left{
+  position: absolute;
+  right: 212px;
+}
+.slider-handle{
+  background-image: linear-gradient(to bottom, #99A8B2 -8%, #1c2b2d 100%);
+}
+
 .slider.slider-horizontal {
-  width: 300px;
-  height: 20px;
+  width: 230px;
+  height: 16px;
+  position: relative;
+  margin: 0;
+  margin-right: 15px;
+  top: 13px;
 }
 .slider.slider-horizontal .slider-track {
   height: 10px;
