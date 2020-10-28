@@ -173,13 +173,22 @@
       <div id="main-view-game">
         <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <div id="camera-controls" class="game-control">
-            <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>
-            <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
-            <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
-            <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
-            <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
-            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i></button>
-            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i></button>
+<!--            <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>-->
+            <div class="game-control_title">View Point</div>
+              <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i><div class="camera-controls_text">Zoom In</div></button>
+            <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i><div class="camera-controls_text">Zoom Out</div></button>
+            <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i><div class="camera-controls_text">Rotate Left</div></button>
+            <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i><div class="camera-controls_text">Rotate Right</div></button>
+            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i><div class="camera-controls_text">Scroll Up</div></button>
+            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i><div class="camera-controls_text">Scroll Down</div></button>
+          </div>
+          <div id="speed-control" class="game-control">
+            <div class="game-control_title">Change Speed</div>
+              <div id="speed-slider"></div>
+              <div class="speed-slider_label">
+                  <div class="speed-slider_left">Slow</div>
+                  <div class="speed-slider_right">Fast</div>
+              </div>
           </div>
           <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop</button>
         </div>
@@ -191,9 +200,17 @@
             <button id="btn-time-slider-forward" class="control-btn btn-time-slider"><i class="fa fa-lg fa-arrow-circle-right"></i></button>
           </div>
           <div id="speed-controls" class="game-control tools-debug">
-            <div id="speed-slider"></div>
+<!--            <div id="speed-slider"></div>-->
           </div>
-          <button id="btn-turbo" class="control-btn tools-no-debug">X</button>
+            <div class="goal-section">
+                <div class="goal-section_title">Goal</div>
+                <div class="goal-section_text">aaaaaaaaaaaaaaaaaaaaaaa</div>
+            </div>
+            <div class="hint-section">
+                <btn id="btn-show-hint" class="hint-button"><i class="fa fa-lg fa-question"></i></btn>
+                <div class="hint-text">Hint</div>
+            </div>
+<!--          <button id="btn-turbo" class="control-btn tools-no-debug">X</button>-->
           <!-- <p id="cube-counter" class="game-control">X</p> -->
         </div>
         <div id="viewer-instructions" style="width: 700px; margin: 0 auto; padding-top: 15px" class="viewerModeUI">

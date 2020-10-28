@@ -828,12 +828,12 @@ function Slider(elemName, selector, labels, allElems, default_val) {
 
         container.addClass('slider-container');
 
-        container.append(
-            '<div class="slider-labels">' +
-                '<span style="text-align: left;">' + labels[0] + '</span>' +
-                '<span style="text-align: center;">' + labels[1] + '</span>' +
-                '<span style="text-align: right;">' + labels[2] + '</span>' +
-            '</div>');
+        // container.append(
+        //     '<div class="slider-labels">' +
+        //         '<span style="text-align: left;">' + labels[0] + '</span>' +
+        //         '<span style="text-align: center;">' + labels[1] + '</span>' +
+        //         '<span style="text-align: right;">' + labels[2] + '</span>' +
+        //     '</div>');
 
         slider = $('<div/>');
 
