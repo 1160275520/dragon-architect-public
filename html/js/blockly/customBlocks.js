@@ -143,12 +143,23 @@ Blockly.JSONLangOps['Forward'] = function(block) {
     return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
-// BACKWARD
-Blockly.Blocks['Backward'] = {
+// SET ; Variables
+Blockly.Blocks['Set'] = {
     init: function() {
+        // var nameField = new Blockly.FieldTextInput(name,
+        //     Blockly.Procedures.rename);
+        // nameField.setSpellcheck(false);
+        // this.appendDummyInput()
+        //     .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
+        //     .appendField(nameField, 'NAME');
         this.jsonInit({
-            message0: "backward by %1",
+            message0: "Set %1 to %1",
             args0: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                },
                 {
                     type: "input_value",
                     name: "VALUE",
@@ -163,8 +174,8 @@ Blockly.Blocks['Backward'] = {
     }
 };
 
-Blockly.JSONLangOps['Backward'] = function(block) {
-    return newCall("Backward", block.id, [makeSingleArg(block, "VALUE")]);
+Blockly.JSONLangOps['Set'] = function(block) {
+    return newCall("Set", block.id, [makeSingleArg(block, "VALUE"), makeSingleArg(block, "VALUE")]);
 };
 
 // UP
@@ -526,7 +537,7 @@ Blockly.JSONLangOps.bodyToXML = function (body, program) {
     return xml;
 };
 
-var BUILT_INS = ['Forward', 'Backward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
+var BUILT_INS = ['Forward', 'Set', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.JSONLangOps.stmtToXML = function (stmt, program) {

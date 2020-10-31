@@ -128,7 +128,7 @@ var RuthefjordManager = (function() {
                 case "forward":
                     cur_pos.add(cur_dir);
                     break;
-                case "backward":
+                case "set":
                     cur_pos.add(cur_dir.clone().multiplyScalar(-1));
                     break;
                 case "up":
@@ -246,10 +246,11 @@ var RuthefjordManager = (function() {
                     }], "name": "Forward", "params": ["x"], "type": "procedure"
                 }, {
                     "body": [{
-                        "body": [{"args": [], "name": "backward", "type": "command"}],
+                        "body": [{"args": [], "name": "set", "type": "command"}],
                         "number": {"type": "ident", "value": "x"},
+                        "number2": {"type": "ident", "value": "y"},
                         "type": "repeat"
-                    }], "name": "Backward", "params": ["x"], "type": "procedure"
+                    }], "name": "Set", "params": ["x", "y"], "type": "procedure"
                 }, {
                     "body": [{"args": [], "name": "left", "type": "command"}],
                     "name": "Left",
