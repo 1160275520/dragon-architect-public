@@ -26,7 +26,7 @@ html {
 }
 
 body {
-    background: #b5b5b5;
+    background: #1c2b2d;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -88,7 +88,7 @@ header > h1 {
 
 #menu-nav {
     display: none;
-    background: rgba(58,134,179,0.8);
+    background: rgba(230,213,184,1);
     border-top: 3px solid rgba(46, 105, 140, 1);
     margin: 0;
     position: absolute;
@@ -173,7 +173,7 @@ header > h1 {
     -webkit-align-items: center;
     justify-content: center;
     -webkit-justify-content: center;
-    background: white;
+    background: #1c2b2d;
 }
 
 .view-loading > #msg-loading {
@@ -183,7 +183,8 @@ header > h1 {
 .intro-msg {
     display: table;
     font-family: "Open Sans";
-    background-color: #fff;
+    color: white;
+    background-color: #1c2b2d;
     margin: 0;
     padding: 25px;
     z-index: 1;
@@ -210,6 +211,7 @@ header > h1 {
     flex-grow: 1;
     -webkit-flex-grow: 1;
     min-height: 620px;
+    background: #1c2b2d;
 }
 
 #main-view-game {
@@ -232,6 +234,7 @@ header > h1 {
     -webkit-flex-direction: column;
     align-items: stretch;
     -webkit-align-items: stretch;
+    background: #1c2b2d;
 }
 
 #code-area {
@@ -243,6 +246,7 @@ header > h1 {
     flex-grow: 1;
     -webkit-flex-grow: 1;
     height: 100%; /* required for minimized FF, don't know why */
+    background: #1c2b2d;
 }
 
 #blockly {
@@ -272,7 +276,7 @@ header > h1 {
 }
 
 .game-control.disabled {
-    background: rgba(150, 150, 150, 0.7); 
+    background: rgba(150, 150, 150, 0.7);
 }
 
 p.game-control {
@@ -843,12 +847,14 @@ header button, .control-btn, .control-icon-btn {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    background: #1c2b2d;
 }
 
 #code-entry-area {
     font-size: 8pt;
     height: 100px;
     flex-grow: 1;
+    background: #1c2b2d;
 }
 
 #btn-code-entry {
