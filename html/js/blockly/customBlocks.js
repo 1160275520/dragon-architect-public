@@ -146,20 +146,23 @@ Blockly.JSONLangOps['Forward'] = function(block) {
 // SET ; Variables
 Blockly.Blocks['Set'] = {
     init: function() {
-        // var nameField = new Blockly.FieldTextInput(name,
-        //     Blockly.Procedures.rename);
-        // nameField.setSpellcheck(false);
-        // this.appendDummyInput()
-        //     .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
-        //     .appendField(nameField, 'NAME');
+        this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
+        this.setColour(Blockly.Blocks.procedures.COLOR);
+        var name = Blockly.Procedures.findLegalName(
+             "counter", this);
+        //how much of the procedures part of this code needs to change?
+        var nameField = new Blockly.FieldTextInput(name,
+            Blockly.Procedures.rename);
+        nameField.setSpellcheck(false);
+        this.appendDummyInput()
+            .appendField("Set")
+            .appendField(nameField, 'NAME')
+            .appendField("to");
+        this.arguments_ = [];
+        this.updateParams_();
         this.jsonInit({
-            message0: "Set %1 to %1",
+            message0: "%1",
             args0: [
-                {
-                    type: "input_value",
-                    name: "VALUE",
-                    check: "Number"
-                },
                 {
                     type: "input_value",
                     name: "VALUE",
@@ -169,13 +172,22 @@ Blockly.Blocks['Set'] = {
             previousStatement:true,
             nextStatement:true,
             inputsInline:true,
-            colour:COLOR_MOVE_1
+            //colour:COLOR_MOVE_1
         });
-    }
+
+    },
+    validate: Blockly.Blocks['procedures_defnoreturn'].validate,
+    setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
+    updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
+    mutationToDom: Blockly.Blocks['procedures_defnoreturn'].mutationToDom,
+    domToMutation: Blockly.Blocks['procedures_defnoreturn'].domToMutation,
+    decompose: Blockly.Blocks['procedures_defnoreturn'].decompose,
+    compose: Blockly.Blocks['procedures_defnoreturn'].compose,
+    getProcedureDef: Blockly.Blocks['procedures_defnoreturn'].getProcedureDef
 };
 
 Blockly.JSONLangOps['Set'] = function(block) {
-    return newCall("Set", block.id, [makeSingleArg(block, "VALUE"), makeSingleArg(block, "VALUE")]);
+    return newCall("Set", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
 // UP
