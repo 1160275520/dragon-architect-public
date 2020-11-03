@@ -862,3 +862,59 @@ header button, .control-btn, .control-icon-btn {
     height: 40px;
 
 }
+
+/*new code: animated trash can
+DOESN'T WORK YET
+
+.icon {
+    background: invert($color);
+    position: relative;
+    width: 200px*$scale;
+    height: 200px*$scale;
+    margin: 50px auto 0;
+    border-radius: 5px*$scale;
+    transition: box-shadow .2s ease;
+&:hover {
+     box-shadow: 0 0 10px*$scale rgba(10,10,10,.3);
+ }
+}
+
+.icon:hover .lid, .icon:hover .lidcap {
+    transform: rotate(10deg);
+    margin-bottom: 15px*$scale;
+}
+
+.lidcap, .lid, .bin {
+    position: absolute;
+}
+
+.lidcap, .lid {
+    border-top-left-radius: 4px*$scale;
+    border-top-right-radius: 4px*$scale;
+    background: $color;
+    transition: transform .2s linear, margin .2s linear;
+}
+
+.lidcap {
+    bottom: 138px*$scale;
+    left: 90px*$scale;
+    height: 10px*$scale;
+    width: 20px*$scale;
+}
+
+.lid {
+    bottom: 120px*$scale;
+    left: 30px*$scale;
+    width: 140px*$scale;
+    height: 20px*$scale;
+}
+
+.bin {
+    bottom: 0;
+    left: 40px*$scale;
+    width: 100px*$scale;
+    border-top: 120px*$scale solid $color;
+    border-left: 10px*$scale solid transparent;
+    border-right: 10px*$scale solid transparent;
+}
+*/
