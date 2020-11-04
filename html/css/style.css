@@ -267,6 +267,7 @@ header > h1 {
     -webkit-justify-content: space-between;
     padding: 5px 0;
     background-color: #1F6F8B;
+    height: 80px;
 }
 
 .game-control {
@@ -294,16 +295,19 @@ div.game-control {
 
 .game-control_title {
     color: #ffffff;
-    top: -16px;
+    top: -23px;
+    left: 63px;
     margin: 2px 4px 6px 13px;
     font-family: 'Roboto Slab';
     position: relative;
     width: max-content;
+    text-decoration: underline;
 }
 .camera-controls_text{
-    font-size: 11px;
+    font-size: 18px;
     line-height: 1;
     font-family: 'Roboto Slab';
+    margin: 0 5px 0 5px;
 }
 
 .tools-debug {
@@ -333,6 +337,13 @@ header button, .control-btn, .control-icon-btn {
 .control-icon-btn {
     width: 40px;
     margin: 0px 0 0 13px;
+}
+
+.control-icon-btn .fa-lg {
+    font-size: 2em;
+    line-height: 1.2em;
+    vertical-align: -15%;
+    margin: 0 6px;
 }
 
 #game-controls-bar-bottom {
@@ -414,7 +425,7 @@ header button, .control-btn, .control-icon-btn {
     display: -webkit-flex;
     -webkit-flex-direction: column;
     position: absolute;
-    right: 10px;
+    right: -30px;
     top: 50px;
 }
 
@@ -509,11 +520,12 @@ header button, .control-btn, .control-icon-btn {
 
 #three-js canvas {
     display: block;
-    width: 100%;
+    width: 96% !important;
     height: 100%;
     padding: 0;
     margin: 0;
     position: absolute;
+    right: 0;
 }
 
 /* */

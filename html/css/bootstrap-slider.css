@@ -41,9 +41,10 @@
 .speed-slider_label{
   position: absolute;
   display: flex;
-  top: 96px;
+  top: 117px;
   right: 18px;
   color: #ffffff;
+  font-size: 18px;
 }
 .speed-slider_left{
   position: absolute;
