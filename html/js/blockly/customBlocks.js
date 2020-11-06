@@ -58,6 +58,32 @@ Blockly.Procedures.rename = function(text) {
     }
 };
 
+Blockly.Variables.rename = function(text) {
+    if (this.sourceBlock_.locked) {
+        return;
+    }
+    if (this.sourceBlock_.isInFlyout) {
+        // don't allow renaming of something in toolbox, this breaks everything...
+        return this.getFieldValue("NAME");
+    } else {
+        // Strip leading and trailing whitespace.  Beyond this, all names are legal.
+        text = text.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
+
+        // Rename any getters and setters.
+        var blocks = this.sourceBlock_.workspace.getAllBlocks();
+        for (var i = 0; i < blocks.length; i++) {
+            if (blocks[i].isGetter && blocks[i].renameVar) { // procedure call blocks have this defined
+                blocks[i].renameVar(this.text_, text); // only renames to text those calls that match current name this.text_
+            }
+        }
+        // blockly friggin explodes if the toolbox is updated while something is being dragged
+        if (Blockly.dragMode_ === 0) {
+            RuthefjordBlockly.updateToolbox();
+        }
+        return text;
+    }
+};
+
 var old_changed_func = Blockly.Mutator.prototype.workspaceChanged_;
 
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
@@ -146,65 +172,88 @@ Blockly.JSONLangOps['Forward'] = function(block) {
 // SET ; Variables
 Blockly.Blocks['Set'] = {
     init: function() {
-        // this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
-        // this.setColour(Blockly.Blocks.variables.HUE);
-        // var name = Blockly.Procedures.findLegalName(
-        //      "counter", this);
-        // //how much of the procedures part of this code needs to change?
-        // var nameField = new Blockly.FieldTextInput(name,
-        //     Blockly.Procedures.rename);
-        // nameField.setSpellcheck(false);
-        // this.appendDummyInput()
-        //     .appendField("Set")
-        //     .appendField(nameField, 'NAME')
-        //     .appendField("to");
-        // this.arguments_ = [];
-        // this.updateParams_();
-        var json = {
-            message0: "Set %1",
-            message1: "to %2",
-            args: [
-                {
-                    type: "input_value",
-                    name: "VALUE",
-                    check: "Number"
-                },
-                {
-                    type: "input_value",
-                    name: "VALUE",
-                    check: "Number"
-                }
-            ],
-            previousStatement:true,
-            nextStatement:true,
-            inputsInline:true,
-        }
-        this.jsonInit(json)
-        // Blockly.Block.prototype.interpolate_(json['message', json['args']])
+        this.setColour(Blockly.Blocks.variables.HUE);
 
-        //Just end up doing these if we define them in the json file
-        // this.setInputsInline(json['inputsInline'])
-        // this.setOutput(true, json['output'])
-        // this.setPreviousStatement(true, json['previousStatement']);
-        // this.setNextStatement(true, json['nextStatement']);
-        // this.setTooltip(json['tooltip']);
-        // this.setHelpUrl(json['helpUrl']);
-        //json.interpolate is called by jsonInit
-        //look into what interpolate does that we need to do
+        // TODO is it ok to just make counter the default name?
+        var nameField = new Blockly.FieldTextInput("counter", Blockly.Variables.rename);
+        nameField.setSpellcheck(false);
+        this.appendDummyInput()
+            .appendField("Set")
+            .appendField(nameField, 'NAME')
+            .appendField("to");
 
+        var input = this.appendValueInput("VALUE");
+        input.setCheck("Number");
+        this.setInputsInline(true);
     },
-    validate: Blockly.Blocks['procedures_defnoreturn'].validate,
-    setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
-    updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
-    mutationToDom: Blockly.Blocks['procedures_defnoreturn'].mutationToDom,
-    domToMutation: Blockly.Blocks['procedures_defnoreturn'].domToMutation,
-    decompose: Blockly.Blocks['procedures_defnoreturn'].decompose,
-    compose: Blockly.Blocks['procedures_defnoreturn'].compose,
-    getProcedureDef: Blockly.Blocks['procedures_defnoreturn'].getProcedureDef
+    mutationToDom: function () {
+        // TODO is this necessary?
+        var container = document.createElement('mutation');
+
+        // HACK add dummmy attribute for no argument to ensure toolbox gets updated with caller (it's super byzantine)
+        container.setAttribute('dummy', true);
+
+        return container;
+    },
+    domToMutation: function () {
+        // TODO is this necessary?
+    },
+    getVars: function() { // used by Blockly code
+        return [this.getFieldValue('NAME')];
+    },
+    renameVar: function (oldName, newName) {
+        if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
+            this.setFieldValue(newName, 'NAME');
+        }
+    },
+    dispose: function () {
+        var getters = [];
+        var blocks = Blockly.getMainWorkspace().getAllBlocks();
+        // Iterate through every block and check the name.
+        for (var i = 0; i < blocks.length; i++) {
+            if (blocks[i].isGetter) {
+                var varName = blocks[i].getFieldValue('NAME');
+                // Procedure name may be null if the block is only half-built.
+                if (varName && Blockly.Names.equals(varName, this.getFieldValue('NAME'))) {
+                    getters.push(blocks[i]);
+                }
+            }
+        }
+        for (i = 0; i < getters.length; i++) {
+            getters[i].dispose(true, false);
+        }
+
+        // avoid recursively updating toolbox by only doing the update when the block being disposed in not in the toolbox
+        var flyout = this.isInFlyout;
+        this.constructor.prototype.dispose.apply(this, arguments);
+        if (Blockly.dragMode_ === 0 && !flyout) {
+            RuthefjordBlockly.updateToolbox();
+        }
+    },
 };
 
 Blockly.JSONLangOps['Set'] = function(block) {
     return newCall("Set", block.id, [makeSingleArg(block, "VALUE")]);
+};
+
+Blockly.Blocks['Get'] = {
+    init: function () {
+        this.setColour(Blockly.Blocks.variables.HUE);
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldVariable("counter"), 'NAME');
+        this.setOutput(true);
+        this.setEditable(false);
+    },
+    renameVar: function (oldName, newName) {
+        if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
+            this.setFieldValue(newName, 'NAME');
+        }
+    },
+    isGetter: true,
+}
+
+Blockly.JSONLangOps['Get'] = function(block) {
+    return newCall("Get", block.id, []);
 };
 
 // UP

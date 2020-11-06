@@ -64,7 +64,7 @@ var RuthefjordBlockly = (function(){
 // block name, standard xml, locked xml, pack name
     RuthefjordBlockly.Commands = {
         move2: { block: '<block type="Forward"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block><block type="Left"></block><block type="Right"></block>'},
-        set: { block: '<block type="Set"><value name="VALUE"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></value></block>'},
+        set: { block: '<block type="Set"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>'},
         place: { block: '<block type="PlaceCube"></block>'},
         remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove'},
         up: { block: '<block type="Up"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">'+RuthefjordBlockly.makeShadowNum(1)+'</value></block>', pack: 'up'},
@@ -296,6 +296,13 @@ var RuthefjordBlockly = (function(){
             _.forEach(proc[1], function(arg) {
                 toolXML += '<arg name="' + arg + '"></arg>'
             });
+            toolXML += '</mutation></block>';
+        });
+
+        // add getter for each defined variable
+        var set_vars = Blockly.Variables.allVariables(Blockly.getMainWorkspace());
+        _.forEach(set_vars, function(name) {
+            toolXML += '<block type="Get"><mutation name="' + name + '">';
             toolXML += '</mutation></block>';
         });
 
