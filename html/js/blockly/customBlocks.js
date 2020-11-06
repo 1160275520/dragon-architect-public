@@ -146,23 +146,29 @@ Blockly.JSONLangOps['Forward'] = function(block) {
 // SET ; Variables
 Blockly.Blocks['Set'] = {
     init: function() {
-        this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
-        this.setColour(Blockly.Blocks.procedures.COLOR);
-        var name = Blockly.Procedures.findLegalName(
-             "counter", this);
-        //how much of the procedures part of this code needs to change?
-        var nameField = new Blockly.FieldTextInput(name,
-            Blockly.Procedures.rename);
-        nameField.setSpellcheck(false);
-        this.appendDummyInput()
-            .appendField("Set")
-            .appendField(nameField, 'NAME')
-            .appendField("to");
-        this.arguments_ = [];
-        this.updateParams_();
-        this.jsonInit({
-            message0: "%1",
-            args0: [
+        // this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
+        // this.setColour(Blockly.Blocks.variables.HUE);
+        // var name = Blockly.Procedures.findLegalName(
+        //      "counter", this);
+        // //how much of the procedures part of this code needs to change?
+        // var nameField = new Blockly.FieldTextInput(name,
+        //     Blockly.Procedures.rename);
+        // nameField.setSpellcheck(false);
+        // this.appendDummyInput()
+        //     .appendField("Set")
+        //     .appendField(nameField, 'NAME')
+        //     .appendField("to");
+        // this.arguments_ = [];
+        // this.updateParams_();
+        var json = {
+            message0: "Set %1",
+            message1: "to %2",
+            args: [
+                {
+                    type: "input_value",
+                    name: "VALUE",
+                    check: "Number"
+                },
                 {
                     type: "input_value",
                     name: "VALUE",
@@ -172,8 +178,19 @@ Blockly.Blocks['Set'] = {
             previousStatement:true,
             nextStatement:true,
             inputsInline:true,
-            //colour:COLOR_MOVE_1
-        });
+        }
+        this.jsonInit(json)
+        // Blockly.Block.prototype.interpolate_(json['message', json['args']])
+
+        //Just end up doing these if we define them in the json file
+        // this.setInputsInline(json['inputsInline'])
+        // this.setOutput(true, json['output'])
+        // this.setPreviousStatement(true, json['previousStatement']);
+        // this.setNextStatement(true, json['nextStatement']);
+        // this.setTooltip(json['tooltip']);
+        // this.setHelpUrl(json['helpUrl']);
+        //json.interpolate is called by jsonInit
+        //look into what interpolate does that we need to do
 
     },
     validate: Blockly.Blocks['procedures_defnoreturn'].validate,
