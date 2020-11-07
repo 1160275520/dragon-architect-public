@@ -195,8 +195,8 @@ Blockly.Blocks['Set'] = {
 
         return container;
     },
-    domToMutation: function () {
-        // TODO is this necessary?
+    domToMutation: function (xml) {
+        // TODO is this necessary?;
     },
     getVars: function() { // used by Blockly code
         return [this.getFieldValue('NAME')];
@@ -245,9 +245,14 @@ Blockly.Blocks['Get'] = {
         this.setEditable(false);
     },
     renameVar: function (oldName, newName) {
+        console.log("renameVar " + oldName + "->" + newName)
         if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
             this.setFieldValue(newName, 'NAME');
         }
+    },
+    domToMutation: function (xml) {
+        // applies the name mutation set up in updateToolbox
+        this.setFieldValue(xml.getAttribute("name"), "NAME");
     },
     isGetter: true,
 }
