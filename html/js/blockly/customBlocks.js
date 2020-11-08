@@ -185,6 +185,8 @@ Blockly.Blocks['Set'] = {
         var input = this.appendValueInput("VALUE");
         input.setCheck("Number");
         this.setInputsInline(true);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
     },
     mutationToDom: function () {
         // TODO is this necessary?

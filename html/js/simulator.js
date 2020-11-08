@@ -129,7 +129,7 @@ var RuthefjordManager = (function() {
                     cur_pos.add(cur_dir);
                     break;
                 case "set":
-                    cur_pos.add(cur_dir.clone().multiplyScalar(-1));
+                    // cur_pos.add(cur_dir.clone().multiplyScalar(-1)); set should not make things go backwards
                     break;
                 case "up":
                     cur_pos.add(RuthefjordWorldState.UP);
