@@ -150,6 +150,7 @@ var RuthefjordDisplay = (function() {
     self.init = function(parentSelector) {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+
         self.clock = new THREE.Clock();
         self.oldTime = 0;
         cubes = {};
@@ -233,7 +234,8 @@ var RuthefjordDisplay = (function() {
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
-        tex = loader.load("media/outlined_cube.png");
+
+        tex = loader.load("media/grass_texture.png");
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         tex.repeat.set(100, 100);

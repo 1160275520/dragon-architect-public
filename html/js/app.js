@@ -744,6 +744,7 @@ $(function() {
                         });
                     }
                 });
+                current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
             }
         });
         RuthefjordBlockly.game_info = game_info;
