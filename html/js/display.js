@@ -194,28 +194,29 @@ var RuthefjordDisplay = (function() {
             path + "py" + format, path + "ny" + format,
             path + "pz" + format, path + "nz" + format];
         var cubeLoader = new THREE.CubeTextureLoader();
-        var cubeMap = cubeLoader.load(texes);
+        // var cubeMap = cubeLoader.load(texes);
         //cubeMap.format = THREE.RGBFormat;
         // code from http://blog.romanliutikov.com/post/58705840698/skybox-and-environment-map-in-threejs
-        var shader = THREE.ShaderLib['cube']; // init cube shader from built-in lib
-        shader.uniforms['tCube'].value = cubeMap; // apply textures to shader
+        // var shader = THREE.ShaderLib['cube']; // init cube shader from built-in lib
+        // need to fix this shader problem
+        // shader.uniforms['tCube'].value = cubeMap; // apply textures to shader
 
         // create shader material
-        var skyBoxMaterial = new THREE.ShaderMaterial( {
-            fragmentShader: shader.fragmentShader,
-            vertexShader: shader.vertexShader,
-            uniforms: shader.uniforms,
-            depthWrite: false,
-            side: THREE.BackSide
-        });
+        // var skyBoxMaterial = new THREE.ShaderMaterial( {
+        //     fragmentShader: shader.fragmentShader,
+        //     vertexShader: shader.vertexShader,
+        //     uniforms: shader.uniforms,
+        //     depthWrite: false,
+        //     side: THREE.BackSide
+        // });
 
         // create skybox mesh
-        var skybox = new THREE.Mesh(
-            new THREE.CubeGeometry(1000, 1000, 1000),
-            skyBoxMaterial
-        );
-
-        scene.add(skybox);
+        // var skybox = new THREE.Mesh(
+        //     new THREE.CubeGeometry(1000, 1000, 1000),
+        //     skyBoxMaterial
+        // );
+        scene.background = cubeLoader.load(texes);
+        // scene.add(skybox);
 
         // cube geometry, materials
         var loader = new THREE.TextureLoader();
@@ -255,6 +256,17 @@ var RuthefjordDisplay = (function() {
         zCuePlane = new THREE.Mesh(geometry, material);
         scene.add(zCuePlane);
         scene.add(robot);
+
+        import("../node_modules/three/examples/jsm/loaders/FBXLoader.js")
+            .then((module) => {
+                var loader = new module.FBXLoader();
+                    loader.load( 'media/dragon_FBX/Dragon.FBX', function ( object ) {
+                        object.scale.set(0.01, 0.01, 0.01);
+                        object.rotation.x = Math.PI / 2;
+                        object.rotation.y += Math.PI / 2;
+                        scene.add( object );
+                    });
+                });
 
         // lights
         var light = new THREE.DirectionalLight("#ffffff", 1.74);
@@ -578,3 +590,4 @@ var RuthefjordDisplay = (function() {
 
     return self;
 }());
+
