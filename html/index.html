@@ -57,44 +57,6 @@
     <title>Dragon Architect</title>
   </head>
   <body>
-<!--    <header id="header">-->
-<!--      <h1>Dragon Architect</h1>-->
-<!--&lt;!&ndash;      <div id="header-items">&ndash;&gt;-->
-<!--&lt;!&ndash;        <div id="menu-btn">&ndash;&gt;-->
-<!--&lt;!&ndash;          <div id="menu-icon">&ndash;&gt;-->
-<!--&lt;!&ndash;            <div class="bar"></div>&ndash;&gt;-->
-<!--&lt;!&ndash;            <div class="bar"></div>&ndash;&gt;-->
-<!--&lt;!&ndash;            <div class="bar"></div>&ndash;&gt;-->
-<!--&lt;!&ndash;          </div>&ndash;&gt;-->
-<!--&lt;!&ndash;          <div id="menu-nav">&ndash;&gt;-->
-<!--&lt;!&ndash;            <ul>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-packs" class="sandboxModeUI">Learn more</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-gallery" class="galleryAccess">Gallery</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-share" class="galleryAccess">Share!</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-header-clear-sandbox" class="sandboxModeUI">Clear everything</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-back-selector-puzzle" class="puzzleModeUI hideTutorial">Try a different puzzle</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-back-selector-pack" class="puzzleModeUI puzzleSelector hideTutorial">Try a different pack</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-back-sandbox" class="puzzleModeUI puzzleSelector packSelector gallerySelector viewerModeUI hideTutorial shareModeUI">Go back to sandbox</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;              <li><button id="btn-back-gallery" class="viewerModeUI">Go back to gallery</button></li>&ndash;&gt;-->
-<!--&lt;!&ndash;            </ul>&ndash;&gt;-->
-<!--&lt;!&ndash;          </div>&ndash;&gt;-->
-<!--&lt;!&ndash;        </div>&ndash;&gt;-->
-<!--        &lt;!&ndash;<p class="sandboxModeUI">You are in the sandbox!</p>&ndash;&gt;-->
-<!--        &lt;!&ndash; leave the div around, even when not in dev mode, because the button spacing relies on it existing &ndash;&gt;-->
-<!--        <div>-->
-<!--          &lt;!&ndash; @ifdef DEV &ndash;&gt;-->
-<!--          <div id="dev-controls" style="display: flex; flex-direction: row; align-items: center">-->
-<!--            <select id="dev-select-pack">-->
-<!--              <option>- Jump to Pack -</option>-->
-<!--            </select>-->
-<!--            <button id="btn-header-sandbox">Sandbox</button>-->
-<!--            <button id="btn-devmode" onclick="devmode()">Dev Mode</button>-->
-<!--            &lt;!&ndash;<button id="btn-clear-save-data">Delete Save Data</button>&ndash;&gt;-->
-<!--          </div>-->
-<!--          &lt;!&ndash; @endif &ndash;&gt;-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </header>-->
     <div class="menu-bar">
       <div class="menu-bar_title">
         Dragon Architect
@@ -112,8 +74,8 @@
     </div>
     <div id="player-consent" class="intro-msg" data-tosid="1">
       <h2>Dragon Architect is a research project, and we use information about how people play the game to do our research. This is a consent form explaining the data we collect and how it might be used.</h2>
-      <p style="background: #fff">By playing this game you acknowledge that:</p>
-      <ul style="background: #fff">
+      <p style="background: #fff;">By playing this game you acknowledge that:</p>
+      <ul style="background: #fff;">
         <li><b>We are recording logs of player decisions.</b> As you play this game, you are participating in a research study, and it is keeping a record of your decisions and pathways through the game so that the game's creators, researchers at the University of Washington*, can improve the game for future players, as well as see whether our games improve our abilities with in-game tasks over time. Your play log will be added to a dataset that shows up trends in player behavior. This data will be kept for 7 years. This logging is no different than the standard practice in the game industry aimed at improving player's experience.<br></li>
 
         <li><b>For some games, we ask a set of survey questions about your perceptions of math and intelligence, and for basic demographic information: Age, Gender, and Education Level.</b><br></li>
@@ -123,7 +85,7 @@
         <li><b>This data may be published or shared with the academic community</b> for the purposes of presenting research findings and furthering the advancement of improving games and learning through games. The log data will be in the aggregate and collected form (not per individual), without the possibility for anyone to determine any personally identifiable information or even personally identifiable gameplay information.</li>
       </ul>
 
-      <p style="background: #fff">If you have any questions or concerns about the research or game, please feel free to contact us at cgs-feedback@cs.washington.edu or at (425) 312-3363. If you have questions about your rights as a research participant, you may contact a member of UW's Human Subjects Division at hsdinfo@uw.edu or at (206) 543-0098. Please note that emails are considered insecure and privacy is not guaranteed.</p><br>
+      <p style="background: #fff;">If you have any questions or concerns about the research or game, please feel free to contact us at cgs-feedback@cs.washington.edu or at (425) 312-3363. If you have questions about your rights as a research participant, you may contact a member of UW's Human Subjects Division at hsdinfo@uw.edu or at (206) 543-0098. Please note that emails are considered insecure and privacy is not guaranteed.</p><br>
 
       <input id="chkbox-consent" type="checkbox" checked>By leaving this box checked I give permission for my data to be used for research purposes.<br><br>
       <input id="btn-consent-continue" type="submit" value="Continue">
@@ -157,41 +119,54 @@
       <div id="share-message"></div>
     </div>
     <div id="main">
-<!--      <div id="instructions-display" class="instructions">-->
-<!--        <div id="instructions-goal"></div>-->
-<!--        <div>-->
-<!--          <img id="instructions-icon" src="media/dragon_icon_speech.png">-->
-<!--        </div>-->
-<!--        &lt;!&ndash;<p id="instructions-detail"></p>&ndash;&gt;-->
-<!--        &lt;!&ndash;<div id="instructions-errors">&ndash;&gt;-->
-<!--        &lt;!&ndash;<p id="instructions-errors-title"></p>&ndash;&gt;-->
-<!--        &lt;!&ndash;<ul id="instructions-errors-list">&ndash;&gt;-->
-<!--        &lt;!&ndash;</ul>&ndash;&gt;-->
-<!--        &lt;!&ndash;</div>&ndash;&gt;-->
-<!--        &lt;!&ndash;<button id="btn-instructions-hide" class="notTitle">Click to hide</button>&ndash;&gt;-->
-<!--      </div>-->
+        <div id="main-view-code" class="codeEditor">
+            <div id="code-area">
+                <iframe id="blockly" src="frame.html"></iframe>
+                <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">
+                    <button id="btn-run" class="game-control-btn-playback">X</button>
+                    <button id="btn-step" class="game-control-btn-playback">X</button>
+                    <button id="btn-revert" class="game-control-btn-playback">X</button>
+                    <button id="btn-done" class="submitUI game-control-btn-playback">I'm done</button>
+                </div>
+                <button id="btn-undo" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Undo</button>
+                <p id="statement-counter"></p>
+            </div>
+        </div>
       <div id="main-view-game">
         <div id="game-controls-bar-top" class="game-controls-bar puzzleModeUI sandboxModeUI">
           <div id="camera-controls" class="game-control">
 <!--            <i class="control-element fa fa-lg fa-video-camera" title="Camera Controls"></i>-->
-            <div class="game-control_title">Zoom</div>
-            <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i><div class="camera-controls_text">In</div></button>
-            <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i><div class="camera-controls_text">Out</div></button>
-              <div class="game-control_title">Rotate</div>
-              <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i><div class="camera-controls_text">Left</div></button>
-            <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i><div class="camera-controls_text">Right</div></button>
-              <div class="game-control_title">Scroll</div>
-              <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i><div class="camera-controls_text">Up</div></button>
-            <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i><div class="camera-controls_text">Down</div></button>
-          </div>
-          <div id="speed-control" class="game-control">
-            <div class="game-control_title">Change Speed</div>
-              <div id="speed-slider"></div>
-              <div class="speed-slider_label">
-                  <div class="speed-slider_left">Slow</div>
-                  <div class="speed-slider_right">Fast</div>
+              <div class="game-control_category">
+                  <div class="game-control_title">Zoom</div>
+                  <div class="game-control_buttons">
+                      <button class="control-icon-btn" id="camera-zoom-in" title="Zoom In Camera"><i class="fa fa-lg fa-search-plus"></i></button>
+                      <button class="control-icon-btn" id="camera-zoom-out" title="Zoom Out Camera"><i class="fa fa-lg fa-search-minus"></i></button>
+                  </div>
+              </div>
+              <div class="game-control_category">
+                  <div class="game-control_title">Rotate</div>
+                  <div class="game-control_buttons">
+                      <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-left" title="Rotate Camera Left"><i class="fa fa-lg fa-rotate-left"></i></button>
+                      <button class="control-icon-btn camera-controls-rotate" id="camera-rotate-right" title="Rotate Camera Right"><i class="fa fa-lg fa-rotate-right"></i></button>
+                  </div>
+              </div>
+              <div class="game-control_category">
+                  <div class="game-control_title">Scroll</div>
+                  <div class="game-control_buttons">
+                      <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-up" title="Tilt Camera Up"><i class="fa fa-lg fa-arrow-up"></i></button>
+                      <button class="control-icon-btn camera-controls-tilt" id="camera-tilt-down" title="Tilt Camera Down"><i class="fa fa-lg fa-arrow-down"></i></button>
+                  </div>
               </div>
           </div>
+        <div class="game-control_category">
+<!--          <div id="speed-control" class="game-control">-->
+            <div class="game-control_title">Change Speed</div>
+            <div id="speed-slider">
+                <div class="speed-slider_left">Slow</div>
+                <div class="speed-slider_right">Fast</div>
+            </div>
+
+        </div>
           <button id="btn-workshop" class="control-btn sandboxModeUI">Enter Workshop</button>
         </div>
         <div id="three-js"></div>
@@ -215,17 +190,17 @@
 <!--          <button id="btn-turbo" class="control-btn tools-no-debug">X</button>-->
           <!-- <p id="cube-counter" class="game-control">X</p> -->
         </div>
-        <div id="viewer-instructions" style="width: 700px; margin: 0 auto; padding-top: 15px" class="viewerModeUI">
+        <div id="viewer-instructions" style="width: 700px; margin: 0 auto; padding-top: 15px;" class="viewerModeUI">
           <div class="dialog-content">
             <div>
               <img class="dialog-icon" src="media/dragon_icon.png">
             </div>
-            <span style="display: block; text-align: left; padding: 5px 0px; font-size: 16pt; line-height: 20pt;">
+            <span style="display: block; text-align: left; padding: 5px 0; font-size: 16pt; line-height: 20pt;">
               Press <span class="keyboard-key">Esc</span> to get the mouse back
               <br>Use the arrow keys or
               <div style="display: inline-flex; flex-direction: column; font-size: 10pt; vertical-align: middle; line-height: 14pt; align-items: center;">
                 <div><span class="keyboard-key">W</span></div>
-                <div style="flex-direction: row"><span class="keyboard-key">A</span><span class="keyboard-key">S</span><span class="keyboard-key">D</span></div>
+                <div style="flex-direction: row;"><span class="keyboard-key">A</span><span class="keyboard-key">S</span><span class="keyboard-key">D</span></div>
               </div> to move around
               <br>Use <span class="keyboard-key">shift</span> or <span class="keyboard-key">F</span> to go down and <span class="keyboard-key">space</span> or <span class="keyboard-key">R</span> to go up
             </span>
@@ -243,24 +218,12 @@
           .bin
 
       </div>
-      <div id="dialog" class="dialogUI">
-        <div>
-          <img class="dialog-icon" src="media/dragon_icon_speech.png">
-        </div>
-      </div>
-      <div id="main-view-code" class="codeEditor">
-        <div id="code-area">
-          <iframe id="blockly" src="frame.html"></iframe>
-          <div id="game-control-bar-playback" class="puzzleModeUI sandboxModeUI">
-            <button id="btn-run" class="game-control-btn-playback">X</button>
-            <button id="btn-step" class="game-control-btn-playback">X</button>
-            <button id="btn-revert" class="game-control-btn-playback">X</button>
-            <button id="btn-done" class="submitUI game-control-btn-playback">I'm done</button>
-          </div>
-          <button id="btn-undo" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Undo</button>
-          <p id="statement-counter"></p>
-        </div>
-      </div>
+<!--      <div id="dialog" class="dialogUI">-->
+<!--        <div>-->
+<!--          <img class="dialog-icon" src="media/dragon_icon_speech.png">-->
+<!--        </div>-->
+<!--      </div>-->
+
     </div>
     <img id="attention-arrow" src="media/arrow.png"/>
   </body>

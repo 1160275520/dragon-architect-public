@@ -33,6 +33,7 @@ body {
     display: -webkit-flex;
     -webkit-flex-direction: column;
     min-width: 1200px;
+    height: 100vh;
 }
 
 /* header */
@@ -135,6 +136,7 @@ header > h1 {
     font-family: 'Roboto Slab', serif;
     display: flex;
     border-top: 6px solid #1c2b2d;
+    max-height: 55px;
 }
 
 .menu-bar_title {
@@ -142,18 +144,20 @@ header > h1 {
     color: #1c2b2d;
     margin: auto 45px;
     font-size: 24px;
+    min-width: fit-content;
 }
 
 .menu-bar_list {
     display: flex;
-    font-color: #1c2b2d
+    font-color: #1c2b2d;
+    width: 100vh;
 }
 
 .menu-bar_item {
     font-family: "Roboto Slab";
     fonr-weight: 300;
     position: relative;
-    margin: 0 100px;
+    margin: auto;
 }
 
 .menu-bar .current{
@@ -215,19 +219,19 @@ header > h1 {
 }
 
 #main-view-game {
-    order: 1;
-    -webkit-order: 1;
-    width: 80%;
+    /*order: 1;*/
+    /*-webkit-order: 1;*/
+    width: inherit;
     background: #1c2b2d;
-    padding: 0 5px;
-    height: fit-content;
+    padding: 0;
+    /*height: fit-content;*/
 }
 
 #main-view-code {
     position: relative;
-    order: 0;
-    -webkit-order: 0;
-    width: 60%;
+    /* order: 0; */
+    /* -webkit-order: 0; */
+    width: 75%;
     display: flex;
     flex-direction: column;
     display: -webkit-flex;
@@ -235,6 +239,8 @@ header > h1 {
     align-items: stretch;
     -webkit-align-items: stretch;
     background: #1c2b2d;
+    /*height: 93vh;*/
+    /*overflow: auto;*/
 }
 
 #code-area {
@@ -260,14 +266,12 @@ header > h1 {
 
 .game-controls-bar {
     display: flex;
-    display: -webkit-flex;
-    align-items: center;
-    -webkit-align-items: center;
     justify-content: space-between;
     -webkit-justify-content: space-between;
     padding: 5px 0;
     background-color: #1F6F8B;
-    height: 80px;
+    position: absolute;
+    z-index: 10;
 }
 
 .game-control {
@@ -293,16 +297,24 @@ div.game-control {
     padding: 5px;
 }
 
+.game-control_category{
+    display: block;
+    text-align: center;
+    padding: 0 15px;
+}
+
 .game-control_title {
     color: #ffffff;
-    top: -23px;
-    left: 63px;
-    margin: 2px 4px 6px 13px;
+    margin: 0 auto;
     font-family: 'Roboto Slab';
-    position: relative;
-    width: max-content;
-    text-decoration: underline;
+    text-align: center;
 }
+.game-control_buttons {
+    display: flex;
+    position: relative;
+}
+
+
 .camera-controls_text{
     font-size: 18px;
     line-height: 1;
@@ -334,10 +346,6 @@ header button, .control-btn, .control-icon-btn {
     color: #ffffff;
 }
 
-.control-icon-btn {
-    width: 40px;
-    margin: 0px 0 0 13px;
-}
 
 .control-icon-btn .fa-lg {
     font-size: 2em;
@@ -350,7 +358,8 @@ header button, .control-btn, .control-icon-btn {
     flex-direction: column;
     -webkit-flex-direction: column;
     background-color: #1c2b2d;
-    height: 200px;
+    height: 100px;
+    width: 100%;
 }
 
 .goal-section{
@@ -358,15 +367,17 @@ header button, .control-btn, .control-icon-btn {
     font-family: "Roboto Slab";
     text-align: left;
     display: block;
-    right: 600px;
-    position: absolute;
+    width: 100vh;
+    height: 100vh;
+    /*right: 600px;*/
+    /*position: absolute;*/
 }
 
 .hint-section {
     position: absolute;
     display: flex;
-    right: 100px;
-    bottom: -30px;
+    /*right: 100px;*/
+    /*bottom: -30px;*/
 }
 
 #btn-show-hint .fa-lg {
@@ -424,9 +435,8 @@ header button, .control-btn, .control-icon-btn {
     flex-direction: column;
     display: -webkit-flex;
     -webkit-flex-direction: column;
-    position: absolute;
-    right: -30px;
-    top: 50px;
+    padding: 21px 10px;
+
 }
 
 .game-control-btn-playback {
@@ -510,22 +520,24 @@ header button, .control-btn, .control-icon-btn {
     width: 100%;
     padding: 0;
     margin: 0;
+    max-height: 600px;
+    height: 90vh;
 }
 
-#three-js:after {
-    padding-top: 75%;
-    display: block;
-    content: '';
-}
+/*#three-js:after {*/
+/*    padding-top: 75%;*/
+/*    display: block;*/
+/*    content: '';*/
+/*}*/
 
 #three-js canvas {
     display: block;
-    width: 96% !important;
+    /*width: 96% !important;*/
     height: 100%;
     padding: 0;
     margin: 0;
-    position: absolute;
-    right: 0;
+    /*position: absolute;*/
+    /*right: 0;*/
 }
 
 /* */
@@ -592,9 +604,11 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .slider-container {
-    height: 52px;
-    padding: 2px;
+    height: 43px;
+
+    padding: 0 30px;
     background-color: transparent;
+    display: flex;
 }
 
 #slider .ui-slider-handle {

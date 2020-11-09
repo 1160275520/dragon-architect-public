@@ -47,9 +47,19 @@
   font-size: 18px;
 }
 .speed-slider_left{
-  position: absolute;
-  right: 212px;
+  position:relative;
+  color: #ffffff;
+  left: -4px;
+  top: 10px;
 }
+.speed-slider_right{
+  position: absolute;
+  color: #ffffff;
+  right: 37px;
+  top: 35px;
+
+}
+
 .slider-handle{
   background-image: linear-gradient(to bottom, #99A8B2 -8%, #1c2b2d 100%);
 }
@@ -58,8 +68,7 @@
   width: 230px;
   height: 16px;
   position: relative;
-  margin: 0;
-  margin-right: 15px;
+  margin: 0 23px;
   top: 13px;
 }
 .slider.slider-horizontal .slider-track {
@@ -67,7 +76,7 @@
   width: 100%;
   margin-top: -5px;
   top: 50%;
-  left: 0;
+  left: -15px;
 }
 .slider.slider-horizontal .slider-selection,
 .slider.slider-horizontal .slider-track-low,
