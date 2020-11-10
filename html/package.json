@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "ruthefjord",
   "private": true,
   "version": "0.0.0",
@@ -10,7 +11,7 @@
     "dagre": "^0.7.4",
     "dagre-d3": "^0.4.17",
     "gulp": "^3.9.1",
-    "gulp-clean-css": "^2.0.6",
+    "gulp-clean-css": "^2.3.2",
     "gulp-debug": "^2.1.2",
     "gulp-if": "^2.0.0",
     "gulp-minify-html": "^1.0.6",
@@ -27,11 +28,9 @@
     "q": "^1.4.1",
     "rimraf": "^2.5.2",
     "stats-js": "^1.0.0-alpha1",
-    "three": "^0.74.0",
+    "three": "^0.122.0",
+    "wwobjloader2": "^2.4.2",
     "urijs": "^1.17.1",
     "whatwg-fetch": "^0.11.0"
-  },
-  "dependencies": {
-    "three": "^0.74.0"
   }
 }
