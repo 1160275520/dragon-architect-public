@@ -791,6 +791,9 @@ function start_editor(info) {
         RuthefjordUI.CubeCounter.setVisible(info.puzzle.goal && info.puzzle.goal.type === "cube_count");
         RuthefjordUI.DoneButton.setVisible(info.puzzle.goal && info.puzzle.goal.type === "submit");
         RuthefjordUI.UndoButton.update();
+        RuthefjordUI.DeleteButton.update();
+        RuthefjordUI.TrashButton.update();
+
 
         _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
 

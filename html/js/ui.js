@@ -788,11 +788,33 @@ module.UndoButton = (function () {
 
     self.update = function () {
         var btn = $('#btn-undo');
-        btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - btn.outerHeight(true));
+        btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - 2*(btn.outerHeight(true)));
     };
 
     return self;
 }());
+
+    module.DeleteButton = (function () {
+        var self = {};
+
+        self.update = function () {
+            var btn = $('#btn-delete');
+            btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - btn.outerHeight(true));
+        };
+
+        return self;
+    }());
+
+    module.TrashButton = (function () {
+        var self = {};
+
+        self.update = function () {
+            var btn = $('#btn-trash');
+            btn.css('top', Blockly.getMainWorkspace().trashcan.top_ + btn.outerHeight(true));
+        };
+
+        return self;
+    }());
 
 module.CameraControls = (function() {
     var self = {};

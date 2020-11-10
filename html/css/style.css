@@ -182,6 +182,7 @@ header > h1 {
 
 .view-loading > #msg-loading {
     font-size: 40pt;
+    color: #ffffff;
 }
 
 .intro-msg {
@@ -389,11 +390,17 @@ header button, .control-btn, .control-icon-btn {
     font-family: "Roboto Slab";
     text-align: left;
     display: block;
+    min-height: 23vh;
     max-height: 22vh;
-    min-width: 140vh;
     padding: 20px;
+    width: 100vh;
     /*right: 600px;*/
     /*position: absolute;*/
+}
+
+.goal-section_title{
+    font-size: 28px;
+    display: flex;
 }
 
 .hint-section {
@@ -529,10 +536,10 @@ header button, .control-btn, .control-icon-btn {
     background-color: #0072F4;
 }
 
-#btn-undo {
+#btn-undo, #btn-delete, #btn-trash {
     position: absolute;
     font-size: 16pt;
-    background-color: #d1bd7d;
+    background-color: #E6E6E6;
     height: 40px;
     right: 10px;
 }

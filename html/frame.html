@@ -134,7 +134,6 @@
       }
 
       #python_overlay_after {
-        /* width: 100vh; */
         background-color: aliceblue;
         display: flex;
         flex-direction: column;
@@ -255,18 +254,19 @@
         <div class="label-large">Code Block</div>
       </div>
       <div class="pythonCode">
-        def simple_interest(p,t,r):
-        print('The principal is', p)
-        print('The time period is', t)
-        print('The rate of interest is',r)
-        si = (p * t * r)/100
-        print('The Simple Interest is', si)
-        return si
-        def compound_interest(principle, rate, time):
-        # Calculates compound interest
-        Amount = principle * (pow((1 + rate / 100), time))
-        CI = Amount - principle
-        print("Compound interest is", CI)
+        def simple_interest(p,t,r):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; print('The principal is', p)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; print('The time period is', t)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; print('The rate of interest is',r)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; si = (p * t * r)/100<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; print('The Simple Interest is', si)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; return si<br>
+        <br>
+        def compound_interest(principle, rate, time):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; # Calculates compound interest<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; Amount = principle * (pow((1 + rate / 100), time))<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; CI = Amount - principle<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; print("Compound interest is", CI)<br>
       </div>
     </div>
    <div id="python_overlay_after"></div>

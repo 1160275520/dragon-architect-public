@@ -70,9 +70,9 @@
       </div>
       <ul class="menu-bar_list">
         <div class="menu-bar_item current">Home</div>
-        <div class="menu-bar_item">Puzzle</div>
+        <div class="menu-bar_item">Puzzles</div>
         <div class="menu-bar_item">Sandbox</div>
-        <div class="menu-bar_item">Rule</div>
+        <div class="menu-bar_item">Rules</div>
       </ul>
     </div>
     <div class="view-loading">
@@ -135,7 +135,10 @@
                     <button id="btn-revert" class="game-control-btn-playback">X</button>
                     <button id="btn-done" class="submitUI game-control-btn-playback">I'm done</button>
                 </div>
+                <button id="btn-trash" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Trash</button>
                 <button id="btn-undo" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Undo</button>
+                <button id="btn-delete" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Delete All</button>
+
                 <p id="statement-counter"></p>
             </div>
         </div>
@@ -187,8 +190,8 @@
 <!--&lt;!&ndash;            <div id="speed-slider"></div>&ndash;&gt;-->
 <!--          </div>-->
             <div class="goal-section">
-                <div class="goal-section_title">Goal</div>
-                <div class="goal-section_text">aaaaaaaaaaaaaaaaaaaaaaa</div>
+                <div class="goal-section_title">Goal: &nbsp; <div class="goal-section_summary">Build a Castle</div></div>
+                <div class="goal-section_text">You need a place to keep the princess. Let's build a castle!</div>
                 <div class="hint-section">
                     <btn id="btn-show-hint" class="hint-button"><i class="fa fa-lg fa-question"></i></btn>
                     <div class="hint-text">Hint</div>
