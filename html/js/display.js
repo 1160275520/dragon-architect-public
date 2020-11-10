@@ -209,7 +209,7 @@ var RuthefjordDisplay = (function() {
         cubeTargetMat = new THREE.MeshLambertMaterial({color:"#4078E6", transparent: true, opacity:0.5});
         robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:"#df67be", transparent: true, opacity:0.5}));
         targetShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
-            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.31, side: THREE.DoubleSide}));
+            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide}));
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
@@ -282,7 +282,7 @@ var RuthefjordDisplay = (function() {
                             // deliberate case fall-through since wait time is up if we get here
                             case "animating":
                                 robot.position.lerp(finalBotPos, Math.min(tDelta / animTime, 1));
-                                robot.quaternion.slerp(finalBotQ, Math.min(tDelta / animTime, 1));
+                                robot.quaternion.slerp(finalBotQ,Math.min(tDelta / animTime, 1));
                                 animTime -= tDelta;
                                 if (animTime <= 0) {
                                     robot.position.copy(finalBotPos);
