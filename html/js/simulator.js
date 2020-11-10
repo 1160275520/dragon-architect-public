@@ -76,7 +76,7 @@ var RuthefjordManager = (function() {
                     break;
                 case "repeat": // definite loop
                     var count;
-                    if (stmt.number.type === "ident") {
+                    if (stmt.number.type === "ident") { //ToDo: make context hold count's value
                         count = _.last(sim.call_stack).context[stmt.number.value].value;
                     } else { // we only support int literals and identifiers
                         count = stmt.number.value;
@@ -107,6 +107,7 @@ var RuthefjordManager = (function() {
 
                     break;
                 case "command": // imperative robot instructions
+                    //ToDo: this is where forward/up/down/etc. get their functionality, but the value doesnt get passed in here. It just does things once. and somewhere else things got unrolled
                     self.apply_command(stmt, state, sim);
                     break;
                 default:

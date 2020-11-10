@@ -108,6 +108,9 @@ function makeIdent(name) {
 
 function makeSingleArg(block, inputName) {
     var input = block.getInlineInputValue(inputName, "NUM");
+    //with a variable block, input is null here so you get a ident type passed as an argument with a null value which doesnt
+    //break it because forward just goes forward once when it has bad input
+    //but it breaks later
     if (input === null) {
         input = block.getInlineInputValue(inputName, "VAR");
         return makeIdent(input);
@@ -166,6 +169,7 @@ Blockly.Blocks['Forward'] = {
 };
 
 Blockly.JSONLangOps['Forward'] = function(block) {
+    //make Single Arg takes in the block that has been passed to forward. When this is a variable block, it doesn't currently have a value
     return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
@@ -239,6 +243,7 @@ Blockly.JSONLangOps['Set'] = function(block) {
 };
 
 Blockly.Blocks['Get'] = {
+    //GET block currently only carries its name. 
     init: function () {
         this.setColour(Blockly.Blocks.variables.HUE);
         this.appendDummyInput()
