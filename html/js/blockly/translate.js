@@ -3,11 +3,27 @@ var RuthefjordTranslate = (function () {
     var codeString = "";
     var numIndents = 0;
     var indent = "    ";
+    var forwardUsed = false;
+    var leftUsed = false;
+    var rightUsed = false;
+    var upUsed = false;
+    var downUsed = false;
+    var placeCubeUsed = false;
+    var removeCubeUsed = false;
 
     self.getPythonCode = function () {
         buildString();
         console.log(codeString);
-        return codeString;
+        var codeStringCopy = codeString;
+        codeString = ""
+        forwardUsed = false;
+        leftUsed = false;
+        rightUsed = false;
+        upUsed = false;
+        downUsed = false;
+        placeCubeUsed = false;
+        removeCubeUsed = false;
+        return codeStringCopy;
     };
 
     self.extractCommands = function () {
@@ -24,6 +40,7 @@ var RuthefjordTranslate = (function () {
     self.buildString = function () {
         var commands = extractCommands();
         buildStringHelper(commands);
+        importStatements();
     }
 
     self.buildStringHelper = function (commands) {
@@ -74,52 +91,47 @@ var RuthefjordTranslate = (function () {
 
     //Each Block Type
     self.forward = function (args) {
-        //console.log("found a forward");
         var forwardString = 'forward('.concat(args[0]['value'],')');
         codeString = codeString.concat(indent.repeat(numIndents),forwardString,'\n');
-        //console.log(forwardString);
-        //console.log(numIndents);
+        forwardUsed = true;
     }
 
     self.left = function () {
-        //console.log("found a left");
         var leftString = 'left()';
         codeString = codeString.concat(indent.repeat(numIndents),leftString,'\n');
+        leftUsed = true;
     }
 
     self.right = function () {
-        //console.log("found a right");
         var rightString = 'right()';
         codeString = codeString.concat(indent.repeat(numIndents),rightString,'\n');
+        rightUsed = true;
     }
 
     self.placeCube = function (args) {
-        //console.log("found a placeCube");
         var colors = ['green','purple','red','blue','yellow','orange','black','white'];
         var colorNum = parseInt(args[0]['value']);
         var placeCubeString = 'placeCube('.concat(colors[colorNum],')');
-        //console.log(placeCubeString);
         codeString = codeString.concat(indent.repeat(numIndents),placeCubeString,'\n');
+        placeCubeUsed = true;
     }
 
     self.removeCube = function (args) {
-        //console.log("found a removeCube");
         var removeCubeString = 'removeCube()'
         codeString = codeString.concat(indent.repeat(numIndents),removeCubeString,'\n');
+        removeCubeUsed = true;
     }
 
     self.up = function (args) {
-        //console.log("found a up");
         var upString = 'up('.concat(args[0]['value'],')');
-        //console.log(upString);
         codeString = codeString.concat(indent.repeat(numIndents),upString,'\n');
+        upUsed = true;
     }
 
     self.down = function (args) {
-        //console.log("found a down");
         var downString = 'down('.concat(args[0]['value'],')');
-        //console.log(downString);
         codeString = codeString.concat(indent.repeat(numIndents),downString,'\n');
+        downUsed = true;
     }
 
     self.userProcedure = function (name) {
@@ -128,8 +140,6 @@ var RuthefjordTranslate = (function () {
     }
 
     self.loop = function (body, number) {
-        //console.log("recursing on a loop");
-        //console.log(body);
         var loopString = 'for i in range('.concat(number,'):');
         codeString = codeString.concat(indent.repeat(numIndents),loopString,'\n');
         numIndents = numIndents + 1;
@@ -138,8 +148,6 @@ var RuthefjordTranslate = (function () {
     }
 
     self.procedure = function (body, name) {
-        //console.log("recursing on a procedure");
-        //console.log(body);
         var procedureString = 'def '.concat(name.substring(1),'():');
         codeString = codeString.concat(indent.repeat(numIndents),procedureString,'\n');
         numIndents = numIndents + 1;
@@ -148,6 +156,56 @@ var RuthefjordTranslate = (function () {
         codeString = codeString.concat('\n');
     }
 
+    self.importStatements = function () {
+        var previous = false;
+        var importString = "from DragonArchitect import ";
+        if (forwardUsed) {
+            importString = importString.concat("forward");
+            previous = true;
+        }
+        if (leftUsed) {
+            if (previous) {
+                importString = importString.concat(", ");
+            }
+            importString = importString.concat("turnLeft");
+            previous = true;
+        }
+        if (rightUsed) {
+            if (previous) {
+                importString = importString.concat(", ");
+            }
+            importString = importString.concat("turnRight");
+            previous = true;
+        }
+        if (upUsed) {
+            if (previous) {
+                importString = importString.concat(", ");
+            }
+            importString = importString.concat("up");
+            previous = true;
+        }
+        if (downUsed) {
+            if (previous) {
+                importString = importString.concat(", ");
+            }
+            importString = importString.concat("down");
+            previous = true;
+
+        if (placeCubeUsed) {
+            if (previous) {
+                importString = importString.concat(", ");
+            }
+            importString = importString.concat("placeCube");
+            previous = true;
+        }
+        if (removeCubeUsed) {
+            if (previous) {
+                importString = importString.concat(", ");
+            }
+            importString = importString.concat("removeCube");
+        }
+        codeString = importString.concat("\n\n",codeString);
+    }}
 
 
 
