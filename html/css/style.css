@@ -390,10 +390,12 @@ header button, .control-btn, .control-icon-btn {
     font-family: "Roboto Slab";
     text-align: left;
     display: block;
+
     min-height: 23vh;
     max-height: 22vh;
     padding: 20px;
     width: 100vh;
+
     /*right: 600px;*/
     /*position: absolute;*/
 }
