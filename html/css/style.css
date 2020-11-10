@@ -380,8 +380,8 @@ header button, .control-btn, .control-icon-btn {
     flex-direction: column;
     -webkit-flex-direction: column;
     background-color: #1c2b2d;
-    height: 100px;
-    width: 100%;
+    max-height: 22vh;
+    min-width: 140vh;
 }
 
 .goal-section{
@@ -389,8 +389,9 @@ header button, .control-btn, .control-icon-btn {
     font-family: "Roboto Slab";
     text-align: left;
     display: block;
-    width: 100vh;
-    height: 100vh;
+    max-height: 22vh;
+    min-width: 140vh;
+    padding: 20px;
     /*right: 600px;*/
     /*position: absolute;*/
 }
@@ -398,8 +399,10 @@ header button, .control-btn, .control-icon-btn {
 .hint-section {
     position: absolute;
     display: flex;
-    /*right: 100px;*/
-    /*bottom: -30px;*/
+
+    right: 15px;
+    bottom: 67px;
+
 }
 
 #btn-show-hint .fa-lg {
