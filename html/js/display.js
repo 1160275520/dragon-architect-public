@@ -19,7 +19,8 @@ var RuthefjordDisplay = (function() {
     // positioning
     var relativeCamPos = new THREE.Vector3(-10,0,12);
     var relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
-    var robotOffset = new THREE.Vector3(0.5,0.5,1);
+    var robotOffset = new THREE.Vector3(0.5,0.5,1.5);
+
     var cubeOffset = new THREE.Vector3(0.5,0.5,0.5);
 
     // the colors are 1-indexed for some reason
@@ -239,12 +240,15 @@ var RuthefjordDisplay = (function() {
             .then((module) => {
                 var loader = new module.FBXLoader();
                 loader.load( 'media/dragon_FBX/Dragon.FBX', function ( object ) {
-                    robot = object
-                    robot.scale.set(0.01, 0.01, 0.01);
-                    robot.rotation.x = Math.PI / 2;
-                    robot.rotation.y += Math.PI / 2;
-                    robot.add(robotDir);
-                    scene.add( robot );
+
+                    robot = new THREE.Object3D();
+                    robot.scale.set(1, 1, 1);
+                    robot.rotation.set(0, 0, 0);
+                    object.scale.set(0.01, 0.01, 0.01);
+                    object.rotation.x = Math.PI / 2;
+                    object.rotation.y += Math.PI / 2;
+                    robot.add(object);
+                    scene.add(robot);
 
                     // lights
                     var light = new THREE.DirectionalLight("#ffffff", 1.74);
