@@ -1,4 +1,4 @@
-importScripts("../node_modules/three/three.js", "../node_modules/lodash/lodash.js", "simulator.js");
+importScripts("../node_modules/three/build/three.js", "../node_modules/lodash/lodash.js", "simulator.js");
 
 // dummy world state so imported code from simulator.js can reference it
 var RuthefjordWorldState = {};
