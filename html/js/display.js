@@ -428,14 +428,14 @@ var RuthefjordDisplay = (function() {
             finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), bot.dir); // 1,0,0 is default direction
             if (bot.dir.x==-1)
             {
-                // console.log(bot.dir)
-                finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)); // 1,0,0 is default direction
-                // console.log(finalBotQ)
+                console.log(bot.dir)
+                // finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)); // 1,0,0 is default direction
+                console.log(finalBotQ)
             }
-            else{
+            // else{
                 // console.log(bot.dir)
                 // console.log(finalBotQ)
-            }
+            // }
 
             waitTime = dt*0.1;
             animTime = Math.min(dt*0.9, MAX_ANIMATION_TIME);
