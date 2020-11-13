@@ -737,7 +737,7 @@ module.RunButton = (function() {
 
     self.update = function(isRunning, isWorkshopMode) {
         var at = isWorkshopMode ? "Reset" : "Stop";
-        update_button('#btn-run', true, isRunning, "Go!", at);
+        update_button('#btn-run', true, isRunning, "RUN", at);
     };
 
     return self;
@@ -767,7 +767,7 @@ module.PauseButton = (function() {
     var self = {};
 
     self.update = function(isEnabled, isPaused) {
-        update_button('#btn-pause', isEnabled, isPaused, "Pause", "Resume");
+        update_button('#btn-revert', isEnabled, isPaused, "Revert One Step", "Resume");
     };
 
     return self;
@@ -777,7 +777,7 @@ module.StepButton = (function() {
     var self = {};
 
     self.update = function(isEnabled) {
-        update_button('#btn-step', isEnabled, false, "One Step", "One Step");
+        update_button('#btn-step', isEnabled, false, "Run One Step", "One Step");
     };
 
     return self;
@@ -800,7 +800,7 @@ module.CameraControls = (function() {
     self.setVisible = function(isVisible) {
         var camera_controls = $('#camera-controls');
         var control_bar = $("#game-controls-bar-top");
-        isVisible ? camera_controls.show() : camera_controls.hide();
+        // isVisible ? camera_controls.show() : camera_controls.hide();
         control_bar.show();
         // check if we should hide or show the area containing camera controls (by checking if everything in it is hidden)
         if (control_bar.children().toArray().every(function (e) { return $(e).is(":hidden");})) {
@@ -828,12 +828,12 @@ function Slider(elemName, selector, labels, allElems, default_val) {
 
         container.addClass('slider-container');
 
-        container.append(
-            '<div class="slider-labels">' +
-                '<span style="text-align: left;">' + labels[0] + '</span>' +
-                '<span style="text-align: center;">' + labels[1] + '</span>' +
-                '<span style="text-align: right;">' + labels[2] + '</span>' +
-            '</div>');
+        // container.append(
+        //     '<div class="slider-labels">' +
+        //         '<span style="text-align: left;">' + labels[0] + '</span>' +
+        //         '<span style="text-align: center;">' + labels[1] + '</span>' +
+        //         '<span style="text-align: right;">' + labels[2] + '</span>' +
+        //     '</div>');
 
         slider = $('<div/>');
 

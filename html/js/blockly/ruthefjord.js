@@ -40,15 +40,15 @@ var RuthefjordBlockly = (function(){
 
         Blockly.getMainWorkspace().addChangeListener(RuthefjordBlockly.addToHistory);
 
-        Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseenter = function () {
-            Blockly.getMainWorkspace().flyout_.show_all();
-            $(".blocklyDraggable", $(".blocklyFlyout", $("#blockly").contents())).css('pointer-events', '')
-        };
-
-        Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseleave = function () {
-            Blockly.getMainWorkspace().flyout_.show_cutoff();
-            $(".blocklyDraggable", $(".blocklyFlyout", $("#blockly").contents())).css('pointer-events', 'none')
-        };
+        // Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseenter = function () {
+        //     Blockly.getMainWorkspace().flyout_.show_all();
+        //     $(".blocklyDraggable", $(".blocklyFlyout", $("#blockly").contents())).css('pointer-events', '')
+        // };
+        //
+        // Blockly.getMainWorkspace().flyout_.svgGroup_.onmouseleave = function () {
+        //     Blockly.getMainWorkspace().flyout_.show_cutoff();
+        //     $(".blocklyDraggable", $(".blocklyFlyout", $("#blockly").contents())).css('pointer-events', 'none')
+        // };
 
         q_defer.resolve();
     };
