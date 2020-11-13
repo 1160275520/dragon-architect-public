@@ -6,6 +6,10 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script type="text/javascript" src="generated/blockly.js"></script>
+    <script type="text/javascript" src="js/blockly/ruthefjord.js"></script>
+    <script type="text/javascript" src="js/blockly/translate.js"></script>
+    <script type="text/javascript" src="js/simulator.js"></script>
+<!--    <script type="text/javascript" src="js/blockly/ruthefjord.js"></script>-->
 <!--    <script src="js/ui.js"></script>-->
 <!--    <script src="js/app.js"></script>-->
     <!-- build:js code/frame.js -->
@@ -98,7 +102,7 @@
         /*margin: 10px;*/
         -webkit-transition: width 0.3s ease;
         transition: width 0.3s ease;
-        width: ;
+        /*width: ;*/
       }
       /*#codeLabel {*/
       /*  -webkit-transition: width 0.3s ease;*/
@@ -188,6 +192,7 @@
       font-size: 18px;
       padding: 20px;
       line-height: 1.5;
+      white-space: pre;
     }
 
     </style>
@@ -219,6 +224,7 @@
         }
       }
 
+
       $(document).ready(function(){
         var boxWidth = "100%";
         $("#pythonCodeLabel").click(function(){
@@ -226,13 +232,21 @@
             width: 0
           });
           $("#python_overlay_after").css('background', '#1f6f8b');
+
         });
         $("#libraryLabel").click(function(){
+            // console.log($("#pythonText").text());
+          $("#pythonText").text(window.parent.RuthefjordTranslate.getPythonCode());
+          // console.log(window.parent.RuthefjordTranslate.getPythonCode());
+
           $("#python_overlay").animate({
             width: boxWidth
           });
           $("#python_overlay_after").css('background', 'aliceblue');
         });
+
+
+
       });
 
     </script>
@@ -254,19 +268,7 @@
         <div class="label-small">Switch to</div>
         <div class="label-large">Code Block</div>
       </div>
-      <div class="pythonCode">
-        def simple_interest(p,t,r):
-        print('The principal is', p)
-        print('The time period is', t)
-        print('The rate of interest is',r)
-        si = (p * t * r)/100
-        print('The Simple Interest is', si)
-        return si
-        def compound_interest(principle, rate, time):
-        # Calculates compound interest
-        Amount = principle * (pow((1 + rate / 100), time))
-        CI = Amount - principle
-        print("Compound interest is", CI)
+      <div id="pythonText" class="pythonCode">
       </div>
     </div>
    <div id="python_overlay_after"></div>
