@@ -76,9 +76,15 @@ var RuthefjordManager = (function() {
                     break;
                 case "repeat": // definite loop
                     var count;
+                    console.log('stmt', stmt);
                     if (stmt.number.type === "ident") { //ToDo: make context hold count's value
+                        console.log("A");
+                        console.log("last on call stack:");
+                        console.log(_.last(sim.call_stack).context);
+
                         count = _.last(sim.call_stack).context[stmt.number.value].value;
                     } else { // we only support int literals and identifiers
+                        console.log("B");
                         count = stmt.number.value;
                     }
                     var new_repeat = {
@@ -249,9 +255,8 @@ var RuthefjordManager = (function() {
                     "body": [{
                         "body": [{"args": [], "name": "set", "type": "command"}],
                         "number": {"type": "ident", "value": "x"},
-                        "number2": {"type": "ident", "value": "y"},
                         "type": "repeat"
-                    }], "name": "Set", "params": ["x", "y"], "type": "procedure"
+                    }], "name": "Set", "params": ["x"], "type": "procedure"
                 }, {
                     "body": [{"args": [], "name": "left", "type": "command"}],
                     "name": "Left",
