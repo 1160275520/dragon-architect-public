@@ -3,14 +3,22 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
     <script type="text/javascript" src="generated/blockly.js"></script>
+    <script type="text/javascript" src="js/blockly/ruthefjord.js"></script>
+    <script type="text/javascript" src="js/blockly/translate.js"></script>
+    <script type="text/javascript" src="js/simulator.js"></script>
+<!--    <script type="text/javascript" src="js/blockly/ruthefjord.js"></script>-->
+<!--    <script src="js/ui.js"></script>-->
+<!--    <script src="js/app.js"></script>-->
     <!-- build:js code/frame.js -->
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <!-- endbuild -->
     <style>
       html, body {
         font-family: "Open Sans";
-        background-color: #fff;
+        background-color: #1c2b2d;
         margin: 0;
         padding: 0;
         overflow: hidden;
@@ -23,7 +31,8 @@
         padding: 0;
       }
       .blocklyFlyoutBackground {
-        fill: #ccebff !important;
+        fill: #1F6F8B !important;
+        fill-opacity: 1 !important;
         pointer-events: all;
       }
       .blocklyFlyout {
@@ -84,16 +93,108 @@
         text-align: center;
         display: flex;
         display: -webkit-flex;
+        height: 63px;
+        width: 100vh;
       }
       #libraryLabel {
-        background-color: #ccebff;
+        background-color: #1f6f8b;
+        font-family: "Roboto Slab";
+        /*margin: 10px;*/
         -webkit-transition: width 0.3s ease;
         transition: width 0.3s ease;
+        /*width: ;*/
       }
-      #codeLabel {
-        -webkit-transition: width 0.3s ease;
-        transition: width 0.3s ease;
+      /*#codeLabel {*/
+      /*  -webkit-transition: width 0.3s ease;*/
+      /*  transition: width 0.3s ease;*/
+      /*}*/
+
+
+      #blocklyLabels .blocklyLabels_python {
+        width: 235px !important;
+        background-color: aliceblue;
+        font-size: 16px;
+        padding: 1px 14px;
+        text-align: left;
+        color: #1f6f8b;
+        border: 2px #1f6f8b solid;
+        border-radius: 10px;
+        margin-bottom: 5px;
       }
+
+      #python_overlay {
+        position: absolute;
+        /*display: none;*/
+        width: 0;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: aliceblue;
+        z-index: 2;
+        cursor: pointer;
+        overflow: hidden;
+      }
+
+      #python_overlay_after {
+        /* width: 100vh; */
+        background-color: aliceblue;
+        display: flex;
+        flex-direction: column;
+        display: -webkit-flex;
+        -webkit-flex-direction: column;
+        padding: 21px 10px;
+        background: rgb(31, 111, 139);
+        position: absolute;
+        right: -140px;
+        z-index: 12;
+        width: 140px;
+        height: 100vh;
+      }
+
+
+      #python_overlay .blocklyLabels_block {
+        font-family: "Roboto Slab";
+        width: 173px !important;
+        background-color: #1f6f8b;
+        font-size: 16px;
+        padding: 1px 14px;
+        text-align: left;
+        color: aliceblue;
+        border: 2px aliceblue solid;
+        border-radius: 10px;
+        margin-bottom: 5px;
+      }
+
+      .blocklyLabels_python .label-large,
+      .blocklyLabels_block .label-large {
+        font-size: 24px;
+        text-align: center;
+        text-decoration: underline;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+
+      .blocklyLabels_code {
+        font-family: "Roboto Slab";
+        color: #ffffff;
+        margin: auto;
+        font-size: 30px;
+        text-align: left;
+        padding-left: 20px;
+        width: 100vh !important;
+      }
+
+    #python_overlay .pythonCode {
+      font-family: 'Courier';
+      font-size: 18px;
+      padding: 20px;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
     </style>
     <script>
       function init() {
@@ -117,21 +218,59 @@
           $("#blocklyLabels", document).hide();
         } else {
           $("#blocklyLabels", document).show();
-          $("#libraryLabel", document).width(toolboxWidth);
+          $("#libraryLabel", document).width("105px");
           $("#flyoutMask", document).find("rect").attr("width", toolboxWidth);
           $("#codeLabel", document).width(Blockly.getMainWorkspace().getMetrics().viewWidth - toolboxWidth);
         }
       }
+
+
+      $(document).ready(function(){
+        var boxWidth = "100%";
+        $("#pythonCodeLabel").click(function(){
+          $("#python_overlay").animate({
+            width: 0
+          });
+          $("#python_overlay_after").css('background', '#1f6f8b');
+
+        });
+        $("#libraryLabel").click(function(){
+            // console.log($("#pythonText").text());
+          $("#pythonText").text(window.parent.RuthefjordTranslate.getPythonCode());
+          // console.log(window.parent.RuthefjordTranslate.getPythonCode());
+
+          $("#python_overlay").animate({
+            width: boxWidth
+          });
+          $("#python_overlay_after").css('background', 'aliceblue');
+        });
+
+
+
+      });
+
     </script>
   </head>
   <body onload="init()">
     <div id="blocklyLabels">
-      <div id="libraryLabel">Code Blocks</div>
-      <div id="codeLabel">Drag blocks here</div>
+      <div id="libraryLabel" class="blocklyLabels_python">
+        <div class="label-small">Switch to</div>
+        <div class="label-large">Python Code</div>
+      </div>
+      <div id="codeLabel" class="blocklyLabels_code">Drag blocks here</div>
     </div>
     <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
     <xml id="toolbox" style="display: none">
       <block type="controls_repeat"></block>
     </xml>
+    <div id="python_overlay">
+      <div id="pythonCodeLabel" class="blocklyLabels_block">
+        <div class="label-small">Switch to</div>
+        <div class="label-large">Code Block</div>
+      </div>
+      <div id="pythonText" class="pythonCode">
+      </div>
+    </div>
+   <div id="python_overlay_after"></div>
   </body>
 </html>

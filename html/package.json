@@ -31,5 +31,8 @@
     "three": "^0.122.0",
     "urijs": "^1.17.1",
     "whatwg-fetch": "^0.11.0"
+  },
+  "dependencies": {
+    "three": "^0.74.0"
   }
 }

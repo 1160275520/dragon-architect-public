@@ -522,7 +522,7 @@ $(function() {
             RuthefjordManager.Simulator.set_edit_mode(newEM);
         });
 
-        $('#btn-pause').on('click', function() {
+        $('#btn-revert').on('click', function() {
             var oldRS = RuthefjordManager.Simulator.run_state;
             if (oldRS === RuthefjordManager.RunState.executing || oldRS === RuthefjordManager.RunState.paused) {
                 var newRS = oldRS === RuthefjordManager.RunState.executing ? RuthefjordManager.RunState.paused : RuthefjordManager.RunState.executing;
@@ -1050,8 +1050,8 @@ handler.onPuzzleComplete = function(puzzle_id) {
     progress.mark_puzzle_completed(puzzle_id, game_info.puzzles[puzzle_id]);
     if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logOnPuzzledCompleted(); }
     RuthefjordUI.WinMessage.show(win_msg, win_btn_msg, function() { handler.onPuzzleFinish(puzzle_id); });
-    var cheer = new Audio("media/cheer_3.mp3");
-    cheer.play();
+    // var cheer = new Audio("media/cheer_3.mp3");
+    // cheer.play();
 };
 
 // sent when they exit a puzzle
