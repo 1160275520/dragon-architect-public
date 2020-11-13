@@ -425,17 +425,13 @@ var RuthefjordDisplay = (function() {
         if (bot) {
             // set robot goal position and direction
             finalBotPos.copy(bot.pos).add(robotOffset);
-            finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), bot.dir); // 1,0,0 is default direction
+            finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), bot.dir);
+
+            // add a special case to set the right orientation of the dragon when x = -1
             if (bot.dir.x==-1)
             {
-                console.log(bot.dir)
-                // finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(-1, 0, 0)); // 1,0,0 is default direction
-                console.log(finalBotQ)
+                finalBotQ.set(0, 0, 1, 0)
             }
-            // else{
-                // console.log(bot.dir)
-                // console.log(finalBotQ)
-            // }
 
             waitTime = dt*0.1;
             animTime = Math.min(dt*0.9, MAX_ANIMATION_TIME);
