@@ -975,8 +975,8 @@ module.Dialog = (function() {
     };
 
     self.destroy = function () {
-        $(".dialog-content").remove();
-        $(dialog).hide();
+        // $(".dialog-content").remove();
+        // $(dialog).hide();
     };
 
     return self;
