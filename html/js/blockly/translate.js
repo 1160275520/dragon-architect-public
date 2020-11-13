@@ -190,7 +190,7 @@ var RuthefjordTranslate = (function () {
             }
             importString = importString.concat("down");
             previous = true;
-
+        }
         if (placeCubeUsed) {
             if (previous) {
                 importString = importString.concat(", ");
@@ -205,7 +205,7 @@ var RuthefjordTranslate = (function () {
             importString = importString.concat("removeCube");
         }
         codeString = importString.concat("\n\n",codeString);
-    }}
+    }
 
 
 
