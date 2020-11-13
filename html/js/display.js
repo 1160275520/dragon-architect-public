@@ -19,9 +19,11 @@ var RuthefjordDisplay = (function() {
     // positioning
     var relativeCamPos = new THREE.Vector3(-10,0,12);
     var relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
+
     var robotOffset = new THREE.Vector3(0.5,0.5,1.5);
 
     var cubeOffset = new THREE.Vector3(0.5,0.5,0.5);
+    var ZLineOffset = new THREE.Vector3(0.5,0.5,1.5);
 
     // the colors are 1-indexed for some reason
     var cubeMats = [];
@@ -226,15 +228,15 @@ var RuthefjordDisplay = (function() {
         // robot
         geometry = new THREE.SphereGeometry(0.5, 32, 32);
         // robot = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial( {color: "#f56e90"} ));
+
         var robotDir = new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
+
         // robot.add(robotDir);
         zLineMat = new THREE.MeshBasicMaterial( {color: 0xf2c2ce} );
-        geometry = new THREE.PlaneBufferGeometry(1, 1, 32);
-        tex = loader.load("media/y-cue.png");
-        material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
-        zCuePlane = new THREE.Mesh(geometry, material);
+        zCuePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
+            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide}));
         scene.add(zCuePlane);
-        // scene.add(robot);
+
 
         import("../node_modules/three/examples/jsm/loaders/FBXLoader.js")
             .then((module) => {
@@ -318,7 +320,9 @@ var RuthefjordDisplay = (function() {
 
                     // necessary for fps display
                     var update = function () {
+
                         // stats.begin();
+
                         var t = self.clock.getElapsedTime();
                         var dt = Math.min(t - self.oldTime, 0.1);
                         self.oldTime = t;
@@ -364,7 +368,9 @@ var RuthefjordDisplay = (function() {
                             onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
                             self.renderOut = false;
                         }
+
                         // stats.end();
+
                         requestAnimationFrame(update);
                     };
 
@@ -380,7 +386,9 @@ var RuthefjordDisplay = (function() {
                         var height = robot.position.z;
                         for (var z = Math.floor(robot.position.z); z >= 0; z--) {
                             if (grid.hasOwnProperty([Math.floor(robot.position.x), Math.floor(robot.position.y), z])) {
+
                                 height -= z + (robotOffset.z - cubeOffset.z);
+
                                 break;
                             }
                         }
@@ -389,7 +397,9 @@ var RuthefjordDisplay = (function() {
                         zLine.position.copy(robot.position);
                         zLine.translateZ(-height / 2);
                         zLine.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI / 2);
+
                         scene.add(zLine);
+
                         zCuePlane.position.copy(robot.position);
                         zCuePlane.translateZ(-height + 0.1); // offset a bit to avoid z-fighting
                     }
@@ -472,7 +482,7 @@ var RuthefjordDisplay = (function() {
     };
 
     self.addRobotTarget = function(pos) {
-        robotTarget.position.copy(pos).add(robotOffset);
+        robotTarget.position.copy(pos).add(ZLineOffset);
         targetShadow.position.copy(robotTarget.position);
         targetShadow.position.setZ(0.01);
         scene.add(robotTarget);
