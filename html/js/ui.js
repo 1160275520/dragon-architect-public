@@ -822,7 +822,7 @@ module.CameraControls = (function() {
     self.setVisible = function(isVisible) {
         var camera_controls = $('#camera-controls');
         var control_bar = $("#game-controls-bar-top");
-        isVisible ? camera_controls.show() : camera_controls.hide();
+        // isVisible ? camera_controls.show() : camera_controls.hide();
         control_bar.show();
         // check if we should hide or show the area containing camera controls (by checking if everything in it is hidden)
         if (control_bar.children().toArray().every(function (e) { return $(e).is(":hidden");})) {
@@ -997,8 +997,8 @@ module.Dialog = (function() {
     };
 
     self.destroy = function () {
-        $(".dialog-content").remove();
-        $(dialog).hide();
+        // $(".dialog-content").remove();
+        // $(dialog).hide();
     };
 
     return self;
