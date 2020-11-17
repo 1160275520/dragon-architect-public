@@ -13,7 +13,7 @@ var RuthefjordTranslate = (function () {
 
     self.getPythonCode = function () {
         buildString();
-        console.log(codeString);
+        // console.log(codeString);
         var codeStringCopy = codeString;
         codeString = ""
         forwardUsed = false;
@@ -45,8 +45,8 @@ var RuthefjordTranslate = (function () {
 
     self.buildStringHelper = function (commands) {
         //console.log("In Helper! Commands are");
-        //console.log(commands.length);
-        //console.log(commands);
+        // console.log(commands.length);
+        // console.log(commands);
         for (var i = 0; i < commands.length; i++){
             var command = commands[i];
             var type = command['type'];
@@ -74,6 +74,13 @@ var RuthefjordTranslate = (function () {
                     userProcedure(name);
                     //console.log("execute a procedure");
                 }
+            }
+            else if (type == 'assign'){ //Set block
+                var value = command['value']['value'];
+                var name = command['name'];
+                set(name,value);
+                // console.log("value" + value);
+                // console.log("name" + name);
             }
             else if (type == 'procedure'){ //Procedure
                 var body = command['body'];
@@ -106,6 +113,12 @@ var RuthefjordTranslate = (function () {
         var rightString = 'right()';
         codeString = codeString.concat(indent.repeat(numIndents),rightString,'\n');
         rightUsed = true;
+    }
+
+    self.set = function (name, value) {
+        var setString = name.concat(' = ', value);
+        codeString = codeString.concat(indent.repeat(numIndents),setString,'\n');
+        //not a function so no need to mark it used
     }
 
     self.placeCube = function (args) {
