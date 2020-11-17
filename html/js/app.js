@@ -974,7 +974,7 @@ handler.onProgramStateChange = function(type) {
         var rs = RuthefjordManager.Simulator.run_state;
         // console.log('on run state change: ' + rs);
         RuthefjordUI.StepButton.update(rs !== RuthefjordManager.RunState.finished && RuthefjordManager.Simulator.edit_mode === RuthefjordManager.EditMode.workshop);
-        RuthefjordUI.PauseButton.update(rs !== RuthefjordManager.RunState.stopped && rs !== RuthefjordManager.RunState.finished, rs === RuthefjordManager.RunState.paused);
+        RuthefjordUI.RevertButton.update(rs !== RuthefjordManager.RunState.finished && RuthefjordManager.Simulator.edit_mode === RuthefjordManager.EditMode.workshop);
         RuthefjordUI.RunButton.update(rs !== RuthefjordManager.RunState.stopped, RuthefjordManager.Simulator.edit_mode === RuthefjordManager.EditMode.workshop);
 
         if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }

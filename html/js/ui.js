@@ -763,11 +763,11 @@ module.ModeButton = (function() {
     return self;
 }());
 
-module.PauseButton = (function() {
+module.RevertButton = (function() {
     var self = {};
 
     self.update = function(isEnabled, isPaused) {
-        update_button('#btn-revert', isEnabled, isPaused, "Revert One Step", "Resume");
+        update_button('#btn-revert', isEnabled, isPaused, "Revert One Step", "Revert One Step");
     };
 
     return self;
@@ -777,7 +777,7 @@ module.StepButton = (function() {
     var self = {};
 
     self.update = function(isEnabled) {
-        update_button('#btn-step', isEnabled, false, "Run One Step", "One Step");
+        update_button('#btn-step', isEnabled, false, "Run One Step", "Run One Step");
     };
 
     return self;

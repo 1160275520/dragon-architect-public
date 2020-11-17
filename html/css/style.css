@@ -491,9 +491,23 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-run {
-    font-size: 32pt;
+    font-size: 30pt;
     height: 80px;
+    /* top: -10px; */
+    padding-bottom: 28px;
+    line-height: 0;
 }
+
+.btn-run-after {
+    position: absolute;
+    font-size: 30px;
+    font-family: 'Roboto Slab';
+    font-weight: 600;
+    top: 117px;
+    right: 38px;
+
+}
+
 
 #btn-run.active {
     background-color: transparent;
@@ -512,11 +526,12 @@ header button, .control-btn, .control-icon-btn {
 #btn-revert.active {
     /*font-size: 20pt;*/
     background-color: #E6E6E6;
+    background-color: #BBB;
+    color: #777;
 }
 
 #btn-revert.disabled {
-    background-color: #BBB;
-    color: #777;
+    background-color: #E6E6E6;
 }
 
 #btn-step {
