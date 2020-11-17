@@ -19,8 +19,9 @@ var RuthefjordDisplay = (function() {
     // positioning
     var relativeCamPos = new THREE.Vector3(-10,0,12);
     var relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
-    var robotOffset = new THREE.Vector3(0.5,0.5,1.5);
+    var robotOffset = new THREE.Vector3(0.5,0.5,1);
     var cubeOffset = new THREE.Vector3(0.5,0.5,0.5);
+    var ZLineOffset = new THREE.Vector3(0.5,0.5,1.5);
 
     // the colors are 1-indexed for some reason
     var cubeMats = [];
@@ -150,6 +151,7 @@ var RuthefjordDisplay = (function() {
     self.init = function(parentSelector) {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+
         self.clock = new THREE.Clock();
         self.oldTime = 0;
         cubes = {};
@@ -193,28 +195,7 @@ var RuthefjordDisplay = (function() {
             path + "py" + format, path + "ny" + format,
             path + "pz" + format, path + "nz" + format];
         var cubeLoader = new THREE.CubeTextureLoader();
-        var cubeMap = cubeLoader.load(texes);
-        //cubeMap.format = THREE.RGBFormat;
-        // code from http://blog.romanliutikov.com/post/58705840698/skybox-and-environment-map-in-threejs
-        var shader = THREE.ShaderLib['cube']; // init cube shader from built-in lib
-        shader.uniforms['tCube'].value = cubeMap; // apply textures to shader
-
-        // create shader material
-        var skyBoxMaterial = new THREE.ShaderMaterial( {
-            fragmentShader: shader.fragmentShader,
-            vertexShader: shader.vertexShader,
-            uniforms: shader.uniforms,
-            depthWrite: false,
-            side: THREE.BackSide
-        });
-
-        // create skybox mesh
-        var skybox = new THREE.Mesh(
-            new THREE.CubeGeometry(1000, 1000, 1000),
-            skyBoxMaterial
-        );
-
-        scene.add(skybox);
+        scene.background = cubeLoader.load(texes);
 
         // cube geometry, materials
         var loader = new THREE.TextureLoader();
@@ -229,11 +210,12 @@ var RuthefjordDisplay = (function() {
         cubeTargetMat = new THREE.MeshLambertMaterial({color:"#4078E6", transparent: true, opacity:0.5});
         robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:"#df67be", transparent: true, opacity:0.5}));
         targetShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
-            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.31, side: THREE.DoubleSide}));
+            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide}));
 
         // ground plane
         var geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
-        tex = loader.load("media/outlined_cube.png");
+
+        tex = loader.load("media/grass_texture.png");
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         tex.repeat.set(100, 100);
@@ -243,162 +225,179 @@ var RuthefjordDisplay = (function() {
 
         // robot
         geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        robot = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial( {color: "#f56e90"} ));
-        var robotDir = new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
-        robot.add(robotDir);
+        // robot = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial( {color: "#f56e90"} ));
+        // var robotDir = new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
+        // robot.add(robotDir);
         zLineMat = new THREE.MeshBasicMaterial( {color: 0xf2c2ce} );
-        geometry = new THREE.PlaneBufferGeometry(1, 1, 32);
-        tex = loader.load("media/y-cue.png");
-        material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
-        zCuePlane = new THREE.Mesh(geometry, material);
+        zCuePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
+            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide}));
         scene.add(zCuePlane);
-        scene.add(robot);
 
-        // lights
-        var light = new THREE.DirectionalLight("#ffffff", 1.74);
-        //light.position.set(0.32,0.77,-0.56); // rotating 0,0,-1 by 50 about x then 330 about y
-        light.position.set(-0.56,-0.32,0.77);
-        scene.add(light);
-        scene.add(new THREE.AmbientLight("#404040"));
 
-        // camera init
-        camera.position.copy(relativeCamPos);
-        camera.lookAt(new THREE.Vector3(0,0,0));
-        self.rotateCamera(-10);
+        import("../node_modules/three/examples/jsm/loaders/FBXLoader.js")
+            .then((module) => {
+                var loader = new module.FBXLoader();
+                loader.load( 'media/dragon_FBX/Dragon.FBX', function ( object ) {
 
-        robot.position.copy(robotOffset);
-        window.addEventListener( 'resize', self.onWindowResize, false );
-        self.clock.start();
+                    robot = new THREE.Object3D();
+                    robot.scale.set(1, 1, 1);
+                    robot.rotation.set(0, 0, 0);
+                    object.scale.set(0.01, 0.01, 0.01);
+                    object.rotation.x = Math.PI / 2;
+                    object.rotation.y += Math.PI / 2;
+                    robot.add(object);
+                    scene.add(robot);
 
-        requestAnimationFrame(update); // change to render to omit fps display
+                    // lights
+                    var light = new THREE.DirectionalLight("#ffffff", 1.74);
+                    //light.position.set(0.32,0.77,-0.56); // rotating 0,0,-1 by 50 about x then 330 about y
+                    light.position.set(-0.56,-0.32,0.77);
+                    scene.add(light);
+                    scene.add(new THREE.AmbientLight("#404040"));
+
+                    // camera init
+                    camera.position.copy(relativeCamPos);
+                    camera.lookAt(new THREE.Vector3(0,0,0));
+                    self.rotateCamera(-10);
+
+                    robot.position.copy(robotOffset);
+                    window.addEventListener( 'resize', self.onWindowResize, false );
+                    self.clock.start();
+
+                    self.screenshot = function(id) {
+                        self.renderOut = {id: id};
+                    };
+
+                    function render(tDelta, tTotal) {
+                        var z = WOBBLE_MAGNITUDE * Math.sin(tTotal * 4 * Math.PI / WOBBLE_PERIOD);
+                        var y = WOBBLE_MAGNITUDE * Math.cos(tTotal * 2 * Math.PI / WOBBLE_PERIOD);
+                        var v = new THREE.Vector3(0, y, z);
+
+                        switch (animStatus) {
+                            case "waiting":
+                                waitTime -= tDelta;
+                                if (waitTime > 0) {
+                                    break;
+                                }
+                                tDelta += waitTime; // wait time is negative, carry over into animating
+                                animStatus = "animating";
+                            // deliberate case fall-through since wait time is up if we get here
+                            case "animating":
+                                robot.position.lerp(finalBotPos, Math.min(tDelta / animTime, 1));
+                                robot.quaternion.slerp(finalBotQ,Math.min(tDelta / animTime, 1));
+                                animTime -= tDelta;
+                                if (animTime <= 0) {
+                                    robot.position.copy(finalBotPos);
+                                    robot.quaternion.copy(finalBotQ);
+                                    animStatus = "done";
+                                }
+                                break;
+                        }
+                        makeZLine();
+
+                        var newCamPos = v.add(relativeCamPos).add(robot.position);
+                        camera.position.lerp(newCamPos, TRANSLATION_SMOOTHNESS * tDelta);
+
+                        // Couldn't figure out how to reimplement technique from Unity code
+                        // There's probably something better than my hack
+                        var oldCamQ = camera.quaternion.clone();
+                        camera.lookAt(robot.position);
+                        var newCamQ = camera.quaternion.clone();
+                        camera.quaternion.copy(oldCamQ);
+                        camera.quaternion.slerp(newCamQ, ROTATION_SMOOTHNESS * tDelta);
+
+                        if (controls.enabled) {
+                            renderer.render(scene, viewer_camera);
+                        } else {
+                            renderer.render(scene, camera);
+                        }
+                    }
+
+
+                    // necessary for fps display
+                    var update = function () {
+                        stats.begin();
+                        var t = self.clock.getElapsedTime();
+                        var dt = Math.min(t - self.oldTime, 0.1);
+                        self.oldTime = t;
+                        //if (dt > 0.1) {
+                        //    console.error("large dt", dt);
+                        //} else {
+                        var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
+                        RuthefjordPuzzle.check_win_predicate();
+                        if (RuthefjordWorldState.dirty) {
+                            self.setDisplayFromWorld(transition_time);
+                        }
+
+                        if ( controlsEnabled ) {
+
+                            headingVel -= headingVel * 10.0 * dt;
+                            orthoVel -= orthoVel * 10.0 * dt;
+                            vertVel -= vertVel * 10.0 * dt;
+
+                            if ( strafeLeft ) orthoVel -= 4.0 * dt;
+                            if ( strafeRight ) orthoVel += 4.0 * dt;
+
+                            if ( moveUp ) vertVel += 4.0 * dt;
+                            if ( moveDown ) vertVel -= 4.0 * dt;
+
+                            if ( moveForward ) headingVel += 4.0 * dt;
+                            if ( moveBackward ) headingVel -= 4.0 * dt;
+
+                            var heading = new THREE.Vector3();
+                            var ortho = new THREE.Vector3();
+                            viewer_camera.getWorldDirection(heading);
+                            heading.z = 0; // just get the heading the in x-y plane
+                            heading.normalize();
+                            ortho.copy(heading);
+
+                            viewer_camera.position.add(heading.multiplyScalar(headingVel));
+                            viewer_camera.position.setZ(viewer_camera.position.z + vertVel);
+                            ortho.cross(RuthefjordWorldState.UP).multiplyScalar(orthoVel);
+                            viewer_camera.position.add(ortho);
+                        }
+
+                        render(dt, t);
+                        if (self.renderOut) {
+                            onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
+                            self.renderOut = false;
+                        }
+                        stats.end();
+                        requestAnimationFrame(update);
+                    };
+
+                    function makeZLine() {
+                        scene.remove(zLine);
+                        if (zLine) {
+                            zLine.geometry.dispose();
+                        }
+                        var grid = RuthefjordWorldState.grid;
+                        // find nearest filled cell below robot
+                        // use robot.position (instead of RuthefjordWorldState.robot.pos), so height is correct when animating
+                        // use Math.floor to compensate for robotOffset
+                        var height = robot.position.z;
+                        for (var z = Math.floor(robot.position.z); z >= 0; z--) {
+                            if (grid.hasOwnProperty([Math.floor(robot.position.x), Math.floor(robot.position.y), z])) {
+                                height -= z + (ZLineOffset.z - cubeOffset.z);
+                                break;
+                            }
+                        }
+                        var geometry = new THREE.CylinderGeometry(0.1, 0.1, height, 32);
+                        zLine = new THREE.Mesh(geometry, zLineMat);
+                        zLine.position.copy(robot.position);
+                        zLine.translateZ(-height / 2);
+                        zLine.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI / 2);
+                        // scene.add(zLine);
+                        zCuePlane.position.copy(robot.position);
+                        zCuePlane.translateZ(-height + 0.01); // offset a bit to avoid z-fighting
+                    }
+
+                    requestAnimationFrame(update); // change to render to omit fps display
+                });
+            });
+
     };
 
-    self.screenshot = function(id) {
-        self.renderOut = {id: id};
-    };
-
-    // necessary for fps display
-    var update = function () {
-        stats.begin();
-        var t = self.clock.getElapsedTime();
-        var dt = Math.min(t - self.oldTime, 0.1);
-        self.oldTime = t;
-        //if (dt > 0.1) {
-        //    console.error("large dt", dt);
-        //} else {
-        var transition_time = RuthefjordManager.Simulator.update(dt, t, RuthefjordWorldState);
-        RuthefjordPuzzle.check_win_predicate();
-        if (RuthefjordWorldState.dirty) {
-            self.setDisplayFromWorld(transition_time);
-        }
-
-        if ( controlsEnabled ) {
-
-            headingVel -= headingVel * 10.0 * dt;
-            orthoVel -= orthoVel * 10.0 * dt;
-            vertVel -= vertVel * 10.0 * dt;
-
-            if ( strafeLeft ) orthoVel -= 4.0 * dt;
-            if ( strafeRight ) orthoVel += 4.0 * dt;
-
-            if ( moveUp ) vertVel += 4.0 * dt;
-            if ( moveDown ) vertVel -= 4.0 * dt;
-
-            if ( moveForward ) headingVel += 4.0 * dt;
-            if ( moveBackward ) headingVel -= 4.0 * dt;
-
-            var heading = new THREE.Vector3();
-            var ortho = new THREE.Vector3();
-            viewer_camera.getWorldDirection(heading);
-            heading.z = 0; // just get the heading the in x-y plane
-            heading.normalize();
-            ortho.copy(heading);
-
-            viewer_camera.position.add(heading.multiplyScalar(headingVel));
-            viewer_camera.position.setZ(viewer_camera.position.z + vertVel);
-            ortho.cross(RuthefjordWorldState.UP).multiplyScalar(orthoVel);
-            viewer_camera.position.add(ortho);
-        }
-
-        render(dt, t);
-        if (self.renderOut) {
-            onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
-            self.renderOut = false;
-        }
-        stats.end();
-        requestAnimationFrame(update);
-    };
-
-    function makeZLine() {
-        scene.remove(zLine);
-        if (zLine) {
-            zLine.geometry.dispose();
-        }
-        var grid = RuthefjordWorldState.grid;
-        // find nearest filled cell below robot
-        // use robot.position (instead of RuthefjordWorldState.robot.pos), so height is correct when animating
-        // use Math.floor to compensate for robotOffset
-        var height = robot.position.z;
-        for (var z = Math.floor(robot.position.z); z >= 0; z--) {
-            if (grid.hasOwnProperty([Math.floor(robot.position.x), Math.floor(robot.position.y), z])) {
-                height -= z + (robotOffset.z - cubeOffset.z);
-                break;
-            }
-        }
-        var geometry = new THREE.CylinderGeometry(0.1, 0.1, height, 32);
-        zLine = new THREE.Mesh(geometry, zLineMat);
-        zLine.position.copy(robot.position);
-        zLine.translateZ(-height / 2);
-        zLine.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI / 2);
-        scene.add(zLine);
-        zCuePlane.position.copy(robot.position);
-        zCuePlane.translateZ(-height + 0.1); // offset a bit to avoid z-fighting
-    }
-
-    function render(tDelta, tTotal) {
-        var z = WOBBLE_MAGNITUDE * Math.sin(tTotal * 4 * Math.PI / WOBBLE_PERIOD);
-        var y = WOBBLE_MAGNITUDE * Math.cos(tTotal * 2 * Math.PI / WOBBLE_PERIOD);
-        var v = new THREE.Vector3(0, y, z);
-
-        switch (animStatus) {
-            case "waiting":
-                waitTime -= tDelta;
-                if (waitTime > 0) {
-                    break;
-                }
-                tDelta += waitTime; // wait time is negative, carry over into animating
-                animStatus = "animating";
-                // deliberate case fall-through since wait time is up if we get here
-            case "animating":
-                robot.position.lerp(finalBotPos, Math.min(tDelta / animTime, 1));
-                robot.quaternion.slerp(finalBotQ, Math.min(tDelta / animTime, 1));
-                animTime -= tDelta;
-                if (animTime <= 0) {
-                    robot.position.copy(finalBotPos);
-                    robot.quaternion.copy(finalBotQ);
-                    animStatus = "done";
-                }
-                break;
-        }
-        makeZLine();
-
-        var newCamPos = v.add(relativeCamPos).add(robot.position);
-        camera.position.lerp(newCamPos, TRANSLATION_SMOOTHNESS * tDelta);
-
-        // Couldn't figure out how to reimplement technique from Unity code
-        // There's probably something better than my hack
-        var oldCamQ = camera.quaternion.clone();
-        camera.lookAt(robot.position);
-        var newCamQ = camera.quaternion.clone();
-        camera.quaternion.copy(oldCamQ);
-        camera.quaternion.slerp(newCamQ, ROTATION_SMOOTHNESS * tDelta);
-
-        if (controls.enabled) {
-            renderer.render(scene, viewer_camera);
-        } else {
-            renderer.render(scene, camera);
-        }
-    }
 
     function Vector3FromString(str) {
         var ret = new THREE.Vector3();
@@ -414,6 +413,10 @@ var RuthefjordDisplay = (function() {
             // set robot goal position and direction
             finalBotPos.copy(bot.pos).add(robotOffset);
             finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), bot.dir); // 1,0,0 is default direction
+            if (bot.dir.x==-1)
+            {
+                finalBotQ.set(0, 0, 1, 0)
+            }
             waitTime = dt*0.1;
             animTime = Math.min(dt*0.9, MAX_ANIMATION_TIME);
             animStatus = "waiting";
@@ -470,7 +473,7 @@ var RuthefjordDisplay = (function() {
     };
 
     self.addRobotTarget = function(pos) {
-        robotTarget.position.copy(pos).add(robotOffset);
+        robotTarget.position.copy(pos).add(ZLineOffset);
         targetShadow.position.copy(robotTarget.position);
         targetShadow.position.setZ(0.01);
         scene.add(robotTarget);
@@ -552,7 +555,6 @@ var RuthefjordDisplay = (function() {
     };
 
     self.onWindowResize = function() {
-
         renderer.setSize(parent.width(), parent.height());
         camera.aspect = parent.width() / parent.height();
         camera.updateProjectionMatrix();

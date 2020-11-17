@@ -22,17 +22,18 @@ p {
 
 html {
     font-family: "Open Sans";
-    height: 100%;
+    /*height: 100%;*/
 }
 
 body {
-    background: #b5b5b5;
+    background: #1c2b2d;
     height: 100%;
     display: flex;
     flex-direction: column;
     display: -webkit-flex;
     -webkit-flex-direction: column;
     min-width: 1200px;
+    height: 100vh;
 }
 
 /* header */
@@ -46,7 +47,7 @@ header {
     height: 60px;
     flex: none;
     -webkit-flex: none;
-    background: #4aaae3;
+    background: #1c2b2d;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -68,9 +69,12 @@ header > div * {
 }
 
 header > h1 {
-    margin: 0 10px;
+    position: relative;
+    font-family: 'Gravitas One', cursive;
+    margin: auto;
     flex-grow: 0;
     -webkit-flex-grow: 0;
+    color: #E7F2F9;
 }
 
 #header-items {
@@ -85,7 +89,7 @@ header > h1 {
 
 #menu-nav {
     display: none;
-    background: rgba(58,134,179,0.8);
+    background: rgba(230,213,184,1);
     border-top: 3px solid rgba(46, 105, 140, 1);
     margin: 0;
     position: absolute;
@@ -124,6 +128,43 @@ header > h1 {
     margin: 0 0 4px 0;
 }
 
+
+/* menu bar */
+
+.menu-bar{
+    background-color: #e6d5b8;
+    font-family: 'Roboto Slab', serif;
+    display: flex;
+    border-top: 6px solid #1c2b2d;
+    max-height: 55px;
+}
+
+.menu-bar_title {
+    font-family: 'Gravitas One';
+    color: #1c2b2d;
+    margin: auto 45px;
+    font-size: 24px;
+    min-width: fit-content;
+}
+
+.menu-bar_list {
+    display: flex;
+    font-color: #1c2b2d;
+    width: 100vh;
+}
+
+.menu-bar_item {
+    font-family: "Roboto Slab";
+    fonr-weight: 300;
+    position: relative;
+    margin: auto;
+}
+
+.menu-bar .current{
+    color: #ffffff;
+    text-decoration: underline;
+}
+
 /* loading pane */
 /************************************************************/
 
@@ -136,7 +177,7 @@ header > h1 {
     -webkit-align-items: center;
     justify-content: center;
     -webkit-justify-content: center;
-    background: white;
+    background: #1c2b2d;
 }
 
 .view-loading > #msg-loading {
@@ -146,7 +187,8 @@ header > h1 {
 .intro-msg {
     display: table;
     font-family: "Open Sans";
-    background-color: #fff;
+    color: white;
+    background-color: #1c2b2d;
     margin: 0;
     padding: 25px;
     z-index: 1;
@@ -173,28 +215,55 @@ header > h1 {
     flex-grow: 1;
     -webkit-flex-grow: 1;
     min-height: 620px;
+    background: #1c2b2d;
 }
 
 #main-view-game {
-    order: 1;
-    -webkit-order: 1;
-    width: 40%;
-    background: #ccebff;
-    padding: 0 5px;
+    /*order: 1;*/
+    /*-webkit-order: 1;*/
+    width: inherit;
+    background: #1c2b2d;
+    padding: 0;
+    /*height: fit-content;*/
 }
 
 #main-view-code {
     position: relative;
-    order: 0;
-    -webkit-order: 0;
-    width: 60%;
+    /* order: 0; */
+    /* -webkit-order: 0; */
+    width: 75%;
     display: flex;
     flex-direction: column;
     display: -webkit-flex;
     -webkit-flex-direction: column;
     align-items: stretch;
     -webkit-align-items: stretch;
+    background: #1c2b2d;
+    /*height: 93vh;*/
+    /*overflow: auto;*/
 }
+
+
+
+#blocklyLabels .blocklyLabels_block{
+    width: 159px !important;
+    background-color: aliceblue;
+    font-size: 16px;
+    padding: 1px 14px;
+    text-align: left;
+    color: #1f6f8b;
+    border: 2px #1f6f8b solid;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.blocklyLabels_block .label-large {
+    font-size: 24px;
+    text-align: center;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
 
 #code-area {
     position: relative;
@@ -205,6 +274,7 @@ header > h1 {
     flex-grow: 1;
     -webkit-flex-grow: 1;
     height: 100%; /* required for minimized FF, don't know why */
+    background: #1c2b2d;
 }
 
 #blockly {
@@ -218,22 +288,22 @@ header > h1 {
 
 .game-controls-bar {
     display: flex;
-    display: -webkit-flex;
-    align-items: center;
-    -webkit-align-items: center;
     justify-content: space-between;
     -webkit-justify-content: space-between;
     padding: 5px 0;
+    background-color: #1F6F8B;
+    position: absolute;
+    z-index: 10;
 }
 
 .game-control {
     height: 52px;
     border-radius: 6px;
-    background: rgba(74, 170, 227, 0.7);
+    /*background: rgba(74, 170, 227, 0.7);*/
 }
 
 .game-control.disabled {
-    background: rgba(150, 150, 150, 0.7); 
+    background: rgba(150, 150, 150, 0.7);
 }
 
 p.game-control {
@@ -247,6 +317,31 @@ div.game-control {
     align-items: center;
     -webkit-align-items: center;
     padding: 5px;
+}
+
+.game-control_category{
+    display: block;
+    text-align: center;
+    padding: 0 15px;
+}
+
+.game-control_title {
+    color: #ffffff;
+    margin: 0 auto;
+    font-family: 'Roboto Slab';
+    text-align: center;
+}
+.game-control_buttons {
+    display: flex;
+    position: relative;
+}
+
+
+.camera-controls_text{
+    font-size: 18px;
+    line-height: 1;
+    font-family: 'Roboto Slab';
+    margin: 0 5px 0 5px;
 }
 
 .tools-debug {
@@ -269,13 +364,72 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .control-icon-btn {
-    width: 40px;
-    margin: 0 0 0 5px;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+
+.control-icon-btn .fa-lg {
+    font-size: 2em;
+    line-height: 1.2em;
+    vertical-align: -15%;
+    margin: 0 6px;
 }
 
 #game-controls-bar-bottom {
     flex-direction: column;
     -webkit-flex-direction: column;
+    background-color: #1c2b2d;
+    height: 100px;
+    width: 100%;
+}
+
+.goal-section{
+    color: #ffffff;
+    font-family: "Roboto Slab";
+    text-align: left;
+    display: block;
+    width: 100vh;
+    height: 100vh;
+    /*right: 600px;*/
+    /*position: absolute;*/
+}
+
+.hint-section {
+    position: absolute;
+    display: flex;
+    /*right: 100px;*/
+    /*bottom: -30px;*/
+}
+
+#btn-show-hint .fa-lg {
+    font-size: 1.33333333em;
+    line-height: 1.25em;
+    vertical-align: -15%;
+    text-align: center;
+    left: 9px;
+    position: relative;
+}
+
+.hint-button{
+    background-color: #ffffff;
+    color: black;
+    /* width: 38px; */
+    position: absolute;
+    text-align: center;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    line-height: 1.5;
+    display: flex;
+}
+.hint-text{
+    position: absolute;
+    bottom: -70px;
+    font-size: 21px;
+    color: #ffffff;
+    background: transparent;
 }
 
 #time-controls {
@@ -303,9 +457,8 @@ header button, .control-btn, .control-icon-btn {
     flex-direction: column;
     display: -webkit-flex;
     -webkit-flex-direction: column;
-    position: absolute;
-    right: 10px;
-    top: 30px;
+    padding: 21px 10px;
+
 }
 
 .game-control-btn-playback {
@@ -318,10 +471,13 @@ header button, .control-btn, .control-icon-btn {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    font-size: 12px;
+    font-family: "Roboto Slab";
 }
 
-#btn-run, #btn-pause.active {
-    background-color: #11d800;
+#btn-run, #btn-revert.active {
+    background-color: #E6E6E6;
+    font-family: "Roboto Slab";
 }
 
 #btn-run {
@@ -330,31 +486,34 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-run.active {
-    background-color: #b03737;
-    font-size: 24pt;
+    background-color: transparent;
+    color: #E6E6E6;
+    border: 3px solid #E6E6E6;
+    /*font-size: 24pt;*/
 }
 
-#btn-pause {
-    background-color: #f5d46f;
+#btn-revert {
+    background-color: #E6E6E6;
     height: 40px;
     line-height: 36px;
-    font-size: 20pt;
+    /*font-size: 20pt;*/
 }
 
-#btn-pause.active {
-    font-size: 20pt;
+#btn-revert.active {
+    /*font-size: 20pt;*/
+    background-color: #E6E6E6;
 }
 
-#btn-pause.disabled {
+#btn-revert.disabled {
     background-color: #BBB;
     color: #777;
 }
 
 #btn-step {
-    background-color: #11d800;
+    background-color: #E6E6E6;
     height: 40px;
     line-height: 36px;
-    font-size: 17pt;
+    /*font-size: 17pt;*/
 }
 
 #btn-step.disabled {
@@ -383,21 +542,24 @@ header button, .control-btn, .control-icon-btn {
     width: 100%;
     padding: 0;
     margin: 0;
+    max-height: 600px;
+    height: 90vh;
 }
 
-#three-js:after {
-    padding-top: 75%;
-    display: block;
-    content: '';
-}
+/*#three-js:after {*/
+/*    padding-top: 75%;*/
+/*    display: block;*/
+/*    content: '';*/
+/*}*/
 
 #three-js canvas {
     display: block;
-    width: 100%;
+    /*width: 96% !important;*/
     height: 100%;
     padding: 0;
     margin: 0;
-    position: absolute;
+    /*position: absolute;*/
+    /*right: 0;*/
 }
 
 /* */
@@ -464,9 +626,11 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .slider-container {
-    height: 52px;
-    padding: 5px;
+    height: 43px;
+
+    padding: 0 30px;
     background-color: transparent;
+    display: flex;
 }
 
 #slider .ui-slider-handle {
@@ -731,12 +895,14 @@ header button, .control-btn, .control-icon-btn {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    background: #1c2b2d;
 }
 
 #code-entry-area {
     font-size: 8pt;
     height: 100px;
     flex-grow: 1;
+    background: #1c2b2d;
 }
 
 #btn-code-entry {
@@ -744,3 +910,59 @@ header button, .control-btn, .control-icon-btn {
     height: 40px;
 
 }
+
+/*new code: animated trash can
+DOESN'T WORK YET
+
+.icon {
+    background: invert($color);
+    position: relative;
+    width: 200px*$scale;
+    height: 200px*$scale;
+    margin: 50px auto 0;
+    border-radius: 5px*$scale;
+    transition: box-shadow .2s ease;
+&:hover {
+     box-shadow: 0 0 10px*$scale rgba(10,10,10,.3);
+ }
+}
+
+.icon:hover .lid, .icon:hover .lidcap {
+    transform: rotate(10deg);
+    margin-bottom: 15px*$scale;
+}
+
+.lidcap, .lid, .bin {
+    position: absolute;
+}
+
+.lidcap, .lid {
+    border-top-left-radius: 4px*$scale;
+    border-top-right-radius: 4px*$scale;
+    background: $color;
+    transition: transform .2s linear, margin .2s linear;
+}
+
+.lidcap {
+    bottom: 138px*$scale;
+    left: 90px*$scale;
+    height: 10px*$scale;
+    width: 20px*$scale;
+}
+
+.lid {
+    bottom: 120px*$scale;
+    left: 30px*$scale;
+    width: 140px*$scale;
+    height: 20px*$scale;
+}
+
+.bin {
+    bottom: 0;
+    left: 40px*$scale;
+    width: 100px*$scale;
+    border-top: 120px*$scale solid $color;
+    border-left: 10px*$scale solid transparent;
+    border-right: 10px*$scale solid transparent;
+}
+*/

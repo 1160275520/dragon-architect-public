@@ -3,11 +3,12 @@ function RuthefjordBlocklyCustomInit() {
 
 // Extensions to Blockly's language and JavaScript generator.
 
-var COLOR_MOVE_1 = '#0075A6';
-var COLOR_MOVE_2 = '#B84B26';
-var COLOR_BLOCK = '#978B63';
+
+var COLOR_MOVE_1 = '#CFEEFF';
+var COLOR_MOVE_2 = '#CFFFE5';
+var COLOR_BLOCK = '#F6FFCF';
 var COLOR_LOOPS = '#00711C';
-var COLOR_PROCS = '#7C478B';
+var COLOR_PROCS = '#FFF3CF';
 var COLOR_UNUSED_1 = '#B63551';
 var COLOR_UNUSED_2 = '#A88217';
 var COLOR_TEASER = '#707070';
@@ -106,8 +107,8 @@ function makeIdent(name) {
     return {type:'ident', value:name};
 }
 
-//For the making of variable set blocks.
-function makeAssignment(name, value){
+//For the making of variable set blocks
+function makeAssignment(name, value) {
     return {type:"assign", name:name, value:value};
 }
 
@@ -241,7 +242,7 @@ Blockly.Blocks['Set'] = {
 };
 
 Blockly.JSONLangOps['Set'] = function(block) {
-    return makeAssignment(block.getFieldValue('NAME'), makeSingleArg(block,"VALUE"));
+    return makeAssignment(block.getFieldValue('NAME'), makeSingleArg(block, "VALUE"));
 };
 
 //Get blocks only have the name of the variable on them and can be put into forward, up, down, or repeats

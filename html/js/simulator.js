@@ -76,8 +76,8 @@ var RuthefjordManager = (function() {
                         throw new Error(stmt.name + " not found");
                     }
                     // replace each variable with its value before pushing state on the stack
-                    stmt.args.forEach((arg, index,args) => {
-                        if (arg.type == "indent"){ // if the argument is a get block for a variable
+                    stmt.args.forEach((arg, index, args) => {
+                        if (arg.type === "ident") { // if the argument is a get block for a variable
                             args[index] = _.last(sim.call_stack).context[arg.value];
                         }
                     })
@@ -85,15 +85,14 @@ var RuthefjordManager = (function() {
                     break;
                 case "repeat": // definite loop
                     var count;
-                    console.log('stmt', stmt);
+                    // console.log('stmt', stmt);
                     if (stmt.number.type === "ident") { //ToDo: make context hold count's value
-                        console.log("A");
-                        console.log("last on call stack:");
-                        console.log(_.last(sim.call_stack).context);
+                        // console.log("A");
+                        // console.log("last on call stack:");
+                        // console.log(_.last(sim.call_stack).context);
 
                         count = _.last(sim.call_stack).context[stmt.number.value].value;
                     } else { // we only support int literals and identifiers
-                        console.log("B");
                         count = stmt.number.value;
                     }
                     var new_repeat = {
@@ -193,6 +192,7 @@ var RuthefjordManager = (function() {
                 RuthefjordUI.TimeSlider.value(0);
             } else if (rs === module.RunState.executing) {
                 if (self.run_state === module.RunState.stopped) {
+                    RuthefjordTranslate.getPythonCode();
                     self.set_program(RuthefjordBlockly.getProgram());
                 }
                 // reset last statement execution time so dt isn't super wrong next time
