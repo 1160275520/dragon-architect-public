@@ -60,6 +60,9 @@ var RuthefjordManager = (function() {
         self.step = function(stmt, state, sim) {
             //console.log(stmt);
             switch (stmt.type) {
+                case "assign": //for variable blocks
+                    _.last(sim.call_stack).context[stmt.name] = stmt.value;
+                    break;
                 case "procedure": // procedure definition
                     _.last(sim.call_stack).context[stmt.name] = stmt;
                     break;
@@ -72,6 +75,12 @@ var RuthefjordManager = (function() {
                     } else {
                         throw new Error(stmt.name + " not found");
                     }
+                    // replace each variable with its value before pushing state on the stack
+                    stmt.args.forEach((arg, index,args) => {
+                        if (arg.type == "indent"){ // if the argument is a get block for a variable
+                            args[index] = _.last(sim.call_stack).context[arg.value];
+                        }
+                    })
                     self.push_stack_state(proc.body, _.zip(proc.params, stmt.args), stmt.meta, sim);
                     break;
                 case "repeat": // definite loop

@@ -106,13 +106,15 @@ function makeIdent(name) {
     return {type:'ident', value:name};
 }
 
+//For the making of variable set blocks.
+function makeAssignment(name, value){
+    return {type:"assign", name:name, value:value};
+}
+
 function makeSingleArg(block, inputName) {
     var input = block.getInlineInputValue(inputName, "NUM");
-    //with a variable block, input is null here so you get a ident type passed as an argument with a null value which doesnt
-    //break it because forward just goes forward once when it has bad input
-    //but it breaks later
     if (input === null) {
-        input = block.getInlineInputValue(inputName, "VAR");
+        input = block.getInlineInputValue(inputName, "NAME");
         return makeIdent(input);
     }
     return makeLiteral(input);
@@ -173,7 +175,7 @@ Blockly.JSONLangOps['Forward'] = function(block) {
     return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
 };
 
-// SET ; Variables
+// SET - the set block creates variables and initializes them
 Blockly.Blocks['Set'] = {
     init: function() {
         this.setColour(Blockly.Blocks.variables.HUE);
@@ -239,9 +241,10 @@ Blockly.Blocks['Set'] = {
 };
 
 Blockly.JSONLangOps['Set'] = function(block) {
-    return newCall("Set", block.id, [makeSingleArg(block, "VALUE")]);
+    return makeAssignment(block.getFieldValue('NAME'), makeSingleArg(block,"VALUE"));
 };
 
+//Get blocks only have the name of the variable on them and can be put into forward, up, down, or repeats
 Blockly.Blocks['Get'] = {
     //GET block currently only carries its name. 
     init: function () {
@@ -265,7 +268,8 @@ Blockly.Blocks['Get'] = {
 }
 
 Blockly.JSONLangOps['Get'] = function(block) {
-    return newCall("Get", block.id, []);
+    //ident for indentifier/identification (variable)
+    return makeIdent(block.getFieldValue('NAME'));
 };
 
 // UP
