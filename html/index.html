@@ -59,15 +59,22 @@
     <title>Dragon Architect</title>
   </head>
   <body>
+  <div id="dev-controls" style="display: flex; flex-direction: row; align-items: center">
+      <select id="dev-select-pack">
+          <option>- Jump to Pack -</option>
+      </select>
+      <button id="btn-header-sandbox">Sandbox</button>
+      <button id="btn-devmode" onclick="devmode()">Dev Mode</button>
+      <button id="btn-clear-save-data">Delete Save Data</button></div>
     <div class="menu-bar">
       <div class="menu-bar_title">
         Dragon Architect
       </div>
       <ul class="menu-bar_list">
-        <div class="menu-bar_item current">Home</div>
+        <div class="menu-bar_item current">Tutorial</div>
         <div class="menu-bar_item">Puzzle</div>
         <div class="menu-bar_item">Sandbox</div>
-        <div class="menu-bar_item">Rule</div>
+        <div class="menu-bar_item">About</div>
       </ul>
     </div>
     <div class="view-loading">
@@ -220,11 +227,11 @@
           .bin
 
       </div>
-<!--      <div id="dialog" class="dialogUI">-->
-<!--        <div>-->
-<!--          <img class="dialog-icon" src="media/dragon_icon_speech.png">-->
-<!--        </div>-->
-<!--      </div>-->
+      <div id="dialog" class="dialogUI">
+        <div>
+          <img class="dialog-icon" src="media/dragon_icon_speech.png">
+        </div>
+      </div>
 
     </div>
     <img id="attention-arrow" src="media/arrow.png"/>
