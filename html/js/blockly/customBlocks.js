@@ -218,20 +218,26 @@ Blockly.Blocks['Set'] = {
     dispose: function () {
         var getters = [];
         var blocks = Blockly.getMainWorkspace().getAllBlocks();
+        var found_setter = false;
+        var var_name;
         // Iterate through every block and check the name.
         for (var i = 0; i < blocks.length; i++) {
             if (blocks[i].isGetter) {
-                var varName = blocks[i].getFieldValue('NAME');
+                var_name = blocks[i].getFieldValue('NAME');
                 // Procedure name may be null if the block is only half-built.
-                if (varName && Blockly.Names.equals(varName, this.getFieldValue('NAME'))) {
+                if (var_name && Blockly.Names.equals(var_name, this.getFieldValue('NAME'))) {
                     getters.push(blocks[i]);
                 }
+            } else if (blocks[i].renameVar) { // found a setter
+                var_name = blocks[i].getFieldValue('NAME');
+                found_setter = found_setter || ((this !== blocks[i]) && var_name && Blockly.Names.equals(var_name, this.getFieldValue('NAME')));
             }
         }
-        for (i = 0; i < getters.length; i++) {
-            getters[i].dispose(true, false);
+        if (!found_setter) {
+            for (i = 0; i < getters.length; i++) {
+                getters[i].dispose(true, false);
+            }
         }
-
         // avoid recursively updating toolbox by only doing the update when the block being disposed in not in the toolbox
         var flyout = this.isInFlyout;
         this.constructor.prototype.dispose.apply(this, arguments);
