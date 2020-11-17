@@ -468,7 +468,7 @@ header button, .control-btn, .control-icon-btn {
     display: -webkit-flex;
     -webkit-flex-direction: column;
     padding: 21px 10px;
-
+    padding-top: 78px;
 }
 
 .game-control-btn-playback {
