@@ -59,6 +59,32 @@ Blockly.Procedures.rename = function(text) {
     }
 };
 
+Blockly.Variables.rename = function(text) {
+    if (this.sourceBlock_.locked) {
+        return;
+    }
+    if (this.sourceBlock_.isInFlyout) {
+        // don't allow renaming of something in toolbox, this breaks everything...
+        return this.getFieldValue("NAME");
+    } else {
+        // Strip leading and trailing whitespace.  Beyond this, all names are legal.
+        text = text.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
+
+        // Rename any getters and setters.
+        var blocks = this.sourceBlock_.workspace.getAllBlocks();
+        for (var i = 0; i < blocks.length; i++) {
+            if (blocks[i].isGetter && blocks[i].renameVar) { // procedure call blocks have this defined
+                blocks[i].renameVar(this.text_, text); // only renames to text those calls that match current name this.text_
+            }
+        }
+        // blockly friggin explodes if the toolbox is updated while something is being dragged
+        if (Blockly.dragMode_ === 0) {
+            RuthefjordBlockly.updateToolbox();
+        }
+        return text;
+    }
+};
+
 var old_changed_func = Blockly.Mutator.prototype.workspaceChanged_;
 
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
@@ -81,10 +107,15 @@ function makeIdent(name) {
     return {type:'ident', value:name};
 }
 
+//For the making of variable set blocks
+function makeAssignment(name, value) {
+    return {type:"assign", name:name, value:value};
+}
+
 function makeSingleArg(block, inputName) {
     var input = block.getInlineInputValue(inputName, "NUM");
     if (input === null) {
-        input = block.getInlineInputValue(inputName, "VAR");
+        input = block.getInlineInputValue(inputName, "NAME");
         return makeIdent(input);
     }
     return makeLiteral(input);
@@ -141,7 +172,111 @@ Blockly.Blocks['Forward'] = {
 };
 
 Blockly.JSONLangOps['Forward'] = function(block) {
+    //make Single Arg takes in the block that has been passed to forward. When this is a variable block, it doesn't currently have a value
     return newCall("Forward", block.id, [makeSingleArg(block, "VALUE")]);
+};
+
+// SET - the set block creates variables and initializes them
+Blockly.Blocks['Set'] = {
+    init: function() {
+        this.setColour(Blockly.Blocks.variables.HUE);
+
+        // TODO is it ok to just make counter the default name?
+        var nameField = new Blockly.FieldTextInput("counter", Blockly.Variables.rename);
+        nameField.setSpellcheck(false);
+        this.appendDummyInput()
+            .appendField("Set")
+            .appendField(nameField, 'NAME')
+            .appendField("to");
+
+        var input = this.appendValueInput("VALUE");
+        input.setCheck("Number");
+        this.setInputsInline(true);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+    },
+    mutationToDom: function () {
+        // TODO is this necessary?
+        var container = document.createElement('mutation');
+
+        // HACK add dummmy attribute for no argument to ensure toolbox gets updated with caller (it's super byzantine)
+        container.setAttribute('dummy', true);
+
+        return container;
+    },
+    domToMutation: function (xml) {
+        // TODO is this necessary?;
+    },
+    getVars: function() { // used by Blockly code
+        return [this.getFieldValue('NAME')];
+    },
+    renameVar: function (oldName, newName) {
+        if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
+            this.setFieldValue(newName, 'NAME');
+        }
+    },
+    dispose: function () {
+        var getters = [];
+        var blocks = Blockly.getMainWorkspace().getAllBlocks();
+        var found_setter = false;
+        var var_name;
+        // Iterate through every block and check the name.
+        for (var i = 0; i < blocks.length; i++) {
+            if (blocks[i].isGetter) {
+                var_name = blocks[i].getFieldValue('NAME');
+                // Procedure name may be null if the block is only half-built.
+                if (var_name && Blockly.Names.equals(var_name, this.getFieldValue('NAME'))) {
+                    getters.push(blocks[i]);
+                }
+            } else if (blocks[i].renameVar) { // found a setter
+                var_name = blocks[i].getFieldValue('NAME');
+                found_setter = found_setter || ((this !== blocks[i]) && var_name && Blockly.Names.equals(var_name, this.getFieldValue('NAME')));
+            }
+        }
+        if (!found_setter) {
+            for (i = 0; i < getters.length; i++) {
+                getters[i].dispose(true, false);
+            }
+        }
+        // avoid recursively updating toolbox by only doing the update when the block being disposed in not in the toolbox
+        var flyout = this.isInFlyout;
+        this.constructor.prototype.dispose.apply(this, arguments);
+        if (Blockly.dragMode_ === 0 && !flyout) {
+            RuthefjordBlockly.updateToolbox();
+        }
+    },
+};
+
+Blockly.JSONLangOps['Set'] = function(block) {
+    return makeAssignment(block.getFieldValue('NAME'), makeSingleArg(block, "VALUE"));
+};
+
+//Get blocks only have the name of the variable on them and can be put into forward, up, down, or repeats
+Blockly.Blocks['Get'] = {
+    //GET block currently only carries its name. 
+    init: function () {
+        this.setColour(Blockly.Blocks.variables.HUE);
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldVariable("counter"), 'NAME');
+        this.setOutput(true);
+        this.setEditable(false);
+    },
+    renameVar: function (oldName, newName) {
+        console.log("renameVar " + oldName + "->" + newName)
+        if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
+            this.setFieldValue(newName, 'NAME');
+        }
+    },
+    domToMutation: function (xml) {
+        // applies the name mutation set up in updateToolbox
+        this.setFieldValue(xml.getAttribute("name"), "NAME");
+    },
+    isGetter: true,
+}
+
+Blockly.JSONLangOps['Get'] = function(block) {
+    //ident for indentifier/identification (variable)
+    return makeIdent(block.getFieldValue('NAME'));
 };
 
 // UP
@@ -503,7 +638,7 @@ Blockly.JSONLangOps.bodyToXML = function (body, program) {
     return xml;
 };
 
-var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
+var BUILT_INS = ['Forward', 'Set', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.JSONLangOps.stmtToXML = function (stmt, program) {

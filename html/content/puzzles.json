@@ -1,7 +1,7 @@
 {
     "dummy": {
         "library": {
-            "granted": [
+            "granted": ["set"
             ]
         }
     },

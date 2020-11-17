@@ -60,6 +60,9 @@ var RuthefjordManager = (function() {
         self.step = function(stmt, state, sim) {
             //console.log(stmt);
             switch (stmt.type) {
+                case "assign": //for variable blocks
+                    _.last(sim.call_stack).context[stmt.name] = stmt.value;
+                    break;
                 case "procedure": // procedure definition
                     _.last(sim.call_stack).context[stmt.name] = stmt;
                     break;
@@ -72,11 +75,22 @@ var RuthefjordManager = (function() {
                     } else {
                         throw new Error(stmt.name + " not found");
                     }
+                    // replace each variable with its value before pushing state on the stack
+                    stmt.args.forEach((arg, index, args) => {
+                        if (arg.type === "ident") { // if the argument is a get block for a variable
+                            args[index] = _.last(sim.call_stack).context[arg.value];
+                        }
+                    })
                     self.push_stack_state(proc.body, _.zip(proc.params, stmt.args), stmt.meta, sim);
                     break;
                 case "repeat": // definite loop
                     var count;
-                    if (stmt.number.type === "ident") {
+                    // console.log('stmt', stmt);
+                    if (stmt.number.type === "ident") { //ToDo: make context hold count's value
+                        // console.log("A");
+                        // console.log("last on call stack:");
+                        // console.log(_.last(sim.call_stack).context);
+
                         count = _.last(sim.call_stack).context[stmt.number.value].value;
                     } else { // we only support int literals and identifiers
                         count = stmt.number.value;
@@ -107,6 +121,7 @@ var RuthefjordManager = (function() {
 
                     break;
                 case "command": // imperative robot instructions
+                    //ToDo: this is where forward/up/down/etc. get their functionality, but the value doesnt get passed in here. It just does things once. and somewhere else things got unrolled
                     self.apply_command(stmt, state, sim);
                     break;
                 default:
@@ -127,6 +142,9 @@ var RuthefjordManager = (function() {
                     break;
                 case "forward":
                     cur_pos.add(cur_dir);
+                    break;
+                case "set":
+                    // cur_pos.add(cur_dir.clone().multiplyScalar(-1)); set should not make things go backwards
                     break;
                 case "up":
                     cur_pos.add(RuthefjordWorldState.UP);
@@ -242,6 +260,12 @@ var RuthefjordManager = (function() {
                         "number": {"type": "ident", "value": "x"},
                         "type": "repeat"
                     }], "name": "Forward", "params": ["x"], "type": "procedure"
+                }, {
+                    "body": [{
+                        "body": [{"args": [], "name": "set", "type": "command"}],
+                        "number": {"type": "ident", "value": "x"},
+                        "type": "repeat"
+                    }], "name": "Set", "params": ["x"], "type": "procedure"
                 }, {
                     "body": [{"args": [], "name": "left", "type": "command"}],
                     "name": "Left",
