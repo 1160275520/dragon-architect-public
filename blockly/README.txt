@@ -39,5 +39,7 @@ Instructions for working on the blockly code:
    you forgot the "-f". Without -f, blockly/build.py requires that the local blockly repo be "clean", meaning it has no
    uncommitted changes.
 
-4. Commit and push your changes to the blockly repo. Others can pull the changes by running "python blockly/build.py"
-   from the dragon-architect directory.
+4. Commit and push your changes to the blockly repo. Update the branch and revision fields in dependencies.json with the
+   branch and hash for your new commit, and commit and push that to the DA repo. Once others pull the changes to
+   dependencies.json in the DA repo, they can get the blockly changes by running "python blockly/build.py" from the
+   dragon-architect directory.
