@@ -522,14 +522,12 @@ $(function() {
         });
 
         $('#btn-revert').on('click', function() {
-            if (RuthefjordLogging.activeTaskLogger) {
-                RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
+            var oldRS = RuthefjordManager.Simulator.run_state;
+            if (oldRS === RuthefjordManager.RunState.executing || oldRS === RuthefjordManager.RunState.paused) {
+                var newRS = oldRS === RuthefjordManager.RunState.executing ? RuthefjordManager.RunState.paused : RuthefjordManager.RunState.executing;
+                if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoProgramRunStateChange(newRS); }
+                RuthefjordManager.Simulator.set_run_state(newRS);
             }
-            if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.stopped) {
-                RuthefjordManager.Simulator.set_program(RuthefjordBlockly.getProgram());
-            }
-            RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.paused);
-            RuthefjordManager.Simulator.next_state();
         });
 
 
@@ -976,7 +974,7 @@ handler.onProgramStateChange = function(type) {
         var rs = RuthefjordManager.Simulator.run_state;
         // console.log('on run state change: ' + rs);
         RuthefjordUI.StepButton.update(rs !== RuthefjordManager.RunState.finished && RuthefjordManager.Simulator.edit_mode === RuthefjordManager.EditMode.workshop);
-        RuthefjordUI.RevertButton.update(rs !== RuthefjordManager.RunState.finished && RuthefjordManager.Simulator.edit_mode === RuthefjordManager.EditMode.workshop);
+        RuthefjordUI.PauseButton.update(rs !== RuthefjordManager.RunState.stopped && rs !== RuthefjordManager.RunState.finished, rs === RuthefjordManager.RunState.paused);
         RuthefjordUI.RunButton.update(rs !== RuthefjordManager.RunState.stopped, RuthefjordManager.Simulator.edit_mode === RuthefjordManager.EditMode.workshop);
 
         if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logOnProgramRunStateChanged(rs, JSON.stringify(RuthefjordBlockly.getProgram())); }

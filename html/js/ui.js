@@ -763,11 +763,11 @@ module.ModeButton = (function() {
     return self;
 }());
 
-module.RevertButton = (function() {
+module.PauseButton = (function() {
     var self = {};
 
-    self.update = function(isEnabled) {
-        update_button('#btn-revert', isEnabled, false,"Revert One Step", "Revert One Step");
+    self.update = function(isEnabled, isPaused) {
+        update_button('#btn-pause', isEnabled, isPaused, "Pause", "Resume");
     };
 
     return self;

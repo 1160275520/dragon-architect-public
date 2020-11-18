@@ -485,7 +485,7 @@ header button, .control-btn, .control-icon-btn {
     font-family: "Roboto Slab";
 }
 
-#btn-run, #btn-revert.active {
+#btn-run, #btn-pause.active {
     background-color: #E6E6E6;
     font-family: "Roboto Slab";
 }
@@ -499,15 +499,6 @@ header button, .control-btn, .control-icon-btn {
     padding: 9px;
 }
 
-/*.btn-run-after {*/
-/*    position: absolute;*/
-/*    font-size: 30px;*/
-/*    font-family: 'Roboto Slab';*/
-/*    font-weight: 600;*/
-/*    top: 117px;*/
-/*    right: 38px;*/
-/*}*/
-
 
 #btn-run.active {
     background-color: transparent;
@@ -518,14 +509,15 @@ header button, .control-btn, .control-icon-btn {
     line-height: 1.0;
 }
 
-#btn-revert {
-    background-color: #E6E6E6;
+#btn-pause {
+    background-color: #BBB;
+    color: #777;
     height: 40px;
     line-height: 36px;
     /*font-size: 20pt;*/
 }
 
-#btn-revert.active {
+#btn-pause.active {
     /*font-size: 2   FF0pt;*/
     background-color: #E6E6E6;
     background-color: #BBB;
