@@ -513,7 +513,6 @@ $(function() {
             var newRS = RuthefjordManager.Simulator.run_state !== RuthefjordManager.RunState.stopped ? RuthefjordManager.RunState.stopped : RuthefjordManager.RunState.executing;
             if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoProgramRunStateChange(newRS); }
             RuthefjordManager.Simulator.set_run_state(newRS);
-
         });
 
         $('#btn-workshop').on('click', function() {
@@ -523,15 +522,18 @@ $(function() {
         });
 
         $('#btn-revert').on('click', function() {
-            var oldRS = RuthefjordManager.Simulator.run_state;
-            if (oldRS === RuthefjordManager.RunState.executing || oldRS === RuthefjordManager.RunState.paused) {
-                var newRS = oldRS === RuthefjordManager.RunState.executing ? RuthefjordManager.RunState.paused : RuthefjordManager.RunState.executing;
-                if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoProgramRunStateChange(newRS); }
-                RuthefjordManager.Simulator.set_run_state(newRS);
+            if (RuthefjordLogging.activeTaskLogger) {
+                RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
             }
+            if (RuthefjordManager.Simulator.run_state === RuthefjordManager.RunState.stopped) {
+                RuthefjordManager.Simulator.set_program(RuthefjordBlockly.getProgram());
+            }
+            RuthefjordManager.Simulator.set_run_state(RuthefjordManager.RunState.paused);
+            RuthefjordManager.Simulator.next_state();
         });
 
-         $('#btn-step').on('click', function() {
+
+        $('#btn-step').on('click', function() {
              if (RuthefjordLogging.activeTaskLogger) {
                  RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
              }

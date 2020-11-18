@@ -737,7 +737,7 @@ module.RunButton = (function() {
 
     self.update = function(isRunning, isWorkshopMode) {
         var at = isWorkshopMode ? "Reset" : "Stop";
-        update_button('#btn-run', true, isRunning, "RUN", at);
+        update_button('#btn-run', true, isRunning, "RUN CODE", "RESET CODE", at);
     };
 
     return self;
@@ -766,8 +766,8 @@ module.ModeButton = (function() {
 module.RevertButton = (function() {
     var self = {};
 
-    self.update = function(isEnabled, isPaused) {
-        update_button('#btn-revert', isEnabled, isPaused, "Revert One Step", "Revert One Step");
+    self.update = function(isEnabled) {
+        update_button('#btn-revert', isEnabled, false,"Revert One Step", "Revert One Step");
     };
 
     return self;

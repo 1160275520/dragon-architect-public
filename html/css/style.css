@@ -492,21 +492,21 @@ header button, .control-btn, .control-icon-btn {
 
 #btn-run {
     font-size: 30pt;
-    height: 80px;
+    height: 85px;
     /* top: -10px; */
-    padding-bottom: 28px;
-    line-height: 0;
+    padding-bottom: 19px;
+    line-height: 0.8;
+    padding: 9px;
 }
 
-.btn-run-after {
-    position: absolute;
-    font-size: 30px;
-    font-family: 'Roboto Slab';
-    font-weight: 600;
-    top: 117px;
-    right: 38px;
-
-}
+/*.btn-run-after {*/
+/*    position: absolute;*/
+/*    font-size: 30px;*/
+/*    font-family: 'Roboto Slab';*/
+/*    font-weight: 600;*/
+/*    top: 117px;*/
+/*    right: 38px;*/
+/*}*/
 
 
 #btn-run.active {
@@ -514,6 +514,8 @@ header button, .control-btn, .control-icon-btn {
     color: #E6E6E6;
     border: 3px solid #E6E6E6;
     /*font-size: 24pt;*/
+    font-size: 23pt;
+    line-height: 1.0;
 }
 
 #btn-revert {
@@ -524,7 +526,7 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-revert.active {
-    /*font-size: 20pt;*/
+    /*font-size: 2   FF0pt;*/
     background-color: #E6E6E6;
     background-color: #BBB;
     color: #777;
