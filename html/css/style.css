@@ -491,12 +491,13 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #btn-run {
-    font-size: 30pt;
+    font-size: 27pt;
     height: 85px;
     /* top: -10px; */
     padding-bottom: 19px;
     line-height: 0.8;
     padding: 9px;
+    font-family: "Roboto Slab";
 }
 
 
