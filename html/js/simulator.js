@@ -61,7 +61,12 @@ var RuthefjordManager = (function() {
             //console.log(stmt);
             switch (stmt.type) {
                 case "assign": //for variable blocks
-                    _.last(sim.call_stack).context[stmt.name] = stmt.value;
+                    if (stmt.value.type === "ident") {
+                        // if the argument is a get block for a variable
+                        _.last(sim.call_stack).context[stmt.name] = _.last(sim.call_stack).context[stmt.value.value];
+                    } else {
+                        _.last(sim.call_stack).context[stmt.name] = stmt.value;
+                    }
                     break;
                 case "procedure": // procedure definition
                     _.last(sim.call_stack).context[stmt.name] = stmt;
