@@ -580,9 +580,8 @@ module.Instructions = (function() {
             container.off('transitionend');
             container.on('transitionend', showContent);
         } else {
-            container.show({duration: 400, queue: false, start: function () {
+            container.show({duration: 0, queue: false, start: function () {
                 container.css('transition', '');
-                container.css('-webkit-transition', '');
             }, done: function () {
                 container.css('transition', 'all 1s');
                 container.css('-webkit-transition', 'all 1s');
