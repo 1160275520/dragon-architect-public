@@ -471,95 +471,109 @@ module.Instructions = (function() {
         // position and show box
         var coords, offset, block, reverse, rect;
         var editor = $("#blockly");
-        switch (target.type) {
-            case "ui":
-                coords = $(target.name).offset();
-                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
-                coords.height = $(target.name).innerHeight();
-                break;
-            case "world":
-                // for now we assume the only world target is either a robot target or a cube target
-                var vec = RuthefjordDisplay.getScreenCoordsForTargets();
-                var threejs = $("#three-js").offset();
-                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
-                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
-                break;
-            case "general":
-                container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
-                container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
-                break;
-            case "block":
-                block = RuthefjordBlockly.instructions_block;
-                if (block) {
-                    coords = $(block.svgGroup_).offset();
-                    rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
-                    coords.left += editor.offset().left + rect.width;
-                    coords.top += editor.offset().top;
-                    coords.height = rect.height;
-                    reverse = true;
-                    offset = {left: 20, top: dragon.height()};
-                } else {
-                    throw new Error("no block set as instructions_block");
-                }
-                break;
-            case "toolbox":
-                var toolbox = Blockly.getMainWorkspace().flyout_;
-                block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
-                rect = block.get()[0].getBoundingClientRect();
-                coords = block.offset();
-                coords.left += editor.offset().left + rect.width;
-                coords.top += editor.offset().top;
-                coords.height = rect.height;
-                reverse = true;
-                offset = {left: 20, top: dragon.height()};
-                break;
-            default:
-                throw new Error(target.type + " not a recognized target type");
-        }
+        // switch (target.type) {
+        //     case "ui":
+        //         coords = $(target.name).offset();
+        //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+        //         coords.height = $(target.name).innerHeight();
+        //         break;
+        //     case "world":
+        //         // for now we assume the only world target is either a robot target or a cube target
+        //         var vec = RuthefjordDisplay.getScreenCoordsForTargets();
+        //         var threejs = $("#three-js").offset();
+        //         coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
+        //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+        //         break;
+        //     case "general":
+        //         container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
+        //         container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
+        //         break;
+        //     case "block":
+        //         block = RuthefjordBlockly.instructions_block;
+        //         if (block) {
+        //             coords = $(block.svgGroup_).offset();
+        //             rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
+        //             coords.left += editor.offset().left + rect.width;
+        //             coords.top += editor.offset().top;
+        //             coords.height = rect.height;
+        //             reverse = true;
+        //             offset = {left: 20, top: dragon.height()};
+        //         } else {
+        //             throw new Error("no block set as instructions_block");
+        //         }
+        //         break;
+        //     case "toolbox":
+        //         var toolbox = Blockly.getMainWorkspace().flyout_;
+        //         block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
+        //         rect = block.get()[0].getBoundingClientRect();
+        //         coords = block.offset();
+        //         coords.left += editor.offset().left + rect.width;
+        //         coords.top += editor.offset().top;
+        //         coords.height = rect.height;
+        //         reverse = true;
+        //         offset = {left: 20, top: dragon.height()};
+        //         break;
+        //     default:
+        //         throw new Error(target.type + " not a recognized target type");
+        // }
         if (coords) {
             container.css('left', (coords.left + offset.left) + 'px');
             container.css('top', (coords.top + offset.top) + 'px');
         }
+        // container.css('left', '617px');
+        // container.css('top', '754.891px');
+        container.css('width', '757px');
+        //
+        // var text = $("<p>" + processTemplate(target.text) + "</p>");
+        // var current_text = $("p", content).first();
+        // current_text.css('font-size', '11pt');
+        // current_text.css('padding-top', '20px');
+        // current_text.css('height', '');
+        // content.prepend(text);
+        // module.makeImgOnClick();
+        // var h = text.innerHeight();
+        // text.css("opacity", 0);
+        // text.css("height", "0px");
         function showContent() {
             container.off('transitionend');
             container.off('click');
             // animate and show content
-            dragon.show({duration: 1000, queue: false});
-            content.show({duration: 1000, queue: false, complete: function () {
+            // dragon.show({duration: 1000, queue: false});
+            content.show({duration: 0, queue: false, complete: function () {
                 var text = $("<p>" + processTemplate(target.text) + "</p>");
                 var current_text = $("p", content).first();
                 current_text.css('font-size', '11pt');
                 current_text.css('padding-top', '20px');
-                current_text.css('height', '');
+                current_text.css('height', '20px');
                 content.prepend(text);
                 module.makeImgOnClick();
                 var h = text.innerHeight();
-                text.css("opacity", 0);
-                text.css("height", "0px");
-                text.animate({opacity:1, height:h+"px"}, 1000, function () {
-                    if (coords) {
-                        RuthefjordUI.Arrow.show(coords, reverse);
-                    }
-                    if (next) {
-                        next();
-                    }
-                    container.on('click', function () {
-                        container.off('click');
-                        if (next) {
-                            if (self.timeouts) {
-                                _.forEach(self.timeouts, function (id) {
-                                    clearTimeout(id);
-                                });
-                                self.timeouts = [];
-                                container.finish();
-                                dragon.finish();
-                                content.finish();
-                                $("p", content).finish();
-                            }
-                            next(true);
-                        }
-                    });
-                });
+                // text.css("opacity", 0);
+                // text.css("height", "0px");
+                // text.animate({opacity:1, height:h+"px"}, 1000, function () {
+                //     if (coords) {
+                //         RuthefjordUI.Arrow.show(coords, reverse);
+                //     }
+                //     if (next) {
+                //         next();
+                //     }
+                //     container.on('click', function () {
+                //         container.off('click');
+                //         if (next) {
+                //             if (self.timeouts) {
+                //                 _.forEach(self.timeouts, function (id) {
+                //                     clearTimeout(id);
+                //                 });
+                //                 self.timeouts = [];
+                //                 container.finish();
+                //                 dragon.finish();
+                //                 content.finish();
+                //                 $("p", content).finish();
+                //             }
+                //             next(true);
+                //         }
+                //     });
+                // });
             }});
         }
         if (container.is(":visible")) {

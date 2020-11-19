@@ -159,9 +159,6 @@
       <div id="share-message"></div>
     </div>
     <div id="main">
-        <div id="instructions-display" class="instructions">
-            <div id="instructions-goal"></div>
-        </div>
         <div id="main-view-code" class="codeEditor">
             <div id="code-area">
                 <iframe id="blockly" src="frame.html"></iframe>
@@ -225,13 +222,16 @@
 <!--          <div id="speed-controls" class="game-control tools-debug">-->
 <!--&lt;!&ndash;            <div id="speed-slider"></div>&ndash;&gt;-->
 <!--          </div>-->
-            <div class="goal-section">
-                <div class="goal-section_title">Goal: &nbsp; <div class="goal-section_summary">Build a Castle</div></div>
-                <div class="goal-section_text">You need a place to keep the princess. Let's build a castle!</div>
-<!--                <div class="hint-section">-->
-<!--                    <btn id="btn-show-hint" class="hint-button"><i class="fa fa-lg fa-question"></i></btn>-->
-<!--                    <div class="hint-text">Hint</div>-->
-<!--                </div>-->
+<!--            <div class="goal-section">-->
+<!--                <div class="goal-section_title">Goal: &nbsp; <div class="goal-section_summary">Build a Castle</div></div>-->
+<!--                <div class="goal-section_text">You need a place to keep the princess. Let's build a castle!</div>-->
+<!--&lt;!&ndash;                <div class="hint-section">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <btn id="btn-show-hint" class="hint-button"><i class="fa fa-lg fa-question"></i></btn>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="hint-text">Hint</div>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--            </div>-->
+            <div id="instructions-display" class="goal-section instructions">
+                <div class="goal-section_title">Goal: </div><div id="instructions-goal"></div>
             </div>
 <!--          <button id="btn-turbo" class="control-btn tools-no-debug">X</button>-->
           <!-- <p id="cube-counter" class="game-control">X</p> -->
