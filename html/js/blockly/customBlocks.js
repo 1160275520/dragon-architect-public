@@ -680,6 +680,9 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 stmt.value.meta = {};
             }
             stmt.value.meta.id = Blockly.genUid();
+            if (stmt.value.type === "ident") {
+                return '<block id="' + stmt.meta.id + '" type="Set"><field name="NAME">' + stmt.name + '</field><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(1, Blockly.genUid()) + '<block type="Get" id="' + Blockly.genUid() + '" editable="false"><field name="NAME">' + stmt.value.value + '</field></block></value>';
+            }
             return '<block id="' + stmt.meta.id + '" type="Set"><field name="NAME">' + stmt.name + '</field><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.value.value, stmt.value.meta.id) + '</value>';
         }
     }
