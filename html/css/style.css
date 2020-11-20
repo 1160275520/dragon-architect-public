@@ -113,6 +113,7 @@ header > h1 {
     background: rgba(67,153,204,0.8);
 }
 
+
 .bar {
     width: 25px;
     height: 4px;
@@ -334,16 +335,16 @@ div.game-control {
 }
 
 .game-control_title {
-    color: #ffffff;
+    color: white;
     margin: 0 auto;
     font-family: 'Roboto Slab';
     text-align: center;
 }
+
 .game-control_buttons {
     display: flex;
     position: relative;
 }
-
 
 .camera-controls_text{
     font-size: 18px;
@@ -360,6 +361,7 @@ div.game-control {
     margin: 0 2px 0 0;
 }
 
+
 header button, .control-btn, .control-icon-btn {
     display: block;
     height: 40px;
@@ -373,7 +375,7 @@ header button, .control-btn, .control-icon-btn {
 
 .control-icon-btn {
     background-color: transparent;
-    color: #ffffff;
+    color: white;
 }
 
 
@@ -680,8 +682,8 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #selector-puzzle .node rect {
-    stroke: #333;
-    stroke-width: 1.5px;
+    /*stroke: #333;*/
+    /*stroke-width: 1.5px;*/
     fill: #fff;
 }
 

@@ -165,6 +165,7 @@ var content = (function() {
         var qm = Q($.get('content/packs.json'))
             .then(function(json) {
                 game_info.packs = json;
+                console.log(game_info.packs)
             });
 
         var qs = Q($.get('content/puzzles.json'))

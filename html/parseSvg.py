@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 dec = """<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">"""
-blocks = ['f1', 'f2', 'f3', 'f4', 'f5', 'line', 'forward', 'left', 'right', 'up', 'down', 'placeblock', 'repeat']
+blocks = ['f1', 'f2', 'f3', 'f4', 'f5', 'line', 'forward', 'backward', 'left', 'right', 'up', 'down', 'placeblock', 'repeat']
 
 tree = ET.parse("media/blocklySvg.svg")
 root = tree.getroot()
