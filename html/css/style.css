@@ -115,12 +115,6 @@ header > h1 {
     background: rgba(67,153,204,0.8);
 }
 
-.menu-bar-title {
-    color: black;
-    margin: 0 auto;
-    font-family: 'Roboto Slab';
-    text-align: center;
-}
 
 .bar {
     width: 25px;
@@ -340,7 +334,6 @@ div.game-control {
 }
 
 .game-control_buttons {
-    color: black;
     display: flex;
     position: relative;
 }
@@ -360,16 +353,6 @@ div.game-control {
     margin: 0 2px 0 0;
 }
 
-.menu-bar-button {
-    background-color: transparent;
-    display: block;
-    height: 40px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
 
 header button, .control-btn, .control-icon-btn {
     display: block;
