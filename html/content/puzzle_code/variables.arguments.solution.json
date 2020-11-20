@@ -1,34 +1,29 @@
 {
   "body": [
     {
-      "args": [
-        {
-          "meta": {
-            "attributes": {},
-            "id": 15
-          },
-          "type": "int",
-          "value": 5
-        }
-      ],
+      "type": "assign",
+      "name": "x",
+      "value": {
+        "type": "int",
+        "value": "4"
+      },
       "meta": {
         "attributes": {
           "FrozenBlocks": "one"
         },
-        "id": 16
-      },
-      "name": "Set",
-      "type": "execute"
+        "id": 2
+      }
     },
     {
       "args": [
         {
           "meta": {
             "attributes": {},
-            "id": 1
+            "id": 1,
+            "FrozenBlocks": "one"
           },
-          "type": "int",
-          "value": 3
+          "type": "ident",
+          "value": "x"
         }
       ],
       "meta": {
@@ -45,96 +40,55 @@
         {
           "meta": {
             "attributes": {},
-            "id": 3
+            "id": 1
           },
           "type": "int",
           "value": 0
+        }
+      ],
+      "meta": {
+        "attributes": {
+          "FrozenBlocks": "one"
+        },
+        "id": 2
+      },
+      "name": "PlaceCube",
+      "type": "execute"
+    },
+    {
+      "args": [
+        {
+          "meta": {
+            "attributes": {},
+            "id": 3
+          },
+          "type": "ident",
+          "value": "x"
         }
       ],
       "meta": {
         "attributes": {},
         "id": 4
       },
-      "name": "PlaceCube",
+      "name": "Forward",
       "type": "execute"
     },
     {
       "args": [
         {
           "meta": {
-            "attributes": {},
+            "attributes": {
+              "Instructions": "one"
+            },
             "id": 5
           },
           "type": "int",
-          "value": 3
+          "value": 0
         }
       ],
       "meta": {
         "attributes": {},
         "id": 6
-      },
-      "name": "Forward",
-      "type": "execute"
-    },
-    {
-      "args": [
-        {
-          "meta": {
-            "attributes": {},
-            "id": 7
-          },
-          "type": "int",
-          "value": 0
-        }
-      ],
-      "meta": {
-        "attributes": {},
-        "id": 8
-      },
-      "name": "PlaceCube",
-      "type": "execute"
-    },
-    {
-      "args": [],
-      "meta": {
-        "attributes": {},
-        "id": 9
-      },
-      "name": "Right",
-      "type": "execute"
-    },
-    {
-      "args": [
-        {
-          "meta": {
-            "attributes": {},
-            "id": 10
-          },
-          "type": "int",
-          "value": 2
-        }
-      ],
-      "meta": {
-        "attributes": {},
-        "id": 11
-      },
-      "name": "Forward",
-      "type": "execute"
-    },
-    {
-      "args": [
-        {
-          "meta": {
-            "attributes": {},
-            "id": 12
-          },
-          "type": "int",
-          "value": 0
-        }
-      ],
-      "meta": {
-        "attributes": {},
-        "id": 13
       },
       "name": "PlaceCube",
       "type": "execute"

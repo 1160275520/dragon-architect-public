@@ -50,10 +50,15 @@
 "variables":{
     "prereq": ["repeat"],
     "nodes": [
-        "variables.arguments"
+        "variables.arguments",
+        "variables.dual-arguments",
+        "variables.repeat",
+        "variables.snake"
     ],
     "edges": [
-
+        ["variables.arguments", "variables.dual-arguments"],
+        ["variables.dual-arguments", "variables.repeat"],
+        ["variables.repeat", "variables.snake"]
     ],
     "name": "Variable Outcomes",
     "learn": ["Create custom variables"]

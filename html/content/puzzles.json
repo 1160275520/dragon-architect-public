@@ -411,6 +411,93 @@
         "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
     },
+    "variables.dual-arguments": {
+        "name": "Double Trouble",
+        "format_version": 2,
+        "library": {
+            "restricted": ["blocks"],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "detail": "Variables hold values that you want to use later. You can give the variables to blocks like {forward}. Change the numbers to complete my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me put cubes on these blue boxes!"
+                },{
+                    "type": "block",
+                    "text": "Changing the values of the set blocks is key",
+                    "delay": 5000
+                }
+            ]
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"file", "value":"content/puzzle_code/variables.dual-arguments.json"},
+        "solution": "content/puzzle_code/variables.dual-arguments.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
+        "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
+    },
+    "variables.repeat": {
+        "name": "Variable Variable Variable",
+        "format_version": 2,
+        "library": {
+            "restricted": ["blocks"],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "detail": "Variables hold values that you want to use later. You can give the variables to blocks like {forward}. Change the numbers to complete my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me put cubes on these blue boxes!"
+                },{
+                    "type": "block",
+                    "text": "Changing the values of the set blocks is key",
+                    "delay": 5000
+                }
+            ]
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"file", "value":"content/puzzle_code/variables.repeat.json"},
+        "solution": "content/puzzle_code/variables.repeat.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
+        "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
+    },
+    "variables.snake": {
+        "name": "Slither Slither",
+        "format_version": 2,
+        "library": {
+            "restricted": ["blocks"],
+            "required": [],
+            "granted": []
+        },
+        "instructions": {
+            "detail": "Variables hold values that you want to use later. You can give the variables to blocks like {forward}. Change the numbers to complete my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me put cubes on these blue boxes!"
+                },{
+                    "type": "block",
+                    "text": "Changing the values of the set blocks is key",
+                    "delay": 5000
+                }
+            ]
+        },
+        "world": {
+            "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
+        },
+        "program": {"type":"file", "value":"content/puzzle_code/variables.snake.json"},
+        "solution": "content/puzzle_code/variables.snake.solution.json",
+        "goal": {"source":"solution", "type":"cubes"},
+        "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
+    },
     "procedures.square": {
         "name": "A Square Deal",
         "format_version": 2,
@@ -610,7 +697,7 @@
         "logging_id": "759d34a7-6982-424f-91d3-3f7f5a0ac62c"
     },
     "challenges.house": {
-        "name": "Homemaker",
+        "name": "There's No Place Like Home",
         "format_version": 2,
         "library": {
             "restricted": [],

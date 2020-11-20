@@ -2,10 +2,10 @@
   "body": [
     {
       "type": "assign",
-      "name": "x",
+      "name": "y",
       "value": {
         "type": "int",
-        "value": "2"
+        "value": "6"
       },
       "meta": {
         "attributes": {
@@ -23,7 +23,7 @@
             "FrozenBlocks": "one"
           },
           "type": "ident",
-          "value": "x"
+          "value": "y"
         }
       ],
       "meta": {
@@ -56,6 +56,29 @@
       "type": "execute"
     },
     {
+      "args": [],
+      "meta": {
+        "attributes": {},
+        "id": 9
+      },
+      "name": "Right",
+      "type": "execute"
+    },
+    {
+      "type": "assign",
+      "name": "y",
+      "value": {
+        "type": "int",
+        "value": "3"
+      },
+      "meta": {
+        "attributes": {
+          "FrozenBlocks": "one"
+        },
+        "id": 2
+      }
+    },
+    {
       "args": [
         {
           "meta": {
@@ -63,7 +86,7 @@
             "id": 3
           },
           "type": "ident",
-          "value": "x"
+          "value": "y"
         }
       ],
       "meta": {
