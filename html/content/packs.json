@@ -47,20 +47,17 @@
     "name": "Better Building Through Repeat",
     "learn": ["Use arguments","Repeat code many times"]
 },
-    "variable":{
-        "prereq": ["repeat"],
-        "nodes": [
-            "procedures.square",
-            "procedures.call",
-            "procedures.def"
-        ],
-        "edges": [
-            ["procedures.square", "procedures.call"],
-            ["procedures.call", "procedures.def"]
-        ],
-        "name": "Procedural Bliss",
-        "learn": ["Create custom blocks with procedures"]
-    },
+"variables":{
+    "prereq": ["repeat"],
+    "nodes": [
+        "variables.arguments"
+    ],
+    "edges": [
+
+    ],
+    "name": "Variable Outcomes",
+    "learn": ["Create custom variables"]
+},
 "procedures":{
     "prereq": ["repeat"],
     "nodes": [
