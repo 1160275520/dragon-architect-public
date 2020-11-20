@@ -540,11 +540,11 @@ module.Instructions = (function() {
             // animate and show content
             // dragon.show({duration: 1000, queue: false});
             content.show({duration: 0, queue: false, complete: function () {
-                var text = $("<p>" + processTemplate(target.text) + "</p>");
-                var current_text = $("p", content).first();
-                current_text.css('font-size', '11pt');
-                current_text.css('padding-top', '20px');
-                current_text.css('height', '20px');
+                var text = $("<p>" + processTemplate(target.home_text) + "</p>");
+                text.css('font-size', '35px');
+                text.css('font-family', 'Roboto Slab');
+                text.css('padding-left', '20px');
+                text.css('height', '60px');
                 content.prepend(text);
                 module.makeImgOnClick();
                 var h = text.innerHeight();
