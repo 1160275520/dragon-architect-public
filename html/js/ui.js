@@ -541,7 +541,7 @@ module.Instructions = (function() {
             // dragon.show({duration: 1000, queue: false});
             content.show({duration: 0, queue: false, complete: function () {
                 var text = $("<p>" + processTemplate(target.home_text) + "</p>");
-                text.css('font-size', '35px');
+                text.css('font-size', '30px');
                 text.css('font-family', 'Roboto Slab');
                 text.css('padding-left', '20px');
                 text.css('height', '60px');
