@@ -231,9 +231,9 @@ var colors = {
     teal: "#5BA68D",
     brown: "#A6875B",
     purple: "#995BA6",
-    green: "#5BA65B",
-    gray: "#777777",
-    orange: "#FFB361"
+    green: "#CFFFE5",
+    gray: "#AEA9A9",
+    orange: "#F6FFCF"
 };
 
 module.PackSelect = (function() {
@@ -338,6 +338,10 @@ module.LevelSelect = (function() {
 
         nodes.each(function (index) {
             var x = $(this)[0];
+            // console.log(x);
+            x.childNodes[0].style.rx = 4;
+            // console.log(x.childNodes[0]);
+            // consolelog(x.childNodes[0])
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback(x.id);
@@ -351,6 +355,24 @@ module.LevelSelect = (function() {
                 x.childNodes[0].style.fill = colors[COLOR_MAP.unavailable];
             }
         });
+
+        // nodes.each(function (v){
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+
+        // console.log(graph.nodes());
+        // graph.nodes().forEach(function(v) {
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+        // console.log(nodes);
 
         // set up image of back to sandbox button
         module.makeImgOnClick();
