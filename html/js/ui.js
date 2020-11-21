@@ -231,9 +231,9 @@ var colors = {
     teal: "#5BA68D",
     brown: "#A6875B",
     purple: "#995BA6",
-    green: "#5BA65B",
-    gray: "#777777",
-    orange: "#FFB361"
+    green: "#CFFFE5",
+    gray: "#AEA9A9",
+    orange: "#F6FFCF"
 };
 
 module.PackSelect = (function() {
@@ -338,6 +338,10 @@ module.LevelSelect = (function() {
 
         nodes.each(function (index) {
             var x = $(this)[0];
+            // console.log(x);
+            x.childNodes[0].style.rx = 4;
+            // console.log(x.childNodes[0]);
+            // consolelog(x.childNodes[0])
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback(x.id);
@@ -351,6 +355,24 @@ module.LevelSelect = (function() {
                 x.childNodes[0].style.fill = colors[COLOR_MAP.unavailable];
             }
         });
+
+        // nodes.each(function (v){
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+
+        // console.log(graph.nodes());
+        // graph.nodes().forEach(function(v) {
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+        // console.log(nodes);
 
         // set up image of back to sandbox button
         module.makeImgOnClick();
@@ -472,104 +494,117 @@ module.Instructions = (function() {
         // position and show box
         var coords, offset, block, reverse, rect;
         var editor = $("#blockly");
-        switch (target.type) {
-            case "ui":
-                coords = $(target.name).offset();
-                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
-                coords.height = $(target.name).innerHeight();
-                break;
-            case "world":
-                // for now we assume the only world target is either a robot target or a cube target
-                var vec = RuthefjordDisplay.getScreenCoordsForTargets();
-                var threejs = $("#three-js").offset();
-                coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
-                offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
-                break;
-            case "general":
-                container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
-                container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
-                break;
-            case "block":
-                block = RuthefjordBlockly.instructions_block;
-                if (block) {
-                    coords = $(block.svgGroup_).offset();
-                    rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
-                    coords.left += editor.offset().left + rect.width;
-                    coords.top += editor.offset().top;
-                    coords.height = rect.height;
-                    reverse = true;
-                    offset = {left: 20, top: dragon.height()};
-                } else {
-                    throw new Error("no block set as instructions_block");
-                }
-                break;
-            case "toolbox":
-                var toolbox = Blockly.getMainWorkspace().flyout_;
-                block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
-                rect = block.get()[0].getBoundingClientRect();
-                coords = block.offset();
-                coords.left += editor.offset().left + rect.width;
-                coords.top += editor.offset().top;
-                coords.height = rect.height;
-                reverse = true;
-                offset = {left: 20, top: dragon.height()};
-                break;
-            default:
-                throw new Error(target.type + " not a recognized target type");
-        }
+        // switch (target.type) {
+        //     case "ui":
+        //         coords = $(target.name).offset();
+        //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+        //         coords.height = $(target.name).innerHeight();
+        //         break;
+        //     case "world":
+        //         // for now we assume the only world target is either a robot target or a cube target
+        //         var vec = RuthefjordDisplay.getScreenCoordsForTargets();
+        //         var threejs = $("#three-js").offset();
+        //         coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
+        //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+        //         break;
+        //     case "general":
+        //         container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
+        //         container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
+        //         break;
+        //     case "block":
+        //         block = RuthefjordBlockly.instructions_block;
+        //         if (block) {
+        //             coords = $(block.svgGroup_).offset();
+        //             rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
+        //             coords.left += editor.offset().left + rect.width;
+        //             coords.top += editor.offset().top;
+        //             coords.height = rect.height;
+        //             reverse = true;
+        //             offset = {left: 20, top: dragon.height()};
+        //         } else {
+        //             throw new Error("no block set as instructions_block");
+        //         }
+        //         break;
+        //     case "toolbox":
+        //         var toolbox = Blockly.getMainWorkspace().flyout_;
+        //         block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
+        //         rect = block.get()[0].getBoundingClientRect();
+        //         coords = block.offset();
+        //         coords.left += editor.offset().left + rect.width;
+        //         coords.top += editor.offset().top;
+        //         coords.height = rect.height;
+        //         reverse = true;
+        //         offset = {left: 20, top: dragon.height()};
+        //         break;
+        //     default:
+        //         throw new Error(target.type + " not a recognized target type");
+        // }
         if (coords) {
             container.css('left', (coords.left + offset.left) + 'px');
             container.css('top', (coords.top + offset.top) + 'px');
         }
+        // container.css('left', '617px');
+        // container.css('top', '754.891px');
+        container.css('width', '757px');
+        //
+        // var text = $("<p>" + processTemplate(target.text) + "</p>");
+        // var current_text = $("p", content).first();
+        // current_text.css('font-size', '11pt');
+        // current_text.css('padding-top', '20px');
+        // current_text.css('height', '');
+        // content.prepend(text);
+        // module.makeImgOnClick();
+        // var h = text.innerHeight();
+        // text.css("opacity", 0);
+        // text.css("height", "0px");
         function showContent() {
             container.off('transitionend');
             container.off('click');
             // animate and show content
-            dragon.show({duration: 1000, queue: false});
-            content.show({duration: 1000, queue: false, complete: function () {
-                var text = $("<p>" + processTemplate(target.text) + "</p>");
-                var current_text = $("p", content).first();
-                current_text.css('font-size', '11pt');
-                current_text.css('padding-top', '20px');
-                current_text.css('height', '');
+            // dragon.show({duration: 1000, queue: false});
+            content.show({duration: 0, queue: false, complete: function () {
+                var text = $("<p>" + processTemplate(target.home_text) + "</p>");
+                text.css('font-size', '30px');
+                text.css('font-family', 'Roboto Slab');
+                text.css('padding-left', '20px');
+                text.css('height', '60px');
                 content.prepend(text);
                 module.makeImgOnClick();
                 var h = text.innerHeight();
-                text.css("opacity", 0);
-                text.css("height", "0px");
-                text.animate({opacity:1, height:h+"px"}, 1000, function () {
-                    if (coords) {
-                        RuthefjordUI.Arrow.show(coords, reverse);
-                    }
-                    if (next) {
-                        next();
-                    }
-                    container.on('click', function () {
-                        container.off('click');
-                        if (next) {
-                            if (self.timeouts) {
-                                _.forEach(self.timeouts, function (id) {
-                                    clearTimeout(id);
-                                });
-                                self.timeouts = [];
-                                container.finish();
-                                dragon.finish();
-                                content.finish();
-                                $("p", content).finish();
-                            }
-                            next(true);
-                        }
-                    });
-                });
+                // text.css("opacity", 0);
+                // text.css("height", "0px");
+                // text.animate({opacity:1, height:h+"px"}, 1000, function () {
+                //     if (coords) {
+                //         RuthefjordUI.Arrow.show(coords, reverse);
+                //     }
+                //     if (next) {
+                //         next();
+                //     }
+                //     container.on('click', function () {
+                //         container.off('click');
+                //         if (next) {
+                //             if (self.timeouts) {
+                //                 _.forEach(self.timeouts, function (id) {
+                //                     clearTimeout(id);
+                //                 });
+                //                 self.timeouts = [];
+                //                 container.finish();
+                //                 dragon.finish();
+                //                 content.finish();
+                //                 $("p", content).finish();
+                //             }
+                //             next(true);
+                //         }
+                //     });
+                // });
             }});
         }
         if (container.is(":visible")) {
             container.off('transitionend');
             container.on('transitionend', showContent);
         } else {
-            container.show({duration: 400, queue: false, start: function () {
+            container.show({duration: 0, queue: false, start: function () {
                 container.css('transition', '');
-                container.css('-webkit-transition', '');
             }, done: function () {
                 container.css('transition', 'all 1s');
                 container.css('-webkit-transition', 'all 1s');
@@ -738,7 +773,7 @@ module.RunButton = (function() {
 
     self.update = function(isRunning, isWorkshopMode) {
         var at = isWorkshopMode ? "Reset" : "Stop";
-        update_button('#btn-run', true, isRunning, "RUN", at);
+        update_button('#btn-run', true, isRunning, "RUN CODE", "RESET CODE", at);
     };
 
     return self;
@@ -768,7 +803,7 @@ module.PauseButton = (function() {
     var self = {};
 
     self.update = function(isEnabled, isPaused) {
-        update_button('#btn-revert', isEnabled, isPaused, "Revert One Step", "Resume");
+        update_button('#btn-pause', isEnabled, isPaused, "Pause", "Resume");
     };
 
     return self;
@@ -778,7 +813,7 @@ module.StepButton = (function() {
     var self = {};
 
     self.update = function(isEnabled) {
-        update_button('#btn-step', isEnabled, false, "Run One Step", "One Step");
+        update_button('#btn-step', isEnabled, false, "Run One Step", "Run One Step");
     };
 
     return self;
@@ -789,11 +824,33 @@ module.UndoButton = (function () {
 
     self.update = function () {
         var btn = $('#btn-undo');
-        btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - btn.outerHeight(true));
+        btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - 2*(btn.outerHeight(true)));
     };
 
     return self;
 }());
+
+    module.DeleteButton = (function () {
+        var self = {};
+
+        self.update = function () {
+            var btn = $('#btn-delete');
+            btn.css('top', Blockly.getMainWorkspace().trashcan.top_ - btn.outerHeight(true));
+        };
+
+        return self;
+    }());
+
+    module.TrashButton = (function () {
+        var self = {};
+
+        self.update = function () {
+            var btn = $('#btn-trash');
+            btn.css('top', Blockly.getMainWorkspace().trashcan.top_ + btn.outerHeight(true));
+        };
+
+        return self;
+    }());
 
 module.CameraControls = (function() {
     var self = {};

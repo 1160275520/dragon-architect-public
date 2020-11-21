@@ -132,7 +132,6 @@
       }
 
       #python_overlay_after {
-        /* width: 100vh; */
         background-color: aliceblue;
         display: flex;
         flex-direction: column;
@@ -163,7 +162,7 @@
 
       .blocklyLabels_python .label-large,
       .blocklyLabels_block .label-large {
-        font-size: 24px;
+        font-size: 23px;
         text-align: center;
         text-decoration: underline;
         font-weight: 600;
@@ -225,7 +224,7 @@
           $("#python_overlay").animate({
             width: 0
           });
-          $("#python_overlay_after").css('background', '#1f6f8b');
+          $("#game-control-bar-playback").css('background', '#1f6f8b');
 
         });
         $("#libraryLabel").click(function(){
@@ -236,7 +235,7 @@
           $("#python_overlay").animate({
             width: boxWidth
           });
-          $("#python_overlay_after").css('background', 'aliceblue');
+          $("#game-control-bar-playback").css('background', 'aliceblue');
         });
 
 
@@ -265,6 +264,6 @@
       <div id="pythonText" class="pythonCode">
       </div>
     </div>
-   <div id="python_overlay_after"></div>
+<!--   <div id="python_overlay_after"></div>-->
   </body>
 </html>

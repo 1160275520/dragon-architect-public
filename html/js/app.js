@@ -514,7 +514,6 @@ $(function() {
             var newRS = RuthefjordManager.Simulator.run_state !== RuthefjordManager.RunState.stopped ? RuthefjordManager.RunState.stopped : RuthefjordManager.RunState.executing;
             if (RuthefjordLogging.activeTaskLogger) { RuthefjordLogging.activeTaskLogger.logDoProgramRunStateChange(newRS); }
             RuthefjordManager.Simulator.set_run_state(newRS);
-
         });
 
         $('#btn-workshop').on('click', function() {
@@ -532,7 +531,8 @@ $(function() {
             }
         });
 
-         $('#btn-step').on('click', function() {
+
+        $('#btn-step').on('click', function() {
              if (RuthefjordLogging.activeTaskLogger) {
                  RuthefjordLogging.activeTaskLogger.logDoUiAction('button-one-step', 'click', null);
              }
@@ -792,6 +792,9 @@ function start_editor(info) {
         RuthefjordUI.CubeCounter.setVisible(info.puzzle.goal && info.puzzle.goal.type === "cube_count");
         RuthefjordUI.DoneButton.setVisible(info.puzzle.goal && info.puzzle.goal.type === "submit");
         RuthefjordUI.UndoButton.update();
+        RuthefjordUI.DeleteButton.update();
+        RuthefjordUI.TrashButton.update();
+
 
         _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
 
