@@ -168,7 +168,6 @@ header > h1 {
     padding: 5px 20px;
     font-size: 21px;
 }
-}
 
 .menu-bar .current{
     color: #ffffff;
@@ -235,14 +234,14 @@ header > h1 {
     background: #1c2b2d;
     padding: 0;
     position: absolute;
-    right: 0px;
+    right: 0;
     height: -webkit-fill-available;
     overflow: hidden;
 }
 
 #main-view-code {
     position: absolute;
-    left: 0px;
+    left: 0;
     width: 45%;
     display: flex;
     background: #1c2b2d;
@@ -678,7 +677,7 @@ header button, .control-btn, .control-icon-btn {
 #selector-puzzle svg {
     display: block;
     margin: auto;
-    background: #fff;
+    background: #1c2b2d;
 }
 
 #selector-puzzle .node rect {
