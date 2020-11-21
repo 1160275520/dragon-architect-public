@@ -175,16 +175,16 @@ var RuthefjordDisplay = (function() {
         controls = new THREE.PointerLockControls( viewer_camera );
         scene.add( viewer_camera );
 
-        // FPS display
-        stats = new Stats();
-        stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
-        // align top-left
-        stats.domElement.style.position = 'absolute';
-        stats.domElement.style.left = '0px';
-        stats.domElement.style.top = '0px';
-        // @ifdef DEV
-        parent.append(stats.domElement);
-        // @endif
+        // // FPS display
+        // stats = new Stats();
+        // stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+        // // align top-left
+        // stats.domElement.style.position = 'absolute';
+        // stats.domElement.style.left = '0px';
+        // stats.domElement.style.top = '0px';
+        // // @ifdef DEV
+        // parent.append(stats.domElement);
+        // // @endif
 
         // skybox
         var path = "media/skybox/";
@@ -316,7 +316,7 @@ var RuthefjordDisplay = (function() {
 
                     // necessary for fps display
                     var update = function () {
-                        stats.begin();
+                        // stats.begin();
                         var t = self.clock.getElapsedTime();
                         var dt = Math.min(t - self.oldTime, 0.1);
                         self.oldTime = t;
@@ -362,7 +362,7 @@ var RuthefjordDisplay = (function() {
                             onRuthefjordEvent("onScreenshot", {id: self.renderOut.id, src: renderer.domElement.toDataURL()});
                             self.renderOut = false;
                         }
-                        stats.end();
+                        // stats.end();
                         requestAnimationFrame(update);
                     };
 

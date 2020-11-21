@@ -7,11 +7,11 @@ function RuthefjordBlocklyCustomInit() {
 var COLOR_MOVE_1 = '#CFEEFF';
 var COLOR_MOVE_2 = '#CFFFE5';
 var COLOR_BLOCK = '#F6FFCF';
-var COLOR_LOOPS = '#00711C';
-var COLOR_PROCS = '#FFF3CF';
-var COLOR_UNUSED_1 = '#B63551';
-var COLOR_UNUSED_2 = '#A88217';
-var COLOR_TEASER = '#707070';
+var COLOR_LOOPS = '#ffede4';
+var COLOR_PROCS = '#ebe6ff';
+var COLOR_UNUSED_1 = '#ffe5ec';
+var COLOR_UNUSED_2 = '#fff5e0';
+var COLOR_TEASER = '#f1ffce';
 
 Blockly.Blocks.loops.COLOR = COLOR_LOOPS;
 Blockly.Blocks.procedures.COLOR = COLOR_PROCS;

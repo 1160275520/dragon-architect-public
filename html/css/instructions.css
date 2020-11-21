@@ -1,7 +1,7 @@
 #instructions-display {
     display: flex;
-    flex-direction: column;
-    position: absolute;
+    /*flex-direction: column;*/
+    position: relative;
     z-index: 1;
     pointer-events: none;
 }
@@ -38,8 +38,9 @@
 
 #instructions-goal > p {
     -webkit-transition: font-size 0.5s, padding-top 1s ease;
-    transition: font-size 0.5s, padding-top 1s ease;
-    padding-top: 0;
+    /*transition: font-size 0.5s, padding-top 1s ease;*/
+    height: 30px;
+    padding-top: 10px;
     overflow: hidden;
 }
 
@@ -115,6 +116,7 @@
 
 .instructions-img {
     height: 20px;
+    height: 38px;
 }
 
 @-webkit-keyframes speechBubble {
