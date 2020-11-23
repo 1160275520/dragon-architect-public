@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
     function hideAll() {
         RuthefjordDisplay.hide();
         RuthefjordDisplay.exit_viewer_mode(); // disable view & keyboard controls (HACK: this is only actually necessary when leaving the viewer, but this seems like a good place to put it)
-        $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
+        $('#main, #main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -36,7 +36,7 @@ module.State = (function(){ "use strict";
         current_state = 'title';
 
         hideAll();
-        $('.codeEditor, #main-view-game').show();
+        $('.codeEditor, #main, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
@@ -51,7 +51,7 @@ module.State = (function(){ "use strict";
         current_state = 'intro';
 
         hideAll();
-        $('.codeEditor, #main-view-game').show();
+        $('.codeEditor, #main, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
@@ -71,7 +71,7 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
-        $('.codeEditor, #main-view-game, .puzzleModeUI').show();
+        $('.codeEditor, #main, #main-view-game, .puzzleModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -79,7 +79,7 @@ module.State = (function(){ "use strict";
 
     self.goToSandbox = function(cb) {
         hideAll();
-        $('.codeEditor, #main-view-game, .sandboxModeUI').show();
+        $('.codeEditor, #main, #main-view-game, .sandboxModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -99,7 +99,7 @@ module.State = (function(){ "use strict";
 
     self.goToViewer = function(cb) {
         hideAll();
-        $('.viewerModeUI, #main-view-game').show();
+        $('.viewerModeUI, #main, #main-view-game').show();
         RuthefjordDisplay.show();
         RuthefjordDisplay.viewer_mode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
@@ -339,7 +339,8 @@ module.LevelSelect = (function() {
         nodes.each(function (index) {
             var x = $(this)[0];
             // console.log(x);
-            x.childNodes[0].style.rx = 4;
+            // x.childNodes[0].style.rx = 4;
+            // x.childNodes[0].rx = 4;
             // console.log(x.childNodes[0]);
             // consolelog(x.childNodes[0])
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
@@ -365,13 +366,13 @@ module.LevelSelect = (function() {
         // });
 
         // console.log(graph.nodes());
-        // graph.nodes().forEach(function(v) {
-        //     var node = graph.node(v);
-        //     // Round the corners of the nodes
-        //     node.rx = node.ry = 10;
-        //     node.width = 150;
-        //     node.height = 150;
-        // });
+        graph.nodes().forEach(function(v) {
+            var node = graph.node(v);
+            // Round the corners of the nodes
+            node.rx = node.ry = 10;
+            node.width = 150;
+            node.height = 150;
+        });
         // console.log(nodes);
 
         // set up image of back to sandbox button
