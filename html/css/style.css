@@ -178,6 +178,7 @@ header > h1 {
 #btn-header-sandbox {
     background: white;
     border-color: white;
+    border-style: solid;
 }
 
 #btn-header-sandbox:hover {
