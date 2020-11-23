@@ -366,13 +366,13 @@ module.LevelSelect = (function() {
         // });
 
         // console.log(graph.nodes());
-        graph.nodes().forEach(function(v) {
-            var node = graph.node(v);
-            // Round the corners of the nodes
-            node.rx = node.ry = 10;
-            node.width = 150;
-            node.height = 150;
-        });
+        // graph.nodes().forEach(function(v) {
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
         // console.log(nodes);
 
         // set up image of back to sandbox button
