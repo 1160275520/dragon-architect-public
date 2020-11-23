@@ -339,7 +339,10 @@ module.LevelSelect = (function() {
         nodes.each(function (index) {
             var x = $(this)[0];
             // console.log(x);
-            // x.childNodes[0].style.rx = 4;
+            x.childNodes[0].style.rx = 10;
+            x.childNodes[0].style.ry = 10;
+            // x.childNodes[0].style.width = 150;
+            x.childNodes[0].style.height = 40;
             // x.childNodes[0].rx = 4;
             // console.log(x.childNodes[0]);
             // consolelog(x.childNodes[0])
@@ -366,13 +369,13 @@ module.LevelSelect = (function() {
         // });
 
         // console.log(graph.nodes());
-        // graph.nodes().forEach(function(v) {
-        //     var node = graph.node(v);
-        //     // Round the corners of the nodes
-        //     node.rx = node.ry = 10;
-        //     node.width = 150;
-        //     node.height = 150;
-        // });
+        graph.nodes().forEach(function(v) {
+            var node = graph.node(v);
+            // Round the corners of the nodes
+            node.rx = node.ry = 10;
+            node.width = 150;
+            node.height = 150;
+        });
         // console.log(nodes);
 
         // set up image of back to sandbox button
