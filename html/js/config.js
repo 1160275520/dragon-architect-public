@@ -24,7 +24,7 @@ var RUTHEFJORD_CONFIG = {
         }
     },
     hide_packs: [
-        "decomposition"
+        "decomposition",
     ],
     gallery: {
         group: "cgs_web"
