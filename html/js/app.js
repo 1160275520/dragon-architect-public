@@ -269,6 +269,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
+                        console.log(pack);
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
                     } else {
                         setState_packs();
@@ -276,7 +277,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
                     }
                 } else {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
-                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities. Use <img class="instructions-img" src="media/menu_btn.png" style="vertical-align:middle" data-uiid="#menu-btn"/> if you want to go back.');
+                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
                     } else {
                         setState_sandbox();
                         break;

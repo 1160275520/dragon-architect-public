@@ -168,12 +168,20 @@ header > h1 {
     padding: 5px 20px;
     font-size: 21px;
 }
-}
 
 .menu-bar .current{
     color: #ffffff;
     text-decoration: underline;
     font-weight: 600;
+}
+
+#btn-header-sandbox {
+    background: white;
+    border-color: white;
+}
+
+#btn-header-sandbox:hover {
+    background: #e7e7e7;
 }
 
 /* loading pane */
@@ -235,14 +243,14 @@ header > h1 {
     background: #1c2b2d;
     padding: 0;
     position: absolute;
-    right: 0px;
+    right: 0;
     height: -webkit-fill-available;
     overflow: hidden;
 }
 
 #main-view-code {
     position: absolute;
-    left: 0px;
+    left: 0;
     width: 45%;
     display: flex;
     background: #1c2b2d;
@@ -678,7 +686,7 @@ header button, .control-btn, .control-icon-btn {
 #selector-puzzle svg {
     display: block;
     margin: auto;
-    background: #fff;
+    background: #1c2b2d;
 }
 
 #selector-puzzle .node rect {
@@ -696,19 +704,19 @@ header button, .control-btn, .control-icon-btn {
 }
 
 #selector-puzzle .edgePath {
-    stroke: #333;
-    stroke-width: 1.5px;
-    fill: #333;
+    stroke: white;
+    stroke-width: 2px;
+    fill: white;
 }
 
 .selector-instructions {
+    text-align: center;
     padding: 15px;
     margin-bottom: 20px;
     border: 1px solid transparent;
     border-radius: 4px;
     font-size: 16pt;
-    color: #000;
-    background-color: #4aaae3;
+    color: white;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
 }
 
