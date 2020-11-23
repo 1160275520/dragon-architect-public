@@ -175,6 +175,15 @@ header > h1 {
     font-weight: 600;
 }
 
+#btn-header-sandbox {
+    background: white;
+    border-color: white;
+}
+
+#btn-header-sandbox:hover {
+    background: #e7e7e7;
+}
+
 /* loading pane */
 /************************************************************/
 
