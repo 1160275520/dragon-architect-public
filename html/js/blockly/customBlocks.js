@@ -33,7 +33,7 @@ Blockly.JSONLangOps.processStructure = function (block) {
     if (block.getProcedureDef) {
         // procedures have no connection, so no siblings exist and we can assume the object we want is the first and only element
         return structure[0].children.map(Blockly.JSONLangOps.convertCallback).filter(function (x) { return x.skip !== true; });
-    } else {
+    } else if (!block.isGetter) {
         return structure.map(Blockly.JSONLangOps.convertCallback).filter(function (x) { return x.skip !== true; });
     }
 };
@@ -65,7 +65,7 @@ Blockly.Variables.rename = function(text) {
     }
     if (this.sourceBlock_.isInFlyout) {
         // don't allow renaming of something in toolbox, this breaks everything...
-        return this.getFieldValue("NAME");
+        return this.sourceBlock_.getFieldValue("NAME");
     } else {
         // Strip leading and trailing whitespace.  Beyond this, all names are legal.
         text = text.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
@@ -108,8 +108,8 @@ function makeIdent(name) {
 }
 
 //For the making of variable set blocks
-function makeAssignment(name, value) {
-    return {type:"assign", name:name, value:value};
+function makeAssignment(name, value, id) {
+    return {type:"assign", name:name, value:value, meta:{id:id}};
 }
 
 function makeSingleArg(block, inputName) {
@@ -248,7 +248,7 @@ Blockly.Blocks['Set'] = {
 };
 
 Blockly.JSONLangOps['Set'] = function(block) {
-    return makeAssignment(block.getFieldValue('NAME'), makeSingleArg(block, "VALUE"));
+    return makeAssignment(block.getFieldValue('NAME'), makeSingleArg(block, "VALUE"), block.id);
 };
 
 //Get blocks only have the name of the variable on them and can be put into forward, up, down, or repeats
@@ -261,8 +261,11 @@ Blockly.Blocks['Get'] = {
         this.setOutput(true);
         this.setEditable(false);
     },
+    getVars: function() { // used by Blockly code
+        return [this.getFieldValue('NAME')];
+    },
     renameVar: function (oldName, newName) {
-        console.log("renameVar " + oldName + "->" + newName)
+        // console.log("renameVar " + oldName + "->" + newName)
         if (Blockly.Names.equals(oldName, this.getFieldValue('NAME'))) {
             this.setFieldValue(newName, 'NAME');
         }
@@ -638,7 +641,7 @@ Blockly.JSONLangOps.bodyToXML = function (body, program) {
     return xml;
 };
 
-var BUILT_INS = ['Forward', 'Set', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
+var BUILT_INS = ['Forward', 'Left', 'Right', 'PlaceCube', 'RemoveCube', 'Up', 'Down'];
 
 // HACK this totally doesn't handle defines correctly but works for other stuff for now
 Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
@@ -652,6 +655,9 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 } else if (stmt.name === 'PlaceCube') {
                     return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[stmt.args[0].value] + '</field>';
                 } else {
+                    if (stmt.args[0].type === "ident") {
+                        return '<block id="' + stmt.meta.id + '" type="' + stmt.name + '"><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(1, Blockly.genUid()) + '<block type="Get" id="' + Blockly.genUid() + '" editable="false"><field name="NAME">' + stmt.args[0].value + '</field></block></value>';
+                    }
                     if (!_.has(stmt.args[0], 'meta')) {
                         stmt.args[0].meta = {};
                     }
@@ -664,11 +670,23 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 return '<block id="' + stmt.meta.id + '" type="procedures_callnoreturn"><mutation name="' + stmt.name.slice(1) + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
+            if (stmt.number.type === "ident") {
+                return '<block id="' + stmt.meta.id + '" type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(1, Blockly.genUid()) + '<block type="Get" id="' + Blockly.genUid() + '" editable="false"><field name="NAME">' + stmt.number.value + '</field></block></value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
+            }
             if (!_.has(stmt.number, 'meta')) {
                 stmt.number.meta = {};
             }
             stmt.number.meta.id = Blockly.genUid();
             return '<block id="' + stmt.meta.id + '" type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(stmt.number.value, stmt.number.meta.id) + '</value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
+        } else if (stmt.type === "assign") {
+            if (!_.has(stmt.value, 'meta')) {
+                stmt.value.meta = {};
+            }
+            stmt.value.meta.id = Blockly.genUid();
+            if (stmt.value.type === "ident") {
+                return '<block id="' + stmt.meta.id + '" type="Set"><field name="NAME">' + stmt.name + '</field><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(1, Blockly.genUid()) + '<block type="Get" id="' + Blockly.genUid() + '" editable="false"><field name="NAME">' + stmt.value.value + '</field></block></value>';
+            }
+            return '<block id="' + stmt.meta.id + '" type="Set"><field name="NAME">' + stmt.name + '</field><value name="VALUE">' + RuthefjordBlockly.makeShadowNum(stmt.value.value, stmt.value.meta.id) + '</value>';
         }
     }
     return '';

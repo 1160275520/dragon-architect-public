@@ -379,7 +379,10 @@ var RuthefjordBlockly = (function(){
                 var body = Blockly.JSONLangOps.processStructure(block);
                 procs.push({type:"procedure", meta:{id:block.id}, name:name, params:params, body:body});
             } else {
-                other = other.concat(Blockly.JSONLangOps.processStructure(block));
+                let struct = Blockly.JSONLangOps.processStructure(block);
+                if (struct) {
+                    other = other.concat(struct);
+                }
             }
         });
         return {
