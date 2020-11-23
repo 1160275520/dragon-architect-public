@@ -670,6 +670,9 @@ Blockly.JSONLangOps.stmtToXML = function (stmt, program) {
                 return '<block id="' + stmt.meta.id + '" type="procedures_callnoreturn"><mutation name="' + stmt.name.slice(1) + '"></mutation>';
             }
         } else if (stmt.type === "repeat") { // repeat
+            if (stmt.number.type === "ident") {
+                return '<block id="' + stmt.meta.id + '" type="controls_repeat"><value name="TIMES">' + RuthefjordBlockly.makeShadowNum(1, Blockly.genUid()) + '<block type="Get" id="' + Blockly.genUid() + '" editable="false"><field name="NAME">' + stmt.number.value + '</field></block></value><statement name="DO">' + Blockly.JSONLangOps.bodyToXML(stmt.body, program) + '</statement>';
+            }
             if (!_.has(stmt.number, 'meta')) {
                 stmt.number.meta = {};
             }

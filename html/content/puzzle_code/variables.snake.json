@@ -27,9 +27,7 @@
         }
       ],
       "meta": {
-        "attributes": {
-          "FrozenBlocks": "one"
-        },
+        "attributes": {},
         "id": 2
       },
       "name": "Forward",
@@ -47,9 +45,7 @@
         }
       ],
       "meta": {
-        "attributes": {
-          "FrozenBlocks": "one"
-        },
+        "attributes": {},
         "id": 2
       },
       "name": "PlaceCube",
