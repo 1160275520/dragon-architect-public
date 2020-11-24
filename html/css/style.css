@@ -175,15 +175,47 @@ header > h1 {
     font-weight: 600;
 }
 
-#btn-header-sandbox {
-    background: white;
-    border-color: white;
-    border-style: solid;
+/*#btn-header-sandbox {*/
+/*    background: transparent;*/
+/*    border-color: transparent;*/
+/*}*/
+
+/*#btn-header-sandbox:hover {*/
+/*    background: #e7e7e7;*/
+/*}*/
+.menu-bar .row {
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    padding: 5px;
+    text-align: center;
 }
 
-#btn-header-sandbox:hover {
-    background: #e7e7e7;
+.menu-bar .navbar-item {
+    display: inline-grid;
+    margin-top: 5px;
 }
+.menu-bar .navbar-item i {
+    margin: 0 auto;
+    height: fit-content;
+}
+.menu-bar .navbar-text {
+    margin: 0 auto;
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+    font-size: 13px;
+    height: fit-content;
+}
+
+.menu-bar .navbar-item:hover {
+    background: transparent;
+    color: aliceblue;
+    cursor: pointer;
+}
+
 
 /* loading pane */
 /************************************************************/
