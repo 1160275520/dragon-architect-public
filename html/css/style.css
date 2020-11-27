@@ -194,20 +194,24 @@ header > h1 {
 }
 
 .menu-bar .navbar-item {
-    display: inline-grid;
+    display: block;
+    font-size: 19px;
     margin-top: 5px;
 }
 .menu-bar .navbar-item i {
-    margin: 0 auto;
+    margin: auto 2px;
     height: fit-content;
 }
 .menu-bar .navbar-text {
-    margin: 0 auto;
+    margin: auto;
     background: transparent;
     border-color: transparent;
     padding: 0;
-    font-size: 13px;
     height: fit-content;
+}
+
+.menu-bar .navbar-item #dev-select-pack {
+    margin-left: 0;
 }
 
 .menu-bar .navbar-item:hover {
