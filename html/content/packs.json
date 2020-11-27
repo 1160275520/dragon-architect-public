@@ -14,7 +14,7 @@
         ["tutorial.place_cubes", "remove.remove_cubes"]
     ]
 },
-"up":{
+"move dragon II":{
     "nodes": [
         "up.what_is_up",
         "up.what_is_down",
