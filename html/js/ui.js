@@ -1016,8 +1016,8 @@ module.Dialog = (function() {
     };
 
     self.destroy = function () {
-        // $(".dialog-content").remove();
-        // $(dialog).hide();
+        $(".dialog-content").remove();
+        $(dialog).hide();
     };
 
     return self;
@@ -1028,11 +1028,15 @@ module.WinMessage = (function() {
 
     self.show = function(msg, btn_msg, cb) {
         var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
-        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
+        // var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
+        // var timeout = setTimeout(off, 0);
         var btn = div.find("button");
         btn.css('font-size', '20pt');
-        btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
-        var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
+        btn.css('padding', '0 30px');
+        btn.css('text-align', 'left');
+        btn.css('background-color', '#E6E6E6');
+        btn.on('click', function () {  RuthefjordUI.Dialog.destroy(); cb(); });
+        var style = {width: 'fit-content', top: '617px', left: '657px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
     };
 

@@ -894,6 +894,7 @@ header button, .control-btn, .control-icon-btn {
     border-radius: 8px;
     padding: 10px;
     font-family: "Ubuntu Mono";
+    color: aliceblue;
 }
 
 #dialog button {
