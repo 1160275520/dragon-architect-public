@@ -354,6 +354,7 @@ header > h1 {
     align-items: center;
     padding: 5px;
     position: relative;
+    width: 50%;
 }
 
 .game-control.disabled {
@@ -377,6 +378,11 @@ div.game-control {
     display: block;
     text-align: center;
     padding: 0 15px;
+    width: 50%;
+}
+
+div #camera-controls .game-control_category {
+    width: 33%;
 }
 
 .game-control_title {
@@ -421,6 +427,8 @@ header button, .control-btn, .control-icon-btn {
 .control-icon-btn {
     background-color: transparent;
     color: white;
+    width: 50%;
+
 }
 
 
@@ -428,7 +436,7 @@ header button, .control-btn, .control-icon-btn {
     font-size: 24px;
     line-height: 1.2em;
     vertical-align: -15%;
-    margin: 0 6px;
+    margin: 0 auto;
 }
 
 #game-controls-bar-bottom {
