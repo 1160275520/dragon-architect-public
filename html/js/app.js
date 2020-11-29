@@ -246,7 +246,8 @@ function create_puzzle_runner(pack, sceneSelectType) {
     var tutorialCounter = 0;
 
     function onPackComplete() {
-        console.error("TODO make this do something!");
+        // console.error("TODO make this do something!");
+        setState_packs();
     }
 
     function setState_puzzle(id, finish_msg) {
@@ -279,7 +280,8 @@ function create_puzzle_runner(pack, sceneSelectType) {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
                     } else {
-                        setState_sandbox();
+                        // setState_sandbox();
+                        onPackComplete();
                         break;
                     }
                 }
@@ -305,11 +307,12 @@ function create_puzzle_runner(pack, sceneSelectType) {
                 } else {
                     if (tutorialCounter < pack.nodes.length) {
                         // progress through tutorial using tutorialCounter
-                        var finishType = pack.nodes.length - tutorialCounter === 1 ? "Go to the sandbox" : "Go to next puzzle";
+                        var finishType = pack.nodes.length - tutorialCounter === 1 ? "Go to the next level" : "Go to next puzzle";
                         setState_puzzle(pack.nodes[tutorialCounter++], finishType);
                     } else {
                         // tutorial has been completed, go to sandbox
-                        setState_sandbox();
+                        // setState_sandbox();
+                        onPackComplete();
                     }
                 }
 
