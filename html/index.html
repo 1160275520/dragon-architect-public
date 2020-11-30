@@ -111,29 +111,32 @@
 <!--    </select>-->
     <button id="btn-devmode" onclick="devmode()">Dev Mode</button>
     <button id="btn-clear-save-data">Delete Save Data</button></div>
-    <nav class="navbar">
-      <div class="container-fluid">
-        <div class="menu-bar_title">
+    
+<nav class="navbar">
+	<div class="container-fluid">
+		<div class="menu-bar_title">
           Dragon Architect
         </div>
-        <ul class="nav navbar-nav navbar-right">
-          <!-- Level Maps-->
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-              <span class="fa fa-map"></span><span class="link">Level Maps</span> <span class="fa fa-caret-down"></span></a>
-            <select id="dev-select-pack" class="dropdown-menu">
-            </select>
-          </li>
-            
-            <!-- Playground -->
-            <li><a href="#"><span class="fa fa-lg fa-gamepad"></span><span id="btn-header-sandbox" class="link">Playground</span></a></li>
-            <!-- About-->
-            <li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span class="link">About</span></a></li>
-          </ul>
-          
-        </div>
-      </div>
-    </nav>
+		<ul class="nav navbar-nav navbar-right">
+			<!-- Level Maps-->
+			<li class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+					<span class="fa fa-map"></span><span class="link"> Level Maps</span> <span class="fa fa-caret-down"></span></a>
+				<ul id="dev-select-pack" class="dropdown-menu">
+					<!-- <li><a href="#">Catalogue 1</a></li>
+					<li><a href="#">Catalogue 2</a></li> -->
+				</ul>
+			</li>
+				
+				<!-- Playground -->
+				<li><a href="#"><span class="fa fa-lg fa-gamepad"></span><span class="link"> Playground</span></a></li>
+				<!-- About-->
+				<li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span class="link"> About</span></a></li>
+			</ul>
+			
+		</div>
+	</div>
+</nav>
 
     <div class="view-loading">
       <p id="msg-loading">Loading...</p>

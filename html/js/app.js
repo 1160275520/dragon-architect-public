@@ -719,7 +719,7 @@ $(function() {
         // HACK this needs to wait for the packs to be loaded
         // console.log(game_info.packs);
         _.forEach(game_info.packs, function(pack, id) {
-            $('#dev-select-pack').append('<option><li><a href="#" value="' + id + '">' + id + '</a></li></option>');
+            $('#dev-select-pack').append('<li><a href="#" value="' + id + '">' + id + '</a></li>');
         });
 
         progress.initialize(function() {
