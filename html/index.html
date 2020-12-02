@@ -106,9 +106,9 @@
 <!--      </div>-->
 <!--    </header>-->
 <div id="dev-controls" style="display: flex; flex-direction: row; align-items: center">
-<!--    <select id="dev-select-pack">-->
-<!--        <option>- Jump to Pack -</option>-->
-<!--    </select>-->
+   <!-- <select id="dev-select-pack">
+       <option>- Jump to Pack -</option>
+   </select> -->
     <button id="btn-devmode" onclick="devmode()">Dev Mode</button>
     <button id="btn-clear-save-data">Delete Save Data</button></div>
     
@@ -122,14 +122,14 @@
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 					<span class="fa fa-map"></span><span class="link">Level Maps</span> <span class="fa fa-caret-down"></span></a>
-				<ul id="dev-select-pack" class="dropdown-menu">
+				<ul id="list-select-pack" class="dropdown-menu">
 					<!-- <li><a href="#">Catalogue 1</a></li>
 					<li><a href="#">Catalogue 2</a></li> -->
 				</ul>
 			</li>
 				
 				<!-- Playground -->
-				<li><a href="#"><span class="fa fa-lg fa-gamepad"></span><span class="link">Playground</span></a></li>
+				<li><a href="#"><span class="fa fa-lg fa-gamepad"></span><span id="btn-header-sandbox" class="link">Playground</span></a></li>
 				<!-- About-->
 				<li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span class="link">About</span></a></li>
 			</ul>

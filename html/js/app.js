@@ -719,8 +719,18 @@ $(function() {
         // HACK this needs to wait for the packs to be loaded
         // console.log(game_info.packs);
         _.forEach(game_info.packs, function(pack, id) {
-            $('#dev-select-pack').append('<li><a href="#" value="' + id + '">' + id + '</a></li>');
+            $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
+
+        _.forEach(game_info.packs, function(pack, id) {
+            if (true) { // TODO check if pack should be added to the menu
+                let item = $('<li>' + id + '</li>');
+                item.click(function () {
+                    current_puzzle_runner = create_puzzle_runner(pack, "pack");
+                })
+                $('#list-select-pack').append(item);}
+                
+                    });
 
         progress.initialize(function() {
             if (progress.is_pack_completed(game_info.packs["tutorial"])) {

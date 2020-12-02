@@ -170,6 +170,11 @@ header > h1 {
   .navbar span {
     color: #212529;
   }
+
+  .navbar .dropdown ul {
+      cursor: pointer;
+  }
+
   .navbar .dropdown .fa-caret-down {
     padding-left: 3px;
     font-size: 18px;

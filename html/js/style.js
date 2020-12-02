@@ -5,14 +5,15 @@ $(document).ready(function(){
 			console.log();
 		}
 		else { 
-			$(this).find(".dropdown-menu").slideDown("fast");
+			$(this).find(".dropdown-menu").stop().slideDown("fast");
+
 			$(this).addClass("open");
 		}
 	});
 
 	// Close dropdown on mouseleave
 	$("li.dropdown").mouseleave(function(){
-			$(this).find(".dropdown-menu").slideUp("fast");
+		$(this).find(".dropdown-menu").stop().slideUp("fast");
 			$(this).removeClass("open");
 	});
 
