@@ -891,7 +891,8 @@ function start_editor(info) {
         }
     }
     // HACK we have to wait long enough for a render to happen, so we get the right screen coordinates
-    setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
+    // setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
+    RuthefjordUI.Instructions.show(info.puzzle.instructions);
     // RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("start_editor", null);
 }
 
