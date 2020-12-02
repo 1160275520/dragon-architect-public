@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
     function hideAll() {
         RuthefjordDisplay.hide();
         RuthefjordDisplay.exit_viewer_mode(); // disable view & keyboard controls (HACK: this is only actually necessary when leaving the viewer, but this seems like a good place to put it)
-        $('#main, #main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
+        $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -36,7 +36,7 @@ module.State = (function(){ "use strict";
         current_state = 'title';
 
         hideAll();
-        $('.codeEditor, #main, #main-view-game').show();
+        $('.codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
@@ -51,7 +51,7 @@ module.State = (function(){ "use strict";
         current_state = 'intro';
 
         hideAll();
-        $('.codeEditor, #main, #main-view-game').show();
+        $('.codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
@@ -71,7 +71,7 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
-        $('.codeEditor, #main, #main-view-game, .puzzleModeUI').show();
+        $('.codeEditor, #main-view-game, .puzzleModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -79,7 +79,7 @@ module.State = (function(){ "use strict";
 
     self.goToSandbox = function(cb) {
         hideAll();
-        $('.codeEditor, #main, #main-view-game, .sandboxModeUI').show();
+        $('.codeEditor, #main-view-game, .sandboxModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -99,7 +99,7 @@ module.State = (function(){ "use strict";
 
     self.goToViewer = function(cb) {
         hideAll();
-        $('.viewerModeUI, #main, #main-view-game').show();
+        $('.viewerModeUI, #main-view-game').show();
         RuthefjordDisplay.show();
         RuthefjordDisplay.viewer_mode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
@@ -338,10 +338,10 @@ module.LevelSelect = (function() {
 
         nodes.each(function (index) {
             var x = $(this)[0];
-            x.childNodes[0].style.rx = 10;
-            x.childNodes[0].style.ry = 10;
-            // x.childNodes[0].style.width = 150;
-            x.childNodes[0].style.height = 40;
+            // console.log(x);
+            x.childNodes[0].style.rx = 4;
+            // console.log(x.childNodes[0]);
+            // consolelog(x.childNodes[0])
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback(x.id);
@@ -356,6 +356,23 @@ module.LevelSelect = (function() {
             }
         });
 
+        // nodes.each(function (v){
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+
+        // console.log(graph.nodes());
+        // graph.nodes().forEach(function(v) {
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+        // console.log(nodes);
 
         // set up image of back to sandbox button
         module.makeImgOnClick();
@@ -473,10 +490,10 @@ module.Instructions = (function() {
         $('#instructions-display').hide();
     };
 
-    // function makeInstructions(target, container, dragon, content, next) {
+    // // function makeInstructions(target, container, dragon, content, next) {
     //     // position and show box
-    //     var coords, offset, block, reverse, rect;
-    //     var editor = $("#blockly");
+    //     // var coords, offset, block, reverse, rect;
+    //     // var editor = $("#blockly");
     //     // switch (target.type) {
     //     //     case "ui":
     //     //         coords = $(target.name).offset();
@@ -522,13 +539,13 @@ module.Instructions = (function() {
     //     //     default:
     //     //         throw new Error(target.type + " not a recognized target type");
     //     // }
-    //     if (coords) {
-    //         container.css('left', (coords.left + offset.left) + 'px');
-    //         container.css('top', (coords.top + offset.top) + 'px');
+    //     // if (coords) {
+    //     //     container.css('left', (coords.left + offset.left) + 'px');
+    //     //     container.css('top', (coords.top + offset.top) + 'px');
     //     }
     //     // container.css('left', '617px');
     //     // container.css('top', '754.891px');
-    //     container.css('width', '757px');
+    //     // container.css('width', '757px');
     //     //
     //     // var text = $("<p>" + processTemplate(target.text) + "</p>");
     //     // var current_text = $("p", content).first();
@@ -540,20 +557,20 @@ module.Instructions = (function() {
     //     // var h = text.innerHeight();
     //     // text.css("opacity", 0);
     //     // text.css("height", "0px");
-    //     function showContent() {
-    //         container.off('transitionend');
-    //         container.off('click');
-    //         // animate and show content
-    //         // dragon.show({duration: 1000, queue: false});
-    //         content.show({duration: 0, queue: false, complete: function () {
-    //             var text = $("<p>" + processTemplate(target.home_text) + "</p>");
-    //             text.css('font-size', '30px');
-    //             text.css('font-family', 'Roboto Slab');
-    //             text.css('padding-left', '20px');
-    //             text.css('height', '60px');
-    //             content.prepend(text);
-    //             module.makeImgOnClick();
-    //             var h = text.innerHeight();
+    //     // function showContent() {
+    //     //     container.off('transitionend');
+    //     //     container.off('click');
+    //     //     // animate and show content
+    //     //     // dragon.show({duration: 1000, queue: false});
+    //     //     content.show({duration: 0, queue: false, complete: function () {
+    //     //         var text = $("<p>" + processTemplate(target.home_text) + "</p>");
+    //     //         text.css('font-size', '30px');
+    //     //         text.css('font-family', 'Roboto Slab');
+    //     //         text.css('padding-left', '20px');
+    //     //         text.css('height', '60px');
+    //     //         content.prepend(text);
+    //     //         module.makeImgOnClick();
+    //             // var h = text.innerHeight();
     //             // text.css("opacity", 0);
     //             // text.css("height", "0px");
     //             // text.animate({opacity:1, height:h+"px"}, 1000, function () {
@@ -580,75 +597,74 @@ module.Instructions = (function() {
     //             //         }
     //             //     });
     //             // });
-    //         }});
-    //     }
-    //     if (container.is(":visible")) {
-    //         container.off('transitionend');
-    //         container.on('transitionend', showContent);
-    //     } else {
-    //         container.show({duration: 0, queue: false, start: function () {
-    //             container.css('transition', '');
-    //         }, done: function () {
-    //             container.css('transition', 'all 1s');
-    //             container.css('-webkit-transition', 'all 1s');
-    //         }});
-    //         showContent();
-    //     }
-    // }
+    // //         }});
+    // //     }
+    // //     if (container.is(":visible")) {
+    // //         container.off('transitionend');
+    // //         container.on('transitionend', showContent);
+    // //     } else {
+    // //         container.show({duration: 0, queue: false, start: function () {
+    // //             container.css('transition', '');
+    // //         }, done: function () {
+    // //             container.css('transition', 'all 1s');
+    // //             container.css('-webkit-transition', 'all 1s');
+    // //         }});
+    // //         showContent();
+    // //     }
+    // // }
 
-    // function scheduleInstructions(targets, cb, now) {
-    //     if (targets && targets.length > 0) {
-    //         var target = targets[0];
-    //         var remaining = targets.slice(1);
-    //         var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} :
-    //             function (n) { self.timeouts.push(setTimeout(function () {self.goHome()}, n ? 1 : 5000)); };
-    //         if (now) {
-    //             cb(target, fn);
-    //         } else if (target.delay) {
-    //             self.timeouts.push(setTimeout(function () {
-    //                 cb(target, fn);
-    //             }, target.delay));
-    //         } else {
-    //             cb(target, fn);
-    //         }
-    //     }
-    // }
+    // // function scheduleInstructions(targets, cb, now) {
+    // //     if (targets && targets.length > 0) {
+    // //         var target = targets[0];
+    // //         var remaining = targets.slice(1);
+    // //         var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} :
+    // //             function (n) { self.timeouts.push(setTimeout(function () {self.goHome()}, n ? 1 : 5000)); };
+    // //         if (now) {
+    // //             cb(target, fn);
+    // //         } else if (target.delay) {
+    // //             self.timeouts.push(setTimeout(function () {
+    // //                 cb(target, fn);
+    // //             }, target.delay));
+    // //         } else {
+    // //             cb(target, fn);
+    // //         }
+    // //     }
+    // // }
 
-
-    
     self.show = function(instructions) {
-        var content = $('.goal-section_text');
+        // setup
+        // if (self.timeouts) {
+        //     _.forEach(self.timeouts, function (id) {
+        //         clearTimeout(id);
+        //     });
+        // }
+        // self.timeouts = [];
+        // var container = $('#instructions-display');
+        // container.finish();
+        // container.hide();
+        // container.css('width', '250px');
+        // var dragon = $("#instructions-icon");
+        // dragon.finish();
+        // dragon.hide();
+        var content = $('#instructions-goal');
+        // content.finish();
+        // $("p", content).finish();
+        // content.empty();
+        // content.hide();
+        // RuthefjordUI.Arrow.hide();
+
         var text = $("<p>" + processTemplate(_.last(instructions.targets).home_text) + "</p>");
         content.html(text);
         $('#instructions-display').show();
-        self.targets = instructions.targets;
-    //     // setup
-    //     if (self.timeouts) {
-    //         _.forEach(self.timeouts, function (id) {
-    //             clearTimeout(id);
-    //         });
-    //     }
-    //     self.timeouts = [];
-    //     var container = $('#instructions-display');
-    //     container.finish();
-    //     container.hide();
-    //     container.css('width', '250px');
-    //     var dragon = $("#instructions-icon");
-    //     dragon.finish();
-    //     dragon.hide();
-    //     var content = $('#instructions-goal');
-    //     content.finish();
-    //     $("p", content).finish();
-    //     content.empty();
-    //     content.hide();
-    //     RuthefjordUI.Arrow.hide();
+         self.targets = instructions.targets;
 
-    //     self.targets = instructions.targets;
 
-    //     scheduleInstructions(instructions.targets, function (target, next) {
-    //         makeInstructions(target, container, dragon, content, next);
-    //     });
-    // };
+        // self.targets = instructions.targets;
+
+        // scheduleInstructions(instructions.targets, function (target, next) {
+        //     makeInstructions(target, container, dragon, content, next);
+        // });
+    };
 
     // self.goHome = function() {
     //     var container = $('#instructions-display');
@@ -667,7 +683,7 @@ module.Instructions = (function() {
     //             }
     //         }
     //     }
-    };
+    // };
 
     self.displayErrors = function(errors) {
         var list = $("#instructions-errors-list");
@@ -1023,8 +1039,8 @@ module.Dialog = (function() {
     };
 
     self.destroy = function () {
-        $(".dialog-content").remove();
-        $(dialog).hide();
+        // $(".dialog-content").remove();
+        // $(dialog).hide();
     };
 
     return self;
@@ -1035,15 +1051,11 @@ module.WinMessage = (function() {
 
     self.show = function(msg, btn_msg, cb) {
         var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
-        // var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
-        // var timeout = setTimeout(off, 0);
+        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
         var btn = div.find("button");
         btn.css('font-size', '20pt');
-        btn.css('padding', '0 30px');
-        btn.css('text-align', 'left');
-        btn.css('background-color', '#E6E6E6');
-        btn.on('click', function () {  RuthefjordUI.Dialog.destroy(); cb(); });
-        var style = {width: 'fit-content', top: '617px', left: '657px', "font-size": "30pt"};
+        btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
+        var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
     };
 
