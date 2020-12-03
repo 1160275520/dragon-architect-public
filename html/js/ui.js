@@ -12,7 +12,7 @@ module.State = (function(){ "use strict";
     function hideAll() {
         RuthefjordDisplay.hide();
         RuthefjordDisplay.exit_viewer_mode(); // disable view & keyboard controls (HACK: this is only actually necessary when leaving the viewer, but this seems like a good place to put it)
-        $('#main, #main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
+        $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
     var main_selector = '#main-view-game, #main-view-code';
@@ -36,7 +36,7 @@ module.State = (function(){ "use strict";
         current_state = 'title';
 
         hideAll();
-        $('.codeEditor, #main, #main-view-game').show();
+        $('.codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
@@ -51,7 +51,7 @@ module.State = (function(){ "use strict";
         current_state = 'intro';
 
         hideAll();
-        $('.codeEditor, #main, #main-view-game').show();
+        $('.codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
@@ -71,7 +71,7 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
-        $('.codeEditor, #main, #main-view-game, .puzzleModeUI').show();
+        $('.codeEditor, #main-view-game, .puzzleModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -79,7 +79,7 @@ module.State = (function(){ "use strict";
 
     self.goToSandbox = function(cb) {
         hideAll();
-        $('.codeEditor, #main, #main-view-game, .sandboxModeUI').show();
+        $('.codeEditor, #main-view-game, .sandboxModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -99,7 +99,7 @@ module.State = (function(){ "use strict";
 
     self.goToViewer = function(cb) {
         hideAll();
-        $('.viewerModeUI, #main, #main-view-game').show();
+        $('.viewerModeUI, #main-view-game').show();
         RuthefjordDisplay.show();
         RuthefjordDisplay.viewer_mode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
@@ -338,10 +338,10 @@ module.LevelSelect = (function() {
 
         nodes.each(function (index) {
             var x = $(this)[0];
-            x.childNodes[0].style.rx = 10;
-            x.childNodes[0].style.ry = 10;
-            // x.childNodes[0].style.width = 150;
-            x.childNodes[0].style.height = 40;
+            // console.log(x);
+            x.childNodes[0].style.rx = 4;
+            // console.log(x.childNodes[0]);
+            // consolelog(x.childNodes[0])
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback(x.id);
@@ -356,6 +356,23 @@ module.LevelSelect = (function() {
             }
         });
 
+        // nodes.each(function (v){
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+
+        // console.log(graph.nodes());
+        // graph.nodes().forEach(function(v) {
+        //     var node = graph.node(v);
+        //     // Round the corners of the nodes
+        //     node.rx = node.ry = 10;
+        //     node.width = 150;
+        //     node.height = 150;
+        // });
+        // console.log(nodes);
 
         // set up image of back to sandbox button
         module.makeImgOnClick();
@@ -465,202 +482,208 @@ module.Instructions = (function() {
     }
 
     self.hide = function() {
-        if (self.timeouts) {
-            _.forEach(self.timeouts, function (id) {
-                clearTimeout(id);
-            });
-        }
+        // if (self.timeouts) {
+        //     _.forEach(self.timeouts, function (id) {
+        //         clearTimeout(id);
+        //     });
+        // }
         $('#instructions-display').hide();
     };
 
-    function makeInstructions(target, container, dragon, content, next) {
-        // position and show box
-        var coords, offset, block, reverse, rect;
-        var editor = $("#blockly");
-        // switch (target.type) {
-        //     case "ui":
-        //         coords = $(target.name).offset();
-        //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
-        //         coords.height = $(target.name).innerHeight();
-        //         break;
-        //     case "world":
-        //         // for now we assume the only world target is either a robot target or a cube target
-        //         var vec = RuthefjordDisplay.getScreenCoordsForTargets();
-        //         var threejs = $("#three-js").offset();
-        //         coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
-        //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
-        //         break;
-        //     case "general":
-        //         container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
-        //         container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
-        //         break;
-        //     case "block":
-        //         block = RuthefjordBlockly.instructions_block;
-        //         if (block) {
-        //             coords = $(block.svgGroup_).offset();
-        //             rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
-        //             coords.left += editor.offset().left + rect.width;
-        //             coords.top += editor.offset().top;
-        //             coords.height = rect.height;
-        //             reverse = true;
-        //             offset = {left: 20, top: dragon.height()};
-        //         } else {
-        //             throw new Error("no block set as instructions_block");
-        //         }
-        //         break;
-        //     case "toolbox":
-        //         var toolbox = Blockly.getMainWorkspace().flyout_;
-        //         block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
-        //         rect = block.get()[0].getBoundingClientRect();
-        //         coords = block.offset();
-        //         coords.left += editor.offset().left + rect.width;
-        //         coords.top += editor.offset().top;
-        //         coords.height = rect.height;
-        //         reverse = true;
-        //         offset = {left: 20, top: dragon.height()};
-        //         break;
-        //     default:
-        //         throw new Error(target.type + " not a recognized target type");
-        // }
-        if (coords) {
-            container.css('left', (coords.left + offset.left) + 'px');
-            container.css('top', (coords.top + offset.top) + 'px');
-        }
-        // container.css('left', '617px');
-        // container.css('top', '754.891px');
-        container.css('width', '757px');
-        //
-        // var text = $("<p>" + processTemplate(target.text) + "</p>");
-        // var current_text = $("p", content).first();
-        // current_text.css('font-size', '11pt');
-        // current_text.css('padding-top', '20px');
-        // current_text.css('height', '');
-        // content.prepend(text);
-        // module.makeImgOnClick();
-        // var h = text.innerHeight();
-        // text.css("opacity", 0);
-        // text.css("height", "0px");
-        function showContent() {
-            container.off('transitionend');
-            container.off('click');
-            // animate and show content
-            // dragon.show({duration: 1000, queue: false});
-            content.show({duration: 0, queue: false, complete: function () {
-                var text = $("<p>" + processTemplate(target.home_text) + "</p>");
-                text.css('font-size', '30px');
-                text.css('font-family', 'Roboto Slab');
-                text.css('padding-left', '20px');
-                text.css('height', '60px');
-                content.prepend(text);
-                module.makeImgOnClick();
-                var h = text.innerHeight();
-                // text.css("opacity", 0);
-                // text.css("height", "0px");
-                // text.animate({opacity:1, height:h+"px"}, 1000, function () {
-                //     if (coords) {
-                //         RuthefjordUI.Arrow.show(coords, reverse);
-                //     }
-                //     if (next) {
-                //         next();
-                //     }
-                //     container.on('click', function () {
-                //         container.off('click');
-                //         if (next) {
-                //             if (self.timeouts) {
-                //                 _.forEach(self.timeouts, function (id) {
-                //                     clearTimeout(id);
-                //                 });
-                //                 self.timeouts = [];
-                //                 container.finish();
-                //                 dragon.finish();
-                //                 content.finish();
-                //                 $("p", content).finish();
-                //             }
-                //             next(true);
-                //         }
-                //     });
-                // });
-            }});
-        }
-        if (container.is(":visible")) {
-            container.off('transitionend');
-            container.on('transitionend', showContent);
-        } else {
-            container.show({duration: 0, queue: false, start: function () {
-                container.css('transition', '');
-            }, done: function () {
-                container.css('transition', 'all 1s');
-                container.css('-webkit-transition', 'all 1s');
-            }});
-            showContent();
-        }
-    }
+    // // function makeInstructions(target, container, dragon, content, next) {
+    //     // position and show box
+    //     // var coords, offset, block, reverse, rect;
+    //     // var editor = $("#blockly");
+    //     // switch (target.type) {
+    //     //     case "ui":
+    //     //         coords = $(target.name).offset();
+    //     //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+    //     //         coords.height = $(target.name).innerHeight();
+    //     //         break;
+    //     //     case "world":
+    //     //         // for now we assume the only world target is either a robot target or a cube target
+    //     //         var vec = RuthefjordDisplay.getScreenCoordsForTargets();
+    //     //         var threejs = $("#three-js").offset();
+    //     //         coords = {left: vec.x + threejs.left, top: vec.y + threejs.top, height:0};
+    //     //         offset = {left: -2 * RuthefjordUI.Arrow.width(), top: -dragon.height()};
+    //     //         break;
+    //     //     case "general":
+    //     //         container.css('left', (editor.width() / 2 + editor.offset().left) + 'px');
+    //     //         container.css('top', (editor.height() / 2 + editor.offset().top) + 'px');
+    //     //         break;
+    //     //     case "block":
+    //     //         block = RuthefjordBlockly.instructions_block;
+    //     //         if (block) {
+    //     //             coords = $(block.svgGroup_).offset();
+    //     //             rect = $(block.svgGroup_).get()[0].getBoundingClientRect();
+    //     //             coords.left += editor.offset().left + rect.width;
+    //     //             coords.top += editor.offset().top;
+    //     //             coords.height = rect.height;
+    //     //             reverse = true;
+    //     //             offset = {left: 20, top: dragon.height()};
+    //     //         } else {
+    //     //             throw new Error("no block set as instructions_block");
+    //     //         }
+    //     //         break;
+    //     //     case "toolbox":
+    //     //         var toolbox = Blockly.getMainWorkspace().flyout_;
+    //     //         block = $(_.find(toolbox.workspace_.getAllBlocks(), function (b) { return b.type === target.name}).svgGroup_);
+    //     //         rect = block.get()[0].getBoundingClientRect();
+    //     //         coords = block.offset();
+    //     //         coords.left += editor.offset().left + rect.width;
+    //     //         coords.top += editor.offset().top;
+    //     //         coords.height = rect.height;
+    //     //         reverse = true;
+    //     //         offset = {left: 20, top: dragon.height()};
+    //     //         break;
+    //     //     default:
+    //     //         throw new Error(target.type + " not a recognized target type");
+    //     // }
+    //     // if (coords) {
+    //     //     container.css('left', (coords.left + offset.left) + 'px');
+    //     //     container.css('top', (coords.top + offset.top) + 'px');
+    //     }
+    //     // container.css('left', '617px');
+    //     // container.css('top', '754.891px');
+    //     // container.css('width', '757px');
+    //     //
+    //     // var text = $("<p>" + processTemplate(target.text) + "</p>");
+    //     // var current_text = $("p", content).first();
+    //     // current_text.css('font-size', '11pt');
+    //     // current_text.css('padding-top', '20px');
+    //     // current_text.css('height', '');
+    //     // content.prepend(text);
+    //     // module.makeImgOnClick();
+    //     // var h = text.innerHeight();
+    //     // text.css("opacity", 0);
+    //     // text.css("height", "0px");
+    //     // function showContent() {
+    //     //     container.off('transitionend');
+    //     //     container.off('click');
+    //     //     // animate and show content
+    //     //     // dragon.show({duration: 1000, queue: false});
+    //     //     content.show({duration: 0, queue: false, complete: function () {
+    //     //         var text = $("<p>" + processTemplate(target.home_text) + "</p>");
+    //     //         text.css('font-size', '30px');
+    //     //         text.css('font-family', 'Roboto Slab');
+    //     //         text.css('padding-left', '20px');
+    //     //         text.css('height', '60px');
+    //     //         content.prepend(text);
+    //     //         module.makeImgOnClick();
+    //             // var h = text.innerHeight();
+    //             // text.css("opacity", 0);
+    //             // text.css("height", "0px");
+    //             // text.animate({opacity:1, height:h+"px"}, 1000, function () {
+    //             //     if (coords) {
+    //             //         RuthefjordUI.Arrow.show(coords, reverse);
+    //             //     }
+    //             //     if (next) {
+    //             //         next();
+    //             //     }
+    //             //     container.on('click', function () {
+    //             //         container.off('click');
+    //             //         if (next) {
+    //             //             if (self.timeouts) {
+    //             //                 _.forEach(self.timeouts, function (id) {
+    //             //                     clearTimeout(id);
+    //             //                 });
+    //             //                 self.timeouts = [];
+    //             //                 container.finish();
+    //             //                 dragon.finish();
+    //             //                 content.finish();
+    //             //                 $("p", content).finish();
+    //             //             }
+    //             //             next(true);
+    //             //         }
+    //             //     });
+    //             // });
+    // //         }});
+    // //     }
+    // //     if (container.is(":visible")) {
+    // //         container.off('transitionend');
+    // //         container.on('transitionend', showContent);
+    // //     } else {
+    // //         container.show({duration: 0, queue: false, start: function () {
+    // //             container.css('transition', '');
+    // //         }, done: function () {
+    // //             container.css('transition', 'all 1s');
+    // //             container.css('-webkit-transition', 'all 1s');
+    // //         }});
+    // //         showContent();
+    // //     }
+    // // }
 
-    function scheduleInstructions(targets, cb, now) {
-        if (targets && targets.length > 0) {
-            var target = targets[0];
-            var remaining = targets.slice(1);
-            var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} :
-                function (n) { self.timeouts.push(setTimeout(function () {self.goHome()}, n ? 1 : 5000)); };
-            if (now) {
-                cb(target, fn);
-            } else if (target.delay) {
-                self.timeouts.push(setTimeout(function () {
-                    cb(target, fn);
-                }, target.delay));
-            } else {
-                cb(target, fn);
-            }
-        }
-    }
+    // // function scheduleInstructions(targets, cb, now) {
+    // //     if (targets && targets.length > 0) {
+    // //         var target = targets[0];
+    // //         var remaining = targets.slice(1);
+    // //         var fn = remaining.length > 0 ? function (n) {scheduleInstructions(remaining, cb, n);} :
+    // //             function (n) { self.timeouts.push(setTimeout(function () {self.goHome()}, n ? 1 : 5000)); };
+    // //         if (now) {
+    // //             cb(target, fn);
+    // //         } else if (target.delay) {
+    // //             self.timeouts.push(setTimeout(function () {
+    // //                 cb(target, fn);
+    // //             }, target.delay));
+    // //         } else {
+    // //             cb(target, fn);
+    // //         }
+    // //     }
+    // // }
 
     self.show = function(instructions) {
         // setup
-        if (self.timeouts) {
-            _.forEach(self.timeouts, function (id) {
-                clearTimeout(id);
-            });
-        }
-        self.timeouts = [];
-        var container = $('#instructions-display');
-        container.finish();
-        container.hide();
-        container.css('width', '250px');
-        var dragon = $("#instructions-icon");
-        dragon.finish();
-        dragon.hide();
+        // if (self.timeouts) {
+        //     _.forEach(self.timeouts, function (id) {
+        //         clearTimeout(id);
+        //     });
+        // }
+        // self.timeouts = [];
+        // var container = $('#instructions-display');
+        // container.finish();
+        // container.hide();
+        // container.css('width', '250px');
+        // var dragon = $("#instructions-icon");
+        // dragon.finish();
+        // dragon.hide();
         var content = $('#instructions-goal');
-        content.finish();
-        $("p", content).finish();
-        content.empty();
-        content.hide();
-        RuthefjordUI.Arrow.hide();
+        // content.finish();
+        // $("p", content).finish();
+        // content.empty();
+        // content.hide();
+        // RuthefjordUI.Arrow.hide();
 
-        self.targets = instructions.targets;
+        var text = $("<p>" + processTemplate(_.last(instructions.targets).home_text) + "</p>");
+        content.html(text);
+        $('#instructions-display').show();
+         self.targets = instructions.targets;
 
-        scheduleInstructions(instructions.targets, function (target, next) {
-            makeInstructions(target, container, dragon, content, next);
-        });
+
+        // self.targets = instructions.targets;
+
+        // scheduleInstructions(instructions.targets, function (target, next) {
+        //     makeInstructions(target, container, dragon, content, next);
+        // });
     };
 
-    self.goHome = function() {
-        var container = $('#instructions-display');
-        var neighbor = $("#game-controls-bar-bottom");
-        container.off('click');
-        container.css('left', neighbor.offset().left + 'px');
-        container.css('top', (neighbor.offset().top + neighbor.innerHeight()) + 'px');
-        container.css('width', neighbor.innerWidth() + 'px');
-        var instructions = $("p", $("#instructions-goal"));
-        instructions.css('height', '');
-        instructions = instructions.get().reverse();
-        if (self.targets && self.targets.length === instructions.length) {
-            for (var i = 0; i < self.targets.length; i++) {
-                if (self.targets[i].home_text) {
-                    instructions[i].innerHTML = processTemplate(self.targets[i].home_text);
-                }
-            }
-        }
-    };
+    // self.goHome = function() {
+    //     var container = $('#instructions-display');
+    //     var neighbor = $("#game-controls-bar-bottom");
+    //     container.off('click');
+    //     container.css('left', neighbor.offset().left + 'px');
+    //     container.css('top', (neighbor.offset().top + neighbor.innerHeight()) + 'px');
+    //     container.css('width', neighbor.innerWidth() + 'px');
+    //     var instructions = $("p", $("#instructions-goal"));
+    //     instructions.css('height', '');
+    //     instructions = instructions.get().reverse();
+    //     if (self.targets && self.targets.length === instructions.length) {
+    //         for (var i = 0; i < self.targets.length; i++) {
+    //             if (self.targets[i].home_text) {
+    //                 instructions[i].innerHTML = processTemplate(self.targets[i].home_text);
+    //             }
+    //         }
+    //     }
+    // };
 
     self.displayErrors = function(errors) {
         var list = $("#instructions-errors-list");
@@ -1016,8 +1039,8 @@ module.Dialog = (function() {
     };
 
     self.destroy = function () {
-        $(".dialog-content").remove();
-        $(dialog).hide();
+        // $(".dialog-content").remove();
+        // $(dialog).hide();
     };
 
     return self;
@@ -1028,15 +1051,11 @@ module.WinMessage = (function() {
 
     self.show = function(msg, btn_msg, cb) {
         var div = RuthefjordUI.Dialog.defaultElems(msg, btn_msg);
-        // var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
-        // var timeout = setTimeout(off, 0);
+        var timeout = setTimeout(function () { RuthefjordUI.Dialog.destroy(); cb(); }, 5000);
         var btn = div.find("button");
         btn.css('font-size', '20pt');
-        btn.css('padding', '0 30px');
-        btn.css('text-align', 'left');
-        btn.css('background-color', '#E6E6E6');
-        btn.on('click', function () {  RuthefjordUI.Dialog.destroy(); cb(); });
-        var style = {width: 'fit-content', top: '617px', left: '657px', "font-size": "30pt"};
+        btn.on('click', function () { clearTimeout(timeout); RuthefjordUI.Dialog.destroy(); cb(); });
+        var style = {width: '300px', top: '400px', left: '200px', "font-size": "30pt"};
         RuthefjordUI.Dialog.make(div, style);
     };
 

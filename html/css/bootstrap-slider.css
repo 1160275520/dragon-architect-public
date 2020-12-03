@@ -55,8 +55,8 @@
 .speed-slider_right{
   position: absolute;
   color: #ffffff;
-  right: 37px;
-  top: 35px;
+  right: 15px;
+  top: 30px;
 
 }
 
@@ -68,7 +68,7 @@
   width: 230px;
   height: 16px;
   position: relative;
-  margin: 0 23px;
+  margin: 0 12px;
   top: 13px;
 }
 .slider.slider-horizontal .slider-track {
@@ -76,7 +76,7 @@
   width: 100%;
   margin-top: -5px;
   top: 50%;
-  left: -15px;
+  /* left: -15px; */
 }
 .slider.slider-horizontal .slider-selection,
 .slider.slider-horizontal .slider-track-low,
