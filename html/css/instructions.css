@@ -41,7 +41,7 @@
     /*transition: font-size 0.5s, padding-top 1s ease;*/
     height: 30px;
     padding-top: 10px;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 #instructions-detail {
