@@ -158,11 +158,11 @@ header > h1 {
     visibility: visible;
     font-size: 18px;
     text-decoration: none !important;
-    font-family: 'Roboto';
+    font-family: "Roboto Slab";
   }
   .navbar .link {
     width: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto Slab";
     transition: 0.2s ease-in-out;
     visibility: hidden;
     font-size: 0px;
