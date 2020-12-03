@@ -82,7 +82,7 @@ header > h1 {
 
 #menu-btn {
     height: 100%;
-    flex-direction: column;
+    /* flex-direction: column; */
 }
 
 #menu-nav {
@@ -127,10 +127,108 @@ header > h1 {
     margin: 0 0 4px 0;
 }
 
-
 /* menu bar */
+.navbar {
+    border: 0;
+    border-radius: 0;
+    background: #e6d5b8;
+  }
+.container-fluid {
+	display: flex;
+}
+  .navbar ul {
+    flex-direction: initial;
+	  position: absolute;
+	  right: 10px;
+  }
+  .navbar .nav li > a, .navbar .navbar-brand {
+    max-height: 50px;
+    width: auto;
+    background: transparent !important;
+    font-size: 18px;
+    transition: 0.2s ease-in-out;
+  }
+  .navbar .nav li > a:hover, .navbar .navbar-brand:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+  }
+  .navbar .nav li > a:hover .link, .navbar .navbar-brand:hover .link {
+    width: 100%;
+    padding: 0 5px 0 5px;
+    visibility: visible;
+    font-size: 18px;
+    text-decoration: none !important;
+    font-family: "Roboto Slab";
+  }
+  .navbar .link {
+    width: 0;
+    font-family: "Roboto Slab";
+    transition: 0.2s ease-in-out;
+    visibility: hidden;
+    font-size: 0px;
+  }
+  .navbar span {
+    color: #212529;
+  }
 
-.menu-bar{
+  .navbar .dropdown ul {
+      cursor: pointer;
+  }
+
+  .navbar .dropdown .fa-caret-down {
+    padding-left: 3px;
+    font-size: 18px;
+    transition: 0.4s ease;
+  }
+  .navbar .dropdown.open {
+    background-color: rgba(230, 213, 184, 0.2);
+    font-size: 14px;
+  }
+  .navbar .dropdown.open .link {
+    width: 100%;
+    visibility: visible;
+    font-size: 14px;
+    padding: 0 5px 0 5px;
+  }
+  .navbar .dropdown.open .fa-caret-down {
+    transform: rotate(180deg);
+  }
+  .navbar .dropdown .dropdown-menu {
+    min-width: 0px !important;
+    width: 100%;
+    background: rgb(250, 240, 223);
+    color: #212529;
+    text-align: center;
+    border-radius: 0;
+    position: absolute;
+    z-index: 12;
+    border-top: none;
+    padding: 0;
+    /* display: none; */
+  }
+  .navbar .dropdown .dropdown-menu li, .navbar .dropdown .dropdown-menu a {
+    color: #212529;
+    font-size: 14px;
+    line-height: 30px;
+  }
+  .navbar .dropdown .dropdown-menu li:hover, .navbar .dropdown .dropdown-menu a:hover {
+    color: #212529;
+    letter-spacing: 1px;
+    background: transparent;
+  }
+  .navbar .dropdown .dropdown-menu a {
+    padding: 0 15px 0 15px;
+  }
+
+  .dropdown-toggle::after {
+      display: none;
+  }
+
+  .navbar-nav li {
+    padding: 5px 18px;
+  }
+
+/* .menu-bar{
     background-color: #e6d5b8;
     font-family: 'Roboto Slab', serif;
     display: flex;
@@ -139,51 +237,19 @@ header > h1 {
     width: -webkit-fill-available;
 }
 
+*/ 
 .menu-bar_title {
     font-family: 'Roboto Slab';
     color: #1c2b2d;
     margin: 5px 0 5px 40px;
     font-size: 29px;
-    /* width: 30%; */
     min-width: fit-content;
     font-weight: 600;
     position: relative;
-}
+} 
 
-.menu-bar_list {
-    display: flex;
-    color: #1c2b2d;
-    /* width: 100vh; */
-    position: absolute;
-    right: 30px;
-    margin: 0;
-    padding: 5px 0;
-}
 
-.menu-bar_item {
-    font-family: "Roboto Slab";
-    font-weight: 300;
-    position: relative;
-    margin: auto;
-    padding: 5px 20px;
-    font-size: 21px;
-}
 
-.menu-bar .current{
-    color: #ffffff;
-    text-decoration: underline;
-    font-weight: 600;
-}
-
-#btn-header-sandbox {
-    background: white;
-    border-color: white;
-    border-style: solid;
-}
-
-#btn-header-sandbox:hover {
-    background: #e7e7e7;
-}
 
 /* loading pane */
 /************************************************************/
@@ -318,6 +384,7 @@ header > h1 {
     align-items: center;
     padding: 5px;
     position: relative;
+    width: 50%;
 }
 
 .game-control.disabled {
@@ -341,6 +408,11 @@ div.game-control {
     display: block;
     text-align: center;
     padding: 0 15px;
+    width: 50%;
+}
+
+div #camera-controls .game-control_category {
+    width: 33%;
 }
 
 .game-control_title {
@@ -385,6 +457,8 @@ header button, .control-btn, .control-icon-btn {
 .control-icon-btn {
     background-color: transparent;
     color: white;
+    width: 50%;
+
 }
 
 
@@ -392,7 +466,7 @@ header button, .control-btn, .control-icon-btn {
     font-size: 24px;
     line-height: 1.2em;
     vertical-align: -15%;
-    margin: 0 6px;
+    margin: 0 auto;
 }
 
 #game-controls-bar-bottom {

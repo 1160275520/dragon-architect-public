@@ -722,6 +722,16 @@ $(function() {
             $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
 
+        _.forEach(game_info.packs, function(pack, id) {
+            if (true) { // TODO check if pack should be added to the menu
+                let item = $('<li>' + id + '</li>');
+                item.click(function () {
+                    current_puzzle_runner = create_puzzle_runner(pack, "pack");
+                })
+                $('#list-select-pack').append(item);}
+                
+                    });
+
         progress.initialize(function() {
             if (progress.is_pack_completed(game_info.packs["tutorial"])) {
                 RuthefjordUI.State.goToAlphaMsg();
@@ -881,7 +891,8 @@ function start_editor(info) {
         }
     }
     // HACK we have to wait long enough for a render to happen, so we get the right screen coordinates
-    setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
+    // setTimeout(function () {RuthefjordUI.Instructions.show(info.puzzle.instructions, null);}, 1000);
+    RuthefjordUI.Instructions.show(info.puzzle.instructions);
     // RuthefjordLogging.activeTaskLogger.logLevelSetupCallEnd("start_editor", null);
 }
 
