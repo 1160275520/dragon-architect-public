@@ -352,7 +352,7 @@ function setState_intro() {
             summary: 'Welcome to Dragon Architect!',
             detail: d
         }, function() {
-            current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
+            current_puzzle_runner = create_puzzle_runner(game_info.packs["move dragon"], "tutorial");
         }, true);
         $('.notTitle').hide(); // hide instructions elements that aren't supposed to be on the title screen (e.g. click to hide button)
     });
@@ -733,7 +733,7 @@ $(function() {
                     });
 
         progress.initialize(function() {
-            if (progress.is_pack_completed(game_info.packs["tutorial"])) {
+            if (progress.is_pack_completed(game_info.packs["move dragon"])) {
                 RuthefjordUI.State.goToAlphaMsg();
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
                     $("#btn-alpha-continue").on('click', function() {
@@ -755,11 +755,11 @@ $(function() {
                         });
                     } else {
                         $("#btn-alpha-continue").on('click', function() {
-                            current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
+                            current_puzzle_runner = create_puzzle_runner(game_info.packs["move dragon"], "tutorial");
                         });
                     }
                 });
-                current_puzzle_runner = create_puzzle_runner(game_info.packs["tutorial"], "tutorial");
+                current_puzzle_runner = create_puzzle_runner(game_info.packs["move dragon"], "tutorial");
             }
         });
         RuthefjordBlockly.game_info = game_info;
