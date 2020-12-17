@@ -470,7 +470,7 @@ $(function() {
         $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
         //$('#btn-header-about').on('click', RuthefjordUI.goToAboutMsg());
-
+        /*
         $('#btn-header-about').on('click', function() {
             //RuthefjordUI.hideAll();
             RuthefjordDisplay.hide();
@@ -480,7 +480,7 @@ $(function() {
             //$('#about-msg').show();
             //$('.codeEditor, #about-msg').show();
             //show_msg("#about_msg");
-        });
+        });*/
 
         $('#btn-packs').on('click', setState_packs);
         $('#btn-back-selector-pack').on('click', setState_packs);
