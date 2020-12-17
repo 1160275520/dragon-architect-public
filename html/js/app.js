@@ -474,7 +474,8 @@ $(function() {
             RuthefjordDisplay.hide();
             //RuthefjordDisplay.exit_viewer_mode();
             //RuthefjordDisplay.show();
-            $('#about-msg').show();
+            document.getElementById("about-msg").style = "block";
+            //$('#about-msg').show();
             //$('.codeEditor, #about-msg').show();
             //show_msg("#about_msg");
         });
