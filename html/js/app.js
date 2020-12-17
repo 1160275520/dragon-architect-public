@@ -470,8 +470,9 @@ $(function() {
         $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
         $('#btn-header-about').on('click', function() {
-            RuthefjordDisplay.hide();
-            ("hello").RutherfjordDisplay.show();
+            RuthefjordUI.hideAll();
+            //RuthefjordDisplay.hide();
+            //RutherfjordDisplay.show();
         });
 
         $('#btn-packs').on('click', setState_packs);
