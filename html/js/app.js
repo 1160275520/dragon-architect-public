@@ -472,7 +472,7 @@ $(function() {
         //$('#btn-header-about').on('click', RuthefjordUI.goToAboutMsg());
 
         $('#btn-header-about').on('click', function() {
-            RuthefjordUI.hideAll();
+            //RuthefjordUI.hideAll();
             RuthefjordDisplay.hide();
             //RuthefjordDisplay.exit_viewer_mode();
             //RuthefjordDisplay.show();
