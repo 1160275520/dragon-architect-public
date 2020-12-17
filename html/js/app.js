@@ -472,8 +472,9 @@ $(function() {
         $('#btn-header-about').on('click', function() {
             //RuthefjordUI.hideAll();
             RuthefjordDisplay.hide();
-            RuthefjordDisplay.exit_viewer_mode();
-            //RutherfjordDisplay.show();
+            //RuthefjordDisplay.exit_viewer_mode();
+            //RuthefjordDisplay.show();
+            $('#about-msg').RuthefjordDisplay.show();
         });
 
         $('#btn-packs').on('click', setState_packs);
