@@ -471,7 +471,7 @@ $(function() {
 
         $('#btn-header-about').on('click', function() {
             RuthefjordDisplay.hide();
-            $('#about-msg').show();
+            RutherfjordDisplay.show("hello");
         });
 
         $('#btn-packs').on('click', setState_packs);
