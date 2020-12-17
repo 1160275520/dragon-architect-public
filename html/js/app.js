@@ -469,7 +469,7 @@ $(function() {
 
         $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
-
+        $('#btn-header-about').on('click', RuthefjordUI.State.goToAboutMsg());
 
         $('#btn-packs').on('click', setState_packs);
         $('#btn-back-selector-pack').on('click', setState_packs);

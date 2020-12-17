@@ -32,6 +32,11 @@ module.State = (function(){ "use strict";
         $('#alpha-msg').show();
     };
 
+    self.goToAboutMsg = function() {
+        hideAll();
+        $('#about-msg').show();
+    };
+
     self.goToTitle = function(cb) {
         current_state = 'title';
 
