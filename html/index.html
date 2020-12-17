@@ -131,12 +131,22 @@
 				<!-- Playground -->
 				<li><a href="#"><span class="fa fa-lg fa-gamepad"></span><span id="btn-header-sandbox" class="link">Playground</span></a></li>
 				<!-- About-->
-				<li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span id="btn-header-about" class="link">About</span></a></li>
+				<li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span id="btn-header-about" onclick="toggle()" class="link">About</span></a></li>
 			</ul>
 			
 		</div>
 	</div>
 </nav>
+<script>
+    function toggle() {
+        var x = document.getElementById("btn-header-about");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
     <div class="view-loading">
       <p id="msg-loading">Loading...</p>
       <p id="msg-not-loading">Something is going wrong with initializing the game! This game is still in development, so it is likely there is a bug.</p>
