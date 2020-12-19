@@ -111,10 +111,8 @@ var RuthefjordPuzzle = (function () {
                                         var type = command['type'];
                                         if (type == 'assign'){
                                             containsSet = true;
-                                            console.log("Has set :)");
                                         }
                                     }
-                                    console.log(containsSet);
                                     return is_running_but_done_executing() &&
                                         _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(RuthefjordWorldState.grid).sort()) &&
                                         containsSet;
