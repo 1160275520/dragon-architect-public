@@ -100,6 +100,26 @@ var RuthefjordPuzzle = (function () {
                                         _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(RuthefjordWorldState.grid).sort());
                                 };
                                 break;
+                            case "useAndCubes":
+                                RuthefjordDisplay.addCubeTargets(final_state.grid);
+                                var containsSet = false;
+                                win_predicate = function () {
+                                    //does the program contain a set block HACK: only implemented for set blocks, could be changed to take another parameter
+                                    var commands = RuthefjordTranslate.extractCommands();
+                                    for (var i = 0; i < commands.length; i++){
+                                        var command = commands[i];
+                                        var type = command['type'];
+                                        if (type == 'assign'){
+                                            containsSet = true;
+                                            console.log("Has set :)");
+                                        }
+                                    }
+                                    console.log(containsSet);
+                                    return is_running_but_done_executing() &&
+                                        _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(RuthefjordWorldState.grid).sort()) &&
+                                        containsSet;
+                                };
+                                break;
                             default:
                                 throw new Error(puzzle.goal.type + " not a supported type of goal from solution");
                         }

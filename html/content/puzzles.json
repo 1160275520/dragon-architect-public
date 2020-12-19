@@ -484,7 +484,7 @@
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
         "solution": "content/puzzle_code/variables.snake.solution.json",
-        "goal": {"source":"solution", "type":"cubes"},
+        "goal": {"source":"solution", "type":"useAndCubes"},
         "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
     },
     "procedures.square": {
