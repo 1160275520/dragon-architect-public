@@ -851,7 +851,7 @@ module.UndoButton = (function () {
 
         return self;
     }());
-
+    /*
     module.TrashButton = (function () {
         var self = {};
 
@@ -861,7 +861,7 @@ module.UndoButton = (function () {
         };
 
         return self;
-    }());
+    }());*/
 
 module.CameraControls = (function() {
     var self = {};
