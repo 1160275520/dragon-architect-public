@@ -1,20 +1,24 @@
 {
-"move dragon":{
+"tutorial":{
     "nodes": [
         "tutorial.movement2d_part1",
         "tutorial.movement2d_part2",
         "tutorial.movement2d_part3",
-        "tutorial.place_cubes",
-        "remove.remove_cubes"
+        "tutorial.place_cubes"
     ],
     "edges": [
         ["tutorial.movement2d_part1", "tutorial.movement2d_part2"],
         ["tutorial.movement2d_part2", "tutorial.movement2d_part3"],
-        ["tutorial.movement2d_part3", "tutorial.place_cubes"],
-        ["tutorial.place_cubes", "remove.remove_cubes"]
+        ["tutorial.movement2d_part3", "tutorial.place_cubes"]
     ]
 },
-"move dragon II":{
+"remove":{
+    "nodes": ["remove.remove_cubes"],
+    "edges": [],
+    "name": "To Err is Dragon",
+    "learn": ["Remove cubes"]
+},
+"up":{
     "nodes": [
         "up.what_is_up",
         "up.what_is_down",
@@ -27,7 +31,7 @@
     "name": "Up, Up and Away",
     "learn": ["Move upwards", "Move downwards"]
 },
-"loop":{
+"repeat":{
     "prereq": ["up"],
     "nodes": [
         "repeat.arguments",
