@@ -103,6 +103,7 @@ var RuthefjordPuzzle = (function () {
                             case "useAndCubes":
                                 RuthefjordDisplay.addCubeTargets(final_state.grid);
                                 var containsSet = false;
+                                var variables = []
                                 win_predicate = function () {
                                     //does the program contain a set block HACK: only implemented for set blocks, could be changed to take another parameter
                                     var commands = RuthefjordTranslate.extractCommands();
@@ -110,9 +111,18 @@ var RuthefjordPuzzle = (function () {
                                         var command = commands[i];
                                         var type = command['type'];
                                         if (type == 'assign'){
+                                            var name = command['name'];
+                                            variables.push(name);
+                                        }
+                                    }
+                                    var code = RuthefjordTranslate.getPythonCode()
+                                    for (i = 0; i < variables.length; i++){
+                                        var count = code.split(variables[i]).length - 1;
+                                        if (count >= 2){
                                             containsSet = true;
                                         }
                                     }
+
                                     return is_running_but_done_executing() &&
                                         _.isEqual(Object.keys(final_state.grid).sort(), Object.keys(RuthefjordWorldState.grid).sort()) &&
                                         containsSet;
