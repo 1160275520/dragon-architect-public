@@ -342,6 +342,8 @@ module.LevelSelect = (function() {
             x.childNodes[0].style.rx = 4;
             // console.log(x.childNodes[0]);
             // consolelog(x.childNodes[0])
+            // console.log("print gragh")
+            // console.log(graph.predecessors(x.id))
             if (graph.predecessors(x.id).every(isSceneCompleted)) {
                 x.onclick = function() {
                     onSelectCallback(x.id);
@@ -355,24 +357,6 @@ module.LevelSelect = (function() {
                 x.childNodes[0].style.fill = colors[COLOR_MAP.unavailable];
             }
         });
-
-        // nodes.each(function (v){
-        //     var node = graph.node(v);
-        //     // Round the corners of the nodes
-        //     node.rx = node.ry = 10;
-        //     node.width = 150;
-        //     node.height = 150;
-        // });
-
-        // console.log(graph.nodes());
-        // graph.nodes().forEach(function(v) {
-        //     var node = graph.node(v);
-        //     // Round the corners of the nodes
-        //     node.rx = node.ry = 10;
-        //     node.width = 150;
-        //     node.height = 150;
-        // });
-        // console.log(nodes);
 
         // set up image of back to sandbox button
         module.makeImgOnClick();

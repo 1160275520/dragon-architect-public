@@ -15,6 +15,7 @@
     ]
 },
 "move dragon II":{
+    "prereq": ["tutorial"],
     "nodes": [
         "up.what_is_up",
         "up.what_is_down",
