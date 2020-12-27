@@ -105,7 +105,6 @@
 <!--        </div>-->
 <!--      </div>-->
 <!--    </header>-->
-
 <div id="dev-controls" style="display: flex; flex-direction: row; align-items: center">
    <!-- <select id="dev-select-pack">
        <option>- Jump to Pack -</option>
@@ -132,36 +131,13 @@
 				<!-- Playground -->
 				<li><a href="#"><span class="fa fa-lg fa-gamepad"></span><span id="btn-header-sandbox" class="link">Playground</span></a></li>
 				<!-- About-->
-				<li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span id="btn-header-about" onclick="toggle()" class="link">About</span></a></li>
+				<li><a href="#"><span class="fa fa-lg fa-info-circle"></span><span class="link">About</span></a></li>
 			</ul>
 			
 		</div>
 	</div>
 </nav>
-<div id="about-msg" class="msg-container" style="display:none;color:white;padding:40px">
-    <p style="font-size:20px">
-        We've found a dragon that only speaks code! In <em>Dragon Architect</em> you learn its language and help
-        this peculiar creature construct wondrous things in a fun 3D building game. You'll use basic programming
-        concepts to solve puzzles and build 3D structures out of cubes.
-    </p>
-    <p>
-    <br>
-        <em>Dragon Architect</em> was originally created by <a href="http://homes.cs.washington.edu/~awb/">Aaron Bauer</a> and <a
-            href="http://ericbutler.net">Eric Butler</a> as part of the <a href="http://centerforgamescience.org">Center
-        for Game Science</a> at the <a href="http://washington.edu">University of Washington</a>. The Center for Game Science is part of the <a
-            href="http://cs.washington.edu">Paul G. Allen School of Computer Science & Engineering</a>. This version of the game has been modified by Aaron Bauer's 2020-2021 comps group at Carleton College: Ellie Mamantov, Kate Grossman, Rie Kurita, Starr Wang, and Catalina Alvarez-Ruiz.
-    </p>
-</div>
-<script>
-    function toggle() {
-        var x = document.getElementById("about-msg");
-        if (x.style.display === "none") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-    }
-</script>
+
     <div class="view-loading">
       <p id="msg-loading">Loading...</p>
       <p id="msg-not-loading">Something is going wrong with initializing the game! This game is still in development, so it is likely there is a bug.</p>
@@ -222,7 +198,7 @@
                     <button id="btn-pause" class="game-control-btn-playback">X</button>
                     <button id="btn-done" class="submitUI game-control-btn-playback">I'm done</button>
                 </div>
-                <!--button id="btn-trash" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Trash</button!-->
+                <button id="btn-trash" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Trash</button>
                 <button id="btn-undo" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Undo</button>
 <!--                <button id="btn-delete" class="puzzleModeUI sandboxModeUI game-control-btn-playback">Delete All</button>-->
 
@@ -325,7 +301,6 @@
       </div>
 
     </div>
-
     <img id="attention-arrow" src="media/arrow.png"/>
   </body>
 </html>

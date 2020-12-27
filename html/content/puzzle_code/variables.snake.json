@@ -1,69 +1,92 @@
 {
   "body": [
     {
-      "body": [
+      "type": "assign",
+      "name": "x",
+      "value": {
+        "type": "int",
+        "value": "2"
+      },
+      "meta": {
+        "attributes": {
+          "FrozenBlocks": "one"
+        },
+        "id": 2
+      }
+    },
+    {
+      "args": [
         {
-          "args": [
-            {
-              "meta": {
-                "attributes": {},
-                "id": 2
-              },
-              "type": "int",
-              "value": 1
-            }
-          ],
+          "meta": {
+            "attributes": {},
+            "id": 1,
+            "FrozenBlocks": "one"
+          },
+          "type": "ident",
+          "value": "x"
+        }
+      ],
+      "meta": {
+        "attributes": {},
+        "id": 2
+      },
+      "name": "Forward",
+      "type": "execute"
+    },
+    {
+      "args": [
+        {
+          "meta": {
+            "attributes": {},
+            "id": 1
+          },
+          "type": "int",
+          "value": 0
+        }
+      ],
+      "meta": {
+        "attributes": {},
+        "id": 2
+      },
+      "name": "PlaceCube",
+      "type": "execute"
+    },
+    {
+      "args": [
+        {
           "meta": {
             "attributes": {},
             "id": 3
           },
-          "name": "Forward",
-          "type": "execute"
-        },
-        {
-          "args": [
-            {
-              "meta": {
-                "attributes": {},
-                "id": 4
-              },
-              "type": "int",
-              "value": 0
-            }
-          ],
-          "meta": {
-            "attributes": {},
-            "id": 5
-          },
-          "name": "PlaceCube",
-          "type": "execute"
+          "type": "ident",
+          "value": "x"
         }
       ],
       "meta": {
-        "attributes": {
-          "FrozenArgs": "one",
-          "FrozenBlocks": "one",
-          "Instructions": "one"
-        },
-        "id": 6
+        "attributes": {},
+        "id": 4
       },
-      "number": {
-        "meta": {
-          "attributes": {},
-          "id": 1
-        },
-        "type": "int",
-        "value": 5
-      },
-      "type": "repeat"
+      "name": "Forward",
+      "type": "execute"
     },
     {
-      "args": [],
+      "args": [
+        {
+          "meta": {
+            "attributes": {
+              "Instructions": "one"
+            },
+            "id": 5
+          },
+          "type": "int",
+          "value": 0
+        }
+      ],
       "meta": {
         "attributes": {},
-        "id": 7
+        "id": 6
       },
-      "name": "Right",
+      "name": "PlaceCube",
       "type": "execute"
     }
   ],

@@ -19,7 +19,8 @@
         {
           "meta": {
             "attributes": {},
-            "id": 1
+            "id": 1,
+            "FrozenBlocks": "one"
           },
           "type": "ident",
           "value": "y"
@@ -27,6 +28,7 @@
       ],
       "meta": {
         "attributes": {
+          "FrozenBlocks": "one"
         },
         "id": 2
       },
@@ -46,6 +48,7 @@
       ],
       "meta": {
         "attributes": {
+          "FrozenBlocks": "one"
         },
         "id": 2
       },
@@ -70,6 +73,7 @@
       },
       "meta": {
         "attributes": {
+          "FrozenBlocks": "one"
         },
         "id": 2
       }

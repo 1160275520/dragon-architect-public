@@ -39,10 +39,8 @@ var RuthefjordTranslate = (function () {
 
     self.buildString = function () {
         var commands = extractCommands();
-        if (commands.length != 0){
-            buildStringHelper(commands);
-            importStatements();
-        }
+        buildStringHelper(commands);
+        importStatements();
     }
 
     self.buildStringHelper = function (commands) {
