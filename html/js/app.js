@@ -731,7 +731,6 @@ $(function() {
                     current_puzzle_runner = create_puzzle_runner(pack, "pack");
                 })
                 $('#list-select-pack').append(item);}
-                
                     });
 
         progress.initialize(function() {
