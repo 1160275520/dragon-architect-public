@@ -312,7 +312,7 @@
         "name": "Square Dancing",
         "format_version": 2,
         "library": {
-            "restricted":["move2", "place", "up", "down", "remove", "set"],
+            "restricted":["move2", "place", "up", "down", "remove"],
             "required":["repeat"],
             "granted": []
         },
@@ -473,18 +473,29 @@
         "name": "Slither Slither",
         "format_version": 2,
         "library": {
-            "restricted": ["defproc_noargs", "defproc", "up", "down"],
-            "required": ["set"],
-            "granted": ["move2", "place", "repeat"]
+            "restricted": ["blocks"],
+            "required": [],
+            "granted": []
         },
         "instructions": {
-            "detail": "Create a snake shape! You must use a variable."
+            "detail": "Variables hold values that you want to use later. You can give the variables to blocks like {forward}. Change the numbers to complete my program.",
+            "targets": [
+                {
+                    "type": "world",
+                    "text": "Help me put cubes on these blue boxes!"
+                },{
+                    "type": "block",
+                    "text": "Changing the values of the set blocks is key",
+                    "delay": 5000
+                }
+            ]
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"file", "value":"content/puzzle_code/variables.snake.json"},
         "solution": "content/puzzle_code/variables.snake.solution.json",
-        "goal": {"source":"solution", "type":"useAndCubes"},
+        "goal": {"source":"solution", "type":"cubes"},
         "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
     },
     "procedures.square": {
