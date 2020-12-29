@@ -192,11 +192,9 @@ var progress = (function(){
 
     self.initialize = function(cb) {
         console.info('initializing progress!');
-        console.log(cb)
         // load the level progress from this session (if any)
         // console.info('loading saved puzzles!');
         Storage.load("puzzles_completed", function(x) {
-            console.log(x)
             // console.log(x);
             if (x) {
                 puzzles_completed = x.split(',');
@@ -289,8 +287,6 @@ function create_puzzle_runner(pack, sceneSelectType) {
                 }
                 // bring up the level select
                 RuthefjordUI.State.goToSceneSelect(function() {
-                    console.log("progress")
-                    console.log(progress)
                     RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                             setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
                     });
