@@ -717,13 +717,15 @@ $(function() {
         Blockly.getMainWorkspace().addChangeListener(onProgramEdit);
 
         // HACK this needs to wait for the packs to be loaded
-        // console.log(game_info.packs);
+        console.log("level map")
+        console.log(game_info.packs);
         _.forEach(game_info.packs, function(pack, id) {
-            $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
+                $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
 
         _.forEach(game_info.packs, function(pack, id) {
-            if (true) { // TODO check if pack should be added to the menu
+            // if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); })){
+            if (pack.prereq==undefined) { // TODO check if pack should be added to the menu
                 let item = $('<li>' + id + '</li>');
                 item.click(function () {
                     current_puzzle_runner = create_puzzle_runner(pack, "pack");
