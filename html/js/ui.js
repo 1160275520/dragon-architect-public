@@ -32,6 +32,11 @@ module.State = (function(){ "use strict";
         $('#alpha-msg').show();
     };
 
+    self.goToAboutMsg = function() {
+        hideAll();
+        $('#about-msg').show();
+    };
+
     self.goToTitle = function(cb) {
         current_state = 'title';
 
@@ -830,7 +835,7 @@ module.UndoButton = (function () {
 
         return self;
     }());
-
+    /*
     module.TrashButton = (function () {
         var self = {};
 
@@ -840,7 +845,7 @@ module.UndoButton = (function () {
         };
 
         return self;
-    }());
+    }());*/
 
 module.CameraControls = (function() {
     var self = {};
