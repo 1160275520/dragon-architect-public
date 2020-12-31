@@ -818,9 +818,7 @@ function start_editor(info) {
         RuthefjordUI.DoneButton.setVisible(info.puzzle.goal && info.puzzle.goal.type === "submit");
         RuthefjordUI.UndoButton.update();
         RuthefjordUI.DeleteButton.update();
-        RuthefjordUI.TrashButton.update();
-
-
+        //RuthefjordUI.TrashButton.update();
         _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
 
         // only show navigation menu if there's something visible in it
