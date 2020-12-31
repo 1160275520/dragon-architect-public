@@ -211,14 +211,24 @@ var progress = (function(){
     };
 
     self.is_puzzle_completed = function(puzzle_id) {
+        if (puzzle_id=="up.what_is_up") {
+            console.log("is puzzle completed")
+            // console.log(puzzles_completed)
+            // console.log(puzzle_id)
+            console.log(_.includes(puzzles_completed, puzzle_id))
+        }
         return isDevMode || _.includes(puzzles_completed, puzzle_id);
     };
 
     self.completed_puzzles = function() {
+        console.log("completed puzzle")
         return _.filter(content.puzzles(), function(p) { return self.is_puzzle_completed(p.id); });
     };
 
     self.is_pack_completed = function(pack) {
+        console.log("is pack complete")
+        console.log(pack.nodes)
+        console.log(pack.nodes.every(self.is_puzzle_completed))
         return pack.nodes.every(self.is_puzzle_completed);
     };
 
@@ -248,15 +258,18 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
     function onPackComplete() {
         // console.error("TODO make this do something!");
         console.log("complete this pack! reload level map")
-        _.forEach(game_info.packs, function(pack, id) {
-            // if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); })){
-            if (true) { // TODO check if pack should be added to the menu
-                let item = $('<li>' + id + '</li>');
-                item.click(function () {
-                    current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
-                })
-                $('#list-select-pack').append(item);}
-        });
+        // _.forEach(game_info.packs, function(pack, id) {
+            // console.log(pack)
+            // if (pack.prereq) {
+            //     console.log(pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); }))
+            // }
+        //     if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
+        //         let item = $('<li>' + id + '</li>');
+        //         item.click(function () {
+        //             current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
+        //         })
+        //         $('#list-select-pack').append(item);}
+        // });
         setState_packs();
     }
 
@@ -299,6 +312,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 }
                 // bring up the level select
                 RuthefjordUI.State.goToSceneSelect(function() {
+                    console.log("bring up level select")
                     RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                             setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
                     });
@@ -730,26 +744,20 @@ $(function() {
         Blockly.getMainWorkspace().addChangeListener(onProgramEdit);
 
         // HACK this needs to wait for the packs to be loaded
-        console.log("level map")
-        console.log(game_info.packs);
+
         _.forEach(game_info.packs, function(pack, id) {
                 $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
         });
 
         _.forEach(game_info.packs, function(pack, id) {
-            // if (pack.prereq){
+            // console.log("load level map")
+            // if (pack.prereq) {
             //     console.log(pack)
-            //     console.log(pack.prereq)
-            //     // for (var i = 0; i < pack.prereq.length; i++) {
-            //     //     console.log(pack.prereq[i])
-            //     // }
-            //     // console.log(progress.is_pack_completed(packs["up"]))
-            //     // console.log(pack.prereq.every(true))
-            //     console.log(pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))
+            //     pack.prereq.every(function (packName) {
+            //         console.log(game_info.packs[packName])
+            //         console.log(progress.is_pack_completed(game_info.packs[packName]))})
             // }
-
-            // if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
-                if (true) { // TODO check if pack should be added to the menu
+            if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                     let item = $('<li>' + id + '</li>');
                     item.click(function () {
                         current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");

@@ -9,19 +9,15 @@
 },
 "move dragon II":{
     "nodes": [
-        "up.what_is_up",
-        "up.what_is_down",
-        "up.bridge"
+        "up.what_is_up"
     ],
     "edges": [
-        ["up.what_is_up", "up.bridge"],
-        ["up.what_is_down", "up.bridge"]
     ],
     "name": "Up, Up and Away",
     "learn": ["Move upwards", "Move downwards"]
 },
 "loop":{
-    "prereq": ["up"],
+    "prereq": ["move dragon II"],
     "nodes": [
         "repeat.arguments",
         "repeat.repeat_args",
@@ -37,7 +33,7 @@
     "learn": ["Use arguments","Repeat code many times"]
 },
 "variables":{
-    "prereq": ["repeat"],
+    "prereq": ["loop"],
     "nodes": [
         "variables.arguments",
         "variables.dual-arguments",
@@ -53,7 +49,7 @@
     "learn": ["Create custom variables"]
 },
 "procedures":{
-    "prereq": ["repeat"],
+    "prereq": ["loop"],
     "nodes": [
         "procedures.square",
         "procedures.call",
