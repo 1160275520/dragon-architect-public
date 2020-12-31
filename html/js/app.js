@@ -165,7 +165,6 @@ var content = (function() {
         var qm = Q($.get('content/packs.json'))
             .then(function(json) {
                 game_info.packs = json;
-                console.log(game_info.packs)
             });
 
         var qs = Q($.get('content/puzzles.json'))
@@ -195,7 +194,6 @@ var progress = (function(){
         // load the level progress from this session (if any)
         // console.info('loading saved puzzles!');
         Storage.load("puzzles_completed", function(x) {
-            // console.log(x);
             if (x) {
                 puzzles_completed = x.split(',');
             }
@@ -211,24 +209,14 @@ var progress = (function(){
     };
 
     self.is_puzzle_completed = function(puzzle_id) {
-        if (puzzle_id=="up.what_is_up") {
-            console.log("is puzzle completed")
-            // console.log(puzzles_completed)
-            // console.log(puzzle_id)
-            console.log(_.includes(puzzles_completed, puzzle_id))
-        }
         return isDevMode || _.includes(puzzles_completed, puzzle_id);
     };
 
     self.completed_puzzles = function() {
-        console.log("completed puzzle")
         return _.filter(content.puzzles(), function(p) { return self.is_puzzle_completed(p.id); });
     };
 
     self.is_pack_completed = function(pack) {
-        console.log("is pack complete")
-        console.log(pack.nodes)
-        console.log(pack.nodes.every(self.is_puzzle_completed))
         return pack.nodes.every(self.is_puzzle_completed);
     };
 
@@ -258,18 +246,14 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
     function onPackComplete() {
         // console.error("TODO make this do something!");
         console.log("complete this pack! reload level map")
-        // _.forEach(game_info.packs, function(pack, id) {
-            // console.log(pack)
-            // if (pack.prereq) {
-            //     console.log(pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); }))
-            // }
-        //     if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
-        //         let item = $('<li>' + id + '</li>');
-        //         item.click(function () {
-        //             current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
-        //         })
-        //         $('#list-select-pack').append(item);}
-        // });
+        _.forEach(game_info.packs, function(pack, id) {
+            if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
+                let item = $('<li>' + id + '</li>');
+                item.click(function () {
+                    current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
+                })
+                $('#list-select-pack').append(item);}
+        });
         setState_packs();
     }
 
@@ -292,7 +276,6 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 var packSelectCB = function (){};
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
-                    console.log("pack case puzzle only")
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         console.log(pack);
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
@@ -301,7 +284,6 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                         break;
                     }
                 } else {
-                    console.log("pack case not puzzle only")
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
                     } else {
@@ -322,7 +304,6 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
 
             case "tutorial":
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
-                    console.log("tutorial case puzzle only")
                     if (tutorialCounter < pack.nodes.length) {
                         // progress through tutorial using tutorialCounter
                         var finishType = "Go to next puzzle";
@@ -332,7 +313,6 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                         setState_packs();
                     }
                 } else {
-                    console.log("tutorial case not puzzle only")
                     if (tutorialCounter < pack.nodes.length) {
                         // progress through tutorial using tutorialCounter
                         var finishType = pack.nodes.length - tutorialCounter === 1 ? "Go to the next level" : "Go to next puzzle";
@@ -745,27 +725,22 @@ $(function() {
 
         // HACK this needs to wait for the packs to be loaded
 
-        _.forEach(game_info.packs, function(pack, id) {
-                $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
-        });
 
-        _.forEach(game_info.packs, function(pack, id) {
-            // console.log("load level map")
-            // if (pack.prereq) {
-            //     console.log(pack)
-            //     pack.prereq.every(function (packName) {
-            //         console.log(game_info.packs[packName])
-            //         console.log(progress.is_pack_completed(game_info.packs[packName]))})
-            // }
-            if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
+
+        progress.initialize(function() {
+            //populate level map
+            _.forEach(game_info.packs, function(pack, id) {
+                $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
+            });
+
+            _.forEach(game_info.packs, function(pack, id) {
+                if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                     let item = $('<li>' + id + '</li>');
                     item.click(function () {
                         current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
                     })
                     $('#list-select-pack').append(item);}
-                        });
-
-        progress.initialize(function() {
+            });
             if (progress.is_pack_completed(game_info.packs["move dragon"])) {
                 RuthefjordUI.State.goToAlphaMsg();
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
