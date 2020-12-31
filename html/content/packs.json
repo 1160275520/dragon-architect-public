@@ -2,17 +2,10 @@
 "move dragon":{
     "nodes": [
         "tutorial.movement2d_part1",
-        "tutorial.movement2d_part2",
-        "tutorial.movement2d_part3",
-        "tutorial.place_cubes",
-        "remove.remove_cubes"
+        "tutorial.movement2d_part2"
     ],
     "edges": [
-        ["tutorial.movement2d_part1", "tutorial.movement2d_part2"],
-        ["tutorial.movement2d_part2", "tutorial.movement2d_part3"],
-        ["tutorial.movement2d_part3", "tutorial.place_cubes"],
-        ["tutorial.place_cubes", "remove.remove_cubes"]
-    ]
+        ["tutorial.movement2d_part1", "tutorial.movement2d_part2"]]
 },
 "move dragon II":{
     "nodes": [

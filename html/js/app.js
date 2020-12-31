@@ -241,12 +241,22 @@ var progress = (function(){
  * @param sceneSelectType one of {"tutorial", "pack"}.
  * Controls whether you are shuttled through levels automatically or get the graph scene selctor.
  */
-function create_puzzle_runner(pack, sceneSelectType) {
+function create_puzzle_runner(game_info, pack, sceneSelectType) {
     var self = {};
     var tutorialCounter = 0;
 
     function onPackComplete() {
         // console.error("TODO make this do something!");
+        console.log("complete this pack! reload level map")
+        _.forEach(game_info.packs, function(pack, id) {
+            // if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); })){
+            if (true) { // TODO check if pack should be added to the menu
+                let item = $('<li>' + id + '</li>');
+                item.click(function () {
+                    current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
+                })
+                $('#list-select-pack').append(item);}
+        });
         setState_packs();
     }
 
@@ -269,6 +279,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
                 var packSelectCB = function (){};
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
+                    console.log("pack case puzzle only")
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         console.log(pack);
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
@@ -277,6 +288,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
                         break;
                     }
                 } else {
+                    console.log("pack case not puzzle only")
                     if (progress.puzzles_remaining(pack) > 0 || first) {
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
                     } else {
@@ -296,6 +308,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
 
             case "tutorial":
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
+                    console.log("tutorial case puzzle only")
                     if (tutorialCounter < pack.nodes.length) {
                         // progress through tutorial using tutorialCounter
                         var finishType = "Go to next puzzle";
@@ -305,6 +318,7 @@ function create_puzzle_runner(pack, sceneSelectType) {
                         setState_packs();
                     }
                 } else {
+                    console.log("tutorial case not puzzle only")
                     if (tutorialCounter < pack.nodes.length) {
                         // progress through tutorial using tutorialCounter
                         var finishType = pack.nodes.length - tutorialCounter === 1 ? "Go to the next level" : "Go to next puzzle";
@@ -315,7 +329,6 @@ function create_puzzle_runner(pack, sceneSelectType) {
                         onPackComplete();
                     }
                 }
-
                 break;
 
             default:
@@ -352,7 +365,7 @@ function setState_intro() {
             summary: 'Welcome to Dragon Architect!',
             detail: d
         }, function() {
-            current_puzzle_runner = create_puzzle_runner(game_info.packs["move dragon"], "tutorial");
+            current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs["move dragon"], "tutorial");
         }, true);
         $('.notTitle').hide(); // hide instructions elements that aren't supposed to be on the title screen (e.g. click to hide button)
     });
@@ -374,7 +387,7 @@ function setState_packs() {
         RuthefjordUI.PackSelect.create(game_info.packs,
             progress,
             function(pack) {
-                current_puzzle_runner = create_puzzle_runner(pack, "pack");
+                current_puzzle_runner = create_puzzle_runner(game_info,pack, "pack");
             });
     });
 }
@@ -447,7 +460,7 @@ $(function() {
             var val = devSelectPack.val();
             // HACK assumes opening line starts with '-'
             if (val[0] !== '-') {
-                current_puzzle_runner = create_puzzle_runner(game_info.packs[val], "pack");
+                current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs[val], "pack");
             }
         });
 
@@ -724,11 +737,22 @@ $(function() {
         });
 
         _.forEach(game_info.packs, function(pack, id) {
-            // if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); })){
-            if (pack.prereq==undefined) { // TODO check if pack should be added to the menu
+            if (pack.prereq){
+                console.log(pack)
+                console.log(pack.prereq)
+                // for (var i = 0; i < pack.prereq.length; i++) {
+                //     console.log(pack.prereq[i])
+                // }
+                // console.log(progress.is_pack_completed(packs["up"]))
+                // console.log(pack.prereq.every(true))
+                console.log(pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))
+            }
+
+        if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); })){
+            // if (pack.prereq==undefined) { // TODO check if pack should be added to the menu
                 let item = $('<li>' + id + '</li>');
                 item.click(function () {
-                    current_puzzle_runner = create_puzzle_runner(pack, "pack");
+                    current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
                 })
                 $('#list-select-pack').append(item);}
                     });
@@ -756,11 +780,11 @@ $(function() {
                         });
                     } else {
                         $("#btn-alpha-continue").on('click', function() {
-                            current_puzzle_runner = create_puzzle_runner(game_info.packs["move dragon"], "tutorial");
+                            current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs["move dragon"], "tutorial");
                         });
                     }
                 });
-                current_puzzle_runner = create_puzzle_runner(game_info.packs["move dragon"], "tutorial");
+                current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs["move dragon"], "tutorial");
             }
         });
         RuthefjordBlockly.game_info = game_info;
@@ -1036,7 +1060,7 @@ handler.onProgramStateChange = function(type) {
 
 handler.onLockedToolboxClick = function(block) {
     RuthefjordUI.UnlockBlockMsg.show(block.svgGroup_, function () {
-        current_puzzle_runner = create_puzzle_runner(game_info.packs[block.packName], "pack");
+        current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs[block.packName], "pack");
     });
 };
 
