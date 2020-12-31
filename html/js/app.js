@@ -246,6 +246,10 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
     function onPackComplete() {
         // console.error("TODO make this do something!");
         console.log("complete this pack! reload level map")
+        const list = document.getElementById("list-select-pack");
+        while (list.lastElementChild) {
+            list.removeChild(list.lastElementChild);
+        }
         _.forEach(game_info.packs, function(pack, id) {
             if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                 let item = $('<li>' + id + '</li>');
