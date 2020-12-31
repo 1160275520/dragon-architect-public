@@ -476,7 +476,18 @@ $(function() {
 
         $('#btn-back-selector-puzzle').on('click', function() { current_puzzle_runner.onPuzzleFinish(); });
 
-
+        //$('#btn-header-about').on('click', RuthefjordUI.goToAboutMsg());
+        /*
+        $('#btn-header-about').on('click', function() {
+            //RuthefjordUI.hideAll();
+            RuthefjordDisplay.hide();
+            //RuthefjordDisplay.exit_viewer_mode();
+            //RuthefjordDisplay.show();
+            document.getElementById("#about-msg").style = "block";
+            //$('#about-msg').show();
+            //$('.codeEditor, #about-msg').show();
+            //show_msg("#about_msg");
+        });*/
 
         $('#btn-packs').on('click', setState_packs);
         $('#btn-back-selector-pack').on('click', setState_packs);
@@ -815,9 +826,7 @@ function start_editor(info) {
         RuthefjordUI.DoneButton.setVisible(info.puzzle.goal && info.puzzle.goal.type === "submit");
         RuthefjordUI.UndoButton.update();
         RuthefjordUI.DeleteButton.update();
-        RuthefjordUI.TrashButton.update();
-
-
+        //RuthefjordUI.TrashButton.update();
         _.includes(library.all, 'gallery') ? $(".galleryAccess").show() : $(".galleryAccess").hide();
 
         // only show navigation menu if there's something visible in it

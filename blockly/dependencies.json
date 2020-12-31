@@ -6,7 +6,7 @@
 			"local":"blockly",
 			"engine":"git",
 			"remote":"https://github.com/awb-carleton/blockly.git",
-			"revision":"f22f7d51883bae680f84829d6deaedb4c162cc0d",
+			"revision":"4bed67c9e3e0425d15db7406900b18cd3952aaae",
 			"branch":"ruthefjord"
 		},
 		{
