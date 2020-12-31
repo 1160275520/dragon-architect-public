@@ -281,7 +281,6 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
-                        console.log(pack);
                         $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
                     } else {
                         setState_packs();
@@ -298,7 +297,6 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 }
                 // bring up the level select
                 RuthefjordUI.State.goToSceneSelect(function() {
-                    console.log("bring up level select")
                     RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
                             setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
                     });
