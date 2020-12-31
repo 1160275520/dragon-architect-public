@@ -737,25 +737,25 @@ $(function() {
         });
 
         _.forEach(game_info.packs, function(pack, id) {
-            if (pack.prereq){
-                console.log(pack)
-                console.log(pack.prereq)
-                // for (var i = 0; i < pack.prereq.length; i++) {
-                //     console.log(pack.prereq[i])
-                // }
-                // console.log(progress.is_pack_completed(packs["up"]))
-                // console.log(pack.prereq.every(true))
-                console.log(pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))
-            }
+            // if (pack.prereq){
+            //     console.log(pack)
+            //     console.log(pack.prereq)
+            //     // for (var i = 0; i < pack.prereq.length; i++) {
+            //     //     console.log(pack.prereq[i])
+            //     // }
+            //     // console.log(progress.is_pack_completed(packs["up"]))
+            //     // console.log(pack.prereq.every(true))
+            //     console.log(pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); }))
+            // }
 
-        if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(packs[packName]); })){
-            // if (pack.prereq==undefined) { // TODO check if pack should be added to the menu
-                let item = $('<li>' + id + '</li>');
-                item.click(function () {
-                    current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
-                })
-                $('#list-select-pack').append(item);}
-                    });
+            // if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
+                if (true) { // TODO check if pack should be added to the menu
+                    let item = $('<li>' + id + '</li>');
+                    item.click(function () {
+                        current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
+                    })
+                    $('#list-select-pack').append(item);}
+                        });
 
         progress.initialize(function() {
             if (progress.is_pack_completed(game_info.packs["move dragon"])) {
