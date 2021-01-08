@@ -587,8 +587,8 @@ header button, .control-btn, .control-icon-btn {
     height: 85px;
     /* top: -10px; */
     padding-bottom: 19px;
-    line-height: 0.8;
-    padding: 9px;
+    line-height: 1;
+    padding: 8px;
     font-family: "Roboto Slab";
 }
 
