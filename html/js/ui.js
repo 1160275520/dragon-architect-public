@@ -428,7 +428,7 @@ module.Instructions = (function() {
         FixedCastleProc: "media/blockSvgs/FixedCastleProc.svg",
         FixedTowerProc: "media/blockSvgs/FixedTowerProc.svg",
         FixedWallProc: "media/blockSvgs/FixedWallProc.svg",
-        go: "media/goButton.png",
+        go: "media/run.png",
         rotateCW: "media/rotateCWButton.png",
         rotateCCW: "media/rotateCCWButton.png",
         camera: "media/cameraControls.png",
