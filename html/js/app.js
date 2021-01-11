@@ -244,8 +244,10 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
     var tutorialCounter = 0;
 
     function onPackComplete() {
-        // console.error("TODO make this do something!");
-        console.log("complete this pack! reload level map")
+        console.log(game_info)
+        console.log(pack)
+        console.log(pack.name)
+        // update the level map dropdown menu
         const list = document.getElementById("list-select-pack");
         while (list.lastElementChild) {
             list.removeChild(list.lastElementChild);
@@ -258,7 +260,21 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 })
                 $('#list-select-pack').append(item);}
         });
-        setState_packs();
+        var next_pack = get_next_pack(pack, game_info);
+        // bring up the level select
+        RuthefjordUI.State.goToSceneSelect(function() {
+            RuthefjordUI.LevelSelect.create(next_pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
+            });
+        });
+        packSelectCB();
+    }
+
+    function get_next_pack(current_pack, game_info) {
+        if (current_pack.nodes[0] && current_pack.nodes[0].split(".")[0] == "tutorial") {
+            return game_info.packs["move dragon II"]
+        }
+        return game_info.packs["move dragon II"]
     }
 
     function setState_puzzle(id, finish_msg) {
