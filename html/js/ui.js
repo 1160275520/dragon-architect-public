@@ -411,10 +411,10 @@ module.Instructions = (function() {
     var self = {};
 
     var imgFileMap = {
-        forward: "media/blockSvgs/forward.svg",
+        forward: "media/forward.png",
         set: "media/blockSvgs/set.svg",
         left: "media/blockSvgs/left.svg",
-        right: "media/blockSvgs/right.svg",
+        right: "media/right.png",
         placecube: "media/blockSvgs/placecube.svg",
         removecube: "media/blockSvgs/removecube.svg",
         up: "media/blockSvgs/up.svg",

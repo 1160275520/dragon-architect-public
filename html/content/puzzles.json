@@ -42,7 +42,7 @@
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
         "instructions": {
-            "text": "I need to get to the {pinkboxGround}"
+            "text": "I need to get to the {pinkboxGround}. A {forward} may help."
         }
     },
     "tutorial.movement2d_part3": {
@@ -64,7 +64,7 @@
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
         "instructions": {
-            "text": "Help me get to {pinkboxGround}!"
+            "text": "Help me get to {pinkboxGround}! A {right} tells me to turn right."
         }
     },
     "tutorial.place_cubes": {
