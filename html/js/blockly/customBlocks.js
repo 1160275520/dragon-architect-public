@@ -9,6 +9,7 @@ var COLOR_MOVE_2 = '#CFFFE5';
 var COLOR_BLOCK = '#F6FFCF';
 var COLOR_LOOPS = '#ffede4';
 var COLOR_PROCS = '#ebe6ff';
+var COLOR_VARS = '#ffcffd';
 var COLOR_UNUSED_1 = '#ffe5ec';
 var COLOR_UNUSED_2 = '#fff5e0';
 var COLOR_TEASER = '#f1ffce';
@@ -179,7 +180,7 @@ Blockly.JSONLangOps['Forward'] = function(block) {
 // SET - the set block creates variables and initializes them
 Blockly.Blocks['Set'] = {
     init: function() {
-        this.setColour(Blockly.Blocks.variables.HUE);
+        this.setColour(COLOR_VARS);
 
         // TODO is it ok to just make counter the default name?
         var nameField = new Blockly.FieldTextInput("counter", Blockly.Variables.rename);
@@ -255,7 +256,7 @@ Blockly.JSONLangOps['Set'] = function(block) {
 Blockly.Blocks['Get'] = {
     //GET block currently only carries its name. 
     init: function () {
-        this.setColour(Blockly.Blocks.variables.HUE);
+        this.setColour(COLOR_VARS);
         this.appendDummyInput()
             .appendField(new Blockly.FieldVariable("counter"), 'NAME');
         this.setOutput(true);
@@ -276,6 +277,7 @@ Blockly.Blocks['Get'] = {
     },
     isGetter: true,
 }
+
 
 Blockly.JSONLangOps['Get'] = function(block) {
     //ident for indentifier/identification (variable)
