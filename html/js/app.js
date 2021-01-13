@@ -242,6 +242,7 @@ var progress = (function(){
 function create_puzzle_runner(game_info, pack, sceneSelectType) {
     var self = {};
     var tutorialCounter = 0;
+    var packCounter = 0;
 
     function onPackComplete() {
         console.log(game_info)
@@ -256,6 +257,13 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
             if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                 let item = $('<li>' + id + '</li>');
                 item.click(function () {
+                    // // bring up the level select
+                    // RuthefjordUI.State.goToSceneSelect(function() {
+                    //     RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                    //         setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
+                    //     });
+                    // });
+                    // packSelectCB();
                     current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
                 })
                 $('#list-select-pack').append(item);}
@@ -303,19 +311,23 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
 
     self.onPuzzleFinish = function(first) { // first flag needed for jump to pack menu to work for completed packs
         switch (sceneSelectType) {
+
             case "pack":
                 var packSelectCB = function (){};
+                $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
                 // adjust the instructions depending on if the pack is complete
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
-                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
+                        // $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities.');
                     } else {
                         setState_packs();
                         break;
                     }
                 } else {
                     if (progress.puzzles_remaining(pack) > 0 || first) {
-                        $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
+                        var finishType = "Go to next puzzle";
+                        setState_puzzle(pack.nodes[packCounter++], finishType);
+                        break;
                     } else {
                         // setState_sandbox();
                         onPackComplete();
@@ -332,6 +344,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 break;
 
             case "tutorial":
+                $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
                 if (RUTHEFJORD_CONFIG.features.puzzles_only) {
                     if (tutorialCounter < pack.nodes.length) {
                         // progress through tutorial using tutorialCounter
@@ -777,6 +790,12 @@ $(function() {
                 if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                     let item = $('<li>' + id + '</li>');
                     item.click(function () {
+                        // // bring up the level select
+                        // RuthefjordUI.State.goToSceneSelect(function() {
+                        //     RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
+                        //         setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to puzzle select" : "Go to sandbox");
+                        //     });
+                        // });
                         current_puzzle_runner = create_puzzle_runner(game_info, pack, "pack");
                     })
                     $('#list-select-pack').append(item);}
