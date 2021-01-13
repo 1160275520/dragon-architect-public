@@ -274,7 +274,18 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
         if (current_pack.nodes[0] && current_pack.nodes[0].split(".")[0] == "tutorial") {
             return game_info.packs["move dragon II"]
         }
-        return game_info.packs["move dragon II"]
+        else if (current_pack.nodes[0] && current_pack.nodes[0].split(".")[0] == "up") {
+            return game_info.packs["loop"]
+        }
+        else if (current_pack.nodes[0] && current_pack.nodes[0].split(".")[0] == "repeat") {
+            return game_info.packs["variables"]
+        }
+        else if (current_pack.nodes[0] && current_pack.nodes[0].split(".")[0] == "variables") {
+            return game_info.packs["procedures"]
+        }
+        else {
+            return game_info.packs["challenges"]
+        }
     }
 
     function setState_puzzle(id, finish_msg) {
