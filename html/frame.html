@@ -90,6 +90,15 @@
         height: 63px;
         width: -webkit-fill-available;
       }
+
+      #codeLabel_frozen {
+        font-size: 20px;
+      }
+
+      #blocklyLabels .codeLabel_small{
+        font-size: 18px;
+      }
+
       #libraryLabel {
         background-color: #1f6f8b;
         font-family: "Roboto Slab";
@@ -211,11 +220,15 @@
         var toolboxWidth = Blockly.getMainWorkspace().flyout_.getMetrics_().viewWidth;
         if (toolboxWidth < 100) { // hide when toolbox is empty
           $("#blocklyLabels", document).show();
+          $("#codeLabel", document).hide();
+          $("#codeLabel_frozen", document).show();
           $(".blocklyFlyout", document).width("0px");
           $(".blocklyFlyoutBackground", document).width("0px");
           
         } else {
           $("#blocklyLabels", document).show();
+          $("#codeLabel", document).show();
+          $("#codeLabel_frozen", document).hide();
           $("#libraryLabel", document).width("105px");
           $("#flyoutMask", document).find("rect").attr("width", toolboxWidth);
           $("#codeLabel", document).width(Blockly.getMainWorkspace().getMetrics().viewWidth - toolboxWidth);
@@ -256,6 +269,7 @@
         <div class="label-large">Python Code</div>
       </div>
       <div id="codeLabel" class="blocklyLabels_code">Drag blocks here</div>
+      <div id="codeLabel_frozen" class="blocklyLabels_code">Change the numbers in each block code.<div class="codeLabel_small">(Faded blocks are not movabale.)</div>
     </div>
     <!-- the blockly toolbox. apparently needs at least one element at the beginning so layout isn't messed up. -->
     <xml id="toolbox" style="display: none">
