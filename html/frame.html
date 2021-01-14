@@ -114,7 +114,7 @@
         border: 2px #1f6f8b solid;
         border-radius: 10px;
         margin-bottom: 5px;
-        min-width: 34%;
+        min-width: 150px;
       }
 
       #python_overlay {
@@ -210,7 +210,10 @@
       function makeLabels() {
         var toolboxWidth = Blockly.getMainWorkspace().flyout_.getMetrics_().viewWidth;
         if (toolboxWidth < 100) { // hide when toolbox is empty
-          $("#blocklyLabels", document).hide();
+          $("#blocklyLabels", document).show();
+          $(".blocklyFlyout", document).width("0px");
+          $(".blocklyFlyoutBackground", document).width("0px");
+          
         } else {
           $("#blocklyLabels", document).show();
           $("#libraryLabel", document).width("105px");

@@ -4,9 +4,9 @@ function RuthefjordBlocklyCustomInit() {
 // Extensions to Blockly's language and JavaScript generator.
 
 
-var COLOR_MOVE_1 = '#CFEEFF';
-var COLOR_MOVE_2 = '#CFFFE5';
-var COLOR_BLOCK = '#F6FFCF';
+var COLOR_MOVE_1 = '#CFEEFF'; //forward, left right
+var COLOR_MOVE_2 = '#CFFFE5'; //up by, down by
+var COLOR_BLOCK = '#F6FFCF'; //place, remove cube
 var COLOR_LOOPS = '#ffede4';
 var COLOR_PROCS = '#ebe6ff';
 var COLOR_UNUSED_1 = '#ffe5ec';
