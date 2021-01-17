@@ -53,7 +53,7 @@
   top: 10px;
 }
 .speed-slider_right{
-  position: relative;
+  position: absolute;
   color: #ffffff;
   right: 15px;
   top: 30px;
