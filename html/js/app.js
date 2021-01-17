@@ -320,11 +320,17 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 RuthefjordUI.State.goToSceneSelect(function () {
                                 RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function (pid) {
                                     setState_puzzle(pid, "Go to next puzzle");
+                                    var puzzle_completed = progress.is_puzzle_completed(pid);
+                                    if (!puzzle_completed) {
+                                        packCounter = pack.nodes.length - progress.puzzles_remaining(pack);
+                                        packCounter++;
+                                        sceneSelectType = "pack";
+                                    }
+                                    else {
+                                        console.log("puzzle already completed");
+                                    }
                                 });
                             });
-                packCounter = pack.nodes.length - progress.puzzles_remaining(pack);
-                packCounter++;
-                sceneSelectType = "pack";
                 break;
 
             default:
