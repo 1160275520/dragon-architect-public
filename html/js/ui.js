@@ -455,6 +455,7 @@ module.Instructions = (function() {
         walltop: "media/blockSvgs/walltop.svg",
         pillarProc: "media/blockSvgs/pillarProc.svg",
         procDef: "media/blockSvgs/procDef.svg",
+        procedure: "media/proc.png",
         bridge: "media/bridge.png",
         cube: "media/cube.png",
         purple_cube: "media/purple_cube.png",
