@@ -131,7 +131,7 @@
         "solution": "content/puzzle_code/up.what_is_up.solution.json",
         "goal": {"source":"solution", "type":"robot"},
         "instructions": {
-            "text": "Help me get to the {pinkboxUp}! To tell me to go down, use {down}. Be sure to use {rotate} and {scroll} if you need to change the camera angle. "
+            "text": "Help me get to the {pinkboxUp}! To tell me to go up, use {up}. Be sure to use {rotate} and {scroll} if you need to change the camera angle. "
         },
         "logging_id": "a9f31eea-a109-4c79-954a-8cc0957ee745"
     },
@@ -315,7 +315,7 @@
             "granted": []
         },
         "instructions": {
-            "text": "You can also change a variable's value multiple times. Help me put cubes on the blue boxes!."
+            "text": "You can also change a variable's value multiple times. Help me put cubes on the blue boxes!"
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
@@ -368,7 +368,7 @@
         "format_version": 2,
         "library": {
             "restricted": ["defproc_noargs", "defproc"],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "procedures_only":true,
@@ -385,7 +385,7 @@
         "format_version": 2,
         "library": {
             "restricted": ["up", "place", "defproc", "defproc_noargs"],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -407,7 +407,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": ["defproc_noargs"]
         },
         "tutorial": {
@@ -415,7 +415,7 @@
         },
         "procedures_only":true,
         "instructions": {
-            "text": "Use a procedure to get me to {pinkboxUp}!"
+            "text": "Use a procedure to get me to {pinkboxUp}! You can only place blocks inside of a {procedure}"
         },
         "solution": "content/puzzle_code/procedures.def.solution.json",
         "goal": {"source":"solution", "type":"robot"},
@@ -548,7 +548,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -562,7 +562,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -576,7 +576,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -590,7 +590,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -604,7 +604,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -618,7 +618,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
