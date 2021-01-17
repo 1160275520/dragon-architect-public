@@ -21,7 +21,7 @@
         "up.bridge"
     ],
     "edges": [
-        ["up.what_is_up", "up.bridge"],
+        ["up.what_is_up", "up.what_is_down"],
         ["up.what_is_down", "up.bridge"]
     ],
     "name": "Move dragon II",
