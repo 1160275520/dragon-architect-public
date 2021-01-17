@@ -303,10 +303,21 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
     }
 
     self.onPuzzleFinish = function(first) { // first flag needed for jump to pack menu to work for completed packs
+
+        var message;
+        var level_name = pack.nodes[0].split(".")[0];
+
+        if (level_name === "tutorial") {message = "Welcome to Dragon Architect! These are your tutorial levels."}
+        if (level_name === "up") {message = "Learn how to move up and down by completing the levels below!"}
+        if (level_name === "repeat") {message = "Play the levels below to learn how to use loops!"}
+        if (level_name === "variables") {message = "Variables can store information. Try using them in these levels!"}
+        if (level_name === "procedures") {message = "Learn how to use a procedure to make programming easier!"}
+        if (level_name === "challenges") {message = "Complete these challenges, and don't forget to be creative!"}
+
         switch (sceneSelectType) {
 
             case "pack":
-            $("#selector-puzzle-instructions").html('Play the levels below to unlock new abilities');
+                $("#selector-puzzle-instructions").html(message);
                 if (progress.puzzles_remaining(pack) > 0) {
                     var finishType = "Go to next puzzle";
                     setState_puzzle(pack.nodes[packCounter++], finishType);
@@ -317,6 +328,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 }
 
             case "level select":
+                $("#selector-puzzle-instructions").html(message);
                 RuthefjordUI.State.goToSceneSelect(function () {
                                 RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function (pid) {
                                     setState_puzzle(pid, "Go to next puzzle");
