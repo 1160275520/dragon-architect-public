@@ -42,7 +42,7 @@
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
         "instructions": {
-            "text": "I need to get to the {pinkboxGround}"
+            "text": "I need to get to the {pinkboxGround}. Another {forward} may help."
         }
     },
     "tutorial.movement2d_part3": {
@@ -64,7 +64,7 @@
         "goal": {"source":"solution", "type":"robot"},
         "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
         "instructions": {
-            "text": "Help me get to {pinkboxGround}!"
+            "text": "Help me get to {pinkboxGround}! A {right} tells me to turn right."
         }
     },
     "tutorial.place_cubes": {
@@ -84,7 +84,7 @@
         "program": {"type":"file", "value":"content/puzzle_code/tutorial.placement.json"},
         "goal": {"source":"min_cubes", "value":4},
         "instructions": {
-            "text": "Help me place 4 {cube}!"
+            "text": "Help me place 4 {cube}! You'll need some more {placecube} blocks"
         },
         "logging_id": "aad39525-99a7-4833-a3d2-87ad9d5cbec3"
     },
@@ -110,7 +110,7 @@
         "solution": "content/puzzle_code/remove.remove_cubes.solution.json",
         "goal": {"source":"solution", "type":"cubes"},
         "instructions": {
-            "text": "Help me remove all the {purple_cube}"
+            "text": "Help me remove all the cubes. Another {removecube} might help"
         },
         "logging_id": "f927a173-7fdf-4850-9888-1b23d9e8f89e"
     },
@@ -131,7 +131,7 @@
         "solution": "content/puzzle_code/up.what_is_up.solution.json",
         "goal": {"source":"solution", "type":"robot"},
         "instructions": {
-            "text": "Help me get to the {pinkboxUp}!"
+            "text": "Help me get to the {pinkboxUp}! To tell me to go up, use {up}. Be sure to use {rotate} and {scroll} if you need to change the camera angle. "
         },
         "logging_id": "a9f31eea-a109-4c79-954a-8cc0957ee745"
     },
@@ -151,7 +151,7 @@
         "solution": "content/puzzle_code/up.what_is_down.solution.json",
         "goal": {"source":"solution", "type":"robot"},
         "instructions": {
-            "text": "Help me get to the {pinkboxGround}!"
+            "text": "Help me get to the {pinkboxGround}! {down} tells me to go down"
         },
         "logging_id": "b8619792-bda0-4e38-a233-0fa91225b296"
     },
@@ -195,7 +195,7 @@
             "granted": []
         },
         "instructions": {
-            "text": "Help me put cubes on these blue boxes!"
+            "text": "The number in each {forward} tells me how many spaces to move. Change the numbers to complete my program. Be sure to use the given starter blocks, you can't delete them or add any others."
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
@@ -281,7 +281,7 @@
             "granted": ["repeat"]
         },
         "instructions": {
-            "text": "I want to build this tower!"
+            "text": "I want to build this tower! The tower has 5 layers and each layer is a 5 by 5 square."
         },
         "solution": "content/puzzle_code/repeat.repeat_tower.solution.json",
         "goal": {"source":"solution", "type":"cubes"},
@@ -296,7 +296,7 @@
             "granted": []
         },
         "instructions": {
-            "text": "Help me put cubes on these blue boxes!"
+            "text": "Variables hold values that you want to use later. {variable} defines a variable. {x} holds the variable's value and can be given to blocks like {forwardx}. Change the numbers to complete my program."
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
@@ -315,7 +315,7 @@
             "granted": []
         },
         "instructions": {
-            "text": "Help me put cubes on these blue boxes!"
+            "text": "You can also change a variable's value multiple times. Help me put cubes on the blue boxes!"
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
@@ -334,7 +334,7 @@
             "granted": []
         },
         "instructions": {
-            "text": "Help me put cubes on these blue boxes!"
+            "text": "Variables can also be given to repeats. Help me put cubes on these blue boxes!"
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
@@ -353,11 +353,12 @@
             "granted": ["move2", "place", "repeat"]
         },
         "instructions": {
-            "text": "Create a snake shape! You must use a variable."
+            "text": "Create a snake shape using at least one variable!"
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]
         },
+        "program": {"type":"file", "value":"content/puzzle_code/variables.snake.json"},
         "solution": "content/puzzle_code/variables.snake.solution.json",
         "goal": {"source":"solution", "type":"useAndCubes"},
         "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
@@ -367,12 +368,12 @@
         "format_version": 2,
         "library": {
             "restricted": ["defproc_noargs", "defproc"],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "procedures_only":true,
         "instructions": {
-            "text": "Put blocks inside Procedure Square to have me build a square."
+            "text": "Put blocks inside {square} to have me build a square."
         },
         "program": {"type":"file", "value":"content/puzzle_code/procedures.square.json"},
         "solution": "content/puzzle_code/procedures.square.solution.json",
@@ -384,11 +385,11 @@
         "format_version": 2,
         "library": {
             "restricted": ["up", "place", "defproc", "defproc_noargs"],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
-            "text": "Use UpCube to help fill in the blue spaces."
+            "text": "Use {upcube} to help fill in the blue spaces."
         },
         "tutorial": {
             "highlighted": ["procedures_callnoreturn"]
@@ -406,7 +407,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": ["defproc_noargs"]
         },
         "tutorial": {
@@ -414,7 +415,7 @@
         },
         "procedures_only":true,
         "instructions": {
-            "text": "Get me to {pinkboxUp} using a procedure!"
+            "text": "Use a procedure to get me to {pinkboxUp}! You can only place blocks inside of a {procedure}"
         },
         "solution": "content/puzzle_code/procedures.def.solution.json",
         "goal": {"source":"solution", "type":"robot"},
@@ -547,7 +548,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -561,7 +562,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -575,7 +576,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -589,7 +590,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -603,7 +604,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {
@@ -617,7 +618,7 @@
         "format_version": 2,
         "library": {
             "restricted": [],
-            "required": [],
+            "required": ["set"],
             "granted": []
         },
         "instructions": {

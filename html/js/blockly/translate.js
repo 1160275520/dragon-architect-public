@@ -106,13 +106,13 @@ var RuthefjordTranslate = (function () {
     }
 
     self.left = function () {
-        var leftString = 'left()';
+        var leftString = 'turnLeft()';
         codeString = codeString.concat(indent.repeat(numIndents),leftString,'\n');
         leftUsed = true;
     }
 
     self.right = function () {
-        var rightString = 'right()';
+        var rightString = 'turnRight()';
         codeString = codeString.concat(indent.repeat(numIndents),rightString,'\n');
         rightUsed = true;
     }
