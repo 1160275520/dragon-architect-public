@@ -47,17 +47,19 @@
   font-size: 18px;
 }
 .speed-slider_left{
-  position:relative;
+  position: relative;
   color: #ffffff;
-  left: -4px;
-  top: 10px;
+  left: -3px;
+  top: 8px;
 }
 .speed-slider_right{
   position: absolute;
   color: #ffffff;
-  right: 15px;
-  top: 30px;
-
+  right: 11px;
+  top: 32px;
+}
+#speed-slider .slider.slider-horizontal {
+  width: -webkit-fill-available;
 }
 
 .slider-handle{
