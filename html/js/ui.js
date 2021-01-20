@@ -12,36 +12,36 @@ module.State = (function(){ "use strict";
     function hideAll() {
         RuthefjordDisplay.hide();
         RuthefjordDisplay.exit_viewer_mode(); // disable view & keyboard controls (HACK: this is only actually necessary when leaving the viewer, but this seems like a good place to put it)
-        $('#main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
+        $('#main, #main-view-game, .instructions, .view-loading, #player-consent, #alpha-msg, #attention-arrow, .codeEditor, .puzzleModeUI, .sandboxModeUI, .puzzleSelector, .packSelector, .galleryAccess, .gallerySelector, .viewerModeUI, .shareModeUI, .devModeOnly, .dialogUI').hide();
     }
 
-    var main_selector = '#main-view-game, #main-view-code';
+    var main_selector = '#main, #main-view-game, #main-view-code';
 
     self.goToLoading = function() {
         hideAll();
-        $('.view-loading').show();
+        $('#main,.view-loading').show();
     };
 
     self.goToConsent = function() {
         hideAll();
-        $('#player-consent').show();
+        $('#main, #player-consent').show();
     };
 
     self.goToAlphaMsg = function() {
         hideAll();
-        $('#alpha-msg').show();
+        $('#main, #alpha-msg').show();
     };
 
     self.goToAboutMsg = function() {
         hideAll();
-        $('#about-msg').show();
+        $('#main, #about-msg').show();
     };
 
     self.goToTitle = function(cb) {
         current_state = 'title';
 
         hideAll();
-        $('.codeEditor, #main-view-game').show();
+        $('#main, .codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('title');
 
@@ -56,7 +56,7 @@ module.State = (function(){ "use strict";
         current_state = 'intro';
 
         hideAll();
-        $('.codeEditor, #main-view-game').show();
+        $('#main, .codeEditor, #main-view-game').show();
         RuthefjordDisplay.show();
         $(main_selector).addClass('transition');
         $(main_selector).removeClass('title');
@@ -76,7 +76,7 @@ module.State = (function(){ "use strict";
 
     self.goToPuzzle = function(cb) {
         hideAll();
-        $('.codeEditor, #main-view-game, .puzzleModeUI').show();
+        $('#main, .codeEditor, #main-view-game, .puzzleModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -84,7 +84,7 @@ module.State = (function(){ "use strict";
 
     self.goToSandbox = function(cb) {
         hideAll();
-        $('.codeEditor, #main-view-game, .sandboxModeUI').show();
+        $('#main, .codeEditor, #main-view-game, .sandboxModeUI').show();
         RuthefjordDisplay.show();
         $(main_selector).removeClass('title');
         cb();
@@ -92,19 +92,19 @@ module.State = (function(){ "use strict";
 
     self.goToPackSelect = function(cb) {
         hideAll();
-        $('.packSelector').show();
+        $('#main, .packSelector').show();
         cb();
     };
 
     self.goToGallery = function(cb) {
         hideAll();
-        $('.gallerySelector').show();
+        $('#main, .gallerySelector').show();
         cb();
     };
 
     self.goToViewer = function(cb) {
         hideAll();
-        $('.viewerModeUI, #main-view-game').show();
+        $('#main, .viewerModeUI, #main-view-game').show();
         RuthefjordDisplay.show();
         RuthefjordDisplay.viewer_mode();
         $('#main-view-game').css('width', '800px').css('margin', '0 auto');
@@ -114,7 +114,7 @@ module.State = (function(){ "use strict";
 
     self.goToShare = function(cb) {
         hideAll();
-        $('.shareModeUI').show();
+        $('#main, .shareModeUI').show();
         cb();
     };
 
