@@ -15,6 +15,7 @@
     ]
 },
 "move dragon II":{
+    "prereq": ["move dragon"],
     "nodes": [
         "up.what_is_up",
         "up.what_is_down",
@@ -60,7 +61,7 @@
     "learn": ["Create custom variables"]
 },
 "procedures":{
-    "prereq": ["loop"],
+    "prereq": ["variables"],
     "nodes": [
         "procedures.square",
         "procedures.call",
@@ -89,6 +90,7 @@
     "name": "One Castle, Two Castle, Red Castle, Blue Castle"
 },
 "challenges":{
+    "prereq": ["procedures"],
     "nodes": [
         "challenges.house",
         "challenges.name",
