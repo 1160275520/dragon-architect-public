@@ -184,6 +184,9 @@ var RuthefjordPuzzle = (function () {
         if (solution_promise) {
             solution_promise.then(function () {
                 onRuthefjordEvent("onPuzzleChange", info);
+            }, function (reason) {
+                console.log("solution promise reject");
+                console.log(reason);
             });
         } else {
             onRuthefjordEvent("onPuzzleChange", info);
