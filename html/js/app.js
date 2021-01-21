@@ -265,10 +265,10 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
         // bring up the level select
         RuthefjordUI.State.goToSceneSelect(function() {
             RuthefjordUI.LevelSelect.create(next_pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next level" : "Go to next level");
+                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next puzzle" : "Go to next puzzle");
             });
         });
-        packSelectCB();
+        //packSelectCB(); not implemented
     }
 
     function get_next_pack(current_pack, game_info) {
@@ -321,6 +321,9 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 $("#selector-puzzle-instructions").html(message);
                 if (progress.puzzles_remaining(pack) > 0) {
                     var finishType = "Go to next puzzle";
+                    while (progress.is_puzzle_completed(pack.nodes[packCounter])){
+                        packCounter++;
+                    }
                     setState_puzzle(pack.nodes[packCounter++], finishType);
                     break;
                 }  else {
@@ -695,6 +698,7 @@ $(function() {
         // set up default values, needs to happen here to ensure Blocky has been loaded
         RuthefjordManager.Simulator.set_edit_mode(RuthefjordManager.EditMode.persistent);
         RuthefjordManager.Simulator.clear_run_state();
+        RuthefjordManager.Simulator.init();
 
         // set up nav menu behavior, also needs to be after blockly
         var show_menu_fn = function() {
@@ -758,7 +762,7 @@ $(function() {
         // HACK this needs to wait for the packs to be loaded
 
 
-
+        //Upon reload of page:
         progress.initialize(function() {
             //populate level map
             _.forEach(game_info.packs, function(pack, id) {
@@ -766,41 +770,27 @@ $(function() {
             });
 
             _.forEach(game_info.packs, function(pack, id) {
-                if (pack.prereq==undefined || pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
+                if (pack.prereq && pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                     let item = $('<li>' + id + '</li>');
                     item.click(function () {
                         current_puzzle_runner = create_puzzle_runner(game_info, pack, "level select");
                     })
                     $('#list-select-pack').append(item);}
             });
-            if (progress.is_pack_completed(game_info.packs["move dragon"])) {
-                RuthefjordUI.State.goToAlphaMsg();
-                if (RUTHEFJORD_CONFIG.features.puzzles_only) {
-                    $("#btn-alpha-continue").on('click', function() {
-                        setState_packs();
-                    });
-                } else {
-                    $("#btn-alpha-continue").on('click', function() {
-                        setState_sandbox();
-                    });
-                }
-            } else {
-                RuthefjordUI.State.goToConsent();
-                $("#btn-consent-continue").on('click', function() {
-                    // RuthefjordLogging.logStudentConsented($("#chkbox-consent")[0].checked, parseInt($("#player-consent").attr("data-tosid")));
-                    RuthefjordUI.State.goToAlphaMsg();
-                    if (RUTHEFJORD_CONFIG.features.sandbox_only) {
-                        $("#btn-alpha-continue").on('click', function() {
-                            setState_sandbox();
-                        });
-                    } else {
-                        $("#btn-alpha-continue").on('click', function() {
-                            current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs["move dragon"], "pack");
-                        });
+            var startPack = game_info.packs["move dragon"];
+            //go through to find which pack is the one that is currently incomplete.
+            _.forEach(game_info.packs, function(pack, id) {
+                if (pack.prereq && pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })) {
+                    if (pack.order > startPack.order) {
+                        startPack = pack;
                     }
-                });
-                current_puzzle_runner = create_puzzle_runner(game_info, game_info.packs["move dragon"], "pack");
-            }
+                }
+            });
+            //go to the Alpha message, then open to the next incomplete level within the first incomplete pack
+            RuthefjordUI.State.goToAlphaMsg();
+            $("#btn-alpha-continue").on('click', function() {
+                current_puzzle_runner = create_puzzle_runner(game_info, startPack, "pack");
+            });
         });
         RuthefjordBlockly.game_info = game_info;
         RuthefjordBlockly.progress = progress;
@@ -867,8 +857,6 @@ function start_editor(info) {
 
         // clear any existing addon blocks in the toolbox (so they don't get duplicated)
         RuthefjordBlockly.AddonCommands = {};
-        // clear existing addons from simulator globals
-        RuthefjordManager.Simulator.init();
         if (info.puzzle.library.autoimports) {
             var addons = [];
             var qs = [];
