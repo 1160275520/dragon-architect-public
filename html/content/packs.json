@@ -12,7 +12,8 @@
         ["tutorial.movement2d_part2", "tutorial.movement2d_part3"],
         ["tutorial.movement2d_part3", "tutorial.place_cubes"],
         ["tutorial.place_cubes", "remove.remove_cubes"]
-    ]
+    ],
+    "order": 0
 },
 "move dragon II":{
     "prereq": ["move dragon"],
@@ -26,7 +27,8 @@
         ["up.what_is_down", "up.bridge"]
     ],
     "name": "Move dragon II",
-    "learn": ["Move upwards", "Move downwards"]
+    "learn": ["Move upwards", "Move downwards"],
+    "order": 1
 },
 "loop":{
     "prereq": ["move dragon II"],
@@ -42,7 +44,8 @@
         ["repeat.repeat_nested", "repeat.repeat_tower"]
     ],
     "name": "Loop",
-    "learn": ["Use arguments","Repeat code many times"]
+    "learn": ["Use arguments","Repeat code many times"],
+    "order": 2
 },
 "variables":{
     "prereq": ["loop"],
@@ -58,7 +61,8 @@
         ["variables.repeat", "variables.snake"]
     ],
     "name": "Variable Outcomes",
-    "learn": ["Create custom variables"]
+    "learn": ["Create custom variables"],
+    "order": 3
 },
 "procedures":{
     "prereq": ["variables"],
@@ -72,7 +76,8 @@
         ["procedures.call", "procedures.def"]
     ],
     "name": "Procedural Bliss",
-    "learn": ["Create custom blocks with procedures"]
+    "learn": ["Create custom blocks with procedures"],
+    "order": 4
 },
 "decomposition":{
     "prereq": ["procedures"],
@@ -87,7 +92,8 @@
         ["decomposition.fix_castle", "decomposition.fix_towers"],
         ["decomposition.fix_towers", "decomposition.fix_walls"]
     ],
-    "name": "One Castle, Two Castle, Red Castle, Blue Castle"
+    "name": "One Castle, Two Castle, Red Castle, Blue Castle",
+    "order": 5
 },
 "challenges":{
     "prereq": ["procedures"],
@@ -101,7 +107,8 @@
     ],
     "edges": [],
     "name": "Challenge Yourself!",
-    "learn": ["Be creative while practicing programming knowledge"]
+    "learn": ["Be creative while practicing programming knowledge"],
+    "order": 6
 }
 }
 
