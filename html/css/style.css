@@ -480,6 +480,7 @@ header button, .control-btn, .control-icon-btn {
 .goal-section{
     color: #ffffff;
     font-family: "Roboto Slab";
+    font-size: 16px;
     text-align: left;
     display: block;
     min-height: 23vh;
