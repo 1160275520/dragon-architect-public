@@ -621,7 +621,7 @@ header button, .control-btn, .control-icon-btn {
     background-color: #E6E6E6;
 }
 
-#btn-step {
+#btn-step, #btn-undo {
     background-color: #E6E6E6;
     height: 40px;
     line-height: 36px;
@@ -638,7 +638,7 @@ header button, .control-btn, .control-icon-btn {
     background-color: #0072F4;
 }
 
-#btn-undo, #btn-delete, #btn-trash {
+#btn-delete, #btn-trash {
     position: absolute;
     font-size: 16pt;
     background-color: #E6E6E6;
