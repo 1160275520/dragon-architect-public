@@ -296,7 +296,7 @@
             "granted": []
         },
         "instructions": {
-            "text": "Variables hold values that you want to use later. {variable} defines a variable. {x} holds the variable's value and can be given to blocks like {forwardx}. Change the numbers to complete my program."
+            "text": "Variables hold values that you want to use later. {variable} defines a variable. {x} holds the variable's value and can be given to blocks like {forwardx}. Change the number to complete my program."
         },
         "world": {
             "robots": [{"pos": [0, 0, 0], "dir":[1, 0, 0]}]

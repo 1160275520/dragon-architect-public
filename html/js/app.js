@@ -265,7 +265,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
         // bring up the level select
         RuthefjordUI.State.goToSceneSelect(function() {
             RuthefjordUI.LevelSelect.create(next_pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next puzzle" : "Go to next puzzle");
+                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next puzzle!" : "Go to next puzzle!!");
             });
         });
         //packSelectCB(); not implemented
@@ -319,8 +319,16 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
 
             case "pack":
                 $("#selector-puzzle-instructions").html(message);
+                console.log("puzzles remaining: "+ progress.puzzles_remaining(pack))
+                var finishType;
+                //when the last puzzle is loaded, 1 is remaining. Upon winning that, you go to the next pack
+                if (progress.puzzles_remaining(pack) === 1){
+                    finishType = "Go to level map";
+                }
+                else{
+                    finishType = "Go to next puzzle";
+                }
                 if (progress.puzzles_remaining(pack) > 0) {
-                    var finishType = "Go to next puzzle";
                     while (progress.is_puzzle_completed(pack.nodes[packCounter])){
                         packCounter++;
                     }
@@ -335,7 +343,8 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 $("#selector-puzzle-instructions").html(message);
                 RuthefjordUI.State.goToSceneSelect(function () {
                                 RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function (pid) {
-                                    setState_puzzle(pid, "Go to next puzzle");
+                                    //when a puzzle is already completed, upon completion you always go back to the level map
+                                    setState_puzzle(pid, "Go to level map");
                                     var puzzle_completed = progress.is_puzzle_completed(pid);
                                     if (!puzzle_completed) {
                                         packCounter = pack.nodes.length - progress.puzzles_remaining(pack);
@@ -764,6 +773,13 @@ $(function() {
 
         //Upon reload of page:
         progress.initialize(function() {
+
+            //Check if the user is not using chrome - Code taken from a stack overflow post
+            var isChrome = !!window.chrome; // "!!" converts the object to a boolean value
+            if (isChrome !== true) {
+                alert("Please use Google Chrome to access Dragon Architect.\nSome key features do not work in browsers other than Chrome.");
+            }
+
             //populate level map
             _.forEach(game_info.packs, function(pack, id) {
                 $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
