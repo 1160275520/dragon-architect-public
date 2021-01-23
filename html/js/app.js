@@ -764,6 +764,13 @@ $(function() {
 
         //Upon reload of page:
         progress.initialize(function() {
+
+            //Check if the user is not using chrome - Code taken from a stack overflow post
+            var isChrome = !!window.chrome; // "!!" converts the object to a boolean value
+            if (isChrome !== true) {
+                alert("Please use Google Chrome to access Dragon Architect.\nSome key features do not work in browsers other than Chrome.");
+            }
+
             //populate level map
             _.forEach(game_info.packs, function(pack, id) {
                 $('#dev-select-pack').append('<option value="' + id + '">' + id + '</option>');
