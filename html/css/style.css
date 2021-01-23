@@ -204,6 +204,7 @@ header > h1 {
     z-index: 12;
     border-top: none;
     padding: 0;
+      min-height: 215px;
     /* display: none; */
   }
   .navbar .dropdown .dropdown-menu li, .navbar .dropdown .dropdown-menu a {
