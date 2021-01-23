@@ -265,7 +265,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
         // bring up the level select
         RuthefjordUI.State.goToSceneSelect(function() {
             RuthefjordUI.LevelSelect.create(next_pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next puzzle!" : "Go to next puzzle!!");
+                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next puzzle" : "Go to next puzzle");
             });
         });
         //packSelectCB(); not implemented
