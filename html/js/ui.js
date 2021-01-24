@@ -599,7 +599,7 @@ module.RunButton = (function() {
 
     self.update = function(isRunning, isWorkshopMode) {
         var at = isWorkshopMode ? "Reset" : "Stop";
-        update_button('#btn-run', true, isRunning, "RUN CODE", "RESET CODE", at);
+        update_button('#btn-run', true, isRunning, "RUN CODE", "RESET DRAGON", at);
     };
 
     return self;

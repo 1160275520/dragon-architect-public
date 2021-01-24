@@ -581,10 +581,11 @@ header button, .control-btn, .control-icon-btn {
 #btn-run, #btn-pause.active {
     background-color: #E6E6E6;
     font-family: "Roboto Slab";
+    font-size: 18pt;
 }
 
 #btn-run {
-    font-size: 27pt;
+    font-size: 18pt;
     height: 85px;
     /* top: -10px; */
     padding-bottom: 19px;
@@ -598,8 +599,7 @@ header button, .control-btn, .control-icon-btn {
     background-color: transparent;
     color: #E6E6E6;
     border: 3px solid #E6E6E6;
-    /*font-size: 24pt;*/
-    font-size: 23pt;
+    font-size: 18pt;
     line-height: 1.0;
 }
 
