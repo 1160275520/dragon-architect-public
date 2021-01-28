@@ -261,14 +261,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 })
                 $('#list-select-pack').append(item);}
         });
-        var next_pack = get_next_pack(pack, game_info);
-        // bring up the level select
-        RuthefjordUI.State.goToSceneSelect(function() {
-            RuthefjordUI.LevelSelect.create(next_pack, game_info.puzzles, progress.is_puzzle_completed, function(pid) {
-                setState_puzzle(pid, progress.puzzles_remaining(pack) > 1 ? "Go to next puzzle" : "Go to next puzzle");
-            });
-        });
-        //packSelectCB(); not implemented
+        current_puzzle_runner = create_puzzle_runner(game_info, get_next_pack(pack, game_info), "level select");
     }
 
     function get_next_pack(current_pack, game_info) {
@@ -343,8 +336,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 $("#selector-puzzle-instructions").html(message);
                 RuthefjordUI.State.goToSceneSelect(function () {
                                 RuthefjordUI.LevelSelect.create(pack, game_info.puzzles, progress.is_puzzle_completed, function (pid) {
-                                    //when a puzzle is already completed, upon completion you always go back to the level map
-                                    setState_puzzle(pid, "Go to level map");
+                                    setState_puzzle(pid, "Go to next puzzle");
                                     var puzzle_completed = progress.is_puzzle_completed(pid);
                                     if (!puzzle_completed) {
                                         packCounter = pack.nodes.length - progress.puzzles_remaining(pack);
