@@ -101,6 +101,8 @@ var RuthefjordPuzzle = (function () {
                                 };
                                 break;
                             case "useAndCubes":
+                                //this case is solely used for the slither slither level
+                                //checks if the user has placed blocks in the correct places AND has used both a set and get block
                                 RuthefjordDisplay.addCubeTargets(final_state.grid);
                                 var containsSet = false;
                                 var variables = []
@@ -115,9 +117,11 @@ var RuthefjordPuzzle = (function () {
                                             variables.push(name);
                                         }
                                     }
+
+                                    containsSet = false;
                                     var code = RuthefjordTranslate.getPythonCode()
-                                    for (i = 0; i < variables.length; i++){
-                                        var count = code.split(variables[i]).length - 1;
+                                    for (var j = 0; j < variables.length; j++){
+                                        var count = code.split(variables[j]).length - 1;
                                         if (count >= 2){
                                             containsSet = true;
                                         }
