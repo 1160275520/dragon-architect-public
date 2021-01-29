@@ -481,6 +481,7 @@ header button, .control-btn, .control-icon-btn {
 .goal-section{
     color: #ffffff;
     font-family: "Roboto Slab";
+    font-size: 16px;
     text-align: left;
     display: block;
     min-height: 23vh;
@@ -492,7 +493,7 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .goal-section_title{
-    font-size: 28px;
+    font-size: 18px;
     display: flex;
 }
 
@@ -622,7 +623,7 @@ header button, .control-btn, .control-icon-btn {
     background-color: #E6E6E6;
 }
 
-#btn-step {
+#btn-step, #btn-undo {
     background-color: #E6E6E6;
     height: 40px;
     line-height: 36px;
@@ -639,7 +640,7 @@ header button, .control-btn, .control-icon-btn {
     background-color: #0072F4;
 }
 
-#btn-undo, #btn-delete, #btn-trash {
+#btn-delete, #btn-trash {
     position: absolute;
     font-size: 16pt;
     background-color: #E6E6E6;
