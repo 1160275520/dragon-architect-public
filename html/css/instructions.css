@@ -19,7 +19,7 @@
     background: #1c2b2d;
     border-radius:6px;
     color: white;
-    font-size: 20pt;
+    font-size: 12pt;
     width: 100%!important;
     pointer-events: all;
 }
@@ -39,6 +39,7 @@
     -webkit-transition: font-size 0.5s, padding-top 1s ease;
     /*transition: font-size 0.5s, padding-top 1s ease;*/
     height: 30px;
+    font-size: 12pt;
     padding-left: 7px;
     /* overflow: hidden; */
 }
