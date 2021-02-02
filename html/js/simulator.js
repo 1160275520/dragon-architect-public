@@ -83,7 +83,15 @@ var RuthefjordManager = (function() {
                     // replace each variable with its value before pushing state on the stack
                     stmt.args.forEach((arg, index, args) => {
                         if (arg.type === "ident") { // if the argument is a get block for a variable
-                            args[index] = _.last(sim.call_stack).context[arg.value];
+                            //If the user has tried to use a variable name before it is defined, this is undefined
+                            //all other undefined values (ex: putting 'x' in forward by) get set to negative 1
+                            if (_.last(sim.call_stack).context[arg.value] === undefined){
+                                args[index] = -1;
+                            }
+                            else{
+                                args[index] = _.last(sim.call_stack).context[arg.value];
+                            }
+
                         }
                     })
                     self.push_stack_state(proc.body, _.zip(proc.params, stmt.args), stmt.meta, sim);
@@ -93,10 +101,12 @@ var RuthefjordManager = (function() {
                     // console.log('stmt', stmt);
                     if (stmt.number.type === "ident") { //ToDo: make context hold count's value
                         // console.log("A");
-                        // console.log("last on call stack:");
-                        // console.log(_.last(sim.call_stack).context);
-
-                        count = _.last(sim.call_stack).context[stmt.number.value].value;
+                        if (_.last(sim.call_stack).context[stmt.number.value] === undefined){
+                            count = -1;
+                        }
+                        else{
+                            count = _.last(sim.call_stack).context[stmt.number.value].value;
+                        }
                     } else { // we only support int literals and identifiers
                         count = stmt.number.value;
                     }
