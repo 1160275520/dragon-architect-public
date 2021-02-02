@@ -259,6 +259,7 @@ function create_puzzle_runner(game_info, pack, sceneSelectType) {
                 item.click(function () {
                     current_puzzle_runner = create_puzzle_runner(game_info, pack, "level select");
                 })
+                console.log("prereq", pack.prereq);
                 $('#list-select-pack').append(item);}
         });
         current_puzzle_runner = create_puzzle_runner(game_info, get_next_pack(pack, game_info), "level select");
@@ -755,6 +756,15 @@ $(function() {
             $('#btn-packs').hide();
         }
 
+        // if (pack.prereq && pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
+        let id = "move dragon";   
+        let item = $('<li>' + id + '</li>');
+            item.click(function () {
+                current_puzzle_runner = create_puzzle_runner(game_info, pack, "level select");
+            })
+            $('#list-select-pack').append(item);
+        // });
+
         console.info('EVERYTHING IS READY!');
 
         // HACK add blockly change listener for saving
@@ -780,6 +790,7 @@ $(function() {
             _.forEach(game_info.packs, function(pack, id) {
                 if (pack.prereq && pack.prereq.every(function (packName) { return progress.is_pack_completed(game_info.packs[packName]); })){
                     let item = $('<li>' + id + '</li>');
+                    console.log(id);
                     item.click(function () {
                         current_puzzle_runner = create_puzzle_runner(game_info, pack, "level select");
                     })

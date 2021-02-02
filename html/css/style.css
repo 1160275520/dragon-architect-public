@@ -240,9 +240,9 @@ header > h1 {
 
 */ 
 .menu-bar_title {
-    font-family: 'Roboto Slab';
+    font-family: 'Times New Roman', Times, serif;
     color: #1c2b2d;
-    margin: 5px 0 5px 40px;
+    /* margin: 5px 0 5px 40px; */
     font-size: 29px;
     min-width: fit-content;
     font-weight: 600;
