@@ -55,4 +55,6 @@ All buildable components (labled "buildable" below) can be build with
     The server backend, for the game to communicate with a database and
     proxy telemetry requests, among other things.
 
+- dragon model:
+    We cannot distribute the dragon model. In order to see the dragon model, you need to purchase it at https://www.turbosquid.com/3d-models/3d-dragon-cartoon-model-1500561
 
